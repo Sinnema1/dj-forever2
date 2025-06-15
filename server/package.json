@@ -1,0 +1,27 @@
+{
+  "name": "wedding-website-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ts-node-dev src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "watch": "nodemon --watch src --ext ts,json --exec \"npm run build && npm run start\""
+  },
+  "dependencies": {
+    "@types/jsonwebtoken": "^9.0.9",
+    "apollo-server-express": "^3.13.0",
+    "express": "^4.18.0",
+    "graphql": "^16.8.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.6.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.5",
+    "nodemon": "^3.0.3",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.0"
+  }
+}

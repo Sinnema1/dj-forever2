@@ -1,16 +1,16 @@
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from './styles/theme';
-import { BrowserRouter } from 'react-router-dom';
-import { AppRoutes } from './router/routes';
+import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import HeroBanner from "./components/HeroBanner";
 
 export default function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
-    </ThemeProvider>
+    <Router>
+      <Navbar />
+      <main>
+        <HeroBanner />
+        {/* TODO: Add Timeline, TheDetails, Gallery, WeddingParty, TravelGuide, FAQs, Registry, RSVP, Guestbook */}
+      </main>
+    </Router>
   );
 }
