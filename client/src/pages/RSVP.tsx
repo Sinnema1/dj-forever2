@@ -1,5 +1,10 @@
 import React from "react";
+import RSVPForm from "../components/RSVP/RSVPForm";
 
 export default function RSVPPage() {
-  return <div>RSVP Section</div>;
+  return (
+    <div className="container mt-4">
+      <RSVPForm />
+    </div>
+  );
 }
