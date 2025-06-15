@@ -1,16 +1,29 @@
 import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import HeroBanner from "./components/HeroBanner";
+import HomePage from "./pages/HomePage";
+import RSVPStandalonePage from "./pages/RSVPStandalonePage";
+import RegistryStandalonePage from "./pages/RegistryStandalonePage";
+import InvitedRoute from "./components/InvitedRoute";
 
 export default function App() {
   return (
-    <Router>
+    <>
       <Navbar />
       <main>
-        <HeroBanner />
-        {/* TODO: Add Timeline, TheDetails, Gallery, WeddingParty, TravelGuide, FAQs, Registry, RSVP, Guestbook */}
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/rsvp"
+            element={
+              <InvitedRoute>
+                <RSVPStandalonePage />
+              </InvitedRoute>
+            }
+          />
+          <Route path="/registry" element={<RegistryStandalonePage />} />
+        </Routes>
       </main>
-    </Router>
+    </>
   );
 }
