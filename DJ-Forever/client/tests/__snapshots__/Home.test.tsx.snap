@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Home page > matches snapshot 1`] = `
+<div>
+  <div
+    class="MuiBox-root css-159c3j5"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthMd css-tsvym-MuiContainer-root"
+    >
+      <h1
+        class="MuiTypography-root MuiTypography-h2 MuiTypography-gutterBottom css-6orrbu-MuiTypography-root"
+      >
+        Welcome to DJ Forever
+      </h1>
+      <h5
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-gutterBottom css-1f9xtph-MuiTypography-root"
+      >
+        Your Ultimate Event RSVP Management Platform
+      </h5>
+      <button
+        class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedSecondary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorSecondary MuiButton-root MuiButton-contained MuiButton-containedSecondary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorSecondary css-1cwgju-MuiButtonBase-root-MuiButton-root"
+        tabindex="0"
+        type="button"
+      >
+        Get Started
+      </button>
+    </div>
+  </div>
+</div>
+`;
