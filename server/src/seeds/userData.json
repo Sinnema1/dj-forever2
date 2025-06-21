@@ -1,2 +1,25 @@
-// Placeholder for user data
-[]
+{
+  "users": [
+    {
+      "fullName": "Alice Johnson",
+      "email": "alice@example.com",
+      "password": "SecurePass123!",
+      "isInvited": true,
+      "hasRSVPed": true
+    },
+    {
+      "fullName": "Bob Smith",
+      "email": "bob@example.com",
+      "password": "SecurePass456!",
+      "isInvited": true,
+      "hasRSVPed": true
+    },
+    {
+      "fullName": "Charlie Williams",
+      "email": "charlie@example.com",
+      "password": "SecurePass789!",
+      "isInvited": false,
+      "hasRSVPed": false
+    }
+  ]
+}
