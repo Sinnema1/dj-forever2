@@ -4,14 +4,17 @@ import userEvent from '@testing-library/user-event';
 import Navbar from '../src/components/Navbar';
 import { AuthProvider } from '../src/context/AuthContext';
 import { MemoryRouter } from 'react-router-dom';
+import { MockedProvider } from '@apollo/client/testing';
 
 function renderNavbar() {
   return render(
-    <AuthProvider>
-      <MemoryRouter>
-        <Navbar />
-      </MemoryRouter>
-    </AuthProvider>
+    <MockedProvider mocks={[]} addTypename={false}>
+      <AuthProvider>
+        <MemoryRouter>
+          <Navbar />
+        </MemoryRouter>
+      </AuthProvider>
+    </MockedProvider>
   );
 }
 

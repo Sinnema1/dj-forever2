@@ -6,7 +6,7 @@ import "../assets/styles.css";
 export default function HeroBanner() {
   const { user } = useAuth();
   const location = useLocation();
-  const isHomePage = location.pathname === '/';
+  const isHomePage = location.pathname === "/";
 
   return (
     <section id="home" className="hero">
@@ -27,7 +27,7 @@ export default function HeroBanner() {
               </Link>
             )
           ) : null}
-          
+
           {isHomePage ? (
             <a href="#registry" className="btn btn-outline">
               Registry
@@ -37,7 +37,7 @@ export default function HeroBanner() {
               Registry
             </Link>
           )}
-          
+
           {isHomePage ? (
             <a href="#travel" className="btn btn-outline">
               Travel Guide

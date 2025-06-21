@@ -51,17 +51,17 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState("home");
 
   useEffect(() => {
-    if (location.pathname === '/') {
+    if (location.pathname === "/") {
       const handleScroll = () => {
         const scrollPosition = window.scrollY + 100;
-  
+
         // Find the current section in view
         const sections = document.querySelectorAll("section[id]");
         sections.forEach((section) => {
           const sectionTop = (section as HTMLElement).offsetTop;
           const sectionHeight = (section as HTMLElement).offsetHeight;
           const sectionId = section.getAttribute("id") || "";
-  
+
           if (
             scrollPosition >= sectionTop &&
             scrollPosition < sectionTop + sectionHeight
@@ -70,10 +70,10 @@ export default function Navbar() {
           }
         });
       };
-  
+
       window.addEventListener("scroll", handleScroll);
       handleScroll(); // Call once on mount to set initial active section
-  
+
       return () => {
         window.removeEventListener("scroll", handleScroll);
       };
@@ -98,13 +98,18 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [mobileMenuOpen]);
-  
-  const isHomePage = location.pathname === '/';
+
+  const isHomePage = location.pathname === "/";
 
   return (
     <nav className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}>
-      <Link to="/" className="navbar-logo">Dominique &amp; Justin</Link>
-      <div className={`navbar-mobile-toggle ${mobileMenuOpen ? "open" : ""}`} onClick={toggleMobileMenu}>
+      <Link to="/" className="navbar-logo">
+        Dominique &amp; Justin
+      </Link>
+      <div
+        className={`navbar-mobile-toggle ${mobileMenuOpen ? "open" : ""}`}
+        onClick={toggleMobileMenu}
+      >
         <span></span>
         <span></span>
         <span></span>
@@ -129,25 +134,30 @@ export default function Navbar() {
         ) : (
           // Just Home link when on other pages
           <li style={{ "--item-index": 0 } as React.CSSProperties}>
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               onClick={() => setMobileMenuOpen(false)}
-              className={location.pathname === '/' ? 'active' : ''}
+              className={location.pathname === "/" ? "active" : ""}
             >
               Home
             </Link>
           </li>
         )}
-        
+
         {/* Always show standalone page links */}
         {pageLinks.map((link, index) => {
           // Skip RSVP if user is not invited
           if (link.requiresInvitation && !user?.isInvited) return null;
-          
+
           return (
             <li
               key={link.to}
-              style={{ "--item-index": index + (isHomePage ? sectionLinks.length : 1) } as React.CSSProperties}
+              style={
+                {
+                  "--item-index":
+                    index + (isHomePage ? sectionLinks.length : 1),
+                } as React.CSSProperties
+              }
             >
               <Link
                 to={link.to}
@@ -162,7 +172,10 @@ export default function Navbar() {
         {/* Auth buttons */}
         <li style={{ "--item-index": 999 } as React.CSSProperties}>
           {!isLoggedIn ? (
-            <button className="btn btn-outline" onClick={() => setLoginModalOpen(true)}>
+            <button
+              className="btn btn-outline"
+              onClick={() => setLoginModalOpen(true)}
+            >
               Login
             </button>
           ) : (
@@ -173,9 +186,15 @@ export default function Navbar() {
         </li>
       </ul>
       {mobileMenuOpen && (
-        <div className="navbar-backdrop" onClick={() => setMobileMenuOpen(false)} />
+        <div
+          className="navbar-backdrop"
+          onClick={() => setMobileMenuOpen(false)}
+        />
       )}
-      <LoginModal isOpen={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
+      <LoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+      />
     </nav>
   );
 }

@@ -12,20 +12,28 @@ export default function RSVPForm() {
     additionalNotes: rsvp?.additionalNotes || "",
   });
 
-  useEffect(() => {
-    if (rsvp) {
-      setFormData({
-        fullName: rsvp.fullName || "",
-        attending: rsvp.attending || "NO",
-        mealPreference: rsvp.mealPreference || "",
-        allergies: rsvp.allergies || "",
-        additionalNotes: rsvp.additionalNotes || "",
-      });
-    }
-  }, [rsvp]);
-
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('[RSVPForm] Rendered. successMessage:', successMessage);
+    if (rsvp) {
+      setFormData((prev) => {
+        const newData = {
+          fullName: rsvp.fullName || "",
+          attending: rsvp.attending || "NO",
+          mealPreference: rsvp.mealPreference || "",
+          allergies: rsvp.allergies || "",
+          additionalNotes: rsvp.additionalNotes || "",
+        };
+        const isDifferent = Object.keys(newData).some(
+          (key) => (prev as any)[key] !== (newData as any)[key]
+        );
+        return isDifferent ? newData : prev;
+      });
+    }
+  }, [rsvp, successMessage]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -43,13 +51,26 @@ export default function RSVPForm() {
     e.preventDefault();
     setSuccessMessage("");
     setErrorMessage("");
+    // eslint-disable-next-line no-console
+    console.log('[RSVPForm] handleSubmit called');
     try {
       if (rsvp) {
         await editRSVP(formData);
         setSuccessMessage("RSVP updated!");
+        // eslint-disable-next-line no-console
+        console.log('[RSVPForm] setSuccessMessage: RSVP updated!');
       } else {
         await createRSVP(formData);
         setSuccessMessage("RSVP submitted!");
+        // eslint-disable-next-line no-console
+        console.log('[RSVPForm] setSuccessMessage: RSVP submitted!');
+        setFormData({
+          fullName: "",
+          attending: "NO",
+          mealPreference: "",
+          allergies: "",
+          additionalNotes: "",
+        });
       }
     } catch (err: any) {
       setErrorMessage(err.message || "Something went wrong.");
@@ -113,7 +134,9 @@ export default function RSVPForm() {
         {loading ? "Submitting..." : rsvp ? "Update RSVP" : "Submit RSVP"}
       </button>
       {successMessage && (
-        <div className="form-success mt-4">{successMessage}</div>
+        <div className="form-success mt-4">
+          {successMessage}
+        </div>
       )}
       {errorMessage && <div className="form-error mt-4">{errorMessage}</div>}
     </form>

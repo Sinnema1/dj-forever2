@@ -4,7 +4,7 @@ const registries = [
   {
     name: "Crate & Barrel",
     url: "https://www.crateandbarrel.com/gift-registry/",
-    logo: "/images/registries/crate-and-barrel.svg", 
+    logo: "/images/registries/crate-and-barrel.svg",
   },
   {
     name: "Williams-Sonoma",
@@ -23,9 +23,11 @@ export default function RegistryLinks() {
   return (
     <div className="registry-links">
       <p className="registry-message">
-        Your presence at our wedding is the greatest gift of all. However, if you wish to honor us with a gift, we have registered at the following places:
+        Your presence at our wedding is the greatest gift of all. However, if
+        you wish to honor us with a gift, we have registered at the following
+        places:
       </p>
-      
+
       <div className="registry-buttons">
         {registries.map((registry, index) => (
           <a
@@ -45,10 +47,8 @@ export default function RegistryLinks() {
           </a>
         ))}
       </div>
-      
-      <p className="registry-thank-you">
-        Thank you for your love and support!
-      </p>
+
+      <p className="registry-thank-you">Thank you for your love and support!</p>
     </div>
   );
 }
