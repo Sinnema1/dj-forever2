@@ -47,7 +47,7 @@ const HomePage: React.FC = () => {
     <>
       {/* Hero Section */}
       <HeroBanner />
-      
+
       {/* Our Story Section */}
       <section id="our-story">
         <h2 className="section-title">Our Story</h2>
@@ -56,7 +56,7 @@ const HomePage: React.FC = () => {
         </div>
         <SectionDivider position="bottom" color="#fff" />
       </section>
-      
+
       {/* The Details Section */}
       <section id="details">
         <SectionDivider position="top" color="#faf6f0" />
@@ -66,7 +66,7 @@ const HomePage: React.FC = () => {
         </div>
         <SectionDivider position="bottom" color="#fff" />
       </section>
-      
+
       {/* Gallery Section */}
       <section id="gallery">
         <SectionDivider position="top" color="#faf6f0" />
@@ -76,7 +76,7 @@ const HomePage: React.FC = () => {
         </div>
         <SectionDivider position="bottom" color="#fff" />
       </section>
-      
+
       {/* Wedding Party Section */}
       <section id="wedding-party">
         <SectionDivider position="top" color="#faf6f0" />
@@ -86,7 +86,7 @@ const HomePage: React.FC = () => {
         </div>
         <SectionDivider position="bottom" color="#fff" />
       </section>
-      
+
       {/* Travel Guide Section */}
       <section id="travel">
         <SectionDivider position="top" color="#faf6f0" />
@@ -96,7 +96,7 @@ const HomePage: React.FC = () => {
         </div>
         <SectionDivider position="bottom" color="#fff" />
       </section>
-      
+
       {/* FAQs Section */}
       <section id="faqs">
         <SectionDivider position="top" color="#faf6f0" />
@@ -106,7 +106,7 @@ const HomePage: React.FC = () => {
         </div>
         <SectionDivider position="bottom" color="#fff" />
       </section>
-      
+
       {/* Registry Section */}
       <section id="registry">
         <SectionDivider position="top" color="#faf6f0" />
@@ -116,7 +116,7 @@ const HomePage: React.FC = () => {
         </div>
         <SectionDivider position="bottom" color="#fff" />
       </section>
-      
+
       {/* Guestbook Section */}
       <section id="guestbook">
         <SectionDivider position="top" color="#faf6f0" />

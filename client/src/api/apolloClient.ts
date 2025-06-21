@@ -1,4 +1,9 @@
-import { ApolloClient, InMemoryCache, createHttpLink, from } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+  from,
+} from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 
@@ -11,7 +16,7 @@ const httpLink = createHttpLink({
 const authLink = setContext((_, { headers }) => {
   // Get auth token from localStorage if it exists
   const token = localStorage.getItem("id_token");
-  
+
   // Return headers to the context for the httpLink to use
   return {
     headers: {
@@ -24,20 +29,20 @@ const authLink = setContext((_, { headers }) => {
 // Handle GraphQL errors
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path }) => 
+    graphQLErrors.forEach(({ message, locations, path }) =>
       console.log(
         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
       )
     );
   }
-  
+
   if (networkError) {
     console.log(`[Network error]: ${networkError}`);
-    
+
     // Optional: Handle token expiration/auth errors
-    if ('statusCode' in networkError && networkError.statusCode === 401) {
-      localStorage.removeItem('id_token');
-      localStorage.removeItem('user');
+    if ("statusCode" in networkError && networkError.statusCode === 401) {
+      localStorage.removeItem("id_token");
+      localStorage.removeItem("user");
       // Could also trigger a global auth state refresh here
     }
   }

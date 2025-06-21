@@ -31,8 +31,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>&times;</button>
+      <div
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className="modal-close" onClick={onClose}>
+          &times;
+        </button>
         <h2>Login</h2>
         <form onSubmit={handleSubmit} className="modal-form">
           <label htmlFor="login-email">Email</label>
@@ -40,7 +47,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             id="login-email"
             type="email"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             required
             autoFocus
           />
@@ -49,7 +56,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             id="login-password"
             type="password"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
           {error && <div className="form-error">{error}</div>}
