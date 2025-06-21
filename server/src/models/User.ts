@@ -1,7 +1,20 @@
-// TODO: Implement User model (e.g., with Mongoose schema)
-// Remove incorrect React import and placeholder function
-// Example: Define Mongoose schema and export model
+import mongoose, { Schema, Document } from "mongoose";
 
-// import mongoose from 'mongoose';
-// const userSchema = new mongoose.Schema({ ... });
-// export default mongoose.model('User', userSchema);
+export interface IUser extends Document {
+  fullName: string;
+  email: string;
+  password: string;
+  isAdmin: boolean;
+  isInvited: boolean;
+}
+
+const userSchema = new Schema<IUser>({
+  fullName: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  isAdmin: { type: Boolean, default: false },
+  isInvited: { type: Boolean, default: true }, // Default to true for demo
+});
+
+export default mongoose.models.User ||
+  mongoose.model<IUser>("User", userSchema);
