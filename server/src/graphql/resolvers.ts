@@ -1,5 +1,5 @@
-import { registerUser, loginUser } from "../services/authService";
-import { submitRSVP } from "../services/rsvpService";
+import { registerUser, loginUser } from "../services/authService.js";
+import { submitRSVP } from "../services/rsvpService.js";
 
 export const resolvers = {
   Query: {
