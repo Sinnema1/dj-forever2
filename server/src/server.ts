@@ -41,14 +41,7 @@ async function startServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Serve static files from client build (for production)
-  if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "../../client/dist")));
-
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
-    });
-  }
+  // Static file serving removed for Render backend-only deployment
 
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
