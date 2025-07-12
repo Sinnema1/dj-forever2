@@ -1,4 +1,4 @@
-import RSVP from "../models/RSVP";
+import RSVP from "../models/RSVP.js";
 
 // Placeholder for RSVP service
 // TODO: Implement RSVP service logic (e.g., create, update, fetch RSVP data, etc.)
