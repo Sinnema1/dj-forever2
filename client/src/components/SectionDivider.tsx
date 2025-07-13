@@ -1,4 +1,5 @@
 import React from 'react';
+import theme from '../theme/theme';
 
 interface SectionDividerProps {
   position: 'top' | 'bottom';
@@ -8,7 +9,7 @@ interface SectionDividerProps {
 
 const SectionDivider: React.FC<SectionDividerProps> = ({ 
   position, 
-  color = "#faf6f0",
+  color = theme.colors.cream,
   invert = false
 }) => {
   return (

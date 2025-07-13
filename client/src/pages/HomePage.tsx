@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import HeroBanner from "../components/HeroBanner";
 import SectionDivider from "../components/SectionDivider";
+import theme from "../theme/theme";
 import Home from "./Home";
 import OurStory from "./OurStory";
 import TheDetails from "./TheDetails";
@@ -54,72 +55,72 @@ const HomePage: React.FC = () => {
         <div className="section-content">
           <OurStory />
         </div>
-        <SectionDivider position="bottom" color="#fff" />
+        <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
 
       {/* The Details Section */}
       <section id="details">
-        <SectionDivider position="top" color="#faf6f0" />
+        <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">The Details</h2>
         <div className="section-content">
           <TheDetails />
         </div>
-        <SectionDivider position="bottom" color="#fff" />
+        <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
 
       {/* Gallery Section */}
       <section id="gallery">
-        <SectionDivider position="top" color="#faf6f0" />
+        <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">Gallery</h2>
         <div className="section-content">
           <Gallery />
         </div>
-        <SectionDivider position="bottom" color="#fff" />
+        <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
 
       {/* Wedding Party Section */}
       <section id="wedding-party">
-        <SectionDivider position="top" color="#faf6f0" />
+        <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">Wedding Party</h2>
         <div className="section-content">
           <WeddingParty />
         </div>
-        <SectionDivider position="bottom" color="#fff" />
+        <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
 
       {/* Travel Guide Section */}
       <section id="travel">
-        <SectionDivider position="top" color="#faf6f0" />
+        <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">Travel Guide</h2>
         <div className="section-content">
           <TravelGuide />
         </div>
-        <SectionDivider position="bottom" color="#fff" />
+        <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
 
       {/* FAQs Section */}
       <section id="faqs">
-        <SectionDivider position="top" color="#faf6f0" />
+        <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">FAQs</h2>
         <div className="section-content">
           <FAQs />
         </div>
-        <SectionDivider position="bottom" color="#fff" />
+        <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
 
       {/* Registry Section */}
       <section id="registry">
-        <SectionDivider position="top" color="#faf6f0" />
+        <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">Registry</h2>
         <div className="section-content">
           <Registry />
         </div>
-        <SectionDivider position="bottom" color="#fff" />
+        <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
 
       {/* Guestbook Section */}
       <section id="guestbook">
-        <SectionDivider position="top" color="#faf6f0" />
+        <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">Guestbook</h2>
         <div className="section-content">
           <Guestbook />
