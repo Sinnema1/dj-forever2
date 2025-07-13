@@ -115,12 +115,12 @@ const HomePage: React.FC = () => {
         <div className="section-content">
           <Registry />
         </div>
-        <SectionDivider position="bottom" color={theme.colors.background} />
+        <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
 
       {/* Guestbook Section */}
       <section id="guestbook">
-        <SectionDivider position="top" color={theme.colors.background} />
+        <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">Guestbook</h2>
         <div className="section-content">
           <Guestbook />
