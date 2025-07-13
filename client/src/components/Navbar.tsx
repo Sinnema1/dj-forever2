@@ -10,7 +10,6 @@ const sectionLinks = [
   { label: "Our Story", to: "our-story" },
   { label: "The Details", to: "details" },
   { label: "Gallery", to: "gallery" },
-  { label: "Wedding Party", to: "wedding-party" },
   { label: "Travel Guide", to: "travel" },
   { label: "FAQs", to: "faqs" },
   { label: "Guestbook", to: "guestbook" },
@@ -22,106 +21,77 @@ const pageLinks = [
   { label: "RSVP", to: "/rsvp", requiresInvitation: true },
 ];
 
-export default function Navbar() {
+function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isLoggedIn, logout } = useAuth();
   const location = useLocation();
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const isHomePage = location.pathname === "/";
 
+  // scroll listener for background
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 100;
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled);
-      }
+      setScrolled(window.scrollY > 100);
     };
-
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [scrolled]);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
-
-  // Function to detect the active section
+  // detect active section on home page
   const [activeSection, setActiveSection] = useState("home");
-
   useEffect(() => {
-    if (location.pathname === "/") {
-      const handleScroll = () => {
-        const scrollPosition = window.scrollY + 100;
-
-        // Find the current section in view
-        const sections = document.querySelectorAll("section[id]");
-        sections.forEach((section) => {
-          const sectionTop = (section as HTMLElement).offsetTop;
-          const sectionHeight = (section as HTMLElement).offsetHeight;
-          const sectionId = section.getAttribute("id") || "";
-
-          if (
-            scrollPosition >= sectionTop &&
-            scrollPosition < sectionTop + sectionHeight
-          ) {
-            setActiveSection(sectionId);
+    if (isHomePage) {
+      const onScroll = () => {
+        const pos = window.scrollY + 100;
+        document.querySelectorAll("section[id]").forEach((sec) => {
+          const el = sec as HTMLElement;
+          if (pos >= el.offsetTop && pos < el.offsetTop + el.offsetHeight) {
+            setActiveSection(el.id);
           }
         });
       };
-
-      window.addEventListener("scroll", handleScroll);
-      handleScroll(); // Call once on mount to set initial active section
-
-      return () => {
-        window.removeEventListener("scroll", handleScroll);
-      };
+      window.addEventListener("scroll", onScroll);
+      onScroll();
+      return () => window.removeEventListener("scroll", onScroll);
     }
-  }, [location.pathname]);
+  }, [isHomePage]);
 
-  // Close mobile menu when clicking outside
+  // close mobile menu on outside click
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
+    const onClick = (e: MouseEvent) => {
+      const tgt = e.target as HTMLElement;
       if (
         mobileMenuOpen &&
-        !target.closest(".navbar-links") &&
-        !target.closest(".navbar-mobile-toggle")
+        !tgt.closest(".navbar-links") &&
+        !tgt.closest(".navbar-mobile-toggle")
       ) {
         setMobileMenuOpen(false);
       }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
   }, [mobileMenuOpen]);
-
-  const isHomePage = location.pathname === "/";
 
   return (
     <nav className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}>
       <Link to="/" className="navbar-logo">
         Dominique &amp; Justin
       </Link>
+
       <div
         className={`navbar-mobile-toggle ${mobileMenuOpen ? "open" : ""}`}
-        onClick={toggleMobileMenu}
+        onClick={() => setMobileMenuOpen((o) => !o)}
       >
-        <span></span>
-        <span></span>
-        <span></span>
+        <span />
+        <span />
+        <span />
       </div>
+
       <ul className={`navbar-links ${mobileMenuOpen ? "open" : ""}`}>
         {isHomePage ? (
-          // Section links (hash links) when on the home page
-          sectionLinks.map((link, index) => (
-            <li
-              key={link.to}
-              style={{ "--item-index": index } as React.CSSProperties}
-            >
+          sectionLinks.map((link, i) => (
+            <li key={link.to} style={{ "--item-index": i } as React.CSSProperties}>
               <a
                 href={`#${link.to}`}
                 onClick={() => setMobileMenuOpen(false)}
@@ -132,31 +102,24 @@ export default function Navbar() {
             </li>
           ))
         ) : (
-          // Just Home link when on other pages
           <li style={{ "--item-index": 0 } as React.CSSProperties}>
             <Link
               to="/"
               onClick={() => setMobileMenuOpen(false)}
-              className={location.pathname === "/" ? "active" : ""}
+              className={isHomePage ? "active" : ""}
             >
               Home
             </Link>
           </li>
         )}
 
-        {/* Always show standalone page links */}
-        {pageLinks.map((link, index) => {
-          // Skip RSVP if user is not invited
+        {pageLinks.map((link, idx) => {
           if (link.requiresInvitation && !user?.isInvited) return null;
-
           return (
             <li
               key={link.to}
               style={
-                {
-                  "--item-index":
-                    index + (isHomePage ? sectionLinks.length : 1),
-                } as React.CSSProperties
+                { "--item-index": idx + (isHomePage ? sectionLinks.length : 1) } as React.CSSProperties
               }
             >
               <Link
@@ -169,13 +132,11 @@ export default function Navbar() {
             </li>
           );
         })}
+
         {/* Auth buttons */}
-        <li style={{ "--item-index": 999 } as React.CSSProperties}>
+        <li style={{ "--item-index": 1000 } as React.CSSProperties}>
           {!isLoggedIn ? (
-            <button
-              className="btn btn-outline"
-              onClick={() => setLoginModalOpen(true)}
-            >
+            <button className="btn btn-outline" onClick={() => setLoginModalOpen(true)}>
               Login
             </button>
           ) : (
@@ -185,16 +146,12 @@ export default function Navbar() {
           )}
         </li>
       </ul>
-      {mobileMenuOpen && (
-        <div
-          className="navbar-backdrop"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-      <LoginModal
-        isOpen={loginModalOpen}
-        onClose={() => setLoginModalOpen(false)}
-      />
+
+      {mobileMenuOpen && <div className="navbar-backdrop" onClick={() => setMobileMenuOpen(false)} />}
+
+      <LoginModal isOpen={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
     </nav>
   );
 }
+
+export default Navbar;

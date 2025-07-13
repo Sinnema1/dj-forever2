@@ -22,9 +22,6 @@ project-root/
 │   │   │   ├── Gallery/
 │   │   │   │   ├── GalleryGrid.tsx
 │   │   │   │   └── LightboxModal.tsx
-│   │   │   ├── WeddingParty/
-│   │   │   │   ├── PartyList.tsx
-│   │   │   │   └── PartyCard.tsx
 │   │   │   ├── TravelGuide.tsx
 │   │   │   ├── FAQAccordion.tsx
 │   │   │   ├── RegistryLinks.tsx
