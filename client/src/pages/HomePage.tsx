@@ -2,42 +2,32 @@ import React, { useEffect } from "react";
 import HeroBanner from "../components/HeroBanner";
 import SectionDivider from "../components/SectionDivider";
 import theme from "../theme/theme";
-import Home from "./Home";
 import OurStory from "./OurStory";
 import TheDetails from "./TheDetails";
 import Gallery from "./Gallery";
-import WeddingParty from "./WeddingParty";
+
 import TravelGuide from "./TravelGuide";
 import FAQs from "./FAQs";
 import Registry from "./Registry";
 import Guestbook from "./Guestbook";
 
 const HomePage: React.FC = () => {
-  // Add animation to sections when they come into view
+  // IntersectionObserver to fade in each .section-content
   useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.2,
-    };
-
+    const observerOptions = { root: null, rootMargin: "0px", threshold: 0.2 };
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("fade-in");
-          // Stop observing after animation is applied
           observer.unobserve(entry.target);
         }
       });
     }, observerOptions);
 
-    // Observe all section content elements
     document.querySelectorAll(".section-content").forEach((section) => {
       observer.observe(section);
     });
-
     return () => {
-      // Clean up
       document.querySelectorAll(".section-content").forEach((section) => {
         observer.unobserve(section);
       });
@@ -74,16 +64,6 @@ const HomePage: React.FC = () => {
         <h2 className="section-title">Gallery</h2>
         <div className="section-content">
           <Gallery />
-        </div>
-        <SectionDivider position="bottom" color={theme.colors.cream} />
-      </section>
-
-      {/* Wedding Party Section */}
-      <section id="wedding-party">
-        <SectionDivider position="top" color={theme.colors.cream} />
-        <h2 className="section-title">Wedding Party</h2>
-        <div className="section-content">
-          <WeddingParty />
         </div>
         <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
