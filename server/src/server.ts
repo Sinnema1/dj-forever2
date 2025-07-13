@@ -32,6 +32,7 @@ async function startServer() {
     typeDefs,
     resolvers,
     context: ({ req }) => ({ req }),
+    persistedQueries: false,
   });
 
   await server.start();
