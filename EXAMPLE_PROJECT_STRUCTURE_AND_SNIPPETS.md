@@ -234,7 +234,6 @@ export const authMiddleware = ({ req }: { req: Request }) => {
 - **Our Story**: Vertical timeline of milestones (First Date, Engagement, Proposal) with captions and dates.
 - **The Details**: Ceremony & reception times, venue address, dress code, embedded Google Map.
 - **Gallery**: Masonry grid of photos, lightbox modal for full-screen viewing.
-- **Wedding Party**: Headshots, names, roles, and short bios/fun facts.
 - **Travel Guide**: Lodging recommendations, airport/transportation tips, local attractions.
 - **FAQs**: Accordion Q&A for common questions (parking, plus-ones, children, accessibility, registry).
 - **Registry**: External links/buttons (e.g., Zola, Amazon) and thank you message.

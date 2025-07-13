@@ -29,6 +29,7 @@
   "devDependencies": {
     "concurrently": "^9.1.2",
     "ts-node": "^10.9.2",
+    "vite-imagetools": "^7.1.0",
     "wait-on": "^7.2.0"
   },
   "dependencies": {
