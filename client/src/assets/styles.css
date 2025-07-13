@@ -1,35 +1,46 @@
+
+:root {
+  --color-cream: #F2EFEA;           /* Page background, large section backgrounds */
+  --color-panel-cream: #E7E3DA;      /* Card/form backgrounds */
+  --color-sage-20: #CAD2C5;          /* Accent blocks, hover states, light overlays */
+  --color-sage: #9FB5A1;             /* Secondary buttons, icon fills */
+  --color-dusty-blue-light: #A3BFCB; /* Primary button hover, link hover */
+  --color-dusty-blue: #6E8FA3;       /* Primary buttons, nav highlights */
+  --color-gold-accent: #B4946C;      /* Underlines, button borders, small accents */
+  --color-charcoal: #3D3D3D;         /* Main text, headers */
+}
+
 body {
   font-family: "Lato", "Montserrat", Arial, sans-serif;
-  background: #faf6f0;
-  color: #4a4a4a;
+  background: var(--color-cream);
+  color: var(--color-charcoal);
   margin: 0;
   padding: 0;
 }
 
 .hero {
-  /* Use gradient as placeholder instead of image */
-  background: linear-gradient(135deg, #4a6580 0%, #6e8cad 50%, #a4b8c4 100%);
+  background: linear-gradient(135deg, var(--color-dusty-blue) 0%, var(--color-sage-20) 50%, var(--color-sage) 100%);
   min-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: #4a4a4a;
+  color: var(--color-charcoal);
   position: relative;
 }
 
 .hero-content {
-  background: rgba(250, 246, 240, 0.85);
+  background: rgba(231, 227, 218, 0.85); /* Panel Cream with opacity */
   padding: 2rem 3rem;
   border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(201, 166, 107, 0.08);
+  box-shadow: 0 4px 24px rgba(231, 227, 218, 0.08);
   display: inline-block;
 }
 
 .hero-title {
   font-family: "Playfair Display", serif;
   font-size: 2.5rem;
-  color: #c9a66b;
+  color: var(--color-dusty-blue);
   margin-bottom: 0.5rem;
 }
 
@@ -43,7 +54,7 @@ body {
   display: block;
   font-size: 1.1rem;
   margin: 1rem 0 2rem 0;
-  color: #4a4a4a;
+  color: var(--color-charcoal);
 }
 
 .hero-links {
@@ -51,9 +62,9 @@ body {
 }
 
 .btn {
-  background: #f7d3d8;
-  color: #4a4a4a;
-  border: none;
+  background: var(--color-dusty-blue);
+  color: #fff;
+  border: 2px solid var(--color-gold-accent);
   border-radius: 8px;
   padding: 0.7rem 1.5rem;
   margin: 0 0.5rem;
@@ -61,7 +72,7 @@ body {
   font-family: "Montserrat", sans-serif;
   font-weight: 700;
   text-decoration: none;
-  box-shadow: 0 2px 8px rgba(201, 166, 107, 0.08);
+  box-shadow: 0 2px 8px rgba(110, 143, 163, 0.08);
   transition:
     background 0.2s,
     color 0.2s;
@@ -69,16 +80,16 @@ body {
 }
 
 .btn:hover {
-  background: #c9a66b;
+  background: var(--color-dusty-blue-light);
   color: #fff;
 }
 
 /* Registry Section Styles */
 .registry-section {
   padding: 3rem 0;
-  background: #fff;
+  background: var(--color-panel-cream);
   border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(201, 166, 107, 0.06);
+  box-shadow: 0 2px 16px rgba(180, 148, 108, 0.06);
   margin: 2rem auto;
   max-width: 700px;
   text-align: center;
@@ -91,7 +102,7 @@ body {
 .registry-intro {
   font-size: 1.1rem;
   margin-bottom: 1.5rem;
-  color: #4a4a4a;
+  color: var(--color-charcoal);
 }
 
 .registry-links {
@@ -113,16 +124,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f7d3d8;
-  color: #4a4a4a;
-  border: none;
+  background: var(--color-sage-20);
+  color: var(--color-charcoal);
+  border: 2px solid var(--color-gold-accent);
   border-radius: 8px;
   padding: 1rem 2rem;
   font-size: 1.1rem;
   font-family: "Montserrat", sans-serif;
   font-weight: 700;
   text-decoration: none;
-  box-shadow: 0 2px 8px rgba(201, 166, 107, 0.08);
+  box-shadow: 0 2px 8px rgba(180, 148, 108, 0.08);
   transition:
     background 0.2s,
     color 0.2s,
@@ -132,9 +143,9 @@ body {
 }
 
 .registry-button:hover {
-  background: #c9a66b;
+  background: var(--color-sage);
   color: #fff;
-  box-shadow: 0 4px 16px rgba(201, 166, 107, 0.16);
+  box-shadow: 0 4px 16px rgba(159, 181, 161, 0.16);
 }
 
 .registry-logo-container {
@@ -153,12 +164,12 @@ body {
 .registry-message {
   font-size: 1.1rem;
   margin-bottom: 1rem;
-  color: #4a4a4a;
+  color: var(--color-charcoal);
 }
 
 .registry-thank-you {
   font-size: 1.05rem;
-  color: #c9a66b;
+  color: var(--color-gold-accent);
   margin-top: 1.5rem;
   font-style: italic;
 }
@@ -177,9 +188,9 @@ body {
   justify-content: center;
 }
 .modal {
-  background: #fff;
+  background: var(--color-panel-cream);
   border-radius: 12px;
-  box-shadow: 0 4px 32px rgba(201, 166, 107, 0.18);
+  box-shadow: 0 4px 32px rgba(180, 148, 108, 0.18);
   padding: 2rem 2.5rem 1.5rem 2.5rem;
   min-width: 320px;
   max-width: 90vw;
@@ -203,7 +214,7 @@ body {
   background: none;
   border: none;
   font-size: 2rem;
-  color: #c9a66b;
+  color: var(--color-gold-accent);
   cursor: pointer;
   line-height: 1;
 }
