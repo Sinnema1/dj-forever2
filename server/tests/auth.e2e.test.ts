@@ -20,8 +20,9 @@ describe("Auth End-to-End", () => {
     await mongoose.disconnect();
   });
 
-  it("registers and logs in a user", async () => {
-    // Register
+  it("registers a user with qrToken and logs in via QR token", async () => {
+    // Register (simulate seed)
+    const qrToken = "test-qr-token-123";
     const registerRes = await request(app)
       .post("/graphql")
       .send({
@@ -30,32 +31,38 @@ describe("Auth End-to-End", () => {
             registerUser(
               fullName: "E2E Auth User"
               email: "e2e-auth@example.com"
-              password: "Password123"
+              qrToken: "${qrToken}"
             ) {
               token
-              user { email isInvited }
+              user { email isInvited qrToken }
             }
           }
         `,
       });
+    if (!registerRes.body.data || !registerRes.body.data.registerUser) {
+      // Log GraphQL errors for easier debugging
+      console.error("GraphQL errors:", registerRes.body.errors);
+    }
     expect(registerRes.body.data.registerUser.token).toBeTypeOf("string");
     expect(registerRes.body.data.registerUser.user.email).toBe("e2e-auth@example.com");
+    expect(registerRes.body.data.registerUser.user.qrToken).toBe(qrToken);
     jwtToken = registerRes.body.data.registerUser.token;
 
-    // Login
+    // Login via QR token
     const loginRes = await request(app)
       .post("/graphql")
       .send({
         query: `
           mutation {
-            loginUser(email: "e2e-auth@example.com", password: "Password123") {
+            loginWithQrToken(qrToken: "${qrToken}") {
               token
-              user { email isInvited }
+              user { email isInvited qrToken }
             }
           }
         `,
       });
-    expect(loginRes.body.data.loginUser.token).toBeTypeOf("string");
-    expect(loginRes.body.data.loginUser.user.email).toBe("e2e-auth@example.com");
+    expect(loginRes.body.data.loginWithQrToken.token).toBeTypeOf("string");
+    expect(loginRes.body.data.loginWithQrToken.user.email).toBe("e2e-auth@example.com");
+    expect(loginRes.body.data.loginWithQrToken.user.qrToken).toBe(qrToken);
   });
 });

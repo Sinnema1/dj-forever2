@@ -21,6 +21,14 @@ export const seedDatabase = async () => {
     );
 
     // Hash passwords before inserting users
+    // Helper to generate a random QR token
+    function generateQrToken() {
+      return (
+        Math.random().toString(36).slice(2) +
+        Math.random().toString(36).slice(2)
+      );
+    }
+
     const usersWithHashedPasswords = await Promise.all(
       userData.users.map(async (user: any) => ({
         fullName: user.fullName,
@@ -28,6 +36,7 @@ export const seedDatabase = async () => {
         password: await bcrypt.hash(user.password, 10),
         isInvited: user.isInvited,
         hasRSVPed: user.hasRSVPed,
+        qrToken: generateQrToken(),
       }))
     );
 
