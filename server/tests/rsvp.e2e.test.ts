@@ -20,8 +20,9 @@ describe("RSVP End-to-End", () => {
     await mongoose.disconnect();
   });
 
-  it("registers, logs in, and submits RSVP", async () => {
-    // Register
+  it("registers a user with qrToken, logs in via QR token, and submits RSVP", async () => {
+    // Register (simulate seed)
+    const qrToken = "test-qr-token-456";
     const registerRes = await request(app)
       .post("/graphql")
       .send({
@@ -30,34 +31,40 @@ describe("RSVP End-to-End", () => {
             registerUser(
               fullName: "E2E User"
               email: "e2e@example.com"
-              password: "Password123"
+              qrToken: "${qrToken}"
             ) {
               token
-              user { email isInvited }
+              user { email isInvited qrToken }
             }
           }
         `,
       });
+    if (!registerRes.body.data || !registerRes.body.data.registerUser) {
+      // Log GraphQL errors for easier debugging
+      console.error("GraphQL errors:", registerRes.body.errors);
+    }
     expect(registerRes.body.data.registerUser.token).toBeTypeOf("string");
     expect(registerRes.body.data.registerUser.user.email).toBe("e2e@example.com");
     expect(registerRes.body.data.registerUser.user.isInvited).toBeTypeOf("boolean");
+    expect(registerRes.body.data.registerUser.user.qrToken).toBe(qrToken);
     jwtToken = registerRes.body.data.registerUser.token;
 
-    // Login
+    // Login via QR token
     const loginRes = await request(app)
       .post("/graphql")
       .send({
         query: `
           mutation {
-            loginUser(email: "e2e@example.com", password: "Password123") {
+            loginWithQrToken(qrToken: "${qrToken}") {
               token
-              user { email isInvited }
+              user { email isInvited qrToken }
             }
           }
         `,
       });
-    expect(loginRes.body.data.loginUser.token).toBeTypeOf("string");
-    expect(loginRes.body.data.loginUser.user.email).toBe("e2e@example.com");
+    expect(loginRes.body.data.loginWithQrToken.token).toBeTypeOf("string");
+    expect(loginRes.body.data.loginWithQrToken.user.email).toBe("e2e@example.com");
+    expect(loginRes.body.data.loginWithQrToken.user.qrToken).toBe(qrToken);
 
     // Submit RSVP
     const rsvpRes = await request(app)

@@ -16,6 +16,7 @@ export const typeDefs = gql`
     rsvpId: ID
     rsvp: RSVP
     isInvited: Boolean!
+    qrToken: String!
   }
 
   type RSVP {
@@ -49,9 +50,9 @@ export const typeDefs = gql`
     registerUser(
       fullName: String!
       email: String!
-      password: String!
+      qrToken: String!
     ): AuthPayload
-    loginUser(email: String!, password: String!): AuthPayload
+    loginWithQrToken(qrToken: String!): AuthPayload
     submitRSVP(
       attending: AttendanceStatus!
       mealPreference: String!
