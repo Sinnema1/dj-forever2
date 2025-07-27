@@ -1,4 +1,4 @@
-import { registerUser, loginUser } from "../services/authService.js";
+import { registerUser, loginUser, loginWithQrToken } from "../services/authService.js";
 import { submitRSVP } from "../services/rsvpService.js";
 
 export const resolvers = {
@@ -8,12 +8,13 @@ export const resolvers = {
   },
   Mutation: {
     registerUser: async (_: any, args: any) => {
-      console.log("registerUser resolver called with args:", args);
+      // Register user with qrToken
       return registerUser(args);
     },
-    loginUser: async (_: any, args: any) => {
-      console.log("loginUser resolver called with args:", args);
-      return loginUser(args);
+    loginWithQrToken: async (_: any, args: any) => {
+      // Login user with qrToken
+      const { qrToken } = args;
+      return loginWithQrToken({ qrToken });
     },
     submitRSVP: async (_: any, args: any, context: any) => {
       // For now, mock userId and fullName; in real app, get from auth context
