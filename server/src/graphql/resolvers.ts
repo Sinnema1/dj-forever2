@@ -1,4 +1,4 @@
-import { registerUser, loginUser, loginWithQrToken } from "../services/authService.js";
+import { registerUser, loginWithQrToken } from "../services/authService.js";
 import { submitRSVP } from "../services/rsvpService.js";
 
 export const resolvers = {
