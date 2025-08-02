@@ -27,7 +27,9 @@ async function main() {
 
   for (const user of users) {
     if (!user.qrToken) {
-      console.warn(`⚠️ User missing qrToken: ${user.fullName} (${user.email}) [ID: ${user._id}]`);
+      console.warn(
+        `⚠️ User missing qrToken: ${user.fullName} (${user.email}) [ID: ${user._id}]`
+      );
       continue;
     }
     const fileName = `${user.fullName.replace(
@@ -45,7 +47,10 @@ async function main() {
         `✅ QR code generated for ${user.fullName} (${user.email}) [ID: ${user._id}]: ${filePath} (URL: ${loginUrl})`
       );
     } catch (err) {
-      console.error(`❌ Error generating QR code for ${user.fullName} (${user.email}) [ID: ${user._id}]:`, err);
+      console.error(
+        `❌ Error generating QR code for ${user.fullName} (${user.email}) [ID: ${user._id}]:`,
+        err
+      );
     }
   }
   await mongoose.disconnect();
