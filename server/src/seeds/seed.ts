@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import User from "../models/User.js";
 import RSVP from "../models/RSVP.js";
@@ -7,8 +6,9 @@ import fs from "fs";
 /**
  * Seeds the database with user and RSVP data for djforever2.
  * Ensures correct user-RSVP relationships.
+ * @param closeConnection - Whether to close the database connection after seeding (default: true)
  */
-export const seedDatabase = async () => {
+export const seedDatabase = async (closeConnection = false) => {
   try {
     console.log("🚀 Starting database seeding for djforever2...");
 
@@ -20,7 +20,6 @@ export const seedDatabase = async () => {
       fs.readFileSync("./src/seeds/rsvpData.json", "utf-8")
     );
 
-    // Hash passwords before inserting users
     // Helper to generate a random QR token
     function generateQrToken() {
       return (
@@ -29,19 +28,16 @@ export const seedDatabase = async () => {
       );
     }
 
-    const usersWithHashedPasswords = await Promise.all(
-      userData.users.map(async (user: any) => ({
-        fullName: user.fullName,
-        email: user.email,
-        password: await bcrypt.hash(user.password, 10),
-        isInvited: user.isInvited,
-        hasRSVPed: user.hasRSVPed,
-        qrToken: generateQrToken(),
-      }))
-    );
+    const usersWithQrTokens = userData.users.map((user: any) => ({
+      fullName: user.fullName,
+      email: user.email,
+      isInvited: user.isInvited,
+      hasRSVPed: user.hasRSVPed,
+      qrToken: user.qrToken || generateQrToken(),
+    }));
 
     // Insert users and retrieve their new IDs
-    const insertedUsers = await User.insertMany(usersWithHashedPasswords);
+    const insertedUsers = await User.insertMany(usersWithQrTokens);
     console.log(`✅ Inserted ${insertedUsers.length} users.`);
 
     // Create a user lookup (email → ObjectId)
@@ -81,6 +77,8 @@ export const seedDatabase = async () => {
     console.error("❌ Error seeding the database:", error);
     throw error;
   } finally {
-    mongoose.connection.close();
+    if (closeConnection) {
+      await mongoose.connection.close();
+    }
   }
 };

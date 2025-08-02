@@ -3,23 +3,23 @@
     {
       "fullName": "Alice Johnson",
       "email": "alice@example.com",
-      "password": "SecurePass123!",
       "isInvited": true,
-      "hasRSVPed": true
+      "hasRSVPed": true,
+      "qrToken": "r24gpj3wntgqwqfberlas"
     },
     {
       "fullName": "Bob Smith",
       "email": "bob@example.com",
-      "password": "SecurePass456!",
       "isInvited": true,
-      "hasRSVPed": true
+      "hasRSVPed": true,
+      "qrToken": "ssq7b7bkfqqpd2724vlcol"
     },
     {
       "fullName": "Charlie Williams",
       "email": "charlie@example.com",
-      "password": "SecurePass789!",
       "isInvited": false,
-      "hasRSVPed": false
+      "hasRSVPed": false,
+      "qrToken": "ss0qx6mg20f2qaiyl9hnl7"
     }
   ]
 }

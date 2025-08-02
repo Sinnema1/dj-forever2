@@ -15,17 +15,14 @@ export interface UserType {
   email: string;
   isAdmin?: boolean;
   isInvited: boolean;
+  hasRSVPed?: boolean;
+  rsvpId?: string;
 }
 
 export interface AuthContextType {
   user: UserType | null;
   token?: string | null;
   isLoggedIn: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  registerUser: (
-    fullName: string,
-    email: string,
-    password: string
-  ) => Promise<void>;
+  loginWithQrToken: (qrToken: string) => Promise<void>;
   logout: () => void;
 }
