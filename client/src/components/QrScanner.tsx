@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Html5Qrcode } from 'html5-qrcode';
+import React, { useEffect, useRef } from "react";
+import { Html5Qrcode } from "html5-qrcode";
 
 interface QrScannerProps {
   onScan: (result: string) => void;
@@ -8,7 +8,12 @@ interface QrScannerProps {
   qrbox?: number;
 }
 
-const QrScanner: React.FC<QrScannerProps> = ({ onScan, onError, fps = 10, qrbox = 250 }) => {
+const QrScanner: React.FC<QrScannerProps> = ({
+  onScan,
+  onError,
+  fps = 10,
+  qrbox = 250,
+}) => {
   const scannerRef = useRef<HTMLDivElement>(null);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
 
@@ -19,7 +24,7 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScan, onError, fps = 10, qrbox 
 
     html5QrCode
       .start(
-        { facingMode: 'environment' },
+        { facingMode: "environment" },
         {
           fps,
           qrbox,
@@ -39,27 +44,26 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScan, onError, fps = 10, qrbox 
       // Only call stop if scanner is running
       if (html5QrCodeRef.current) {
         try {
-          html5QrCodeRef.current.stop()
-            .catch((err) => {
-              // Suppress known error from html5-qrcode when scanner is not running or paused
-              const msg = String(err);
-              if (
-                msg.includes('scanner is not running') ||
-                msg.includes('scanner is not running or paused') ||
-                msg.includes('Cannot stop, scanner is not running or paused.')
-              ) {
-                // Ignore
-                return;
-              }
-              if (onError) onError(err);
-            });
+          html5QrCodeRef.current.stop().catch((err) => {
+            // Suppress known error from html5-qrcode when scanner is not running or paused
+            const msg = String(err);
+            if (
+              msg.includes("scanner is not running") ||
+              msg.includes("scanner is not running or paused") ||
+              msg.includes("Cannot stop, scanner is not running or paused.")
+            ) {
+              // Ignore
+              return;
+            }
+            if (onError) onError(err);
+          });
         } catch (err) {
           // Suppress synchronous errors as well
           const msg = String(err);
           if (
-            msg.includes('scanner is not running') ||
-            msg.includes('scanner is not running or paused') ||
-            msg.includes('Cannot stop, scanner is not running or paused.')
+            msg.includes("scanner is not running") ||
+            msg.includes("scanner is not running or paused") ||
+            msg.includes("Cannot stop, scanner is not running or paused.")
           ) {
             // Ignore
           } else if (onError) onError(err as Error);
@@ -69,7 +73,13 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScan, onError, fps = 10, qrbox 
     };
   }, [onScan, onError, fps, qrbox]);
 
-  return <div id="qr-scanner" ref={scannerRef} style={{ width: qrbox, height: qrbox }} />;
+  return (
+    <div
+      id="qr-scanner"
+      ref={scannerRef}
+      style={{ width: qrbox, height: qrbox }}
+    />
+  );
 };
 
 export default QrScanner;

@@ -5,6 +5,8 @@ import HomePage from "./pages/HomePage";
 import RSVPStandalonePage from "./pages/RSVPStandalonePage";
 import RegistryStandalonePage from "./pages/RegistryStandalonePage";
 import QRTokenLogin from "./pages/QRTokenLogin";
+import LoginSuccess from "./pages/LoginSuccess";
+import QRInfoPage from "./pages/QRInfoPage";
 import InvitedRoute from "./components/InvitedRoute";
 import PersonalizedWelcome from "./components/PersonalizedWelcome";
 
@@ -26,6 +28,8 @@ export default function App() {
           />
           <Route path="/registry" element={<RegistryStandalonePage />} />
           <Route path="/login/qr/:qrToken" element={<QRTokenLogin />} />
+          <Route path="/login/success" element={<LoginSuccess />} />
+          <Route path="/qr-help" element={<QRInfoPage />} />
         </Routes>
       </main>
     </>

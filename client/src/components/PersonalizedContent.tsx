@@ -1,5 +1,5 @@
-import React from 'react';
-import { useAuth } from '../context/AuthContext';
+import React from "react";
+import { useAuth } from "../context/AuthContext";
 
 interface PersonalizedContentProps {
   children: React.ReactNode;
@@ -16,25 +16,25 @@ interface PersonalizedContentProps {
 const PersonalizedContent: React.FC<PersonalizedContentProps> = ({
   children,
   guestContent,
-  invitedOnlyContent
+  invitedOnlyContent,
 }) => {
   const { isLoggedIn, user } = useAuth();
-  
+
   if (!isLoggedIn) {
     // Default content for all visitors
     return <>{children}</>;
   }
-  
+
   if (user?.isInvited && invitedOnlyContent) {
     // Special content for invited guests
     return <>{invitedOnlyContent}</>;
   }
-  
+
   if (guestContent) {
     // Content for any logged-in user
     return <>{guestContent}</>;
   }
-  
+
   // Default fallback
   return <>{children}</>;
 };
