@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "../assets/styles.css";
-import LoginModal from "./LoginModal";
+// import QRLoginModal from "./QRLoginModal"; (removed, QR-only login)
 
 // Links for the main page sections (hash links)
 const sectionLinks = [
@@ -26,7 +26,7 @@ function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isLoggedIn, logout } = useAuth();
   const location = useLocation();
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [qrLoginModalOpen, setQrLoginModalOpen] = useState(false);
   const isHomePage = location.pathname === "/";
 
   // scroll listener for background
@@ -91,7 +91,10 @@ function Navbar() {
       <ul className={`navbar-links ${mobileMenuOpen ? "open" : ""}`}>
         {isHomePage ? (
           sectionLinks.map((link, i) => (
-            <li key={link.to} style={{ "--item-index": i } as React.CSSProperties}>
+            <li
+              key={link.to}
+              style={{ "--item-index": i } as React.CSSProperties}
+            >
               <a
                 href={`#${link.to}`}
                 onClick={() => setMobileMenuOpen(false)}
@@ -119,7 +122,9 @@ function Navbar() {
             <li
               key={link.to}
               style={
-                { "--item-index": idx + (isHomePage ? sectionLinks.length : 1) } as React.CSSProperties
+                {
+                  "--item-index": idx + (isHomePage ? sectionLinks.length : 1),
+                } as React.CSSProperties
               }
             >
               <Link
@@ -136,9 +141,9 @@ function Navbar() {
         {/* Auth buttons */}
         <li style={{ "--item-index": 1000 } as React.CSSProperties}>
           {!isLoggedIn ? (
-            <button className="btn btn-outline" onClick={() => setLoginModalOpen(true)}>
-              Login
-            </button>
+            <span className="navbar-qr-login-info">
+              <strong>Login:</strong> Scan your invitation QR code to access your account.
+            </span>
           ) : (
             <button className="btn btn-outline" onClick={logout}>
               Logout
@@ -147,9 +152,14 @@ function Navbar() {
         </li>
       </ul>
 
-      {mobileMenuOpen && <div className="navbar-backdrop" onClick={() => setMobileMenuOpen(false)} />}
+      {mobileMenuOpen && (
+        <div
+          className="navbar-backdrop"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
 
-      <LoginModal isOpen={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
+      {/* QRLoginModal removed: login is now QR code-only */}
     </nav>
   );
 }

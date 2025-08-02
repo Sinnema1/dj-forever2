@@ -1,6 +1,7 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import QRPrompt from "./QRPrompt";
 
 interface InvitedRouteProps {
   children: React.ReactElement;
@@ -9,14 +10,17 @@ interface InvitedRouteProps {
 const InvitedRoute: React.FC<InvitedRouteProps> = ({ children }) => {
   const auth = useAuth();
 
-  // If we're still loading user info, you could return a spinner
-  // if (!auth?.user) return <div>Loading...</div>;
+  // If not logged in, show QR prompt
+  if (!auth?.isLoggedIn) {
+    return <QRPrompt />;
+  }
 
+  // If logged in but not invited, redirect to home
   if (!auth?.user?.isInvited) {
-    // Not invited → redirect to home
     return <Navigate to="/" replace />;
   }
 
+  // User is logged in and invited, show the protected content
   return children;
 };
 
