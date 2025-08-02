@@ -9,7 +9,7 @@ import { onError } from "@apollo/client/link/error";
 
 // Create an HTTP link for GraphQL server
 const httpLink = createHttpLink({
-  uri: "/graphql",
+  uri: import.meta.env.VITE_API_URL || "/graphql",
 });
 
 // Handle authentication via token in localStorage
