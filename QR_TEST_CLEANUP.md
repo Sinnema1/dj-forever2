@@ -4,15 +4,17 @@
 
 After implementing the QR-only login system, the following tests need to be updated:
 
-1. **Navbar.e2e.test.tsx**: 
+1. **Navbar.e2e.test.tsx**:
+
    - The test is looking for a Login button that has been replaced with an informational message
    - Update test to verify the QR login guidance message instead
 
-2. **QRLoginModal.e2e.test.tsx**: 
+2. **QRLoginModal.e2e.test.tsx**:
+
    - This component has been removed since login is now handled via QR code URL
    - The test should be either deleted or rewritten to test the QRTokenLogin component
 
-3. **App.e2e.test.tsx**: 
+3. **App.e2e.test.tsx**:
    - Apollo MockedProvider error
    - Need to update Apollo mocks to match the queries/mutations used in the actual code
 

@@ -22,12 +22,15 @@ const getRSVPMock = {
   result: { data: { getRSVP: null } },
 };
 
-// Create navigate mock 
+// Create navigate mock
 const navigateMock = vi.fn();
 
 // Mock the react-router-dom's useNavigate
 vi.mock("react-router-dom", async () => {
-  const actualModule = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
+  const actualModule =
+    await vi.importActual<typeof import("react-router-dom")>(
+      "react-router-dom"
+    );
   return {
     ...actualModule,
     useNavigate: () => navigateMock,
@@ -45,7 +48,7 @@ describe("App end-to-end", () => {
       key: vi.fn(),
       length: 0,
     };
-    
+
     // Reset navigate mock
     navigateMock.mockReset();
   });
@@ -73,12 +76,12 @@ describe("App end-to-end", () => {
     await waitFor(() => {
       // Check that QR prompt is not shown to authenticated users
       expect(screen.queryByText(/scan your qr code/i)).not.toBeInTheDocument();
-      
+
       // Check that we see personalized content - be specific with the welcome banner
-      const welcomeBanner = screen.getByTestId('personalized-welcome-banner');
+      const welcomeBanner = screen.getByTestId("personalized-welcome-banner");
       expect(welcomeBanner).toBeInTheDocument();
       expect(welcomeBanner).toHaveTextContent(/welcome/i);
-      
+
       // Check for RSVP link
       const rsvpLinks = screen.getAllByRole("link", { name: /rsvp/i });
       const standaloneRSVPLink = rsvpLinks.find(
