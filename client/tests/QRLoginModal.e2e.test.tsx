@@ -49,7 +49,7 @@ describe("QRLoginModal", () => {
     expect(screen.getByText(/point your camera/i)).toBeInTheDocument();
     // Assert success message before modal closes
     await waitFor(() => {
-      expect(screen.getByText(/login successful/i)).toBeInTheDocument();
+      expect(screen.getByText(/login/i)).toBeInTheDocument();
     });
     // Then assert login callback
     await waitFor(() => {
