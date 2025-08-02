@@ -1,17 +1,49 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import { ApolloServer } from "apollo-server-express";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@apollo/server/express4";
 import { typeDefs } from "./graphql/typeDefs.js";
 import { resolvers } from "./graphql/resolvers.js";
 import cors from "cors";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function startServer() {
+  // Connect to MongoDB
+  const dbName = process.env.MONGODB_DB_NAME || "djforever2";
+  let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017";
+  if (!MONGODB_URI.match(/\/[^\/]+$/)) {
+    MONGODB_URI = MONGODB_URI.replace(/\/$/, "") + `/${dbName}`;
+  }
+  
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log(`🗄️ Connected to MongoDB: ${dbName}`);
+  } catch (error) {
+    console.error("❌ MongoDB connection error:", error);
+    process.exit(1);
+  }
+
   const app = express();
   const PORT = process.env.PORT || 3005; // Using port 3005 to avoid conflicts
+
+  // Apollo Server setup
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+  });
+
+  await server.start();
+
+  // Middleware
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
   // CORS setup
   app.use(
@@ -28,16 +60,10 @@ async function startServer() {
     })
   );
 
-  // Apollo Server setup
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    context: ({ req }) => ({ req }),
-    persistedQueries: false,
-  });
-
-  await server.start();
-  server.applyMiddleware({ app: app as any });
+  // GraphQL endpoint
+  app.use('/graphql', expressMiddleware(server, {
+    context: async ({ req }) => ({ req }),
+  }));
 
   // Middleware
   app.use(express.json());
@@ -64,9 +90,7 @@ async function startServer() {
 
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(
-      `🚀 GraphQL endpoint at http://localhost:${PORT}${server.graphqlPath}`
-    );
+    console.log(`🚀 GraphQL endpoint at http://localhost:${PORT}/graphql`);
   });
 }
 
