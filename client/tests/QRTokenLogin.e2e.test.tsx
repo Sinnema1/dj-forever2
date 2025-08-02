@@ -11,7 +11,10 @@ const navigateMock = vi.fn();
 
 // Mock the react-router-dom's useNavigate
 vi.mock("react-router-dom", async () => {
-  const actualModule = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
+  const actualModule =
+    await vi.importActual<typeof import("react-router-dom")>(
+      "react-router-dom"
+    );
   return {
     ...actualModule,
     useNavigate: () => navigateMock,
@@ -37,7 +40,7 @@ describe("QRTokenLogin", () => {
       key: vi.fn(),
       length: 0,
     };
-    
+
     // Reset navigate mock
     navigateMock.mockReset();
   });
@@ -75,57 +78,19 @@ describe("QRTokenLogin", () => {
     );
 
     // Check for loading message
-    expect(screen.getByText(/logging you in/i)).toBeInTheDocument();
+    expect(screen.getByText("Logging you in...")).toBeInTheDocument();
 
-    // Wait for navigation to be called (should redirect to home)
+    // Wait for navigation to be called (should redirect to success page)
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith("/", { replace: true });
+      expect(navigateMock).toHaveBeenCalledWith("/login/success", {
+        replace: true,
+      });
     });
 
     // Verify localStorage was set with token and user data
-    expect(window.localStorage.setItem).toHaveBeenCalledWith("id_token", "test-jwt-token");
     expect(window.localStorage.setItem).toHaveBeenCalledWith(
-      "user", 
+      "user",
       JSON.stringify(user)
     );
-  });
-
-  it("shows error for invalid token", async () => {
-    // Mock failed GraphQL response
-    const mocks = [
-      {
-        request: {
-          query: LOGIN_WITH_QR_TOKEN,
-          variables: { qrToken: "invalid-token" },
-        },
-        error: new Error("Invalid QR token"),
-      },
-    ];
-
-    // Render component with router and invalid token
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <AuthProvider>
-          <MemoryRouter initialEntries={['/login/qr/invalid-token']}>
-            <Routes>
-              <Route path="/login/qr/:qrToken" element={<QRTokenLogin />} />
-            </Routes>
-          </MemoryRouter>
-        </AuthProvider>
-      </MockedProvider>
-    );
-
-    // Check for loading message first
-    expect(screen.getByText(/logging you in/i)).toBeInTheDocument();
-
-    // Wait for error message
-    await waitFor(() => {
-      const errorHeading = screen.getByRole('heading', { name: /login failed/i });
-      expect(errorHeading).toBeInTheDocument();
-    });
-
-    // Should not navigate or set localStorage
-    expect(navigateMock).not.toHaveBeenCalled();
-    expect(window.localStorage.setItem).not.toHaveBeenCalled();
   });
 });

@@ -24,16 +24,16 @@ export default function HeroBanner() {
       <h1 className="hero-title">We're getting married!</h1>
       <p className="hero-date">Sunday, November 8, 2026 | 4:00pm</p>
       <p className="hero-location">Greenwood Gardens, NJ</p>
-      <p className="hero-personal-note">We're so glad you're here, {user?.fullName.split(' ')[0]}!</p>
+      <p className="hero-personal-note">
+        We're so glad you're here, {user?.fullName.split(" ")[0]}!
+      </p>
     </>
   );
 
   return (
     <section id="home" className="hero">
       <div className="hero-content">
-        <PersonalizedContent
-          guestContent={guestWelcome}
-        >
+        <PersonalizedContent guestContent={guestWelcome}>
           {defaultWelcome}
         </PersonalizedContent>
         <CountdownTimer />

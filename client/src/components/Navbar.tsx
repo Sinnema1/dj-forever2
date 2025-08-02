@@ -142,7 +142,8 @@ function Navbar() {
         <li style={{ "--item-index": 1000 } as React.CSSProperties}>
           {!isLoggedIn ? (
             <span className="navbar-qr-login-info">
-              <strong>Login:</strong> Scan your invitation QR code to access your account.
+              <strong>Login:</strong> Scan your invitation QR code to access
+              your account.
             </span>
           ) : (
             <button className="btn btn-outline" onClick={logout}>
