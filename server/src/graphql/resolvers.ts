@@ -14,7 +14,12 @@ export const resolvers = {
     loginWithQrToken: async (_: any, args: any) => {
       // Login user with qrToken
       const { qrToken } = args;
-      return loginWithQrToken({ qrToken });
+      try {
+        return await loginWithQrToken({ qrToken });
+      } catch (error: any) {
+        // Apollo will return this error in the errors array
+        throw new Error(error?.message || "Login failed");
+      }
     },
     submitRSVP: async (_: any, args: any, context: any) => {
       // For now, mock userId and fullName; in real app, get from auth context

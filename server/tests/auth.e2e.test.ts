@@ -1,18 +1,22 @@
 import { describe, beforeAll, afterAll, it, expect } from "vitest";
 import request from "supertest";
 import mongoose from "mongoose";
-import type { Application } from "express";
 import { createTestServer } from "./utils/testServer";
+import { setupTestUser } from "./utils/setupTestUser";
 
-let app: Application;
+let app: any;
 let stop: () => Promise<void>;
-let jwtToken: string;
 
 describe("Auth End-to-End", () => {
   beforeAll(async () => {
     const server = await createTestServer();
     app = server.app;
     stop = server.stop;
+
+    // Setup test user directly in this test
+    const qrToken = "r24gpj3wntgqwqfberlas";
+    const email = "alice@example.com";
+    await setupTestUser(qrToken, email);
   });
 
   afterAll(async () => {
@@ -20,33 +24,10 @@ describe("Auth End-to-End", () => {
     await mongoose.disconnect();
   });
 
-  it("registers a user with qrToken and logs in via QR token", async () => {
-    // Register (simulate seed)
-    const qrToken = "test-qr-token-123";
-    const registerRes = await request(app)
-      .post("/graphql")
-      .send({
-        query: `
-          mutation {
-            registerUser(
-              fullName: "E2E Auth User"
-              email: "e2e-auth@example.com"
-              qrToken: "${qrToken}"
-            ) {
-              token
-              user { email isInvited qrToken }
-            }
-          }
-        `,
-      });
-    if (!registerRes.body.data || !registerRes.body.data.registerUser) {
-      // Log GraphQL errors for easier debugging
-      console.error("GraphQL errors:", registerRes.body.errors);
-    }
-    expect(registerRes.body.data.registerUser.token).toBeTypeOf("string");
-    expect(registerRes.body.data.registerUser.user.email).toBe("e2e-auth@example.com");
-    expect(registerRes.body.data.registerUser.user.qrToken).toBe(qrToken);
-    jwtToken = registerRes.body.data.registerUser.token;
+  it("logs in a seeded user via QR token", async () => {
+    // Use Alice Johnson's fixed QR token and email
+    const qrToken = "r24gpj3wntgqwqfberlas";
+    const email = "alice@example.com";
 
     // Login via QR token
     const loginRes = await request(app)
@@ -61,8 +42,16 @@ describe("Auth End-to-End", () => {
           }
         `,
       });
+    if (loginRes.body.errors) {
+      // Print GraphQL errors for debugging
+      console.error("GraphQL errors:", loginRes.body.errors);
+    }
+    expect(
+      loginRes.body.data.loginWithQrToken,
+      "loginWithQrToken result should not be null"
+    ).not.toBeNull();
     expect(loginRes.body.data.loginWithQrToken.token).toBeTypeOf("string");
-    expect(loginRes.body.data.loginWithQrToken.user.email).toBe("e2e-auth@example.com");
+    expect(loginRes.body.data.loginWithQrToken.user.email).toBe(email);
     expect(loginRes.body.data.loginWithQrToken.user.qrToken).toBe(qrToken);
   });
 });

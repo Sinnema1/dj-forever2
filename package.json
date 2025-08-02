@@ -34,6 +34,8 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
-    "apollo-server-express": "^3.13.0"
+    "apollo-server-express": "^3.13.0",
+    "qrcode": "^1.5.4",
+    "react-qr-reader": "^3.0.0-beta-1"
   }
 }
