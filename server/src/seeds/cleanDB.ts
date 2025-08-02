@@ -1,3 +1,4 @@
+dotenv.config();
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import User from "../models/User.js";
@@ -5,7 +6,10 @@ import RSVP from "../models/RSVP.js";
 
 dotenv.config();
 
-const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/djforever2";
+const dbName = process.env.MONGODB_DB_NAME || "djforever2";
+const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
+// Do NOT append dbName to URI; always use { dbName } option
+console.log(`[cleanDB] Connecting to MongoDB URI: ${uri}, DB Name: ${dbName}`);
 
 /**
  * Cleans the database by removing all users and RSVPs.
@@ -23,7 +27,7 @@ export const cleanDatabase = async (): Promise<void> => {
 
 const run = async () => {
   try {
-    await mongoose.connect(uri);
+    await mongoose.connect(uri, { dbName });
     await cleanDatabase();
   } catch (error) {
     console.error("Error during database cleaning:", error);

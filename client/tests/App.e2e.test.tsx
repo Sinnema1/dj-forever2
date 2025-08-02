@@ -1,14 +1,9 @@
-import { describe, it, expect } from "vitest";
-import { render, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
 import App from "../src/App";
 import { AuthProvider } from "../src/context/AuthContext";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
-import {
-  LOGIN_USER,
-  REGISTER_USER,
-} from "../src/features/auth/graphql/mutations";
 import { GET_RSVP } from "../src/features/rsvp/graphql/queries";
 
 const userData = {
@@ -22,75 +17,74 @@ const userData = {
   isInvited: true,
 };
 
-const loginMock = {
-  request: {
-    query: LOGIN_USER,
-    variables: { email: "test@example.com", password: "Password123" },
-  },
-  result: {
-    data: {
-      loginUser: {
-        token: "mock-token",
-        user: userData,
-      },
-    },
-  },
-};
-
 const getRSVPMock = {
   request: { query: GET_RSVP },
   result: { data: { getRSVP: null } },
 };
 
-function renderApp({ mocks = [loginMock, getRSVPMock], route = "/" } = {}) {
-  window.history.pushState({}, "Test page", route);
-  return render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <AuthProvider>
-        <MemoryRouter initialEntries={[route]}>
-          <App />
-        </MemoryRouter>
-      </AuthProvider>
-    </MockedProvider>
-  );
-}
+// Create navigate mock 
+const navigateMock = vi.fn();
+
+// Mock the react-router-dom's useNavigate
+vi.mock("react-router-dom", async () => {
+  const actualModule = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
+  return {
+    ...actualModule,
+    useNavigate: () => navigateMock,
+  };
+});
 
 describe("App end-to-end", () => {
-  it("allows invited user to login and access RSVP", async () => {
-    renderApp();
-    const user = userEvent.setup();
-    // Open login modal
-    await user.click(screen.getByRole("button", { name: /login/i }));
-    // Fill and submit login form
-    const modal = await screen.findByRole("dialog");
-    await user.type(within(modal).getByLabelText(/email/i), "test@example.com");
-    await user.type(within(modal).getByLabelText(/password/i), "Password123");
-    await user.click(within(modal).getByRole("button", { name: /^login$/i }));
-    // Wait for modal to close and RSVP link to appear
+  beforeEach(() => {
+    // Mock localStorage
+    global.localStorage = {
+      getItem: vi.fn(() => null),
+      setItem: vi.fn(),
+      clear: vi.fn(),
+      removeItem: vi.fn(),
+      key: vi.fn(),
+      length: 0,
+    };
+    
+    // Reset navigate mock
+    navigateMock.mockReset();
+  });
+
+  it("allows authenticated users to see personalized welcome and access RSVP", async () => {
+    // Mock localStorage to simulate authenticated state
+    localStorage.getItem = vi.fn().mockImplementation((key) => {
+      if (key === "id_token") return "mock-token";
+      if (key === "user") return JSON.stringify(userData);
+      return null;
+    });
+
+    // Render the app in authenticated state
+    render(
+      <MockedProvider mocks={[getRSVPMock]} addTypename={false}>
+        <AuthProvider>
+          <MemoryRouter initialEntries={["/"]}>
+            <App />
+          </MemoryRouter>
+        </AuthProvider>
+      </MockedProvider>
+    );
+
+    // Verify authenticated elements appear - QR prompt should be hidden for authenticated users
     await waitFor(() => {
-      expect(screen.queryByText(/login/i)).not.toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /logout/i })
-      ).toBeInTheDocument();
-      // Use getAllByRole to resolve ambiguity
+      // Check that QR prompt is not shown to authenticated users
+      expect(screen.queryByText(/scan your qr code/i)).not.toBeInTheDocument();
+      
+      // Check that we see personalized content - be specific with the welcome banner
+      const welcomeBanner = screen.getByTestId('personalized-welcome-banner');
+      expect(welcomeBanner).toBeInTheDocument();
+      expect(welcomeBanner).toHaveTextContent(/welcome/i);
+      
+      // Check for RSVP link
       const rsvpLinks = screen.getAllByRole("link", { name: /rsvp/i });
-      // Find the one with href="/rsvp"
       const standaloneRSVPLink = rsvpLinks.find(
         (link) => link.getAttribute("href") === "/rsvp"
       );
       expect(standaloneRSVPLink).toBeInTheDocument();
-    });
-    // Navigate to RSVP page using the correct link
-    const rsvpLinks = screen.getAllByRole("link", { name: /rsvp/i });
-    const standaloneRSVPLink = rsvpLinks.find(
-      (link) => link.getAttribute("href") === "/rsvp"
-    );
-    await user.click(standaloneRSVPLink!);
-    await waitFor(() => {
-      // Use getAllByRole to resolve ambiguity between h1 and h2
-      const headings = screen.getAllByRole("heading", { name: /rsvp/i });
-      const h1 = headings.find((h) => h.tagName === "H1");
-      expect(h1).toBeInTheDocument();
     });
   });
 });

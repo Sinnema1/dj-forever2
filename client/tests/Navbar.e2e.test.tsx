@@ -19,16 +19,11 @@ function renderNavbar() {
 }
 
 describe("Navbar integration", () => {
-  it("shows Login button when logged out and opens modal", async () => {
+  it("shows QR login info when logged out", async () => {
     renderNavbar();
-    const loginBtn = screen.getByRole("button", { name: /login/i });
-    expect(loginBtn).toBeInTheDocument();
-    userEvent.click(loginBtn);
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: /login/i })
-      ).toBeInTheDocument();
-    });
+    const loginInfo = screen.getByText(/scan your invitation qr code/i);
+    expect(loginInfo).toBeInTheDocument();
+    expect(screen.getByText(/login:/i)).toBeInTheDocument();
   });
 
   it("shows Logout button when logged in", async () => {

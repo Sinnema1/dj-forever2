@@ -1,0 +1,62 @@
+.qr-prompt-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  background-color: var(--color-cream);
+  padding: 20px;
+}
+
+.qr-prompt-content {
+  max-width: 600px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.qr-prompt-content h2 {
+  color: var(--color-sage);
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+.qr-instructions {
+  margin: 30px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.instruction-step {
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+
+.step-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--color-sage);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.qr-help-text {
+  margin-top: 30px;
+  font-style: italic;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .qr-prompt-content {
+    padding: 25px;
+  }
+}
