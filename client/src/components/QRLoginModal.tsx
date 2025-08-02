@@ -66,11 +66,7 @@ const QRLoginModal: React.FC<QRLoginModalProps> = (props) => {
           &times;
         </button>
         <h2 id="qr-login-title">Scan QR Code to Login</h2>
-        <QrScanner
-          onScan={handleScan}
-          onError={handleError}
-          qrbox={250}
-        />
+        <QrScanner onScan={handleScan} onError={handleError} qrbox={250} />
         {loading && (
           <div className="modal-status" aria-live="polite">
             Logging in...

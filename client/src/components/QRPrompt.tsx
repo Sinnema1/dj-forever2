@@ -1,16 +1,16 @@
-import React from 'react';
-import { useAuth } from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
-import '../assets/qr-prompt.css';
+import React from "react";
+import { useAuth } from "../context/AuthContext";
+import { Navigate, Link } from "react-router-dom";
+import "../assets/qr-prompt.css";
 
 const QRPrompt: React.FC = () => {
   const { isLoggedIn } = useAuth();
-  
+
   // If already logged in, redirect to home
   if (isLoggedIn) {
     return <Navigate to="/" />;
   }
-  
+
   return (
     <div className="qr-prompt-container">
       <div className="qr-prompt-content">
@@ -33,6 +33,21 @@ const QRPrompt: React.FC = () => {
         <p className="qr-help-text">
           Need help? Contact us if you can't find your invitation.
         </p>
+        <Link
+          to="/qr-help"
+          style={{
+            display: "inline-block",
+            marginTop: "20px",
+            color: "#4caf50",
+            textDecoration: "none",
+            padding: "8px 15px",
+            border: "1px solid #4caf50",
+            borderRadius: "4px",
+            fontSize: "14px",
+          }}
+        >
+          How to Scan QR Codes
+        </Link>
       </div>
     </div>
   );

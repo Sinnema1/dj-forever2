@@ -22,25 +22,31 @@ const OUTPUT_DIR = path.resolve("./qr-codes");
 
 async function main() {
   await mongoose.connect(MONGODB_URI);
-  const users = await User.find({}, "fullName email qrToken");
+  const users = await User.find({}, "_id fullName email qrToken");
   if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR);
 
   for (const user of users) {
-    if (!user.qrToken) continue;
+    if (!user.qrToken) {
+      console.warn(`⚠️ User missing qrToken: ${user.fullName} (${user.email}) [ID: ${user._id}]`);
+      continue;
+    }
     const fileName = `${user.fullName.replace(
       /[^a-z0-9]/gi,
       "_"
-    )}_${user.email.replace(/[^a-z0-9]/gi, "_")}.png`;
+    )}_${user.email.replace(/[^a-z0-9]/gi, "_")}_${user._id}.png`;
     const filePath = path.join(OUTPUT_DIR, fileName);
-    // Encode a login URL with the qrToken
     const loginUrl = `https://dj-forever2.onrender.com/login/qr/${user.qrToken}`;
-    await QRCode.toFile(filePath, loginUrl, {
-      color: { dark: "#000", light: "#FFF" },
-      width: 300,
-    });
-    console.log(
-      `QR code generated for ${user.fullName} (${user.email}): ${filePath} (URL: ${loginUrl})`
-    );
+    try {
+      await QRCode.toFile(filePath, loginUrl, {
+        color: { dark: "#000", light: "#FFF" },
+        width: 300,
+      });
+      console.log(
+        `✅ QR code generated for ${user.fullName} (${user.email}) [ID: ${user._id}]: ${filePath} (URL: ${loginUrl})`
+      );
+    } catch (err) {
+      console.error(`❌ Error generating QR code for ${user.fullName} (${user.email}) [ID: ${user._id}]:`, err);
+    }
   }
   await mongoose.disconnect();
   console.log("All QR codes generated in ./qr-codes/");

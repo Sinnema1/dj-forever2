@@ -11,7 +11,10 @@ const navigateMock = vi.fn();
 
 // Mock the react-router-dom's useNavigate
 vi.mock("react-router-dom", async () => {
-  const actualModule = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
+  const actualModule =
+    await vi.importActual<typeof import("react-router-dom")>(
+      "react-router-dom"
+    );
   return {
     ...actualModule,
     useNavigate: () => navigateMock,
@@ -37,7 +40,7 @@ describe("QRTokenLogin", () => {
       key: vi.fn(),
       length: 0,
     };
-    
+
     // Reset navigate mock
     navigateMock.mockReset();
   });
@@ -83,9 +86,12 @@ describe("QRTokenLogin", () => {
     });
 
     // Verify localStorage was set with token and user data
-    expect(window.localStorage.setItem).toHaveBeenCalledWith("id_token", "test-jwt-token");
     expect(window.localStorage.setItem).toHaveBeenCalledWith(
-      "user", 
+      "id_token",
+      "test-jwt-token"
+    );
+    expect(window.localStorage.setItem).toHaveBeenCalledWith(
+      "user",
       JSON.stringify(user)
     );
   });
@@ -106,7 +112,7 @@ describe("QRTokenLogin", () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <AuthProvider>
-          <MemoryRouter initialEntries={['/login/qr/invalid-token']}>
+          <MemoryRouter initialEntries={["/login/qr/invalid-token"]}>
             <Routes>
               <Route path="/login/qr/:qrToken" element={<QRTokenLogin />} />
             </Routes>
@@ -120,7 +126,9 @@ describe("QRTokenLogin", () => {
 
     // Wait for error message
     await waitFor(() => {
-      const errorHeading = screen.getByRole('heading', { name: /login failed/i });
+      const errorHeading = screen.getByRole("heading", {
+        name: /login failed/i,
+      });
       expect(errorHeading).toBeInTheDocument();
     });
 
