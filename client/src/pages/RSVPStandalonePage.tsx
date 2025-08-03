@@ -18,7 +18,7 @@ const RSVPStandalonePage: React.FC = () => {
               <div className="wedding-details">
                 <div className="detail-item">
                   <span className="detail-icon">📅</span>
-                  <span>September 15, 2025</span>
+                  <span>November 8, 2026</span>
                 </div>
                 <div className="detail-item">
                   <span className="detail-icon">🕐</span>
@@ -26,7 +26,7 @@ const RSVPStandalonePage: React.FC = () => {
                 </div>
                 <div className="detail-item">
                   <span className="detail-icon">📍</span>
-                  <span>The Garden Estate</span>
+                  <span>Venue at the Grove, Phoenix, AZ</span>
                 </div>
               </div>
             </div>

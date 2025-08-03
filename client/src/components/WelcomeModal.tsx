@@ -83,7 +83,7 @@ const WelcomeModal: React.FC = () => {
 
               <div className="welcome-signature">
                 <p>With all our love,</p>
-                <p className="names">Alex & Bailey</p>
+                <p className="names">Dominique & Justin</p>
               </div>
             </div>
           </div>

@@ -10,14 +10,14 @@ interface SEOProps {
 }
 
 export function SEO({
-  title = "Our Wedding Website",
+  title = "Dominique & Justin's Wedding",
   description = "Join us as we celebrate our special day. Find all the details about our wedding ceremony, reception, and how to RSVP.",
   image = "/og-image.jpg",
   url = "https://dj-forever2.onrender.com",
   type = "website",
 }: SEOProps) {
   const fullTitle =
-    title === "Our Wedding Website" ? title : `${title} | Our Wedding Website`;
+    title === "Dominique & Justin's Wedding" ? title : `${title} | Dominique & Justin's Wedding`;
 
   return (
     <Helmet>
@@ -32,7 +32,7 @@ export function SEO({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
-      <meta property="og:site_name" content="Our Wedding Website" />
+      <meta property="og:site_name" content="Dominique & Justin's Wedding" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -64,7 +64,7 @@ export function SEO({
 export function HomePageSEO() {
   return (
     <SEO
-      title="Our Wedding Website"
+      title="Dominique & Justin's Wedding"
       description="Join us as we celebrate our special day. Find all the details about our wedding ceremony, reception, and how to RSVP."
     />
   );

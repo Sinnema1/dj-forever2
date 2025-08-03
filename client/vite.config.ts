@@ -17,8 +17,8 @@ export default defineConfig({
       includeAssets: ["favicon.svg", "offline.html"],
       manifest: {
         name: "Dominique & Justin's Wedding",
-        short_name: "DJ Wedding",
-        description: "Join us for our special day - September 15, 2025",
+        short_name: "D&J Wedding",
+        description: "Join us for our special day - November 8, 2026",
         theme_color: "#C9A66B",
         background_color: "#FAF6F0",
         display: "standalone",
