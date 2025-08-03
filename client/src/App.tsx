@@ -9,10 +9,11 @@ import LoginSuccess from "./pages/LoginSuccess";
 import QRInfoPage from "./pages/QRInfoPage";
 import InvitedRoute from "./components/InvitedRoute";
 import PersonalizedWelcome from "./components/PersonalizedWelcome";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 export default function App() {
   return (
-    <>
+    <ErrorBoundary>
       <Navbar />
       <PersonalizedWelcome />
       <main>
@@ -32,6 +33,6 @@ export default function App() {
           <Route path="/qr-help" element={<QRInfoPage />} />
         </Routes>
       </main>
-    </>
+    </ErrorBoundary>
   );
 }

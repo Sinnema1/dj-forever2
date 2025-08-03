@@ -4,6 +4,7 @@ import { useMutation } from "@apollo/client";
 import { LOGIN_WITH_QR_TOKEN } from "../features/auth/graphql/loginWithQrToken";
 import { useAuth } from "../context/AuthContext";
 import QRHelpModal from "../components/QRHelpModal";
+import { analytics } from "../utils/analytics";
 
 const QRTokenLogin: React.FC = () => {
   const { qrToken } = useParams<{ qrToken: string }>();
@@ -27,6 +28,10 @@ const QRTokenLogin: React.FC = () => {
         if (!authToken || !authUser) throw new Error("Invalid QR login");
         localStorage.setItem("id_token", authToken);
         localStorage.setItem("user", JSON.stringify(authUser));
+
+        // Track successful QR login
+        analytics.trackQRLogin(authUser.id);
+
         // Redirect to success page instead of home
         navigate("/login/success", { replace: true });
       } catch (err) {
@@ -35,6 +40,9 @@ const QRTokenLogin: React.FC = () => {
           err instanceof Error ? err.message : "An unknown error occurred";
 
         console.error("QR Login error:", errorMessage);
+
+        // Track login error
+        analytics.trackError(`QR Login failed: ${errorMessage}`, "qr-login");
 
         // Show user-friendly error message
         if (errorMessage.includes("Invalid QR token")) {
