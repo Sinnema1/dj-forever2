@@ -12,7 +12,7 @@ describe('CountdownTimer', () => {
 
   it('renders the simple countdown with days to the big day', () => {
     // Set a fixed time before the wedding date (7 days before)
-    const testNow = new Date('2026-11-01T16:00:00-05:00').getTime();
+    const testNow = new Date('2026-11-01T16:00:00-07:00').getTime();
     global.Date.now = () => testNow;
     render(<CountdownTimer />);
     expect(screen.getByText(/days to the big day/)).toBeInTheDocument();
@@ -21,7 +21,7 @@ describe('CountdownTimer', () => {
 
   it('shows the wedding day message when it is the day', () => {
     // Set a fixed time after the wedding date
-    const testNow = new Date('2026-11-09T16:00:00-05:00').getTime();
+    const testNow = new Date('2026-11-09T16:00:00-07:00').getTime();
     global.Date.now = () => testNow;
     render(<CountdownTimer />);
     expect(screen.getByText(/today is the day/i)).toBeInTheDocument();

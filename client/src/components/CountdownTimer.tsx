@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../assets/countdown-enhanced.css";
 
-const WEDDING_DATE = new Date("2026-11-08T16:00:00-05:00");
+const WEDDING_DATE = new Date("2026-11-08T16:00:00-07:00");
 
 export default function CountdownTimer() {
   const [daysLeft, setDaysLeft] = useState(0);
