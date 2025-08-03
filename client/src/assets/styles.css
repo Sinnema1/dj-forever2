@@ -1,3 +1,6 @@
+/* Import mobile enhancements first */
+@import url("./mobile-enhancements.css");
+
 :root {
   /* Modeedding Palette & Design Tokens */
   --color-primary: var(--color-dusty-blue);
@@ -46,7 +49,6 @@
 html {
   scroll-behavior: smooth;
 }
-
 body {
   font-family: "Lato", "Montserrat", Arial, sans-serif;
   background: var(--color-cream);
@@ -130,11 +132,21 @@ small {
   transition: color 0.3s ease;
   font-weight: 500;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .navbar-scrolled .navbar-logo {
   color: var(--color-text);
   text-shadow: none;
+}
+
+.navbar-logo:hover {
+  color: var(--color-accent);
+}
+
+.navbar-scrolled .navbar-logo:hover {
+  color: var(--color-accent);
 }
 
 .navbar-links {

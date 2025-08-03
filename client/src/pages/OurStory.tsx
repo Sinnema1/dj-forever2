@@ -1,5 +1,5 @@
 import React from "react";
-import "../assets/timeline.css";
+import "../assets/timeline-alternative-1.css";
 
 import img2022_1 from "../assets/images/story-2022-1.jpeg";
 import img2022_2 from "../assets/images/story-2022-2.jpeg";
@@ -68,18 +68,18 @@ const storyEvents: StoryEvent[] = [
 ];
 
 const OurStory: React.FC = () => (
-  <div className="timeline">
-    {storyEvents.map((evt, idx) => (
-      <div
-        key={evt.date}
-        className={`timeline-item ${idx % 2 === 0 ? "left" : "right"}`}
-      >
-        <div className="timeline-content">
-          <img src={evt.imageUrl} alt={evt.text} loading="lazy" />
-          <div className="timeline-text">
-            <span className="timeline-date">{evt.date}</span>
-            <p>{evt.text}</p>
-          </div>
+  <div className="story-timeline">
+    {storyEvents.map((evt) => (
+      <div key={evt.date} className="story-event">
+        <img
+          src={evt.imageUrl}
+          alt={evt.text}
+          className="story-event-image"
+          loading="lazy"
+        />
+        <div className="story-event-content">
+          <span className="story-event-date">{evt.date}</span>
+          <p className="story-event-text">{evt.text}</p>
         </div>
       </div>
     ))}
