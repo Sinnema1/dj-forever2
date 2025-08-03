@@ -21,7 +21,7 @@ async function startServer() {
   if (!MONGODB_URI.match(/\/[^\/]+$/)) {
     MONGODB_URI = MONGODB_URI.replace(/\/$/, "") + `/${dbName}`;
   }
-  
+
   try {
     await mongoose.connect(MONGODB_URI);
     console.log(`🗄️ Connected to MongoDB: ${dbName}`);
@@ -31,7 +31,7 @@ async function startServer() {
   }
 
   const app = express();
-  const PORT = process.env.PORT || 3005; // Using port 3005 to avoid conflicts
+  const PORT = Number(process.env.PORT) || 3005; // Using port 3005 to avoid conflicts
 
   // Apollo Server setup
   const server = new ApolloServer({
@@ -61,9 +61,12 @@ async function startServer() {
   );
 
   // GraphQL endpoint
-  app.use('/graphql', expressMiddleware(server, {
-    context: async ({ req }) => ({ req }),
-  }));
+  app.use(
+    "/graphql",
+    expressMiddleware(server, {
+      context: async ({ req }) => ({ req }),
+    })
+  );
 
   // Middleware
   app.use(express.json());
@@ -88,9 +91,9 @@ async function startServer() {
 
   // Static file serving removed for Render backend-only deployment
 
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`🚀 GraphQL endpoint at http://localhost:${PORT}/graphql`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+    console.log(`🚀 GraphQL endpoint at http://0.0.0.0:${PORT}/graphql`);
   });
 }
 
