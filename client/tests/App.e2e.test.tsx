@@ -4,6 +4,7 @@ import App from "../src/App";
 import { AuthProvider } from "../src/context/AuthContext";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { GET_RSVP } from "../src/features/rsvp/graphql/queries";
 
 const userData = {
@@ -63,13 +64,15 @@ describe("App end-to-end", () => {
 
     // Render the app in authenticated state
     render(
-      <MockedProvider mocks={[getRSVPMock]} addTypename={false}>
-        <AuthProvider>
-          <MemoryRouter initialEntries={["/"]}>
-            <App />
-          </MemoryRouter>
-        </AuthProvider>
-      </MockedProvider>
+      <HelmetProvider>
+        <MockedProvider mocks={[getRSVPMock]} addTypename={false}>
+          <AuthProvider>
+            <MemoryRouter initialEntries={["/"]}>
+              <App />
+            </MemoryRouter>
+          </AuthProvider>
+        </MockedProvider>
+      </HelmetProvider>
     );
 
     // Verify authenticated elements appear - QR prompt should be hidden for authenticated users
