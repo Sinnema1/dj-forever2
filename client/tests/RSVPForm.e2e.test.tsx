@@ -17,7 +17,7 @@ const createdRSVP = {
   userId: "mock-user",
   fullName: "Test User",
   attending: "YES",
-  mealPreference: "Vegetarian",
+  mealPreference: "vegetarian",
   allergies: "",
   additionalNotes: "",
 };
@@ -34,7 +34,7 @@ const createRSVPMock = {
       input: {
         fullName: "Test User",
         attending: "YES",
-        mealPreference: "Vegetarian",
+        mealPreference: "vegetarian",
         allergies: "",
         additionalNotes: "",
       },
@@ -47,7 +47,7 @@ const createRSVPMock = {
         userId: "mock-user",
         fullName: "Test User",
         attending: "YES",
-        mealPreference: "Vegetarian",
+        mealPreference: "vegetarian",
         allergies: "",
         additionalNotes: "",
       },
@@ -78,28 +78,37 @@ describe("RSVPForm integration", () => {
     const fullNameInput = screen.getByLabelText(
       /full name/i
     ) as HTMLInputElement;
-    const attendingSelect = screen.getByLabelText(
-      /will you attend/i
-    ) as HTMLSelectElement;
-    const mealPrefInput = screen.getByLabelText(
+    
+    // Find the attendance radio button for "YES"
+    const attendingYesRadio = screen.getByDisplayValue("YES") as HTMLInputElement;
+    
+    // Wait for the form to be fully rendered and then find the meal preference field
+    await userEvent.type(fullNameInput, "Test User");
+    await userEvent.click(attendingYesRadio);
+    
+    // Wait for the conditional fields to appear
+    await waitFor(() => {
+      expect(screen.getByLabelText(/meal preference/i)).toBeInTheDocument();
+    });
+    
+    const mealPrefSelect = screen.getByLabelText(
       /meal preference/i
-    ) as HTMLInputElement;
+    ) as HTMLSelectElement;
+    
     // eslint-disable-next-line no-console
     console.log("Before typing:", {
       fullName: fullNameInput.value,
-      attending: attendingSelect.value,
-      mealPref: mealPrefInput.value,
+      attending: attendingYesRadio.checked,
+      mealPref: mealPrefSelect.value,
     });
 
-    await userEvent.type(fullNameInput, "Test User");
-    await userEvent.selectOptions(attendingSelect, "YES");
-    await userEvent.type(mealPrefInput, "Vegetarian");
+    await userEvent.selectOptions(mealPrefSelect, "vegetarian");
 
     // eslint-disable-next-line no-console
     console.log("After typing:", {
       fullName: fullNameInput.value,
-      attending: attendingSelect.value,
-      mealPref: mealPrefInput.value,
+      attending: attendingYesRadio.checked,
+      mealPref: mealPrefSelect.value,
     });
 
     // Log DOM before submit
@@ -107,30 +116,21 @@ describe("RSVPForm integration", () => {
     console.log("DOM before submit:", screen.debug());
 
     await act(async () => {
-      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+      await userEvent.click(screen.getByRole("button", { name: /submit rsvp/i }));
     });
 
     // Log DOM after submit
     // eslint-disable-next-line no-console
     console.log("DOM after submit:", screen.debug());
 
-    // Verbose polling for success message
-    let found = false;
-    for (let i = 0; i < 10; i++) {
-      // eslint-disable-next-line no-console
-      console.log(`Check ${i}:`, screen.queryByText(/RSVP submitted!/i));
-      if (screen.queryByText(/RSVP submitted!/i)) {
-        found = true;
-        break;
-      }
-      // eslint-disable-next-line no-await-in-loop
-      await new Promise((res) => setTimeout(res, 100));
-    }
-    // Final assertion
+    // Wait for the confirmation screen to appear
     await waitFor(() => {
-      expect(screen.getByText(/RSVP submitted!/i)).toBeInTheDocument();
+      expect(screen.getByText(/we can't wait to celebrate with you!/i)).toBeInTheDocument();
     });
-    // eslint-disable-next-line no-console
-    console.log("Test complete. Success message found:", found);
+    
+    // Also check that the guest name appears in the confirmation
+    await waitFor(() => {
+      expect(screen.getByText(/Test User/i)).toBeInTheDocument();
+    });
   });
 });
