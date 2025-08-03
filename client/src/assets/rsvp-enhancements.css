@@ -1,5 +1,36 @@
 /* Enhanced RSVP Form Styles */
 
+/* Guest Form Sections */
+.guest-form-section {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(159, 181, 161, 0.2);
+  border-radius: var(--radius);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-6);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.guest-form-title {
+  font-family: var(--font-serif);
+  font-size: var(--font-lg);
+  color: var(--color-charcoal);
+  margin-bottom: var(--spacing-4);
+  border-bottom: 2px solid var(--color-sage-20);
+  padding-bottom: var(--spacing-2);
+  font-weight: 600;
+}
+
+.guest-form-section:first-of-type .guest-form-title {
+  color: var(--color-sage);
+}
+
+.guest-form-section + .guest-form-section {
+  border-top: 2px dashed rgba(159, 181, 161, 0.3);
+  margin-top: var(--spacing-8);
+  padding-top: var(--spacing-8);
+}
+
 /* RSVP Standalone Page */
 .rsvp-standalone-page {
   min-height: 100vh;
@@ -72,23 +103,57 @@
   .rsvp-page-hero {
     padding: var(--spacing-8) 0 var(--spacing-6);
   }
-  
+
   .hero-title {
     font-size: var(--font-xl);
   }
-  
+
   .hero-subtitle {
     font-size: var(--font-md);
     margin-bottom: var(--spacing-6);
   }
-  
+
   .wedding-details {
     flex-direction: column;
     align-items: center;
     gap: var(--spacing-3);
   }
-  
+
   .rsvp-form-section {
+    padding: var(--spacing-6) 0 var(--spacing-8);
+  }
+}
+
+/* Registry Standalone Page */
+.registry-standalone-page {
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    var(--color-cream) 0%,
+    var(--color-sage-10) 100%
+  );
+}
+
+.registry-page-hero {
+  padding: var(--spacing-12) 0 var(--spacing-8);
+  text-align: center;
+  background: linear-gradient(
+    135deg,
+    rgba(110, 143, 163, 0.05) 0%,
+    rgba(159, 181, 161, 0.05) 100%
+  );
+}
+
+.registry-content-section {
+  padding: var(--spacing-8) 0 var(--spacing-12);
+}
+
+@media (max-width: 768px) {
+  .registry-page-hero {
+    padding: var(--spacing-8) 0 var(--spacing-6);
+  }
+
+  .registry-content-section {
     padding: var(--spacing-6) 0 var(--spacing-8);
   }
 }
@@ -300,7 +365,11 @@
 .rsvp-submit-btn {
   width: 100%;
   padding: var(--spacing-4) var(--spacing-6);
-  background: linear-gradient(135deg, var(--color-accent), var(--color-dusty-blue));
+  background: linear-gradient(
+    135deg,
+    var(--color-accent),
+    var(--color-dusty-blue)
+  );
   color: white;
   border: none;
   border-radius: var(--radius);
@@ -372,8 +441,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Success/Error Messages */
@@ -440,33 +513,33 @@
   .rsvp-form-container {
     padding: var(--spacing-3);
   }
-  
+
   .rsvp-form {
     padding: var(--spacing-6);
   }
-  
+
   .rsvp-title {
     font-size: var(--font-lg);
   }
-  
+
   .attendance-options {
     gap: var(--spacing-2);
   }
-  
+
   .option-content {
     padding: var(--spacing-3);
     min-height: 50px;
   }
-  
+
   .option-icon {
     font-size: 1.25rem;
     min-width: 1.5rem;
   }
-  
+
   .option-text {
     font-size: var(--font-sm);
   }
-  
+
   .rsvp-submit-btn {
     padding: var(--spacing-3) var(--spacing-4);
     font-size: var(--font-md);
@@ -484,15 +557,15 @@
   .option-content {
     transition: none;
   }
-  
+
   .rsvp-submit-btn::before {
     display: none;
   }
-  
+
   .loading-spinner {
     animation: none;
   }
-  
+
   @keyframes slideIn {
     from,
     to {
@@ -510,7 +583,7 @@
   .option-content {
     border-color: currentColor;
   }
-  
+
   .rsvp-submit-btn {
     background: var(--color-charcoal);
     border: 2px solid white;
@@ -705,32 +778,32 @@
   .rsvp-confirmation-container {
     padding: var(--spacing-md);
   }
-  
+
   .rsvp-confirmation-card {
     padding: var(--spacing-lg);
     margin: var(--spacing-md) 0;
   }
-  
+
   .confirmation-title {
     font-size: var(--font-lg);
   }
-  
+
   .next-steps-links {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .next-step-link {
     width: 100%;
     max-width: 200px;
     text-align: center;
   }
-  
+
   .confirmation-actions {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .confirmation-actions .btn-primary,
   .confirmation-actions .btn-secondary {
     width: 100%;
@@ -743,7 +816,7 @@
   .rsvp-confirmation-card {
     animation: none;
   }
-  
+
   .next-step-link:hover,
   .confirmation-actions .btn-primary:hover,
   .confirmation-actions .btn-secondary:hover {
@@ -800,7 +873,7 @@
 }
 
 .rsvp-tooltip-content::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 100%;
   left: 50%;
@@ -820,7 +893,7 @@
     max-width: 280px;
     z-index: 9999;
   }
-  
+
   .rsvp-tooltip-content::after {
     display: none;
   }
@@ -843,7 +916,11 @@
 
 .rsvp-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-sage) 0%, var(--color-sage-dark) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--color-sage) 0%,
+    var(--color-sage-dark) 100%
+  );
   transition: width 0.3s ease;
   border-radius: 2px;
 }
@@ -913,13 +990,13 @@
   .rsvp-progress-steps {
     gap: var(--spacing-2);
   }
-  
+
   .step-indicator {
     width: 28px;
     height: 28px;
     font-size: 12px;
   }
-  
+
   .step-label {
     font-size: 10px;
     max-width: 60px;

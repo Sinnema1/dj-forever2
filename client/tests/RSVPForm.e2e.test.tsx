@@ -78,23 +78,25 @@ describe("RSVPForm integration", () => {
     const fullNameInput = screen.getByLabelText(
       /full name/i
     ) as HTMLInputElement;
-    
+
     // Find the attendance radio button for "YES"
-    const attendingYesRadio = screen.getByDisplayValue("YES") as HTMLInputElement;
-    
+    const attendingYesRadio = screen.getByDisplayValue(
+      "YES"
+    ) as HTMLInputElement;
+
     // Wait for the form to be fully rendered and then find the meal preference field
     await userEvent.type(fullNameInput, "Test User");
     await userEvent.click(attendingYesRadio);
-    
+
     // Wait for the conditional fields to appear
     await waitFor(() => {
       expect(screen.getByLabelText(/meal preference/i)).toBeInTheDocument();
     });
-    
+
     const mealPrefSelect = screen.getByLabelText(
       /meal preference/i
     ) as HTMLSelectElement;
-    
+
     // eslint-disable-next-line no-console
     console.log("Before typing:", {
       fullName: fullNameInput.value,
@@ -116,7 +118,9 @@ describe("RSVPForm integration", () => {
     console.log("DOM before submit:", screen.debug());
 
     await act(async () => {
-      await userEvent.click(screen.getByRole("button", { name: /submit rsvp/i }));
+      await userEvent.click(
+        screen.getByRole("button", { name: /submit rsvp/i })
+      );
     });
 
     // Log DOM after submit
@@ -125,9 +129,11 @@ describe("RSVPForm integration", () => {
 
     // Wait for the confirmation screen to appear
     await waitFor(() => {
-      expect(screen.getByText(/we can't wait to celebrate with you!/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/we can't wait to celebrate with you!/i)
+      ).toBeInTheDocument();
     });
-    
+
     // Also check that the guest name appears in the confirmation
     await waitFor(() => {
       expect(screen.getByText(/Test User/i)).toBeInTheDocument();

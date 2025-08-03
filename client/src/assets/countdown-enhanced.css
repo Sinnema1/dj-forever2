@@ -1,0 +1,24 @@
+/* Simple Countdown Timer Styles */
+.countdown-simple {
+  margin: var(--spacing-4) 0;
+  text-align: center;
+}
+
+.countdown-text {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .countdown-simple {
+    margin: var(--spacing-3) 0;
+  }
+
+  .countdown-text {
+    font-size: 0.9rem;
+  }
+}
