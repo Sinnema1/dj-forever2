@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../assets/styles.css";
-import LightboxModal from "../components/LightboxModal";
+import "../assets/swipeable-lightbox.css";
+import SwipeableLightbox from "../components/SwipeableLightbox";
 import { LazyImage } from "../components/LazyImage";
 import { analytics } from "../utils/analytics";
 
@@ -41,7 +42,7 @@ const Gallery: React.FC = () => {
         ))}
       </div>
       {lightboxOpen && (
-        <LightboxModal
+        <SwipeableLightbox
           images={images}
           initialIndex={currentIndex}
           onClose={closeLightbox}

@@ -1,0 +1,6 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" fill="#C9A66B"/>
+  <circle cx="256" cy="256" r="160" fill="#FAF6F0" stroke="#C9A66B" stroke-width="8"/>
+  <text x="256" y="280" font-family="serif" font-size="64" fill="#C9A66B" text-anchor="middle" font-weight="bold">💍</text>
+  <text x="256" y="340" font-family="serif" font-size="32" fill="#C9A66B" text-anchor="middle">Wedding</text>
+</svg>

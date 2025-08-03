@@ -1,0 +1,62 @@
+/* Mobile-First Enhancements */
+
+/* Touch-friendly button sizing */
+@media (max-width: 768px) {
+  .btn {
+    min-height: 48px;
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-md);
+  }
+
+  /* Form improvements */
+  input,
+  select,
+  textarea {
+    min-height: 48px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Touch targets */
+  .navbar a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Gallery touch improvements */
+  .gallery-grid img {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .gallery-grid img:active {
+    transform: scale(0.95);
+  }
+
+  /* Card touch feedback */
+  .story-event {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .story-event:active {
+    transform: scale(0.98);
+  }
+
+  /* Scroll momentum for iOS */
+  .navbar-links {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Accessibility - focus indicators */
+@media (max-width: 768px) {
+  button:focus,
+  a:focus,
+  input:focus {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
