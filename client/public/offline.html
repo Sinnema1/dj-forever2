@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline - Wedding Website</title>
+    <style>
+      body {
+        font-family: "Lato", sans-serif;
+        background: linear-gradient(135deg, #6e8fa3 0%, #9fb5a1 100%);
+        color: white;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      .offline-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 3rem;
+        max-width: 500px;
+        margin: 2rem;
+      }
+      .offline-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        font-family: "Playfair Display", serif;
+      }
+      p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+      }
+      .retry-button {
+        background: #c9a66b;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+      .retry-button:hover {
+        background: #b4946c;
+      }
+      .wedding-info {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        text-align: left;
+      }
+      .info-item {
+        margin-bottom: 1rem;
+      }
+      .info-label {
+        font-weight: 600;
+        color: #c9a66b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="offline-container">
+      <div class="offline-icon">📵</div>
+      <h1>You're Offline</h1>
+      <p>
+        Don't worry! Here are the essential wedding details you can view
+        offline:
+      </p>
+
+      <div class="wedding-info">
+        <div class="info-item">
+          <div class="info-label">Wedding Date:</div>
+          September 15, 2025
+        </div>
+        <div class="info-item">
+          <div class="info-label">Ceremony Time:</div>
+          4:00 PM
+        </div>
+        <div class="info-item">
+          <div class="info-label">Reception Time:</div>
+          6:00 PM
+        </div>
+        <div class="info-item">
+          <div class="info-label">Venue:</div>
+          The Garden Estate<br />
+          123 Wedding Lane, Celebration City
+        </div>
+        <div class="info-item">
+          <div class="info-label">Dress Code:</div>
+          Semi-formal garden party attire
+        </div>
+      </div>
+
+      <p>
+        Once you're back online, you'll have access to the full website with
+        photo galleries, RSVP, and more!
+      </p>
+
+      <button class="retry-button" onclick="window.location.reload()">
+        Try Again
+      </button>
+    </div>
+
+    <script>
+      // Check for connection and auto-retry
+      window.addEventListener("online", () => {
+        window.location.reload();
+      });
+
+      // Show connection status
+      if (navigator.onLine) {
+        document.querySelector(".retry-button").textContent =
+          "Back Online - Reload Page";
+      }
+    </script>
+  </body>
+</html>

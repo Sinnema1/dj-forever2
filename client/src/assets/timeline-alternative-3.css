@@ -1,0 +1,128 @@
+/* Mobile-First Timeline Alternative: Swipeable/Carousel Style */
+
+.story-carousel {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: var(--spacing-4);
+}
+
+.story-carousel-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+}
+
+.story-slides {
+  display: flex;
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+
+.story-slide {
+  flex: 0 0 100%;
+  background: var(--color-panel-cream);
+  padding: var(--spacing-6);
+  text-align: center;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.story-slide-image {
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  margin: 0 auto var(--spacing-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.story-slide-date {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--color-accent);
+  margin-bottom: var(--spacing-3);
+}
+
+.story-slide-text {
+  font-size: var(--font-md);
+  color: var(--color-charcoal);
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.story-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--spacing-4);
+}
+
+.story-nav-button {
+  background: var(--color-accent);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: var(--font-lg);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-nav-button:hover {
+  background: var(--color-secondary);
+}
+
+.story-nav-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.story-indicators {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.story-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ccc;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.story-indicator.active {
+  background: var(--color-accent);
+}
+
+/* Desktop Enhancement */
+@media (min-width: 768px) {
+  .story-carousel {
+    max-width: 800px;
+  }
+
+  .story-slide {
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+    gap: var(--spacing-6);
+    padding: var(--spacing-8);
+  }
+
+  .story-slide-image {
+    flex: 0 0 250px;
+    margin: 0;
+  }
+
+  .story-slide-content {
+    flex: 1;
+  }
+}
