@@ -9,6 +9,7 @@ import LoginSuccess from "./pages/LoginSuccess";
 import QRInfoPage from "./pages/QRInfoPage";
 import InvitedRoute from "./components/InvitedRoute";
 import PersonalizedWelcome from "./components/PersonalizedWelcome";
+import WelcomeModal from "./components/WelcomeModal";
 import ErrorBoundary from "./components/ErrorBoundary";
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
     <ErrorBoundary>
       <Navbar />
       <PersonalizedWelcome />
+      <WelcomeModal />
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />

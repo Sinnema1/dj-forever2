@@ -12,9 +12,7 @@ import { performanceMonitor } from "../utils/performance";
 import theme from "../theme/theme";
 import OurStory from "./OurStory";
 import TheDetails from "./TheDetails";
-
 import FAQs from "./FAQs";
-import Registry from "./Registry";
 import Guestbook from "./Guestbook";
 
 const HomePage: React.FC = () => {
@@ -109,16 +107,6 @@ const HomePage: React.FC = () => {
         <h2 className="section-title">FAQs</h2>
         <div className="section-content">
           <FAQs />
-        </div>
-        <SectionDivider position="bottom" color={theme.colors.cream} />
-      </section>
-
-      {/* Registry Section */}
-      <section id="registry">
-        <SectionDivider position="top" color={theme.colors.cream} />
-        <h2 className="section-title">Registry</h2>
-        <div className="section-content">
-          <Registry />
         </div>
         <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>

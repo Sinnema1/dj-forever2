@@ -6,10 +6,17 @@ export const CREATE_RSVP = gql`
       _id
       userId
       attending
+      guestCount
+      guests {
+        fullName
+        mealPreference
+        allergies
+      }
+      additionalNotes
+      # Legacy fields for backward compatibility
+      fullName
       mealPreference
       allergies
-      additionalNotes
-      fullName
     }
   }
 `;
@@ -20,10 +27,17 @@ export const EDIT_RSVP = gql`
       _id
       userId
       attending
+      guestCount
+      guests {
+        fullName
+        mealPreference
+        allergies
+      }
+      additionalNotes
+      # Legacy fields for backward compatibility
+      fullName
       mealPreference
       allergies
-      additionalNotes
-      fullName
     }
   }
 `;

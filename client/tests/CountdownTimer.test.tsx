@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import CountdownTimer from '../src/components/CountdownTimer';
 
@@ -10,22 +10,20 @@ describe('CountdownTimer', () => {
     global.Date.now = originalDateNow;
   });
 
-  it('renders the countdown with correct time units', () => {
-    // Set a fixed time before the wedding date
+  it('renders the simple countdown with days to the big day', () => {
+    // Set a fixed time before the wedding date (7 days before)
     const testNow = new Date('2026-11-01T16:00:00-05:00').getTime();
     global.Date.now = () => testNow;
     render(<CountdownTimer />);
-    expect(screen.getByText(/days/)).toBeInTheDocument();
-    expect(screen.getByText(/hours/)).toBeInTheDocument();
-    expect(screen.getByText(/minutes/)).toBeInTheDocument();
-    expect(screen.getByText(/seconds/)).toBeInTheDocument();
+    expect(screen.getByText(/days to the big day/)).toBeInTheDocument();
+    expect(screen.getByText(/7/)).toBeInTheDocument();
   });
 
-  it('shows the complete message when timeLeft is 0 or less', () => {
+  it('shows the wedding day message when it is the day', () => {
     // Set a fixed time after the wedding date
     const testNow = new Date('2026-11-09T16:00:00-05:00').getTime();
     global.Date.now = () => testNow;
     render(<CountdownTimer />);
-    expect(screen.getByText(/wedding time/i)).toBeInTheDocument();
+    expect(screen.getByText(/today is the day/i)).toBeInTheDocument();
   });
 });
