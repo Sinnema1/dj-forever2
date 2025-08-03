@@ -14,7 +14,7 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
+      includeAssets: ["favicon.svg"],
       manifest: {
         name: "Our Wedding Website",
         short_name: "Wedding",
@@ -24,14 +24,9 @@ export default defineConfig({
         display: "standalone",
         icons: [
           {
-            src: "pwa-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
+            src: "favicon.svg",
+            sizes: "32x32",
+            type: "image/svg+xml",
           },
         ],
       },
