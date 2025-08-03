@@ -1,12 +1,18 @@
 import React, { useEffect } from "react";
 import HeroBanner from "../components/HeroBanner";
 import SectionDivider from "../components/SectionDivider";
+import { HomePageSEO } from "../components/SEO";
+import {
+  LazyComponent,
+  Gallery,
+  TravelGuide,
+} from "../components/LazyComponents";
+import { analytics } from "../utils/analytics";
+import { performanceMonitor } from "../utils/performance";
 import theme from "../theme/theme";
 import OurStory from "./OurStory";
 import TheDetails from "./TheDetails";
-import Gallery from "./Gallery";
 
-import TravelGuide from "./TravelGuide";
 import FAQs from "./FAQs";
 import Registry from "./Registry";
 import Guestbook from "./Guestbook";
@@ -14,6 +20,14 @@ import Guestbook from "./Guestbook";
 const HomePage: React.FC = () => {
   // IntersectionObserver to fade in each .section-content
   useEffect(() => {
+    const endTimer = performanceMonitor.trackComponentRender("HomePage");
+
+    // Track homepage view
+    analytics.trackPageView("homepage");
+
+    // Track page load performance
+    performanceMonitor.trackPageLoad("homepage");
+
     const observerOptions = { root: null, rootMargin: "0px", threshold: 0.2 };
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -27,6 +41,10 @@ const HomePage: React.FC = () => {
     document.querySelectorAll(".section-content").forEach((section) => {
       observer.observe(section);
     });
+
+    // End performance timer
+    endTimer();
+
     return () => {
       document.querySelectorAll(".section-content").forEach((section) => {
         observer.unobserve(section);
@@ -36,6 +54,7 @@ const HomePage: React.FC = () => {
 
   return (
     <>
+      <HomePageSEO />
       {/* Hero Section */}
       <HeroBanner />
 
@@ -63,7 +82,10 @@ const HomePage: React.FC = () => {
         <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">Gallery</h2>
         <div className="section-content">
-          <Gallery />
+          <LazyComponent
+            Component={Gallery}
+            loadingMessage="Loading photo gallery..."
+          />
         </div>
         <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
@@ -73,7 +95,10 @@ const HomePage: React.FC = () => {
         <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">Travel Guide</h2>
         <div className="section-content">
-          <TravelGuide />
+          <LazyComponent
+            Component={TravelGuide}
+            loadingMessage="Loading travel information..."
+          />
         </div>
         <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>

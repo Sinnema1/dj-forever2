@@ -37,6 +37,13 @@ async function startServer() {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
+    introspection: process.env.NODE_ENV !== "production",
+    plugins:
+      process.env.NODE_ENV === "production"
+        ? [
+            // Disable introspection and GraphQL Playground in production
+          ]
+        : [],
   });
 
   await server.start();
@@ -91,7 +98,7 @@ async function startServer() {
 
   // Static file serving removed for Render backend-only deployment
 
-  app.listen(PORT, '0.0.0.0', () => {
+  app.listen(PORT, "0.0.0.0", () => {
     console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
     console.log(`🚀 GraphQL endpoint at http://0.0.0.0:${PORT}/graphql`);
   });
