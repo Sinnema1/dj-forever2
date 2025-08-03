@@ -1,48 +1,40 @@
 import React, { useEffect, useState } from "react";
+import "../assets/countdown-enhanced.css";
 
 const WEDDING_DATE = new Date("2026-11-08T16:00:00-05:00");
 
-type TimeUnit = {
-  value: number;
-  label: string;
-};
-
 export default function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = useState(WEDDING_DATE.getTime() - Date.now());
+  const [daysLeft, setDaysLeft] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeLeft(WEDDING_DATE.getTime() - Date.now());
-    }, 1000);
+    const updateCountdown = () => {
+      const timeLeft = WEDDING_DATE.getTime() - Date.now();
+      const days = Math.max(0, Math.floor(timeLeft / (1000 * 60 * 60 * 24)));
+      setDaysLeft(days);
+    };
+
+    // Update immediately
+    updateCountdown();
+
+    // Update daily at midnight
+    const interval = setInterval(updateCountdown, 1000 * 60 * 60 * 24);
+
     return () => clearInterval(interval);
   }, []);
 
-  if (timeLeft <= 0) {
-    return <div className="countdown-complete">It's wedding time!</div>;
+  if (daysLeft === 0) {
+    return (
+      <div className="countdown-simple">
+        <p className="countdown-text">Today is the day! 💍</p>
+      </div>
+    );
   }
 
-  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((timeLeft / (1000 * 60)) % 60);
-  const seconds = Math.floor((timeLeft / 1000) % 60);
-
-  const timeUnits: TimeUnit[] = [
-    { value: days, label: "days" },
-    { value: hours, label: "hours" },
-    { value: minutes, label: "minutes" },
-    { value: seconds, label: "seconds" },
-  ];
-
   return (
-    <div className="countdown-container">
-      <div className="countdown">
-        {timeUnits.map((unit, index) => (
-          <div key={index} className="countdown-unit">
-            <div className="countdown-value">{unit.value}</div>
-            <div className="countdown-label">{unit.label}</div>
-          </div>
-        ))}
-      </div>
+    <div className="countdown-simple">
+      <p className="countdown-text">
+        {daysLeft} {daysLeft === 1 ? 'day' : 'days'} to the big day
+      </p>
     </div>
   );
 }

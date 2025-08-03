@@ -5,7 +5,10 @@ interface RSVPHelpTooltipProps {
   children: React.ReactNode;
 }
 
-export default function RSVPHelpTooltip({ content, children }: RSVPHelpTooltipProps) {
+export default function RSVPHelpTooltip({
+  content,
+  children,
+}: RSVPHelpTooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   return (

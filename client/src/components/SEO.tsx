@@ -96,3 +96,12 @@ export function TravelPageSEO() {
     />
   );
 }
+
+export function RegistryPageSEO() {
+  return (
+    <SEO
+      title="Wedding Registry"
+      description="Our wedding registry with gift ideas and links to our favorite stores. Your presence is the greatest gift, but if you wish to honor us with a gift, here are our registries."
+    />
+  );
+}

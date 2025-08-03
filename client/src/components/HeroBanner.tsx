@@ -50,15 +50,9 @@ export default function HeroBanner() {
             )
           ) : null}
 
-          {isHomePage ? (
-            <a href="#registry" className="btn btn-outline">
-              Registry
-            </a>
-          ) : (
-            <Link to="/registry" className="btn btn-outline">
-              Registry
-            </Link>
-          )}
+          <Link to="/registry" className="btn btn-outline">
+            Registry
+          </Link>
 
           {isHomePage ? (
             <a href="#travel" className="btn btn-outline">

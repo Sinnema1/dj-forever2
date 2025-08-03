@@ -109,7 +109,7 @@ small {
   justify-content: space-between;
   padding: 0 var(--spacing-8);
   position: fixed;
-  top: 0;
+  top: var(--spacing-3);
   left: 0;
   right: 0;
   z-index: 100;
@@ -134,7 +134,19 @@ small {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   text-decoration: none;
   cursor: pointer;
+  /* Align with navbar links */
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: var(--spacing-1) 0; /* Match navbar links padding */
+  /* Allow text wrapping but maintain alignment */
+  line-height: 1.1; /* Tighter line height for wrapped text */
+  /* Center the wrapped text block vertically */
+  justify-content: center;
+  flex-direction: column;
 }
+
+/* Remove responsive sizing since we want wrapping */
 
 .navbar-scrolled .navbar-logo {
   color: var(--color-text);
@@ -157,6 +169,8 @@ small {
   margin: 0;
   padding: 0;
   justify-content: flex-end; /* or center / space-between, as you like */
+  align-items: center; /* Ensure vertical alignment */
+  height: 100%; /* Match navbar height */
 }
 
 /* Navbar link styles */
@@ -172,6 +186,10 @@ small {
   position: relative;
   transition: all 0.3s ease;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  /* Ensure consistent height alignment */
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 .navbar a::after {
@@ -289,7 +307,9 @@ small {
   }
 
   .navbar-links a {
-    display: block; /* make entire block clickable */
+    display: flex; /* Keep flex for consistent alignment */
+    align-items: center; /* Maintain vertical centering */
+    justify-content: center; /* Center horizontally in mobile menu */
     padding: var(--spacing-1) var(--spacing-2);
     white-space: nowrap; /* prevent a label from breaking onto two lines */
     text-transform: uppercase;
@@ -299,14 +319,15 @@ small {
     transition: color 0.3s;
     color: var(--color-secondary);
     text-shadow: none;
+    height: 100%; /* Ensure consistent height */
   }
+}
 
-  /* Optional: reduce padding at smaller breakpoints */
-  @media (max-width: 1024px) {
-    .navbar-links a {
-      padding: var(--spacing-1) var(--spacing-1);
-      font-size: clamp(0.75rem, 1vw, var(--font-xs));
-    }
+/* Optional: Adjust navbar links at intermediate screen sizes */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .navbar-links a {
+    padding: var(--spacing-1) var(--spacing-1);
+    font-size: clamp(0.75rem, 1vw, var(--font-xs));
   }
 
   .navbar::after {
@@ -333,29 +354,37 @@ small {
 .hero {
   height: 100vh;
   width: 100%;
-  /* Beautiful gradient background */
-  background-image: linear-gradient(
-    135deg,
-    #4a6580 0%,
-    #6e8cad 50%,
-    #a4b8c4 100%
-  );
-  /* When you have a real image, add it to /public/assets/images/ and use:
-  background-image: url('/assets/images/hero.jpg'); */
+  /* Full background cover photo with enhanced overlay */
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.2) 0%,
+      rgba(0, 0, 0, 0.3) 30%,
+      rgba(0, 0, 0, 0.4) 70%,
+      rgba(0, 0, 0, 0.5) 100%
+    ),
+    url("../assets/images/cover_photo.jpeg");
   background-size: cover;
   background-position: center center;
   background-attachment: fixed;
+  background-repeat: no-repeat;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.2) 60%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
   z-index: 1;
 }
 
@@ -363,29 +392,51 @@ small {
   position: relative;
   z-index: 2;
   text-align: center;
-  max-width: 700px;
-  padding: var(--spacing-8);
-  background-color: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border-radius: var(--radius);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  animation: fadeIn 1.2s ease-out;
+  max-width: 800px;
+  padding: var(--spacing-8) var(--spacing-6);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px) saturate(180%);
+  border-radius: 24px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.25),
+    0 6px 20px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  animation: heroContentFadeIn 2s ease-out;
+  margin: 0 var(--spacing-4);
+  transform: translateZ(0); /* Hardware acceleration */
 }
 
 .hero-title {
   font-family: "Great Vibes", cursive, "Playfair Display", serif;
-  font-size: var(--font-xxl);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
   color: #fff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.1);
   margin-bottom: var(--spacing-4);
+  font-weight: 400;
+  line-height: 1.2;
 }
 
 .hero-date,
 .hero-location {
-  font-size: var(--font-md);
-  color: #fff;
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: rgba(255, 255, 255, 0.95);
   margin-bottom: var(--spacing-2);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 300;
+  letter-spacing: 0.5px;
+}
+
+.hero-personal-note {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: var(--spacing-3);
+  font-style: italic;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .hero-buttons {
@@ -393,22 +444,80 @@ small {
   justify-content: center;
   flex-wrap: wrap;
   gap: var(--spacing-4);
-  margin-top: var(--spacing-6);
+  margin-top: var(--spacing-8);
 }
 
 .hero-buttons .btn {
-  min-width: 130px;
+  min-width: 140px;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   font-size: var(--font-xs);
   font-weight: 600;
-  padding: var(--spacing-3) var(--spacing-6);
+  padding: var(--spacing-4) var(--spacing-6);
   border-radius: 50px;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Hero Mobile & Tablet Responsive Enhancements */
+@media (max-width: 1024px) {
+  .hero {
+    background-attachment: scroll; /* Better performance on mobile */
+  }
+
+  .hero-content {
+    max-width: 95%;
+    padding: var(--spacing-6) var(--spacing-4);
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-3);
+  }
+
+  .hero-buttons .btn {
+    min-width: 200px;
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: 100vh;
+    background-position: center 30%; /* Better positioning for mobile */
+  }
+
+  .hero-content {
+    padding: var(--spacing-5) var(--spacing-4);
+    border-radius: 12px;
+  }
+
+  .hero-buttons {
+    margin-top: var(--spacing-6);
+  }
+
+  .hero-buttons .btn {
+    padding: var(--spacing-3) var(--spacing-5);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-content {
+    margin: 0 var(--spacing-2);
+    padding: var(--spacing-4) var(--spacing-3);
+  }
+
+  .hero-buttons .btn {
+    min-width: 180px;
+    padding: var(--spacing-3) var(--spacing-4);
+  }
 }
 
 .btn-primary {
@@ -944,6 +1053,17 @@ section:not(:first-child)::before {
   }
 }
 
+@keyframes heroContentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @keyframes slideInLeft {
   from {
     opacity: 0;
@@ -1027,40 +1147,51 @@ body {
 }
 
 .hero {
-  background: linear-gradient(
-    135deg,
-    var(--color-dusty-blue) 0%,
-    var(--color-sage-20) 50%,
-    var(--color-sage) 100%
-  );
-  min-height: 80vh;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45)),
+    url("../assets/images/cover_photo.jpeg");
+  background-size: cover;
+  background-position: center center;
+  background-attachment: scroll; /* Better for mobile */
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: var(--color-charcoal);
+  color: #fff;
   position: relative;
+  overflow: hidden;
 }
 
 .hero-content {
-  background: rgba(231, 227, 218, 0.85); /* Panel Cream with opacity */
-  padding: 2rem 3rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(231, 227, 218, 0.08);
-  display: inline-block;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: var(--spacing-6) var(--spacing-5);
+  border-radius: 16px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 0 var(--spacing-4);
+  max-width: 90%;
 }
 
 .hero-title {
-  font-family: "Playfair Display", serif;
-  font-size: 2.5rem;
-  color: var(--color-dusty-blue);
-  margin-bottom: 0.5rem;
+  font-family: "Great Vibes", cursive, "Playfair Display", serif;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  margin-bottom: var(--spacing-3);
+  font-weight: 400;
 }
 
 .hero-date,
 .hero-location {
-  font-size: 1.2rem;
-  margin: 0.2rem 0;
+  font-size: clamp(0.9rem, 4vw, 1.2rem);
+  color: rgba(255, 255, 255, 0.95);
+  margin: var(--spacing-1) 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 300;
 }
 
 .countdown {
