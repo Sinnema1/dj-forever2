@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-// import QRLoginModal from "./QRLoginModal"; (removed, QR-only login)
 import QRLoginModal from "./QRLoginModal";
 import "../assets/styles.css";
-// import QRLoginModal from "./QRLoginModal"; (removed, QR-only login)
 
 // Links for the main page sections (hash links)
 const sectionLinks = [
