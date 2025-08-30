@@ -5,6 +5,7 @@ import Navbar from "../src/components/Navbar";
 import { AuthProvider } from "../src/context/AuthContext";
 import { MemoryRouter } from "react-router-dom";
 import { MockedProvider } from "@apollo/client/testing";
+import '@testing-library/jest-dom';
 
 function renderNavbar() {
   return render(
@@ -23,13 +24,13 @@ describe("Navbar integration", () => {
     renderNavbar();
     const loginButton = screen.getByRole("button", { name: /login/i });
     expect(loginButton).toBeInTheDocument();
-    
+
     // Check that the button has the correct title attribute
     expect(loginButton).toHaveAttribute(
-      "title", 
+      "title",
       "Scan your invitation QR code to access your account"
     );
-    
+
     // Check for the mobile icon
     expect(screen.getByText("📱")).toBeInTheDocument();
   });
