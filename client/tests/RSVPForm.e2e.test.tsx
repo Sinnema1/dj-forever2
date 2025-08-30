@@ -15,11 +15,20 @@ const initialRSVPMock = {
 const createdRSVP = {
   _id: "mock-id",
   userId: "mock-user",
-  fullName: "Test User",
   attending: "YES",
+  guestCount: 1,
+  guests: [
+    {
+      fullName: "Test User",
+      mealPreference: "vegetarian",
+      allergies: "",
+    },
+  ],
+  additionalNotes: "",
+  // Legacy fields for backward compatibility
+  fullName: "Test User",
   mealPreference: "vegetarian",
   allergies: "",
-  additionalNotes: "",
 };
 
 const getRSVPMockAfterCreate = {
@@ -37,6 +46,14 @@ const createRSVPMock = {
         mealPreference: "vegetarian",
         allergies: "",
         additionalNotes: "",
+        guestCount: 1,
+        guests: [
+          {
+            fullName: "Test User",
+            mealPreference: "vegetarian",
+            allergies: "",
+          },
+        ],
       },
     },
   },
@@ -45,11 +62,20 @@ const createRSVPMock = {
       createRSVP: {
         _id: "mock-id",
         userId: "mock-user",
-        fullName: "Test User",
         attending: "YES",
+        guestCount: 1,
+        guests: [
+          {
+            fullName: "Test User",
+            mealPreference: "vegetarian",
+            allergies: "",
+          },
+        ],
+        additionalNotes: "",
+        // Legacy fields for backward compatibility
+        fullName: "Test User",
         mealPreference: "vegetarian",
         allergies: "",
-        additionalNotes: "",
       },
     },
   },
