@@ -168,6 +168,10 @@ function Navbar() {
       <QRLoginModal
         isOpen={qrLoginModalOpen}
         onClose={() => setQrLoginModalOpen(false)}
+        onLoginSuccess={() => {
+          setQrLoginModalOpen(false);
+          // Optionally reload or redirect after successful login
+        }}
       />
     </nav>
   );
