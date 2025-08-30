@@ -131,7 +131,9 @@ small {
   z-index: 101;
   transition: color 0.3s ease;
   font-weight: 500;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.8),
+    0 1px 0 rgba(0, 0, 0, 0.9);
   text-decoration: none;
   cursor: pointer;
   /* Align with navbar links */
@@ -185,7 +187,9 @@ small {
   padding: var(--spacing-1) var(--spacing-2);
   position: relative;
   transition: all 0.3s ease;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 2px 6px rgba(0, 0, 0, 0.4);
   /* Ensure consistent height alignment */
   display: flex;
   align-items: center;
@@ -350,6 +354,60 @@ small {
   }
 }
 
+/* Login Button Styling */
+.btn-login-prompt {
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 2px 6px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+}
+
+.btn-login-prompt:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.login-icon {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.navbar-scrolled .btn-login-prompt {
+  color: var(--color-secondary);
+  border-color: var(--color-secondary-30);
+  text-shadow: none;
+}
+
+.navbar-scrolled .btn-login-prompt:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: var(--color-secondary);
+}
+
+@media (max-width: 768px) {
+  .btn-login-prompt {
+    color: var(--color-text);
+    border-color: var(--color-text-30);
+    text-shadow: none;
+    font-size: var(--font-xs);
+    padding: var(--spacing-2);
+  }
+}
+
 /* Hero Section */
 .hero {
   height: 100vh;
@@ -394,49 +452,48 @@ small {
   text-align: center;
   max-width: 800px;
   padding: var(--spacing-8) var(--spacing-6);
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(15px) saturate(180%);
-  border-radius: 24px;
-  box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.25),
-    0 6px 20px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.12);
   animation: heroContentFadeIn 2s ease-out;
   margin: 0 var(--spacing-4);
   transform: translateZ(0); /* Hardware acceleration */
 }
 
-.hero-title {
-  font-family: "Great Vibes", cursive, "Playfair Display", serif;
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-  color: #fff;
+.hero .hero-title {
+  font-family: "Great Vibes", cursive, "Playfair Display", serif !important;
+  font-size: clamp(3.5rem, 12vw, 6rem) !important;
+  color: #fff !important;
   text-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    0 4px 8px rgba(0, 0, 0, 0.2),
-    0 8px 16px rgba(0, 0, 0, 0.1);
-  margin-bottom: var(--spacing-4);
-  font-weight: 400;
-  line-height: 1.2;
+    0 2px 4px rgba(0, 0, 0, 0.8),
+    0 4px 8px rgba(0, 0, 0, 0.6),
+    0 8px 16px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(0, 0, 0, 0.9) !important;
+  margin: var(--spacing-6) 0 var(--spacing-6) 0 !important;
+  font-weight: 400 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.6)) !important;
 }
 
-.hero-date,
-.hero-location {
-  font-size: clamp(1rem, 2.5vw, 1.4rem);
+.hero-date-location {
+  font-size: clamp(1rem, 2.8vw, 1.3rem);
   color: rgba(255, 255, 255, 0.95);
-  margin-bottom: var(--spacing-2);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  font-weight: 300;
+  margin-bottom: var(--spacing-6);
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.8),
+    0 1px 0 rgba(0, 0, 0, 0.9);
+  font-weight: 400;
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
 .hero-personal-note {
-  font-size: clamp(1rem, 2.5vw, 1.3rem);
-  color: rgba(255, 255, 255, 0.9);
-  margin-top: var(--spacing-3);
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  color: rgba(255, 255, 255, 0.95);
+  margin-top: var(--spacing-4);
   font-style: italic;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.8),
+    0 1px 0 rgba(0, 0, 0, 0.9);
+  text-align: center;
 }
 
 .hero-buttons {
@@ -444,7 +501,29 @@ small {
   justify-content: center;
   flex-wrap: wrap;
   gap: var(--spacing-4);
-  margin-top: var(--spacing-8);
+  margin-top: var(--spacing-6);
+}
+
+.btn-details {
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  border: none;
+  padding: var(--spacing-4) var(--spacing-8);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-details:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 .hero-buttons .btn {
@@ -494,11 +573,35 @@ small {
 
   .hero-content {
     padding: var(--spacing-5) var(--spacing-4);
-    border-radius: 12px;
+  }
+
+  .hero .hero-title {
+    font-size: clamp(2.5rem, 10vw, 4.5rem) !important;
+    margin: var(--spacing-4) 0 var(--spacing-5) 0 !important;
+    line-height: 1.1 !important;
+    text-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.8),
+      0 4px 8px rgba(0, 0, 0, 0.6),
+      0 1px 0 rgba(0, 0, 0, 0.9) !important;
+  }
+
+  .hero-date,
+  .hero-location {
+    font-size: clamp(0.9rem, 4vw, 1.3rem);
+    margin: var(--spacing-1) 0;
+  }
+
+  .hero-date-location {
+    margin-bottom: var(--spacing-5);
   }
 
   .hero-buttons {
-    margin-top: var(--spacing-6);
+    margin-top: var(--spacing-4);
+  }
+
+  .btn-details {
+    padding: var(--spacing-3) var(--spacing-6);
+    font-size: 1rem;
   }
 
   .hero-buttons .btn {
@@ -1164,34 +1267,9 @@ body {
 }
 
 .hero-content {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
   padding: var(--spacing-6) var(--spacing-5);
-  border-radius: 16px;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.1);
   margin: 0 var(--spacing-4);
   max-width: 90%;
-}
-
-.hero-title {
-  font-family: "Great Vibes", cursive, "Playfair Display", serif;
-  font-size: clamp(2rem, 8vw, 3.5rem);
-  color: #fff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  margin-bottom: var(--spacing-3);
-  font-weight: 400;
-}
-
-.hero-date,
-.hero-location {
-  font-size: clamp(0.9rem, 4vw, 1.2rem);
-  color: rgba(255, 255, 255, 0.95);
-  margin: var(--spacing-1) 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  font-weight: 300;
 }
 
 .countdown {
