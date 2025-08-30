@@ -19,11 +19,19 @@ function renderNavbar() {
 }
 
 describe("Navbar integration", () => {
-  it("shows QR login info when logged out", async () => {
+  it("shows login button when logged out", async () => {
     renderNavbar();
-    const loginInfo = screen.getByText(/scan your invitation qr code/i);
-    expect(loginInfo).toBeInTheDocument();
-    expect(screen.getByText(/login:/i)).toBeInTheDocument();
+    const loginButton = screen.getByRole("button", { name: /login/i });
+    expect(loginButton).toBeInTheDocument();
+    
+    // Check that the button has the correct title attribute
+    expect(loginButton).toHaveAttribute(
+      "title", 
+      "Scan your invitation QR code to access your account"
+    );
+    
+    // Check for the mobile icon
+    expect(screen.getByText("📱")).toBeInTheDocument();
   });
 
   it("shows Logout button when logged in", async () => {

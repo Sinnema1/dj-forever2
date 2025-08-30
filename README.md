@@ -105,6 +105,23 @@ The wedding website provides a personalized experience for guests:
 
 - There is no password-based login or registration. All authentication is via QR code only.
 
+## TODO / Outstanding Action Items
+
+### High Priority
+
+- [ ] **Validate QR Code Login on Desktop** - Test the Login button in navbar opens QR modal and QR scanning works properly on computer/desktop browsers
+- [ ] **Fix RSVP Test Mocks** - Update test mocks to match current RSVP mutation structure (currently has warnings but tests pass)
+
+### Medium Priority
+
+- [ ] **Performance Optimization** - Consider image compression for faster loading (~18MB build size)
+- [ ] **Accessibility Review** - Screen reader testing for countdown timer and focus management
+
+### Low Priority
+
+- [ ] **Documentation Updates** - Update deployment instructions with final configuration
+- [ ] **Enhanced Analytics** - Add performance monitoring if desired
+
 ---
 
 For questions or help, contact the project maintainer.
