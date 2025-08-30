@@ -17,7 +17,9 @@ export function SEO({
   type = "website",
 }: SEOProps) {
   const fullTitle =
-    title === "Dominique & Justin's Wedding" ? title : `${title} | Dominique & Justin's Wedding`;
+    title === "Dominique & Justin's Wedding"
+      ? title
+      : `${title} | Dominique & Justin's Wedding`;
 
   return (
     <Helmet>

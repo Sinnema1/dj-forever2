@@ -33,7 +33,7 @@ export default function CountdownTimer() {
   return (
     <div className="countdown-simple">
       <p className="countdown-text">
-        {daysLeft} {daysLeft === 1 ? 'day' : 'days'} to the big day
+        {daysLeft} {daysLeft === 1 ? "day" : "days"} to the big day
       </p>
     </div>
   );
