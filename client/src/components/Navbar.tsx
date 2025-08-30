@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import QRLoginModal from "./QRLoginModal";
 import "../assets/styles.css";
-// import QRLoginModal from "./QRLoginModal"; (removed, QR-only login)
 
 // Links for the main page sections (hash links)
 const sectionLinks = [
@@ -141,10 +141,14 @@ function Navbar() {
         {/* Auth buttons */}
         <li style={{ "--item-index": 1000 } as React.CSSProperties}>
           {!isLoggedIn ? (
-            <span className="navbar-qr-login-info">
-              <strong>Login:</strong> Scan your invitation QR code to access
-              your account.
-            </span>
+            <button
+              className="btn btn-login-prompt"
+              onClick={() => setQrLoginModalOpen(true)}
+              title="Scan your invitation QR code to access your account"
+            >
+              <span className="login-icon">📱</span>
+              Login
+            </button>
           ) : (
             <button className="btn btn-outline" onClick={logout}>
               Logout
@@ -160,7 +164,15 @@ function Navbar() {
         />
       )}
 
-      {/* QRLoginModal removed: login is now QR code-only */}
+      {/* QR Login Modal */}
+      <QRLoginModal
+        isOpen={qrLoginModalOpen}
+        onClose={() => setQrLoginModalOpen(false)}
+        onLoginSuccess={() => {
+          setQrLoginModalOpen(false);
+          // Optionally reload or redirect after successful login
+        }}
+      />
     </nav>
   );
 }
