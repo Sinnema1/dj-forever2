@@ -45,6 +45,51 @@
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
+/* Modern Native-Style Scrollbars */
+/* WebKit browsers (Safari, Chrome, Edge) */
+::-webkit-scrollbar {
+  width: 0px; /* Remove scrollbar space on mobile */
+  background: transparent; /* Optional: just make scrollbar invisible */
+}
+
+@media (min-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 8px; /* Thin scrollbar on desktop */
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Firefox */
+html {
+  scrollbar-width: none; /* Hide scrollbar on mobile */
+  scrollbar-color: transparent transparent;
+}
+
+@media (min-width: 768px) {
+  html {
+    scrollbar-width: thin; /* Thin scrollbar on desktop */
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+}
+
+/* Ensure body doesn't have overflow issues */
+body {
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
 /* Enable smooth scrolling */
 html {
   scroll-behavior: smooth;
