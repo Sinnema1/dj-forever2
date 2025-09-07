@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { useAuth } from "../../context/AuthContext";
 import { useRSVP } from "../../features/rsvp/hooks/useRSVP";
-import { RSVPFormData, Guest } from "../../features/rsvp/types/rsvpTypes";
 import RSVPConfirmation from "./RSVPConfirmation";
-import "../../assets/rsvp-enhancements.css";
+import { RSVPFormData, Guest } from "../../features/rsvp/types/rsvpTypes";
+// Styles now imported globally via main.tsx
 
 export default function RSVPForm() {
   const { createRSVP, editRSVP, rsvp, loading } = useRSVP();

@@ -1,6 +1,11 @@
 import React from "react";
-import { FaAirbnb, FaCarSide, FaUtensils, FaMapMarkedAlt } from "react-icons/fa";
-import "../assets/TravelGuide.css";
+import {
+  FaAirbnb,
+  FaCarSide,
+  FaUtensils,
+  FaMapMarkedAlt,
+} from "react-icons/fa";
+// Styles now imported globally via main.tsx
 
 const TravelGuide: React.FC = () => (
   <div className="icons-grid">

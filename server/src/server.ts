@@ -17,13 +17,12 @@ const __dirname = path.dirname(__filename);
 async function startServer() {
   // Connect to MongoDB
   const dbName = process.env.MONGODB_DB_NAME || "djforever2";
-  let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017";
-  if (!MONGODB_URI.match(/\/[^\/]+$/)) {
-    MONGODB_URI = MONGODB_URI.replace(/\/$/, "") + `/${dbName}`;
-  }
+  const uri = process.env.MONGODB_URI || "mongodb://localhost:27017";
+  // Use { dbName } option for consistency with seed scripts
+  console.log(`[server] Connecting to MongoDB URI: ${uri}, DB Name: ${dbName}`);
 
   try {
-    await mongoose.connect(MONGODB_URI);
+    await mongoose.connect(uri, { dbName });
     console.log(`🗄️ Connected to MongoDB: ${dbName}`);
   } catch (error) {
     console.error("❌ MongoDB connection error:", error);

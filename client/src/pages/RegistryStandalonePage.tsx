@@ -1,7 +1,7 @@
 import React from "react";
 import Registry from "./Registry";
 import { RegistryPageSEO } from "../components/SEO";
-import "../assets/rsvp-enhancements.css";
+// Styles now imported globally via main.tsx
 
 const RegistryStandalonePage: React.FC = () => {
   return (
