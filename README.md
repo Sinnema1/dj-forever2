@@ -110,8 +110,11 @@ The wedding website provides a personalized experience for guests:
 ### High Priority
 
 - [ ] **Fix Mobile Hero Background Scaling** - Hero background image displays well on desktop but doesn't scale properly on mobile devices. Need to optimize background-size, background-position, or consider responsive image solutions
-- [ ] **Validate QR Code Login on Desktop** - Test the Login button in navbar opens QR modal and QR scanning works properly on computer/desktop browsers
 - [ ] **Fix RSVP Test Mocks** - Update test mocks to match current RSVP mutation structure (currently has warnings but tests pass)
+
+### Medium Priority
+
+- [ ] **Desktop QR Code Scanner Enhancement** - Current QR scanner works on mobile but desktop scanning needs improvement. Consider adding manual token entry fallback for desktop users or enhancing webcam-based scanning reliability
 
 ### Medium Priority
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { Navigate, Link } from "react-router-dom";
-import "../assets/qr-prompt.css";
+// Styles now imported globally via main.tsx
 
 const QRPrompt: React.FC = () => {
   const { isLoggedIn } = useAuth();

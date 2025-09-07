@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import "../assets/welcome-banner.css";
+// Styles now imported globally via main.tsx
 
 const PersonalizedWelcome: React.FC = () => {
   const { user, isLoggedIn } = useAuth();

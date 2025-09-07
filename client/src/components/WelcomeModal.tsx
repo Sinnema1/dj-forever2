@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import coverPhoto from "../assets/images/cover_photo.jpeg";
-import "../assets/welcome-modal.css";
+// Styles now imported globally via main.tsx
 
 const WelcomeModal: React.FC = () => {
   const { user, isLoggedIn } = useAuth();

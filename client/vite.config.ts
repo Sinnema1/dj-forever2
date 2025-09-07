@@ -15,6 +15,9 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "offline.html"],
+      devOptions: {
+        enabled: false, // set to true only if you want to test SW in dev
+      },
       manifest: {
         name: "Dominique & Justin's Wedding",
         short_name: "D&J Wedding",
@@ -53,7 +56,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg}"],
-        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB for high-res wedding photos
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
@@ -66,7 +69,7 @@ export default defineConfig({
               cacheName: "graphql-cache",
               expiration: {
                 maxEntries: 20,
-                maxAgeSeconds: 600, // 10 minutes
+                maxAgeSeconds: 600,
               },
             },
           },
@@ -77,7 +80,7 @@ export default defineConfig({
               cacheName: "wedding-images-cache",
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+                maxAgeSeconds: 30 * 24 * 60 * 60,
               },
             },
           },
@@ -87,7 +90,7 @@ export default defineConfig({
             options: {
               cacheName: "google-fonts-stylesheets",
               expiration: {
-                maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+                maxAgeSeconds: 7 * 24 * 60 * 60,
               },
             },
           },
@@ -98,7 +101,7 @@ export default defineConfig({
               cacheName: "google-fonts-webfonts",
               expiration: {
                 maxEntries: 30,
-                maxAgeSeconds: 365 * 24 * 60 * 60, // 1 year
+                maxAgeSeconds: 365 * 24 * 60 * 60,
               },
             },
           },
@@ -109,7 +112,7 @@ export default defineConfig({
               cacheName: "pages-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 3600, // 1 hour
+                maxAgeSeconds: 3600,
               },
             },
           },
@@ -120,15 +123,25 @@ export default defineConfig({
     }),
   ],
   server: {
+    host: true, // ✅ reachable on LAN (iPhone)
     port: 3002,
+    // https: true,                // ✅ commented out - causing mobile connectivity issues
+    hmr: {
+      // Point this to your machine's LAN IP for iPhone HMR.
+      // Replace with your IP (e.g., "192.168.1.23").
+      host: "localhost",
+      protocol: "ws", // ✅ back to regular websockets
+      port: 3002,
+    },
     proxy: {
       "/graphql": {
-        target: "http://localhost:3005",
+        target: "http://localhost:3001",
         changeOrigin: true,
       },
     },
   },
   build: {
+    target: ["es2019", "safari14"], // ✅ safer for older mobile Safari
     outDir: "dist",
     assetsDir: "assets",
     rollupOptions: {

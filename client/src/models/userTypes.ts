@@ -1,28 +1,22 @@
-// Example type for User
+// Canonical user shape (match your GraphQL response which uses `_id`)
 export interface User {
-  id: string;
-  fullName: string;
-  email: string;
-  isAdmin: boolean;
-  hasRSVPed: boolean;
-  rsvpId?: string;
-  isInvited: boolean;
-}
-
-export interface UserType {
   _id: string;
   fullName: string;
   email: string;
-  isAdmin?: boolean;
   isInvited: boolean;
+  isAdmin?: boolean;
   hasRSVPed?: boolean;
-  rsvpId?: string;
+  rsvpId?: string | null;
 }
 
+// Keep the existing name to avoid touching imports elsewhere
+export type UserType = User;
+
 export interface AuthContextType {
-  user: UserType | null;
-  token?: string | null;
+  user: User | null;
+  token: string | null;         // required, but can be null
   isLoggedIn: boolean;
+  isLoading: boolean;
   loginWithQrToken: (qrToken: string) => Promise<void>;
   logout: () => void;
 }

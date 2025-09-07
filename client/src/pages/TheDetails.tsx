@@ -1,6 +1,6 @@
 import React from "react";
 import { details } from "../data/details";
-import "../assets/details.css";
+// Styles now imported globally via main.tsx
 
 export default function TheDetails() {
   return (
