@@ -23,7 +23,9 @@ const QRTokenLogin: React.FC = () => {
 
     // Wait for network connection before attempting login
     if (!isOnline && !isConnecting) {
-      setError("No internet connection. Please check your connection and try again.");
+      setError(
+        "No internet connection. Please check your connection and try again."
+      );
       return;
     }
 
@@ -66,7 +68,10 @@ const QRTokenLogin: React.FC = () => {
           setError(
             "This QR code is invalid or has expired. Please contact the hosts if you need assistance."
           );
-        } else if (errorMessage.includes("Network Error") || !navigator.onLine) {
+        } else if (
+          errorMessage.includes("Network Error") ||
+          !navigator.onLine
+        ) {
           setError(
             "Unable to connect to the server. Please check your internet connection and try again."
           );
@@ -81,23 +86,33 @@ const QRTokenLogin: React.FC = () => {
     };
 
     attemptLogin();
-  }, [qrToken, isLoggedIn, loginWithQrToken, navigate, isOnline, isConnecting, user]);
+  }, [
+    qrToken,
+    isLoggedIn,
+    loginWithQrToken,
+    navigate,
+    isOnline,
+    isConnecting,
+    user,
+  ]);
 
   // Retry function for network errors
   const handleRetry = async () => {
     if (!qrToken || !isOnline) return;
-    
+
     setIsRetrying(true);
     setError(null);
-    
+
     try {
       await loginWithQrToken(qrToken);
       navigate("/", { replace: true });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
-      setError(errorMessage.includes("Network Error") || !navigator.onLine 
-        ? "Still unable to connect. Please check your internet connection."
-        : "Login failed. Please try scanning your QR code again."
+      const errorMessage =
+        err instanceof Error ? err.message : "An unknown error occurred";
+      setError(
+        errorMessage.includes("Network Error") || !navigator.onLine
+          ? "Still unable to connect. Please check your internet connection."
+          : "Login failed. Please try scanning your QR code again."
       );
     } finally {
       setIsRetrying(false);
