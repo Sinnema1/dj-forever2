@@ -19,7 +19,9 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 const STORAGE_TOKEN_KEY = "id_token";
 const STORAGE_USER_KEY = "user";
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,17 +45,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Initial load from storage
   useEffect(() => {
-    const storedToken = localStorage.getItem(STORAGE_TOKEN_KEY);
-    const storedUser = safeParseUser(localStorage.getItem(STORAGE_USER_KEY));
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(storedUser);
-    } else {
-      // Clean up any partial/legacy state so UI doesn’t get confused
-      localStorage.removeItem(STORAGE_TOKEN_KEY);
-      localStorage.removeItem(STORAGE_USER_KEY);
-    }
-    setIsLoading(false);
+    const initializeAuth = async () => {
+      const storedToken = localStorage.getItem(STORAGE_TOKEN_KEY);
+      const storedUser = safeParseUser(localStorage.getItem(STORAGE_USER_KEY));
+
+      if (storedToken && storedUser) {
+        // Set user immediately for faster UI response
+        setToken(storedToken);
+        setUser(storedUser);
+
+        // Validate token in background (optional - for extra security)
+        try {
+          // You could add a quick token validation query here
+          // const { data } = await validateToken(storedToken);
+          // if (!data.valid) throw new Error('Invalid token');
+        } catch (error) {
+          // Token is invalid, clear auth state
+          console.warn("Stored token validation failed, clearing auth state");
+          localStorage.removeItem(STORAGE_TOKEN_KEY);
+          localStorage.removeItem(STORAGE_USER_KEY);
+          setToken(null);
+          setUser(null);
+        }
+      } else {
+        // Clean up any partial/legacy state so UI doesn't get confused
+        localStorage.removeItem(STORAGE_TOKEN_KEY);
+        localStorage.removeItem(STORAGE_USER_KEY);
+      }
+
+      setIsLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   // Keep tabs/PWA windows in sync
@@ -92,7 +115,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         localStorage.setItem(STORAGE_TOKEN_KEY, authToken);
         localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(authUser));
       } catch (err: unknown) {
-        if (err instanceof Error) throw new Error(err.message || "QR Login failed.");
+        if (err instanceof Error)
+          throw new Error(err.message || "QR Login failed.");
         throw err;
       }
     },

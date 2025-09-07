@@ -3,13 +3,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import QRHelpModal from "../components/QRHelpModal";
 import { analytics } from "../utils/analytics";
+import { useNetworkStatus } from "../hooks/useNetworkStatus";
 
 const QRTokenLogin: React.FC = () => {
   const { qrToken } = useParams<{ qrToken: string }>();
   const { isLoggedIn, loginWithQrToken, user } = useAuth();
+  const { isOnline, isConnecting } = useNetworkStatus();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   useEffect(() => {
     if (!qrToken) return;
@@ -17,7 +20,21 @@ const QRTokenLogin: React.FC = () => {
       navigate("/", { replace: true });
       return;
     }
-    (async () => {
+
+    // Wait for network connection before attempting login
+    if (!isOnline && !isConnecting) {
+      setError(
+        "No internet connection. Please check your connection and try again."
+      );
+      return;
+    }
+
+    if (!isOnline && isConnecting) {
+      // Don't start login while reconnecting
+      return;
+    }
+
+    const attemptLogin = async () => {
       try {
         console.log("QRTokenLogin: Starting login with token:", qrToken);
 
@@ -51,7 +68,10 @@ const QRTokenLogin: React.FC = () => {
           setError(
             "This QR code is invalid or has expired. Please contact the hosts if you need assistance."
           );
-        } else if (errorMessage.includes("Network Error")) {
+        } else if (
+          errorMessage.includes("Network Error") ||
+          !navigator.onLine
+        ) {
           setError(
             "Unable to connect to the server. Please check your internet connection and try again."
           );
@@ -61,13 +81,43 @@ const QRTokenLogin: React.FC = () => {
           );
         }
 
-        // Redirect after a longer delay to give user time to read the message
-        setTimeout(() => {
-          navigate("/", { replace: true });
-        }, 5000);
+        // Don't auto-redirect on error - let user choose
       }
-    })();
-  }, [qrToken, isLoggedIn, loginWithQrToken, navigate]);
+    };
+
+    attemptLogin();
+  }, [
+    qrToken,
+    isLoggedIn,
+    loginWithQrToken,
+    navigate,
+    isOnline,
+    isConnecting,
+    user,
+  ]);
+
+  // Retry function for network errors
+  const handleRetry = async () => {
+    if (!qrToken || !isOnline) return;
+
+    setIsRetrying(true);
+    setError(null);
+
+    try {
+      await loginWithQrToken(qrToken);
+      navigate("/", { replace: true });
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "An unknown error occurred";
+      setError(
+        errorMessage.includes("Network Error") || !navigator.onLine
+          ? "Still unable to connect. Please check your internet connection."
+          : "Login failed. Please try scanning your QR code again."
+      );
+    } finally {
+      setIsRetrying(false);
+    }
+  };
 
   if (error) {
     return (
@@ -93,10 +143,42 @@ const QRTokenLogin: React.FC = () => {
         </div>
         <p>Redirecting to home page in a few seconds...</p>
         <div style={{ display: "flex", justifyContent: "center", gap: "15px" }}>
+          {!isOnline ? (
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                backgroundColor: "#ff9800",
+                color: "white",
+                border: "none",
+                padding: "10px 15px",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "16px",
+              }}
+            >
+              Check Connection
+            </button>
+          ) : (
+            <button
+              onClick={handleRetry}
+              disabled={isRetrying}
+              style={{
+                backgroundColor: isRetrying ? "#ccc" : "#4caf50",
+                color: "white",
+                border: "none",
+                padding: "10px 15px",
+                borderRadius: "4px",
+                cursor: isRetrying ? "not-allowed" : "pointer",
+                fontSize: "16px",
+              }}
+            >
+              {isRetrying ? "Retrying..." : "Try Again"}
+            </button>
+          )}
           <button
             onClick={() => navigate("/")}
             style={{
-              backgroundColor: "#4caf50",
+              backgroundColor: "#2196f3",
               color: "white",
               border: "none",
               padding: "10px 15px",
@@ -105,12 +187,12 @@ const QRTokenLogin: React.FC = () => {
               fontSize: "16px",
             }}
           >
-            Go to Home Page Now
+            Go to Home Page
           </button>
           <button
             onClick={() => setShowHelpModal(true)}
             style={{
-              backgroundColor: "#2196f3",
+              backgroundColor: "#9e9e9e",
               color: "white",
               border: "none",
               padding: "10px 15px",
