@@ -1,5 +1,5 @@
 import React from "react";
-import "../assets/timeline-alternative-1.css";
+// Styles now imported globally via main.tsx
 
 import img2022_1 from "../assets/images/story-2022-1.jpeg";
 import img2022_2 from "../assets/images/story-2022-2.jpeg";

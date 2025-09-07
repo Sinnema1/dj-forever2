@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import "../assets/countdown-enhanced.css";
+import React, { useState, useEffect } from "react";
+// Styles now imported globally via main.tsx
 
 const WEDDING_DATE = new Date("2026-11-08T16:00:00-07:00");
 

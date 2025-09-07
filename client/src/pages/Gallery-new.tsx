@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../assets/styles.css";
-import "../assets/swipeable-lightbox.css";
+// Styles now imported globally via main.tsx
 import SwipeableLightbox from "../components/SwipeableLightbox";
 import { LazyImage } from "../components/LazyImage";
 import { analytics } from "../utils/analytics";
