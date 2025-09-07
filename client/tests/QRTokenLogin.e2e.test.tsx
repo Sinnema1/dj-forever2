@@ -78,7 +78,9 @@ describe("QRTokenLogin", () => {
     );
 
     // Check for loading spinner (no text, just visual indicator)
-    const loadingSpinner = screen.getByRole('button', { name: /having trouble/i });
+    const loadingSpinner = screen.getByRole("button", {
+      name: /having trouble/i,
+    });
     expect(loadingSpinner).toBeInTheDocument();
 
     // Wait for navigation to be called (should redirect directly to home)

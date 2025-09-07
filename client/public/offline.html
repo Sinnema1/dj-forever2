@@ -106,7 +106,11 @@
         photo galleries, RSVP, and more!
       </p>
 
-      <button class="retry-button" id="retryButton" onclick="attemptReconnect()">
+      <button
+        class="retry-button"
+        id="retryButton"
+        onclick="attemptReconnect()"
+      >
         Try Again
       </button>
     </div>
@@ -118,9 +122,9 @@
 
       async function validateConnection() {
         try {
-          const response = await fetch('/manifest.json', { 
-            cache: 'no-cache',
-            signal: AbortSignal.timeout(5000)
+          const response = await fetch("/manifest.json", {
+            cache: "no-cache",
+            signal: AbortSignal.timeout(5000),
           });
           return response.ok;
         } catch (error) {
@@ -130,37 +134,37 @@
 
       async function attemptReconnect() {
         if (isReconnecting) return;
-        
+
         isReconnecting = true;
-        const button = document.getElementById('retryButton');
-        button.textContent = 'Checking Connection...';
+        const button = document.getElementById("retryButton");
+        button.textContent = "Checking Connection...";
         button.disabled = true;
 
         const isConnected = await validateConnection();
-        
+
         if (isConnected) {
-          button.textContent = 'Connected! Redirecting...';
+          button.textContent = "Connected! Redirecting...";
           // Small delay to show success state
           setTimeout(() => {
-            window.location.href = '/';
+            window.location.href = "/";
           }, 1000);
         } else {
           reconnectAttempts++;
           isReconnecting = false;
           button.disabled = false;
-          
+
           if (reconnectAttempts >= maxReconnectAttempts) {
-            button.textContent = 'Still Offline - Try Again';
+            button.textContent = "Still Offline - Try Again";
             // Show additional help after multiple failed attempts
             showOfflineHelp();
           } else {
-            button.textContent = 'Try Again';
+            button.textContent = "Try Again";
           }
         }
       }
 
       function showOfflineHelp() {
-        const helpText = document.createElement('p');
+        const helpText = document.createElement("p");
         helpText.style.cssText = `
           margin-top: 1rem; 
           padding: 1rem; 
@@ -175,27 +179,27 @@
           • Close and reopen this page<br>
           • Contact your network provider if issues persist
         `;
-        
-        const container = document.querySelector('.offline-container');
-        if (!container.querySelector('.offline-help')) {
-          helpText.className = 'offline-help';
+
+        const container = document.querySelector(".offline-container");
+        if (!container.querySelector(".offline-help")) {
+          helpText.className = "offline-help";
           container.appendChild(helpText);
         }
       }
 
       // Enhanced online detection
       window.addEventListener("online", async () => {
-        const button = document.getElementById('retryButton');
-        button.textContent = 'Connection Detected - Validating...';
-        
+        const button = document.getElementById("retryButton");
+        button.textContent = "Connection Detected - Validating...";
+
         const isConnected = await validateConnection();
         if (isConnected) {
-          button.textContent = 'Back Online! Redirecting...';
+          button.textContent = "Back Online! Redirecting...";
           setTimeout(() => {
-            window.location.href = '/';
+            window.location.href = "/";
           }, 1000);
         } else {
-          button.textContent = 'Connection Issues - Try Again';
+          button.textContent = "Connection Issues - Try Again";
         }
       });
 
