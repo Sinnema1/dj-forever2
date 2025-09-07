@@ -1,6 +1,39 @@
 // client/src/context/AuthContext.tsx
-import React, {
-  createContext,
+impor  // Initial load from storage
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const storedToken = localStorage.getItem(STORAGE_TOKEN_KEY);
+      const storedUser = safeParseUser(localStorage.getItem(STORAGE_USER_KEY));
+      
+      if (storedToken && storedUser) {
+        // Set user immediately for faster UI response
+        setToken(storedToken);
+        setUser(storedUser);
+        
+        // Validate token in background (optional - for extra security)
+        try {
+          // You could add a quick token validation query here
+          // const { data } = await validateToken(storedToken);
+          // if (!data.valid) throw new Error('Invalid token');
+        } catch (error) {
+          // Token is invalid, clear auth state
+          console.warn('Stored token validation failed, clearing auth state');
+          localStorage.removeItem(STORAGE_TOKEN_KEY);
+          localStorage.removeItem(STORAGE_USER_KEY);
+          setToken(null);
+          setUser(null);
+        }
+      } else {
+        // Clean up any partial/legacy state so UI doesn't get confused
+        localStorage.removeItem(STORAGE_TOKEN_KEY);
+        localStorage.removeItem(STORAGE_USER_KEY);
+      }
+      
+      setIsLoading(false);
+    };
+
+    initializeAuth();
+  }, []);reateContext,
   useContext,
   useState,
   useEffect,

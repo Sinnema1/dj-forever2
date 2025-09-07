@@ -11,10 +11,12 @@ import InvitedRoute from "./components/InvitedRoute";
 import PersonalizedWelcome from "./components/PersonalizedWelcome";
 import WelcomeModal from "./components/WelcomeModal";
 import ErrorBoundary from "./components/ErrorBoundary";
+import ConnectionStatus from "./components/ConnectionStatus";
 
 export default function App() {
   return (
     <ErrorBoundary>
+      <ConnectionStatus />
       <Navbar />
       <PersonalizedWelcome />
       <WelcomeModal />
