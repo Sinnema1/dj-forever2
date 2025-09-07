@@ -1,5 +1,5 @@
 import React, { useState, ReactNode } from "react";
-import "../assets/FAQ.css";
+// Styles now imported globally via main.tsx
 
 export interface FAQ {
   question: string;

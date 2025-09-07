@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "ts-node-dev src/server.ts",
+    "dev": "ts-node-dev --esm src/server.ts",
     "start": "node dist/server.js",
     "build": "tsc",
     "watch": "nodemon --watch src --ext ts,json --exec \"npm run build && npm run start\"",

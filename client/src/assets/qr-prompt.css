@@ -2,18 +2,22 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
+  min-height: 100vh; /* fill screen for consistent vertical centering */
   background-color: var(--color-cream);
   padding: 20px;
+  padding-top: calc(20px + env(safe-area-inset-top));
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  overscroll-behavior: contain; /* prevent rubber-band scroll behind content on iOS */
 }
 
 .qr-prompt-content {
-  max-width: 600px;
-  background: white;
+  width: min(600px, 100%);
+  background: var(--color-panel-cream); /* match app card/form background */
   padding: 40px;
-  border-radius: 8px;
+  border-radius: var(--radius);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
   text-align: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .qr-prompt-content h2 {
@@ -22,25 +26,26 @@
   font-size: 28px;
 }
 
-.qr-instructions {
+/* Scoped to avoid clashes with global .qr-instructions in styles.css */
+.qr-prompt-content .qr-instructions {
   margin: 30px 0;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.instruction-step {
+.qr-prompt-content .instruction-step {
   display: flex;
   align-items: center;
   text-align: left;
 }
 
-.step-number {
+.qr-prompt-content .step-number {
   width: 36px;
   height: 36px;
   border-radius: 50%;
   background-color: var(--color-sage);
-  color: white;
+  color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -49,7 +54,7 @@
   flex-shrink: 0;
 }
 
-.qr-help-text {
+.qr-prompt-content .qr-help-text {
   margin-top: 30px;
   font-style: italic;
   color: #666;
@@ -58,5 +63,12 @@
 @media (max-width: 768px) {
   .qr-prompt-content {
     padding: 25px;
+  }
+
+  /* Larger, touch-friendly step chip on mobile */
+  .qr-prompt-content .step-number {
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
   }
 }

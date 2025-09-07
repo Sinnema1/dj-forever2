@@ -1,6 +1,8 @@
 import { useAuth } from "../context/AuthContext";
 import CountdownTimer from "./CountdownTimer";
-import "../assets/styles.css";
+import React from "react";
+// Styles now imported globally via main.tsx
+import { analytics } from "../utils/analytics";
 import PersonalizedContent from "./PersonalizedContent";
 
 export default function HeroBanner() {
