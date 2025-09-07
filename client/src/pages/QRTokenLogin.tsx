@@ -32,10 +32,10 @@ const QRTokenLogin: React.FC = () => {
         // Small delay to ensure AuthContext state is updated
         await new Promise((resolve) => setTimeout(resolve, 100));
 
-        console.log("QRTokenLogin: Redirecting to success page");
+        console.log("QRTokenLogin: Redirecting directly to home");
 
-        // Redirect to success page instead of home
-        navigate("/login/success", { replace: true });
+        // Redirect directly to home - no success page needed
+        navigate("/", { replace: true });
       } catch (err) {
         // Provide more specific error messages based on the error
         const errorMessage =
@@ -132,15 +132,13 @@ const QRTokenLogin: React.FC = () => {
 
   return (
     <div style={{ textAlign: "center", marginTop: 80, padding: "0 20px" }}>
-      <h2>Logging you in...</h2>
-
-      {/* Loading spinner */}
+      {/* Minimal loading indicator - just show we're working */}
       <div
         style={{
-          margin: "30px auto",
-          width: "40px",
-          height: "40px",
-          border: "4px solid rgba(0, 0, 0, 0.1)",
+          margin: "50px auto",
+          width: "32px",
+          height: "32px",
+          border: "3px solid rgba(0, 0, 0, 0.1)",
           borderLeftColor: "#4caf50",
           borderRadius: "50%",
           animation: "spin 1s linear infinite",
@@ -153,22 +151,21 @@ const QRTokenLogin: React.FC = () => {
         }
       `}</style>
 
-      <p>If you are not redirected, please try scanning your QR code again.</p>
-
+      {/* Only show help if there's a delay */}
       <button
         onClick={() => setShowHelpModal(true)}
         style={{
           backgroundColor: "transparent",
-          color: "#2196f3",
-          border: "1px solid #2196f3",
-          padding: "8px 15px",
+          color: "#999",
+          border: "1px solid #ddd",
+          padding: "6px 12px",
           borderRadius: "4px",
           cursor: "pointer",
-          fontSize: "14px",
-          marginTop: "20px",
+          fontSize: "12px",
+          marginTop: "40px",
         }}
       >
-        Having trouble logging in?
+        Having trouble?
       </button>
 
       {showHelpModal && <QRHelpModal onClose={() => setShowHelpModal(false)} />}
