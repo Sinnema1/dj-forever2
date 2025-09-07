@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation } from "@apollo/client";
-import { LOGIN_WITH_QR_TOKEN } from "../features/auth/graphql/loginWithQrToken";
 import { useAuth } from "../context/AuthContext";
 import QRHelpModal from "../components/QRHelpModal";
 import { analytics } from "../utils/analytics";
 
 const QRTokenLogin: React.FC = () => {
   const { qrToken } = useParams<{ qrToken: string }>();
-  const [loginWithQrToken] = useMutation(LOGIN_WITH_QR_TOKEN);
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, loginWithQrToken, user } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [showHelpModal, setShowHelpModal] = useState(false);
@@ -22,15 +19,20 @@ const QRTokenLogin: React.FC = () => {
     }
     (async () => {
       try {
-        const { data } = await loginWithQrToken({ variables: { qrToken } });
-        const authToken = data?.loginWithQrToken?.token;
-        const authUser = data?.loginWithQrToken?.user;
-        if (!authToken || !authUser) throw new Error("Invalid QR login");
-        localStorage.setItem("id_token", authToken);
-        localStorage.setItem("user", JSON.stringify(authUser));
+        console.log("QRTokenLogin: Starting login with token:", qrToken);
+
+        // Use AuthContext's loginWithQrToken instead of direct mutation
+        await loginWithQrToken(qrToken);
+
+        console.log("QRTokenLogin: Login successful, user state:", user);
 
         // Track successful QR login
-        analytics.trackQRLogin(authUser.id);
+        analytics.trackQRLogin(qrToken);
+
+        // Small delay to ensure AuthContext state is updated
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        console.log("QRTokenLogin: Redirecting to success page");
 
         // Redirect to success page instead of home
         navigate("/login/success", { replace: true });
