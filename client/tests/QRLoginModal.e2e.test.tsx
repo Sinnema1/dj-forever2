@@ -46,10 +46,15 @@ describe("QRLoginModal", () => {
       </MockedProvider>
     );
     // Modal renders and shows instructions
-    expect(screen.getByText(/use your phone's camera app to scan/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/use your phone's camera app to scan/i)
+    ).toBeInTheDocument();
     // Wait for login to complete and success callback to be called
-    await waitFor(() => {
-      expect(onLoginSuccess).toHaveBeenCalled();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(onLoginSuccess).toHaveBeenCalled();
+      },
+      { timeout: 3000 }
+    );
   });
 });
