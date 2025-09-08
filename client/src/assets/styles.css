@@ -512,7 +512,7 @@ small {
     background-attachment: scroll;
     /* Ensure better mobile performance */
     background-size: cover;
-    background-position: center center;
+    background-position: 75% center; /* More right focus for tablets */
   }
   .hero-content {
     max-width: 95%;
@@ -532,9 +532,9 @@ small {
 @media (max-width: 768px) {
   .hero {
     min-height: 100vh;
-    /* Enhanced mobile background scaling */
+    /* Enhanced mobile background scaling - focus on right side where couple is positioned */
     background-size: cover;
-    background-position: center center;
+    background-position: 85% center; /* More focus on right side to show full couple */
     background-repeat: no-repeat;
     /* Prevent scrolling issues on iOS */
     -webkit-background-size: cover;
@@ -567,7 +567,7 @@ small {
   .hero {
     /* Further mobile optimization for very small screens */
     background-size: cover;
-    background-position: center center;
+    background-position: 90% center; /* Maximum focus on right side for smallest screens */
     /* Ensure consistent height on small screens */
     min-height: 100vh;
     height: auto;
