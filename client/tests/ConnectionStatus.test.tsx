@@ -7,7 +7,7 @@ import ConnectionStatus from "../src/components/ConnectionStatus";
 const mockNetworkStatus = {
   isOnline: true,
   isConnecting: false,
-  connectionQuality: 'good' as const,
+  connectionQuality: "good" as const,
   lastDisconnected: null,
   reconnectAttempts: 0,
 };
@@ -22,7 +22,7 @@ describe("ConnectionStatus", () => {
     Object.assign(mockNetworkStatus, {
       isOnline: true,
       isConnecting: false,
-      connectionQuality: 'good',
+      connectionQuality: "good",
       lastDisconnected: null,
       reconnectAttempts: 0,
     });
@@ -37,12 +37,12 @@ describe("ConnectionStatus", () => {
     await act(async () => {
       Object.assign(mockNetworkStatus, {
         isOnline: true,
-        connectionQuality: 'good',
+        connectionQuality: "good",
       });
     });
 
     render(<ConnectionStatus showWhenOnline={true} />);
-    
+
     expect(screen.getByText(/connected/i)).toBeInTheDocument();
     expect(screen.getByText("✅")).toBeInTheDocument();
   });
@@ -52,12 +52,12 @@ describe("ConnectionStatus", () => {
       Object.assign(mockNetworkStatus, {
         isOnline: false,
         isConnecting: false,
-        connectionQuality: 'offline',
+        connectionQuality: "offline",
       });
     });
 
     render(<ConnectionStatus />);
-    
+
     expect(screen.getByText(/you're offline/i)).toBeInTheDocument();
     expect(screen.getByText("📵")).toBeInTheDocument();
   });
@@ -67,12 +67,12 @@ describe("ConnectionStatus", () => {
       Object.assign(mockNetworkStatus, {
         isOnline: false,
         isConnecting: true,
-        connectionQuality: 'offline',
+        connectionQuality: "offline",
       });
     });
 
     render(<ConnectionStatus />);
-    
+
     expect(screen.getByText(/reconnecting/i)).toBeInTheDocument();
     expect(screen.getByText("🔄")).toBeInTheDocument();
   });
@@ -82,12 +82,12 @@ describe("ConnectionStatus", () => {
       Object.assign(mockNetworkStatus, {
         isOnline: true,
         isConnecting: false,
-        connectionQuality: 'slow',
+        connectionQuality: "slow",
       });
     });
 
     render(<ConnectionStatus showWhenOnline={true} />);
-    
+
     expect(screen.getByText(/slow connection/i)).toBeInTheDocument();
     expect(screen.getByText("🐌")).toBeInTheDocument();
   });
@@ -97,12 +97,12 @@ describe("ConnectionStatus", () => {
       Object.assign(mockNetworkStatus, {
         isOnline: true,
         isConnecting: true,
-        connectionQuality: 'good',
+        connectionQuality: "good",
       });
     });
 
     render(<ConnectionStatus />);
-    
+
     expect(screen.getByText(/reconnecting/i)).toBeInTheDocument();
     expect(screen.getByText("🔄")).toBeInTheDocument();
   });
@@ -113,38 +113,44 @@ describe("ConnectionStatus", () => {
       Object.assign(mockNetworkStatus, {
         isOnline: false,
         isConnecting: false,
-        connectionQuality: 'offline',
+        connectionQuality: "offline",
       });
     });
 
     const { rerender } = render(<ConnectionStatus />);
-    let statusElement = screen.getByText(/you're offline/i).closest('.connection-status');
-    expect(statusElement).toHaveStyle('background-color: rgb(244, 67, 54)'); // Red for offline
+    let statusElement = screen
+      .getByText(/you're offline/i)
+      .closest(".connection-status");
+    expect(statusElement).toHaveStyle("background-color: rgb(244, 67, 54)"); // Red for offline
 
-    // Test slow connection state  
+    // Test slow connection state
     await act(async () => {
       Object.assign(mockNetworkStatus, {
         isOnline: true,
         isConnecting: false,
-        connectionQuality: 'slow',
+        connectionQuality: "slow",
       });
     });
 
     rerender(<ConnectionStatus showWhenOnline={true} />);
-    statusElement = screen.getByText(/slow connection/i).closest('.connection-status');
-    expect(statusElement).toHaveStyle('background-color: rgb(255, 152, 0)'); // Orange for slow
+    statusElement = screen
+      .getByText(/slow connection/i)
+      .closest(".connection-status");
+    expect(statusElement).toHaveStyle("background-color: rgb(255, 152, 0)"); // Orange for slow
 
     // Test connected state
     await act(async () => {
       Object.assign(mockNetworkStatus, {
         isOnline: true,
         isConnecting: false,
-        connectionQuality: 'good',
+        connectionQuality: "good",
       });
     });
 
     rerender(<ConnectionStatus showWhenOnline={true} />);
-    statusElement = screen.getByText(/connected/i).closest('.connection-status');
-    expect(statusElement).toHaveStyle('background-color: rgb(76, 175, 80)'); // Green for good
+    statusElement = screen
+      .getByText(/connected/i)
+      .closest(".connection-status");
+    expect(statusElement).toHaveStyle("background-color: rgb(76, 175, 80)"); // Green for good
   });
 });
