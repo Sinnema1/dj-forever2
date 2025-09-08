@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, waitFor, act } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import { act } from "react";
 import userEvent from "@testing-library/user-event";
 import RSVPForm from "../src/components/RSVP/RSVPForm";
 import { AuthProvider } from "../src/context/AuthContext";
@@ -12,6 +13,7 @@ const initialRSVPMock = {
   result: { data: { getRSVP: null } },
 };
 
+// Updated mock to match current mutation structure exactly
 const createdRSVP = {
   _id: "mock-id",
   userId: "mock-user",
@@ -36,16 +38,13 @@ const getRSVPMockAfterCreate = {
   result: { data: { getRSVP: createdRSVP } },
 };
 
+// Fixed mock to match the actual submission structure from RSVPForm.tsx
 const createRSVPMock = {
   request: {
     query: CREATE_RSVP,
     variables: {
       input: {
-        fullName: "Test User",
         attending: "YES",
-        mealPreference: "vegetarian",
-        allergies: "",
-        additionalNotes: "",
         guestCount: 1,
         guests: [
           {
@@ -54,29 +53,17 @@ const createRSVPMock = {
             allergies: "",
           },
         ],
+        additionalNotes: "",
+        // Legacy fields synchronized with first guest for backward compatibility
+        fullName: "Test User",
+        mealPreference: "vegetarian",
+        allergies: "",
       },
     },
   },
   result: {
     data: {
-      createRSVP: {
-        _id: "mock-id",
-        userId: "mock-user",
-        attending: "YES",
-        guestCount: 1,
-        guests: [
-          {
-            fullName: "Test User",
-            mealPreference: "vegetarian",
-            allergies: "",
-          },
-        ],
-        additionalNotes: "",
-        // Legacy fields for backward compatibility
-        fullName: "Test User",
-        mealPreference: "vegetarian",
-        allergies: "",
-      },
+      createRSVP: createdRSVP,
     },
   },
 };
@@ -96,25 +83,27 @@ function renderRSVPForm() {
 
 describe("RSVPForm integration", () => {
   it("renders and submits RSVP form", async () => {
-    renderRSVPForm();
-    // Log initial DOM
-    // eslint-disable-next-line no-console
-    console.log("Initial DOM:", screen.debug());
+    const user = userEvent.setup();
 
+    await act(async () => {
+      renderRSVPForm();
+    });
+
+    // Find form elements
     const fullNameInput = screen.getByLabelText(
       /full name/i
     ) as HTMLInputElement;
-
-    // Find the attendance radio button for "YES"
     const attendingYesRadio = screen.getByDisplayValue(
       "YES"
     ) as HTMLInputElement;
 
-    // Wait for the form to be fully rendered and then find the meal preference field
-    await userEvent.type(fullNameInput, "Test User");
-    await userEvent.click(attendingYesRadio);
+    // Fill out the form within act() to avoid warnings
+    await act(async () => {
+      await user.type(fullNameInput, "Test User");
+      await user.click(attendingYesRadio);
+    });
 
-    // Wait for the conditional fields to appear
+    // Wait for conditional fields to appear
     await waitFor(() => {
       expect(screen.getByLabelText(/meal preference/i)).toBeInTheDocument();
     });
@@ -123,35 +112,20 @@ describe("RSVPForm integration", () => {
       /meal preference/i
     ) as HTMLSelectElement;
 
-    // eslint-disable-next-line no-console
-    console.log("Before typing:", {
-      fullName: fullNameInput.value,
-      attending: attendingYesRadio.checked,
-      mealPref: mealPrefSelect.value,
-    });
-
-    await userEvent.selectOptions(mealPrefSelect, "vegetarian");
-
-    // eslint-disable-next-line no-console
-    console.log("After typing:", {
-      fullName: fullNameInput.value,
-      attending: attendingYesRadio.checked,
-      mealPref: mealPrefSelect.value,
-    });
-
-    // Log DOM before submit
-    // eslint-disable-next-line no-console
-    console.log("DOM before submit:", screen.debug());
-
+    // Complete form filling
     await act(async () => {
-      await userEvent.click(
-        screen.getByRole("button", { name: /submit rsvp/i })
-      );
+      await user.selectOptions(mealPrefSelect, "vegetarian");
     });
 
-    // Log DOM after submit
-    // eslint-disable-next-line no-console
-    console.log("DOM after submit:", screen.debug());
+    // Verify form state
+    expect(fullNameInput.value).toBe("Test User");
+    expect(attendingYesRadio.checked).toBe(true);
+    expect(mealPrefSelect.value).toBe("vegetarian");
+
+    // Submit the form
+    await act(async () => {
+      await user.click(screen.getByRole("button", { name: /submit rsvp/i }));
+    });
 
     // Wait for the confirmation screen to appear
     await waitFor(() => {
@@ -160,9 +134,11 @@ describe("RSVPForm integration", () => {
       ).toBeInTheDocument();
     });
 
-    // Also check that the guest name appears in the confirmation
+    // Verify confirmation details
     await waitFor(() => {
       expect(screen.getByText(/Test User/i)).toBeInTheDocument();
+      expect(screen.getByText(/Will be attending/i)).toBeInTheDocument();
+      expect(screen.getByText(/1 person/i)).toBeInTheDocument();
     });
   });
 });
