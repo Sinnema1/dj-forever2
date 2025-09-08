@@ -401,6 +401,10 @@ small {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  /* Enhanced mobile compatibility */
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
 }
 .hero::before {
   content: "";
@@ -506,6 +510,9 @@ small {
 @media (max-width: 1024px) {
   .hero {
     background-attachment: scroll;
+    /* Ensure better mobile performance */
+    background-size: cover;
+    background-position: center center;
   }
   .hero-content {
     max-width: 95%;
@@ -525,7 +532,12 @@ small {
 @media (max-width: 768px) {
   .hero {
     min-height: 100vh;
-    background-position: center 30%;
+    /* Enhanced mobile background scaling */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    /* Prevent scrolling issues on iOS */
+    -webkit-background-size: cover;
   }
   .hero-content {
     padding: var(--spacing-5) var(--spacing-4);
@@ -552,6 +564,14 @@ small {
   }
 }
 @media (max-width: 480px) {
+  .hero {
+    /* Further mobile optimization for very small screens */
+    background-size: cover;
+    background-position: center center;
+    /* Ensure consistent height on small screens */
+    min-height: 100vh;
+    height: auto;
+  }
   .hero-content {
     margin: 0 var(--spacing-2);
     padding: var(--spacing-4) var(--spacing-3);
