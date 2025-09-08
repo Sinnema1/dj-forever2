@@ -5,14 +5,26 @@ interface LazyImageProps {
   alt: string;
   className?: string;
   onClick?: () => void;
+  loading?: "lazy" | "eager";
+  priority?: boolean; // For hero images that should load immediately
 }
 
-export function LazyImage({ src, alt, className, onClick }: LazyImageProps) {
+export function LazyImage({
+  src,
+  alt,
+  className,
+  onClick,
+  loading = "lazy",
+  priority = false,
+}: LazyImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
+  const [isInView, setIsInView] = useState(priority); // Load immediately if priority
+  const [hasError, setHasError] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (priority) return; // Skip intersection observer for priority images
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -20,23 +32,45 @@ export function LazyImage({ src, alt, className, onClick }: LazyImageProps) {
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      {
+        threshold: 0.1,
+        rootMargin: "100px", // Start loading 100px before entering viewport
+      }
     );
 
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
+    const container = containerRef.current;
+    if (container) {
+      observer.observe(container);
     }
 
-    return () => observer.disconnect();
-  }, []);
+    return () => {
+      observer.disconnect();
+    };
+  }, [priority]);
+
+  // Fallback: if intersection observer fails, load after a delay
+  useEffect(() => {
+    if (!priority && !isInView) {
+      const fallbackTimer = setTimeout(() => {
+        console.log("Fallback loading triggered for:", src);
+        setIsInView(true);
+      }, 2000); // Load after 2 seconds if intersection observer hasn't triggered
+
+      return () => clearTimeout(fallbackTimer);
+    }
+  }, [priority, isInView, src]);
 
   return (
     <div
-      ref={imgRef}
+      ref={containerRef}
       className={`lazy-image-container ${className || ""}`}
       onClick={onClick}
+      style={{
+        minHeight: "200px", // Ensure container has height for intersection observer
+        display: "block",
+      }}
     >
-      {isInView && (
+      {isInView && !hasError && (
         <>
           {!isLoaded && (
             <div className="image-placeholder">
@@ -48,9 +82,20 @@ export function LazyImage({ src, alt, className, onClick }: LazyImageProps) {
             alt={alt}
             className={`lazy-image ${isLoaded ? "loaded" : "loading"}`}
             onLoad={() => setIsLoaded(true)}
+            onError={() => {
+              setHasError(true);
+              console.warn(`Failed to load image: ${src}`);
+            }}
+            loading={loading}
             style={{ display: isLoaded ? "block" : "none" }}
           />
         </>
+      )}
+      {hasError && (
+        <div className="image-error">
+          <span>📷</span>
+          <p>Image unavailable</p>
+        </div>
       )}
     </div>
   );

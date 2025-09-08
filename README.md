@@ -109,20 +109,18 @@ The wedding website provides a personalized experience for guests:
 
 ### High Priority
 
-- [ ] **Fix Mobile Hero Background Scaling** - Hero background image displays well on desktop but doesn't scale properly on mobile devices. Need to optimize background-size, background-position, or consider responsive image solutions
-- [ ] **Fix RSVP Test Mocks** - Update test mocks to match current RSVP mutation structure (currently has warnings but tests pass)
+- [x] **Fix Mobile Hero Background Scaling** - Hero background image displays well on desktop but doesn't scale properly on mobile devices. Need to optimize background-size, background-position, or consider responsive image solutions
+- [x] **Fix RSVP Test Mocks** - Update test mocks to match current RSVP mutation structure (currently has warnings but tests pass)
 
 ### Medium Priority
 
-- [ ] **Desktop QR Code Scanner Enhancement** - Current QR scanner works on mobile but desktop scanning needs improvement. Consider adding manual token entry fallback for desktop users or enhancing webcam-based scanning reliability
-
-### Medium Priority
-
-- [ ] **Performance Optimization** - Consider image compression for faster loading (~18MB build size)
+- [x] **Performance Optimization** - Consider image compression for faster loading (~18MB build size) → **COMPLETED: Reduced bundle from 18MB to 9MB (50% reduction)**
+- [ ] **Mobile Photo Viewing UX Enhancement** - Improve photo gallery and lightbox experience on mobile devices. Consider better touch gestures, zoom functionality, swipe navigation, and optimized image sizing for mobile viewports
 - [ ] **Accessibility Review** - Screen reader testing for countdown timer and focus management
 
 ### Low Priority
 
+- [ ] **Desktop QR Code Scanner Enhancement** - Current QR scanner works on mobile but desktop scanning needs improvement. Consider adding manual token entry fallback for desktop users or enhancing webcam-based scanning reliability
 - [ ] **Documentation Updates** - Update deployment instructions with final configuration
 - [ ] **Enhanced Analytics** - Add performance monitoring if desired
 

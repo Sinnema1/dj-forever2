@@ -37,6 +37,8 @@ const Gallery: React.FC = () => {
             src={src}
             alt={`Gallery image ${idx + 1}`}
             onClick={() => openLightbox(idx)}
+            loading="eager" // Load gallery thumbnails eagerly
+            priority={idx < 6} // Load first 6 images immediately
           />
         ))}
       </div>

@@ -3,11 +3,19 @@ import react from "@vitejs/plugin-react";
 import { imagetools } from "vite-imagetools";
 import compression from "vite-plugin-compression";
 import { VitePWA } from "vite-plugin-pwa";
+import viteImagemin from "vite-plugin-imagemin";
 
 export default defineConfig({
   plugins: [
     react(),
     imagetools(),
+    // Image optimization for production builds
+    viteImagemin({
+      gifsicle: { optimizationLevel: 7 },
+      mozjpeg: { quality: 85 }, // Reduce quality from default 90 to 85
+      pngquant: { quality: [0.6, 0.8] },
+      webp: { quality: 85 }, // Generate WebP versions
+    }),
     compression({
       algorithm: "gzip",
       ext: ".gz",
