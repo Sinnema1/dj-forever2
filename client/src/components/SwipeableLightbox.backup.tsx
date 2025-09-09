@@ -1,6 +1,50 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 
+// TODO: Desktop UX Enhancement for Photo Gallery Lightbox
+// PRIORITY: Medium | IMPACT: User Experience | EFFORT: ~4-6 hours
+// DESCRIPTION: Improve desktop-specific interactions and visual design for the photo gallery lightbox
+//
+// SPECIFIC IMPROVEMENTS NEEDED:
+// 1. **Desktop Navigation Controls**
+//    - Add larger, more prominent left/right arrow buttons for desktop users
+//    - Position arrows outside image area (not overlapping) for better visibility
+//    - Add subtle hover effects and better visual hierarchy
+//
+// 2. **Keyboard Navigation Enhancements**
+//    - Add visual indicators for keyboard shortcuts (Esc, ←, →)
+//    - Consider adding number key support (1-9) for direct image access
+//    - Add focus indicators for accessibility compliance
+//
+// 3. **Desktop-Optimized Layout**
+//    - Optimize image sizing for larger screens (currently mobile-first)
+//    - Consider side-by-side thumbnail strip for quick navigation
+//    - Implement zoom functionality for high-resolution images
+//
+// 4. **Visual Polish**
+//    - Add smooth transitions between images with directional animations
+//    - Enhance close button styling and positioning for desktop
+//    - Consider adding image metadata display (filename, dimensions, etc.)
+//    - Implement loading states with skeleton screens
+//
+// 5. **Performance Optimization**
+//    - Add image preloading for next/previous images
+//    - Implement lazy loading for thumbnail strip
+//    - Consider adding image optimization based on screen size
+//
+// ACCEPTANCE CRITERIA:
+// - Desktop users should have clear, prominent navigation controls
+// - Keyboard navigation should be intuitive and well-documented
+// - Image viewing should feel optimized for larger screens
+// - Maintain existing mobile touch functionality
+// - All interactions should have smooth, professional animations
+//
+// TECHNICAL CONSIDERATIONS:
+// - Use CSS media queries to differentiate desktop vs mobile styles
+// - Consider implementing separate desktop/mobile interaction handlers
+// - Ensure accessibility standards are maintained across all screen sizes
+// - Test across different desktop screen sizes and browsers
+
 interface LightboxModalProps {
   images: string[];
   initialIndex: number;
@@ -21,7 +65,6 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
   const [panY, setPanY] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
   const [lastTap, setLastTap] = useState(0);
-  const [showHints, setShowHints] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -53,63 +96,54 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
   };
 
   // Double tap to zoom functionality
-  const handleDoubleTap = useCallback(
-    (e: React.TouchEvent) => {
-      const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap;
-
-      if (tapLength < 500 && tapLength > 0) {
-        e.preventDefault();
-
-        if (isZoomed) {
-          resetZoom();
-        } else {
-          const rect = (e.target as HTMLElement).getBoundingClientRect();
-          const x = e.touches[0].clientX - rect.left;
-          const y = e.touches[0].clientY - rect.top;
-
-          // Calculate pan to center the tap point
-          const centerX = rect.width / 2;
-          const centerY = rect.height / 2;
-          const newPanX = (centerX - x) * 1.5;
-          const newPanY = (centerY - y) * 1.5;
-
-          setScale(2.5);
-          setPanX(newPanX);
-          setPanY(newPanY);
-          setIsZoomed(true);
-        }
+  const handleDoubleTap = useCallback((e: React.TouchEvent) => {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    
+    if (tapLength < 500 && tapLength > 0) {
+      e.preventDefault();
+      
+      if (isZoomed) {
+        resetZoom();
+      } else {
+        const rect = (e.target as HTMLElement).getBoundingClientRect();
+        const x = e.touches[0].clientX - rect.left;
+        const y = e.touches[0].clientY - rect.top;
+        
+        // Calculate pan to center the tap point
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const newPanX = (centerX - x) * 1.5;
+        const newPanY = (centerY - y) * 1.5;
+        
+        setScale(2.5);
+        setPanX(newPanX);
+        setPanY(newPanY);
+        setIsZoomed(true);
       }
-      setLastTap(currentTime);
-    },
-    [lastTap, isZoomed, resetZoom]
-  );
+    }
+    setLastTap(currentTime);
+  }, [lastTap, isZoomed, resetZoom]);
 
   // Enhanced touch handling for zoom and pan
   const onTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
       setTouchEnd(null);
       setTouchStart(e.targetTouches[0].clientX);
-
-      // Show navigation hints briefly on first touch (mobile)
-      if (!showHints) {
-        setShowHints(true);
-        setTimeout(() => setShowHints(false), 2000);
-      }
     }
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
       setTouchEnd(e.targetTouches[0].clientX);
-
+      
       // If zoomed, allow panning
       if (isZoomed) {
         e.preventDefault();
         const deltaX = e.targetTouches[0].clientX - (touchStart || 0);
         const deltaY = e.targetTouches[0].clientY - (touchStart || 0);
-        setPanX((prev) => prev + deltaX * 0.5);
-        setPanY((prev) => prev + deltaY * 0.5);
+        setPanX(prev => prev + deltaX * 0.5);
+        setPanY(prev => prev + deltaY * 0.5);
       }
     }
   };
@@ -145,7 +179,7 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
   useEffect(() => {
     // Save current scroll position
     const scrollY = window.scrollY;
-
+    
     // Prevent body scroll
     document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
@@ -158,22 +192,15 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
       document.body.style.position = "unset";
       document.body.style.top = "unset";
       document.body.style.width = "unset";
-
-      // Restore scroll position immediately without animation
-      requestAnimationFrame(() => {
-        window.scrollTo({
-          top: scrollY,
-          left: 0,
-          behavior: "instant",
-        });
-      });
+      
+      // Restore scroll position
+      window.scrollTo(0, scrollY);
     };
   }, []);
 
   // Reset zoom when image changes
   useEffect(() => {
     resetZoom();
-    setShowHints(false); // Reset hint visibility when image changes
   }, [current, resetZoom]);
 
   // Create portal element to render modal at body level
@@ -204,25 +231,18 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
             onTouchStart={handleDoubleTap}
             style={{
               transform: `scale(${scale}) translate(${panX}px, ${panY}px)`,
-              transformOrigin: "center center",
-              transition:
-                isTransitioning || !isZoomed ? "transform 0.3s ease" : "none",
+              transformOrigin: 'center center',
+              transition: isTransitioning || !isZoomed ? 'transform 0.3s ease' : 'none',
             }}
           />
 
           {/* Touch navigation hints - only show when not zoomed */}
           {!isZoomed && (
             <>
-              <div
-                className={`swipe-hint left ${showHints ? "show-hint" : ""}`}
-                onClick={prevImage}
-              >
+              <div className="swipe-hint left" onClick={prevImage}>
                 <span>‹</span>
               </div>
-              <div
-                className={`swipe-hint right ${showHints ? "show-hint" : ""}`}
-                onClick={nextImage}
-              >
+              <div className="swipe-hint right" onClick={nextImage}>
                 <span>›</span>
               </div>
             </>
@@ -234,6 +254,30 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
               <span>Tap to reset zoom</span>
             </div>
           )}
+        </div>
+
+        <div className="lightbox-controls">
+          <button
+            className="nav-button prev"
+            onClick={prevImage}
+            disabled={isTransitioning}
+            aria-label="Previous image"
+          >
+            ‹
+          </button>
+
+          <div className="image-counter">
+            {current + 1} / {images.length}
+          </div>
+
+          <button
+            className="nav-button next"
+            onClick={nextImage}
+            disabled={isTransitioning}
+            aria-label="Next image"
+          >
+            ›
+          </button>
         </div>
       </div>
     </div>

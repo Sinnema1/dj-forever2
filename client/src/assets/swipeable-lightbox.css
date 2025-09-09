@@ -10,7 +10,7 @@
   max-width: none !important;
   max-height: none !important;
   margin: 0 !important;
-  padding: 20px !important;
+  padding: 0 !important;
   border: none !important;
   outline: none !important;
   transform: none !important;
@@ -23,6 +23,9 @@
   animation: fadeIn 0.3s ease;
   box-sizing: border-box;
   overflow: hidden;
+  /* Prevent iOS bounce scrolling */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
 
 .lightbox-container {
@@ -36,31 +39,41 @@
   align-items: center;
   justify-content: center;
   margin: 0;
-  padding: 60px 20px 20px;
+  padding: 0;
   box-sizing: border-box;
+  /* Safe area for notched devices */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 .lightbox-close {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.8);
   border: none;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   font-size: 24px;
-  color: #333;
+  color: white;
   z-index: 2001;
   transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  /* Ensure it's tappable on mobile */
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
 }
 
-.lightbox-close:hover {
+.lightbox-close:hover,
+.lightbox-close:active {
   background: rgba(0, 0, 0, 0.9);
   transform: scale(1.1);
 }
@@ -74,8 +87,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  touch-action: pan-y pinch-zoom;
-  margin-bottom: 20px;
+  touch-action: none; /* Prevent default touch behaviors for zoom/pan */
+  overflow: hidden; /* Contain zoomed images */
 }
 
 /* Main image styling */
@@ -85,8 +98,22 @@
   width: auto;
   height: auto;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 4px;
   transition: transform 0.3s ease;
+  cursor: grab;
+  /* Prevent image selection/drag */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+.lightbox-image.zoomed {
+  cursor: grab;
+}
+
+.lightbox-image.zoomed:active {
+  cursor: grabbing;
 }
 
 .lightbox-content {
@@ -112,186 +139,131 @@
 .swipe-hint {
   position: absolute;
   top: 0;
-  bottom: 0;
-  width: 25%;
+  bottom: 0; /* Full height now that controls are gone */
+  width: 30%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.1), transparent);
   cursor: pointer;
   opacity: 0;
   transition: all 0.3s ease;
   user-select: none;
   z-index: 10;
+  /* Better touch targets */
+  min-width: 60px;
+  touch-action: manipulation;
 }
 
 .swipe-hint.left {
   left: 0;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.2), transparent);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.3), transparent);
 }
 
 .swipe-hint.right {
   right: 0;
-  background: linear-gradient(to left, rgba(0, 0, 0, 0.2), transparent);
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.3), transparent);
 }
 
 .swipe-hint span {
   color: white;
-  font-size: 3rem;
+  font-size: 2.5rem;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
   pointer-events: none;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(5px);
+  font-weight: bold;
 }
 
+/* Show hints on interaction */
+.lightbox-image-container:active .swipe-hint,
 .lightbox-image-container:hover .swipe-hint {
   opacity: 0.8;
 }
 
-.swipe-hint:hover {
+.swipe-hint:active {
   opacity: 1 !important;
+  transform: scale(1.1);
 }
 
-.lightbox-controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 500px;
-  padding: 0 var(--spacing-4);
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 25px;
-  backdrop-filter: blur(10px);
-  margin-top: auto;
-  margin-bottom: var(--spacing-4);
-}
-
-.nav-button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* Zoom indicator */
+.zoom-indicator {
+  position: absolute;
+  bottom: 40px; /* Closer to bottom since no controls */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
   color: white;
-  padding: var(--spacing-3) var(--spacing-5);
+  padding: 8px 16px;
   border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: var(--font-md);
-  font-weight: 500;
-  min-width: 90px;
-  backdrop-filter: blur(5px);
-}
-
-.nav-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-2px);
-}
-
-.nav-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.image-counter {
-  color: white;
-  font-size: var(--font-lg);
-  font-weight: 600;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-  padding: var(--spacing-2) var(--spacing-4);
-}
-
-.lightbox-indicators {
-  display: flex;
-  gap: var(--spacing-2);
-  margin-top: var(--spacing-3);
-  max-width: 90vw;
-  overflow-x: auto;
-  padding: var(--spacing-2);
-}
-
-.indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  border: none;
+  font-size: 14px;
+  z-index: 15;
   cursor: pointer;
   transition: all 0.2s ease;
-  flex-shrink: 0;
+  backdrop-filter: blur(5px);
+  touch-action: manipulation;
 }
 
-.indicator.active {
-  background: white;
-  transform: scale(1.2);
-}
-
-.indicator:hover {
-  background: rgba(255, 255, 255, 0.7);
+.zoom-indicator:active {
+  transform: translateX(-50%) scale(0.95);
 }
 
 /* Mobile optimizations */
 @media (max-width: 768px) {
   .lightbox-overlay {
-    padding: 10px;
+    padding: 0;
   }
 
   .lightbox-container {
-    max-height: 95vh;
+    padding-top: max(10px, env(safe-area-inset-top));
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
   }
 
   .lightbox-close {
-    top: 15px;
-    right: 15px;
+    top: max(15px, env(safe-area-inset-top, 15px));
+    right: max(15px, env(safe-area-inset-right, 15px));
     width: 40px;
     height: 40px;
-    font-size: 1.8rem;
+    font-size: 20px;
   }
 
-  .lightbox-image-container {
-    margin-bottom: 15px;
-  }
-
-  .lightbox-controls {
-    margin-bottom: var(--spacing-2);
-    max-width: 90vw;
-    padding: var(--spacing-2) var(--spacing-3);
-  }
-
-  .nav-button {
-    min-width: 70px;
-    padding: var(--spacing-2) var(--spacing-3);
-    font-size: var(--font-sm);
-  }
-
-  .image-counter {
-    font-size: var(--font-md);
-    padding: var(--spacing-2) var(--spacing-3);
-  }
+  /* No margin needed since controls are removed */
 
   .swipe-hint {
-    width: 35%;
-    opacity: 0.4; /* Always show on mobile */
+    width: 30%;
+    opacity: 0; /* Hidden by default on mobile to prevent face overlap */
+  }
+
+  /* Show arrows briefly when user taps the image */
+  .lightbox-image-container:active .swipe-hint,
+  .swipe-hint.show-hint {
+    opacity: 0.6;
   }
 
   .swipe-hint span {
-    font-size: 2.5rem;
-    width: 50px;
-    height: 50px;
+    font-size: 1.8rem;
+    width: 40px;
+    height: 40px;
   }
 
-  .lightbox-indicators {
-    margin-top: var(--spacing-3);
-    padding: var(--spacing-2);
+  .zoom-indicator {
+    bottom: 40px;
+    font-size: 12px;
+    padding: 6px 12px;
   }
 
-  .indicator {
-    width: 10px;
-    height: 10px;
+  /* Landscape mobile adjustments */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .zoom-indicator {
+      bottom: 20px;
+    }
   }
 }
 
@@ -300,20 +272,6 @@
   .lightbox-container {
     max-width: 85vw;
     max-height: 85vh;
-  }
-
-  .lightbox-controls {
-    max-width: 600px;
-  }
-
-  .nav-button {
-    min-width: 120px;
-    padding: var(--spacing-4) var(--spacing-6);
-    font-size: var(--font-lg);
-  }
-
-  .image-counter {
-    font-size: var(--font-xl);
   }
 }
 
@@ -326,19 +284,54 @@
   .lightbox-overlay {
     animation: none;
   }
+
+  .swipe-hint,
+  .zoom-indicator {
+    transition: none;
+  }
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(10px);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* Loading state */
 .lightbox-image[src=""] {
-  background: var(--color-sage-20);
+  background: linear-gradient(
+    135deg,
+    var(--color-sage-20, #e5e7e9) 0%,
+    var(--color-sage-30, #d1d5db) 100%
+  );
   min-width: 200px;
   min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
 }
 
 .lightbox-image[src=""]:after {
   content: "Loading...";
-  color: var(--color-charcoal);
+  color: var(--color-charcoal, #374151);
+  font-size: 16px;
+  font-weight: 500;
 }
