@@ -54,14 +54,30 @@
   }
 
   /* Gallery touch improvements */
-  .gallery-grid img {
+  .gallery-grid img,
+  .lazy-image-container {
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
     touch-action: manipulation;
+    /* Prevent image selection/drag on mobile */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
   }
 
-  .gallery-grid img:active {
+  .gallery-grid img:active,
+  .lazy-image-container:active {
     transform: scale(0.95);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Improve tap targets for gallery */
+  .lazy-image-container {
+    min-height: 44px; /* Ensure minimum touch target size */
+    min-width: 44px;
   }
 
   /* Card touch feedback */
