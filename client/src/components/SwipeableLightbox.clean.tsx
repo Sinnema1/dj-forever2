@@ -21,7 +21,6 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
   const [panY, setPanY] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
   const [lastTap, setLastTap] = useState(0);
-  const [showHints, setShowHints] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -90,12 +89,6 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
     if (e.touches.length === 1) {
       setTouchEnd(null);
       setTouchStart(e.targetTouches[0].clientX);
-
-      // Show navigation hints briefly on first touch (mobile)
-      if (!showHints) {
-        setShowHints(true);
-        setTimeout(() => setShowHints(false), 2000);
-      }
     }
   };
 
@@ -159,21 +152,14 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
       document.body.style.top = "unset";
       document.body.style.width = "unset";
 
-      // Restore scroll position immediately without animation
-      requestAnimationFrame(() => {
-        window.scrollTo({
-          top: scrollY,
-          left: 0,
-          behavior: "instant",
-        });
-      });
+      // Restore scroll position
+      window.scrollTo(0, scrollY);
     };
   }, []);
 
   // Reset zoom when image changes
   useEffect(() => {
     resetZoom();
-    setShowHints(false); // Reset hint visibility when image changes
   }, [current, resetZoom]);
 
   // Create portal element to render modal at body level
@@ -213,16 +199,10 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
           {/* Touch navigation hints - only show when not zoomed */}
           {!isZoomed && (
             <>
-              <div
-                className={`swipe-hint left ${showHints ? "show-hint" : ""}`}
-                onClick={prevImage}
-              >
+              <div className="swipe-hint left" onClick={prevImage}>
                 <span>‹</span>
               </div>
-              <div
-                className={`swipe-hint right ${showHints ? "show-hint" : ""}`}
-                onClick={nextImage}
-              >
+              <div className="swipe-hint right" onClick={nextImage}>
                 <span>›</span>
               </div>
             </>
@@ -234,6 +214,30 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
               <span>Tap to reset zoom</span>
             </div>
           )}
+        </div>
+
+        <div className="lightbox-controls">
+          <button
+            className="nav-button prev"
+            onClick={prevImage}
+            disabled={isTransitioning}
+            aria-label="Previous image"
+          >
+            ‹
+          </button>
+
+          <div className="image-counter">
+            {current + 1} / {images.length}
+          </div>
+
+          <button
+            className="nav-button next"
+            onClick={nextImage}
+            disabled={isTransitioning}
+            aria-label="Next image"
+          >
+            ›
+          </button>
         </div>
       </div>
     </div>
