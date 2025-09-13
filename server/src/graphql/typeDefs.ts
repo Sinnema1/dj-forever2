@@ -17,14 +17,23 @@ export const typeDefs = `
     qrToken: String!
   }
 
+  type Guest {
+    fullName: String!
+    mealPreference: String!
+    allergies: String
+  }
+
   type RSVP {
     _id: ID!
     userId: ID!
     attending: AttendanceStatus!
-    mealPreference: String!
-    allergies: String
+    guestCount: Int
+    guests: [Guest!]
     additionalNotes: String
-    fullName: String!
+    # Legacy fields for backward compatibility
+    fullName: String
+    mealPreference: String
+    allergies: String
   }
 
   type AuthPayload {
@@ -32,11 +41,32 @@ export const typeDefs = `
     user: User
   }
 
-  input RSVPInput {
-    attending: AttendanceStatus
+  input GuestInput {
+    fullName: String!
+    mealPreference: String!
+    allergies: String
+  }
+
+  input CreateRSVPInput {
+    attending: AttendanceStatus!
+    guestCount: Int
+    guests: [GuestInput!]
+    additionalNotes: String
+    # Legacy fields for backward compatibility
+    fullName: String
     mealPreference: String
     allergies: String
+  }
+
+  input RSVPInput {
+    attending: AttendanceStatus
+    guestCount: Int
+    guests: [GuestInput!]
     additionalNotes: String
+    # Legacy fields for backward compatibility
+    fullName: String
+    mealPreference: String
+    allergies: String
   }
 
   type Query {
@@ -51,12 +81,14 @@ export const typeDefs = `
       qrToken: String!
     ): AuthPayload
     loginWithQrToken(qrToken: String!): AuthPayload
+    createRSVP(input: CreateRSVPInput!): RSVP
+    editRSVP(updates: RSVPInput!): RSVP
+    # Legacy mutation for backward compatibility
     submitRSVP(
       attending: AttendanceStatus!
       mealPreference: String!
       allergies: String
       additionalNotes: String
     ): RSVP
-    editRSVP(updates: RSVPInput!): RSVP
   }
 `;
