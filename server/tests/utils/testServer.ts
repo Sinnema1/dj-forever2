@@ -5,7 +5,7 @@ import cors from "cors";
 import { json } from "body-parser";
 
 import { typeDefs, resolvers } from "../../src/graphql/index.js";
-import { createContext } from "../../src/graphql/context.js";
+import { getUserFromRequest } from "../../src/services/authService.js";
 
 export async function createTestServer(): Promise<{
   app: Application;
@@ -34,7 +34,14 @@ export async function createTestServer(): Promise<{
   app.use(
     "/graphql",
     expressMiddleware(server, {
-      context: async ({ req }) => createContext({ req }),
+      context: async ({ req }) => {
+        // Use the same authentication logic as the main server
+        const user = await getUserFromRequest(req);
+        return { 
+          req, 
+          user 
+        };
+      },
     })
   );
 
