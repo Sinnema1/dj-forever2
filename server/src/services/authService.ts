@@ -45,4 +45,36 @@ export const loginWithQrToken = async ({ qrToken }: { qrToken: string }) => {
   return { token, user };
 };
 
+/**
+ * Verify JWT token and return user
+ */
+export const verifyToken = async (token: string): Promise<IUser | null> => {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string };
+    const user = await User.findById(decoded.id);
+    return user;
+  } catch (error) {
+    console.error("Token verification failed:", error);
+    return null;
+  }
+};
+
+/**
+ * Extract user from request headers
+ */
+export const getUserFromRequest = async (req: any): Promise<IUser | null> => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return null;
+    }
+    
+    const token = authHeader.substring(7); // Remove "Bearer " prefix
+    return await verifyToken(token);
+  } catch (error) {
+    console.error("Error extracting user from request:", error);
+    return null;
+  }
+};
+
 // Password-based login removed for QR code branch

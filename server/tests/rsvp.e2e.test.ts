@@ -70,15 +70,23 @@ describe("RSVP End-to-End", () => {
               allergies: "None"
               additionalNotes: "Excited!"
             ) {
-              fullName
+              _id
               attending
               mealPreference
               allergies
               additionalNotes
+              fullName
             }
           }
         `,
       });
+    
+    // Debug GraphQL errors if any
+    if (rsvpRes.body.errors) {
+      console.error("GraphQL errors:", rsvpRes.body.errors);
+    }
+    
+    expect(rsvpRes.body.data.submitRSVP, "submitRSVP should not be null").not.toBeNull();
     expect(rsvpRes.body.data.submitRSVP.fullName).toBeDefined();
     expect(rsvpRes.body.data.submitRSVP.attending).toBe("YES");
     expect(rsvpRes.body.data.submitRSVP.mealPreference).toBe("Vegetarian");
