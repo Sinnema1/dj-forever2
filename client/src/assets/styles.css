@@ -760,9 +760,7 @@ textarea.error {
   width: 100%;
   height: 180px;
   border-radius: var(--radius);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
 }
 
@@ -782,7 +780,7 @@ textarea.error {
     gap: var(--spacing-2);
     padding: var(--spacing-3);
   }
-
+  
   .gallery-grid img {
     height: 150px;
     border-radius: 8px;
@@ -796,7 +794,7 @@ textarea.error {
     gap: 8px;
     padding: var(--spacing-2);
   }
-
+  
   .gallery-grid img {
     height: 140px;
     border-radius: 6px;
@@ -819,9 +817,7 @@ textarea.error {
   overflow: hidden;
   cursor: pointer;
   background: var(--color-bg);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .lazy-image-container:hover {
@@ -855,11 +851,7 @@ textarea.error {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    135deg,
-    var(--color-sage-10) 0%,
-    var(--color-sage-20) 100%
-  );
+  background: linear-gradient(135deg, var(--color-sage-10) 0%, var(--color-sage-20) 100%);
   display: flex;
   align-items: center;
   justify-content: center;

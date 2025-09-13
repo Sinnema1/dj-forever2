@@ -5,6 +5,7 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { typeDefs } from "./graphql/typeDefs.js";
 import { resolvers } from "./graphql/resolvers.js";
+import { getUserFromRequest } from "./services/authService.js";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -66,17 +67,20 @@ async function startServer() {
     })
   );
 
-  // GraphQL endpoint
+  // GraphQL endpoint with authentication context
   app.use(
     "/graphql",
     expressMiddleware(server, {
-      context: async ({ req }) => ({ req }),
+      context: async ({ req }) => {
+        // Extract user from JWT token in Authorization header
+        const user = await getUserFromRequest(req);
+        return { 
+          req, 
+          user 
+        };
+      },
     })
   );
-
-  // Middleware
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
 
   // Health check endpoint
   app.get("/health", (req, res) => {
