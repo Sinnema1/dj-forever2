@@ -50,7 +50,10 @@ export const loginWithQrToken = async ({ qrToken }: { qrToken: string }) => {
  */
 export const verifyToken = async (token: string): Promise<IUser | null> => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string };
+    const decoded = jwt.verify(token, JWT_SECRET) as {
+      id: string;
+      email: string;
+    };
     const user = await User.findById(decoded.id);
     return user;
   } catch (error) {
@@ -68,7 +71,7 @@ export const getUserFromRequest = async (req: any): Promise<IUser | null> => {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return null;
     }
-    
+
     const token = authHeader.substring(7); // Remove "Bearer " prefix
     return await verifyToken(token);
   } catch (error) {

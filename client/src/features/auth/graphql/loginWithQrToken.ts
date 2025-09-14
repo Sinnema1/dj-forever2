@@ -10,6 +10,7 @@ export const LOGIN_WITH_QR_TOKEN = gql`
         email
         isInvited
         qrToken
+        hasRSVPed
       }
     }
   }

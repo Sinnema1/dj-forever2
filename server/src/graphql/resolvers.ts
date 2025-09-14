@@ -1,5 +1,10 @@
 import { registerUser, loginWithQrToken } from "../services/authService.js";
-import { getRSVP, createRSVP, updateRSVP, submitRSVP } from "../services/rsvpService.js";
+import {
+  getRSVP,
+  createRSVP,
+  updateRSVP,
+  submitRSVP,
+} from "../services/rsvpService.js";
 
 export const resolvers = {
   Query: {
@@ -12,7 +17,7 @@ export const resolvers = {
       if (!context.user) {
         throw new Error("Authentication required");
       }
-      
+
       try {
         return await getRSVP(context.user._id);
       } catch (error: any) {
@@ -41,7 +46,7 @@ export const resolvers = {
       if (!context.user) {
         throw new Error("Authentication required");
       }
-      
+
       try {
         return await createRSVP({
           ...args,
@@ -58,7 +63,7 @@ export const resolvers = {
       if (!context.user) {
         throw new Error("Authentication required");
       }
-      
+
       try {
         return await createRSVP({
           ...input,
@@ -75,7 +80,7 @@ export const resolvers = {
       if (!context.user) {
         throw new Error("Authentication required");
       }
-      
+
       try {
         return await updateRSVP(context.user._id, updates);
       } catch (error: any) {
