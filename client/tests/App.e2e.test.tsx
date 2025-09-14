@@ -59,6 +59,7 @@ describe("App end-to-end", () => {
     localStorage.getItem = vi.fn().mockImplementation((key) => {
       if (key === "id_token") return "mock-token";
       if (key === "user") return JSON.stringify(userData);
+      if (key === "auth_version") return "1.1"; // Match current auth version
       return null;
     });
 

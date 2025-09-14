@@ -18,6 +18,8 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 
 const STORAGE_TOKEN_KEY = "id_token";
 const STORAGE_USER_KEY = "user";
+const STORAGE_VERSION_KEY = "auth_version";
+const CURRENT_AUTH_VERSION = "1.1"; // Increment when user schema changes
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -46,8 +48,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   // Initial load from storage
   useEffect(() => {
     const initializeAuth = async () => {
+      const storedVersion = localStorage.getItem(STORAGE_VERSION_KEY);
       const storedToken = localStorage.getItem(STORAGE_TOKEN_KEY);
       const storedUser = safeParseUser(localStorage.getItem(STORAGE_USER_KEY));
+
+      // Clear cache if version mismatch (e.g., when we add new user fields)
+      if (storedVersion !== CURRENT_AUTH_VERSION) {
+        console.log("Auth version mismatch, clearing cached user data");
+        localStorage.removeItem(STORAGE_TOKEN_KEY);
+        localStorage.removeItem(STORAGE_USER_KEY);
+        localStorage.setItem(STORAGE_VERSION_KEY, CURRENT_AUTH_VERSION);
+        setIsLoading(false);
+        return;
+      }
 
       if (storedToken && storedUser) {
         // Set user immediately for faster UI response
@@ -114,6 +127,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         setUser(authUser);
         localStorage.setItem(STORAGE_TOKEN_KEY, authToken);
         localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(authUser));
+        localStorage.setItem(STORAGE_VERSION_KEY, CURRENT_AUTH_VERSION);
       } catch (err: unknown) {
         if (err instanceof Error)
           throw new Error(err.message || "QR Login failed.");

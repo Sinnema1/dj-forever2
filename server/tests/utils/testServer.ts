@@ -37,9 +37,9 @@ export async function createTestServer(): Promise<{
       context: async ({ req }) => {
         // Use the same authentication logic as the main server
         const user = await getUserFromRequest(req);
-        return { 
-          req, 
-          user 
+        return {
+          req,
+          user,
         };
       },
     })

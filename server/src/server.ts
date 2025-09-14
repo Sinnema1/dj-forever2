@@ -74,9 +74,9 @@ async function startServer() {
       context: async ({ req }) => {
         // Extract user from JWT token in Authorization header
         const user = await getUserFromRequest(req);
-        return { 
-          req, 
-          user 
+        return {
+          req,
+          user,
         };
       },
     })
