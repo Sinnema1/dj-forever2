@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { imagetools } from "vite-imagetools";
+// import { imagetools } from "vite-imagetools"; // Temporarily disabled
 import compression from "vite-plugin-compression";
 import { VitePWA } from "vite-plugin-pwa";
 import viteImagemin from "vite-plugin-imagemin";
@@ -8,9 +8,9 @@ import viteImagemin from "vite-plugin-imagemin";
 export default defineConfig({
   plugins: [
     react(),
-    imagetools(),
-    // Image optimization for production builds
-    viteImagemin({
+    // imagetools(), // Temporarily disabled to fix development errors
+    // Image optimization for production builds only
+    process.env.NODE_ENV === "production" && viteImagemin({
       gifsicle: { optimizationLevel: 7 },
       mozjpeg: { quality: 85 }, // Reduce quality from default 90 to 85
       pngquant: { quality: [0.6, 0.8] },
@@ -129,7 +129,7 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
       },
     }),
-  ],
+  ].filter(Boolean),
   server: {
     host: true, // ✅ reachable on LAN (iPhone)
     port: 3002,

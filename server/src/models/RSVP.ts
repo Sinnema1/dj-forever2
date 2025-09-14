@@ -36,7 +36,7 @@ const rsvpSchema = new Schema<IRSVP>({
   allergies: { type: String },
 });
 
-export const RSVP = mongoose.models.RSVP ||
-  mongoose.model<IRSVP>("RSVP", rsvpSchema);
+export const RSVP =
+  mongoose.models.RSVP || mongoose.model<IRSVP>("RSVP", rsvpSchema);
 
 export default RSVP;
