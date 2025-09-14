@@ -1,4 +1,5 @@
 import RSVP from "../models/RSVP.js";
+import User from "../models/User.js";
 
 /**
  * Get RSVP for a specific user
@@ -50,6 +51,10 @@ export async function createRSVP({
       guestCount,
       guests,
     });
+
+    // Update user's hasRSVPed status
+    await User.findByIdAndUpdate(userId, { hasRSVPed: true });
+
     return rsvpDoc.toObject();
   } catch (error) {
     console.error("Error creating RSVP:", error);
@@ -81,11 +86,11 @@ export async function updateRSVP(
       { $set: updates },
       { new: true }
     );
-    
+
     if (!rsvp) {
       throw new Error("RSVP not found");
     }
-    
+
     return rsvp.toObject();
   } catch (error) {
     console.error("Error updating RSVP:", error);
@@ -119,5 +124,9 @@ export async function submitRSVP({
     allergies,
     additionalNotes,
   });
+
+  // Update user's hasRSVPed status
+  await User.findByIdAndUpdate(userId, { hasRSVPed: true });
+
   return rsvpDoc.toObject();
 }

@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   isAdmin: boolean;
   isInvited: boolean;
+  hasRSVPed: boolean;
   qrToken: string;
 }
 
@@ -14,6 +15,7 @@ const userSchema = new Schema<IUser>(
     email: { type: String, required: true, unique: true },
     isAdmin: { type: Boolean, default: false },
     isInvited: { type: Boolean, default: true }, // Default to true for demo
+    hasRSVPed: { type: Boolean, default: false },
     qrToken: { type: String, required: true, unique: true },
   },
   {
@@ -21,9 +23,7 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-// Add indexes for performance
-userSchema.index({ email: 1 });
-userSchema.index({ qrToken: 1 });
+// Add indexes for performance (email and qrToken already have unique indexes from schema)
 userSchema.index({ isInvited: 1 });
 
 export default mongoose.models.User ||

@@ -10,12 +10,39 @@ export default function RSVPForm() {
   const { createRSVP, editRSVP, rsvp, loading } = useRSVP();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [submittedData, setSubmittedData] = useState<RSVPFormData | null>(null);
+
+  // Helper function to normalize legacy meal preference values
+  const normalizeMealPreference = (value: string): string => {
+    if (!value) return "";
+
+    const normalizedValue = value.toLowerCase().trim();
+
+    // Map legacy values to current form values
+    const legacyMapping: Record<string, string> = {
+      vegetarian: "vegetarian",
+      chicken: "chicken",
+      beef: "beef",
+      fish: "fish",
+      salmon: "fish",
+      vegan: "vegan",
+      kids: "kids",
+      kid: "kids",
+      children: "kids",
+    };
+
+    return legacyMapping[normalizedValue] || "";
+  };
+
   const [formData, setFormData] = useState<RSVPFormData>(() => {
     // Initialize with proper guest structure, handling legacy data
-    const initialGuests = rsvp?.guests || [
+    const initialGuests = rsvp?.guests?.map((guest) => ({
+      fullName: guest.fullName || "",
+      mealPreference: normalizeMealPreference(guest.mealPreference || ""),
+      allergies: guest.allergies || "",
+    })) || [
       {
         fullName: rsvp?.fullName || "",
-        mealPreference: rsvp?.mealPreference || "",
+        mealPreference: normalizeMealPreference(rsvp?.mealPreference || ""),
         allergies: rsvp?.allergies || "",
       },
     ];
@@ -23,7 +50,7 @@ export default function RSVPForm() {
     return {
       fullName: rsvp?.fullName || "",
       attending: rsvp?.attending || "NO",
-      mealPreference: rsvp?.mealPreference || "",
+      mealPreference: normalizeMealPreference(rsvp?.mealPreference || ""),
       allergies: rsvp?.allergies || "",
       additionalNotes: rsvp?.additionalNotes || "",
       guestCount: rsvp?.guestCount || initialGuests.length,
@@ -46,14 +73,20 @@ export default function RSVPForm() {
         const newData = {
           fullName: rsvp.fullName || "",
           attending: rsvp.attending || "NO",
-          mealPreference: rsvp.mealPreference || "",
+          mealPreference: normalizeMealPreference(rsvp.mealPreference || ""),
           allergies: rsvp.allergies || "",
           additionalNotes: rsvp.additionalNotes || "",
           guestCount: rsvp.guestCount || 1,
-          guests: rsvp.guests || [
+          guests: rsvp.guests?.map((guest) => ({
+            fullName: guest.fullName || "",
+            mealPreference: normalizeMealPreference(guest.mealPreference || ""),
+            allergies: guest.allergies || "",
+          })) || [
             {
               fullName: rsvp.fullName || "",
-              mealPreference: rsvp.mealPreference || "",
+              mealPreference: normalizeMealPreference(
+                rsvp.mealPreference || ""
+              ),
               allergies: rsvp.allergies || "",
             },
           ],
@@ -166,10 +199,27 @@ export default function RSVPForm() {
         break;
     }
 
-    setValidationErrors((prev) => ({
-      ...prev,
-      ...errors,
-    }));
+    setValidationErrors((prev) => {
+      const newErrors = { ...prev };
+
+      // Clear or set the specific error for this field
+      if (guestIndex !== undefined) {
+        const errorKey = `guest-${guestIndex}-${name}`;
+        if (errors[errorKey]) {
+          newErrors[errorKey] = errors[errorKey];
+        } else {
+          delete newErrors[errorKey];
+        }
+      } else {
+        if (errors[name]) {
+          newErrors[name] = errors[name];
+        } else {
+          delete newErrors[name];
+        }
+      }
+
+      return newErrors;
+    });
   };
 
   const handleInputChange = (
@@ -319,6 +369,23 @@ export default function RSVPForm() {
           </p>
         </div>
 
+        {/* Global Error Summary for Mobile */}
+        {Object.keys(validationErrors).length > 0 && (
+          <div className="form-error-summary" role="alert" aria-live="polite">
+            <div className="error-summary-icon">⚠️</div>
+            <div className="error-summary-content">
+              <strong>Please fix the following:</strong>
+              <ul className="error-summary-list">
+                {Object.entries(validationErrors).map(([key, message]) => (
+                  <li key={key} className="error-summary-item">
+                    {message}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
         {/* Guest Count Field */}
         <div className="form-group">
           <label htmlFor="guestCount" className="form-label">
@@ -394,12 +461,20 @@ export default function RSVPForm() {
         >
           {/* Individual Guest Forms */}
           {formData.guests.map((guest, index) => (
-            <div key={index} className="guest-form-section">
-              <h3 className="guest-form-title">
-                {formData.guestCount === 1
-                  ? "Guest Information"
-                  : `Guest ${index + 1} Information`}
-              </h3>
+            <div key={index} className="guest-form-section" data-guest-index={index}>
+              <div className="guest-form-header">
+                <h3 className="guest-form-title">
+                  {formData.guestCount === 1
+                    ? "Guest Information"
+                    : `Guest ${index + 1} Information`}
+                </h3>
+                {formData.guestCount > 1 && (
+                  <div className="guest-progress-indicator">
+                    <span className="guest-current">{index + 1}</span>
+                    <span className="guest-total">of {formData.guestCount}</span>
+                  </div>
+                )}
+              </div>
 
               {/* Guest Name */}
               <div className="form-group">
@@ -409,30 +484,36 @@ export default function RSVPForm() {
                 >
                   Full Name <span className="required">*</span>
                 </label>
-                <input
-                  id={`guest-${index}-fullName`}
-                  name={`guest-${index}-fullName`}
-                  type="text"
-                  className={`form-input ${validationErrors[`guest-${index}-fullName`] ? "error" : ""}`}
-                  value={guest.fullName}
-                  onChange={(e) => {
-                    updateGuest(index, "fullName", e.target.value);
-                    validateField("fullName", e.target.value, index);
-                  }}
-                  placeholder="Enter full name"
-                  required
-                  aria-describedby={
-                    validationErrors[`guest-${index}-fullName`]
-                      ? `guest-${index}-fullName-error`
-                      : undefined
-                  }
-                />
+                <div className="form-input-container">
+                  <input
+                    id={`guest-${index}-fullName`}
+                    name={`guest-${index}-fullName`}
+                    type="text"
+                    className={`form-input ${validationErrors[`guest-${index}-fullName`] ? "error" : ""} ${guest.fullName ? "filled" : ""}`}
+                    value={guest.fullName}
+                    onChange={(e) => {
+                      updateGuest(index, "fullName", e.target.value);
+                      validateField("fullName", e.target.value, index);
+                    }}
+                    placeholder="Enter full name"
+                    required
+                    aria-describedby={
+                      validationErrors[`guest-${index}-fullName`]
+                        ? `guest-${index}-fullName-error`
+                        : undefined
+                    }
+                  />
+                  {guest.fullName && (
+                    <div className="form-input-check">✓</div>
+                  )}
+                </div>
                 {validationErrors[`guest-${index}-fullName`] && (
                   <div
                     id={`guest-${index}-fullName-error`}
-                    className="field-error"
+                    className="field-error mobile-friendly"
                     role="alert"
                   >
+                    <span className="error-icon">⚠️</span>
                     {validationErrors[`guest-${index}-fullName`]}
                   </div>
                 )}
@@ -446,34 +527,40 @@ export default function RSVPForm() {
                 >
                   Meal Preference <span className="required">*</span>
                 </label>
-                <select
-                  id={`guest-${index}-mealPreference`}
-                  name={`guest-${index}-mealPreference`}
-                  className={`form-select ${validationErrors[`guest-${index}-mealPreference`] ? "error" : ""}`}
-                  value={guest.mealPreference}
-                  onChange={(e) => {
-                    updateGuest(index, "mealPreference", e.target.value);
-                    validateField("mealPreference", e.target.value, index);
-                  }}
-                  required={formData.attending === "YES"}
-                  aria-describedby={
-                    validationErrors[`guest-${index}-mealPreference`]
-                      ? `guest-${index}-mealPreference-error`
-                      : undefined
-                  }
-                >
-                  {mealOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                <div className="form-select-container">
+                  <select
+                    id={`guest-${index}-mealPreference`}
+                    name={`guest-${index}-mealPreference`}
+                    className={`form-select ${validationErrors[`guest-${index}-mealPreference`] ? "error" : ""} ${guest.mealPreference ? "filled" : ""}`}
+                    value={guest.mealPreference}
+                    onChange={(e) => {
+                      updateGuest(index, "mealPreference", e.target.value);
+                      validateField("mealPreference", e.target.value, index);
+                    }}
+                    required={formData.attending === "YES"}
+                    aria-describedby={
+                      validationErrors[`guest-${index}-mealPreference`]
+                        ? `guest-${index}-mealPreference-error`
+                        : undefined
+                    }
+                  >
+                    {mealOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  {guest.mealPreference && (
+                    <div className="form-select-check">✓</div>
+                  )}
+                </div>
                 {validationErrors[`guest-${index}-mealPreference`] && (
                   <div
                     id={`guest-${index}-mealPreference-error`}
-                    className="field-error"
+                    className="field-error mobile-friendly"
                     role="alert"
                   >
+                    <span className="error-icon">⚠️</span>
                     {validationErrors[`guest-${index}-mealPreference`]}
                   </div>
                 )}
@@ -505,46 +592,65 @@ export default function RSVPForm() {
               </div>
             </div>
           ))}
-        </div>
 
-        {/* Additional Notes */}
-        <div className="form-group">
-          <label htmlFor="additionalNotes" className="form-label">
-            Additional Notes
-          </label>
-          <textarea
-            id="additionalNotes"
-            name="additionalNotes"
-            className="form-textarea"
-            value={formData.additionalNotes}
-            onChange={handleInputChange}
-            rows={3}
-            placeholder="Any special requests, song suggestions, or messages for us..."
-          />
-          <small className="form-hint">
-            Feel free to share anything else we should know or any special songs
-            you'd like to hear!
-          </small>
+          {/* Additional Notes - moved inside conditional fields */}
+          <div className="form-group">
+            <label htmlFor="additionalNotes" className="form-label">
+              Additional Notes
+            </label>
+            <textarea
+              id="additionalNotes"
+              name="additionalNotes"
+              className="form-textarea"
+              value={formData.additionalNotes}
+              onChange={handleInputChange}
+              rows={3}
+              placeholder="Any special requests, song suggestions, or messages for us..."
+            />
+            <small className="form-hint">
+              Feel free to share anything else we should know or any special
+              songs you'd like to hear!
+            </small>
+          </div>
         </div>
 
         {/* Submit Button */}
-        <button
-          className={`rsvp-submit-btn ${loading ? "loading" : ""}`}
-          type="submit"
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <span className="loading-spinner"></span>
-              Submitting...
-            </>
-          ) : (
-            <>
-              {rsvp ? "Update RSVP" : "Submit RSVP"}
-              <span className="submit-icon">💕</span>
-            </>
+        <div className="submit-section">
+          <button
+            className={`rsvp-submit-btn ${loading ? "loading" : ""} ${Object.keys(validationErrors).length > 0 ? "has-errors" : ""}`}
+            type="submit"
+            disabled={loading}
+            aria-describedby={Object.keys(validationErrors).length > 0 ? "form-errors" : undefined}
+          >
+            {loading ? (
+              <>
+                <span className="loading-spinner"></span>
+                <span className="loading-text">
+                  {rsvp ? "Updating..." : "Submitting..."}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="submit-text">
+                  {rsvp ? "Update RSVP" : "Submit RSVP"}
+                </span>
+                <span className="submit-icon">💕</span>
+              </>
+            )}
+          </button>
+          
+          {/* Progress indicator for mobile */}
+          {loading && (
+            <div className="submission-progress" aria-live="polite">
+              <div className="progress-bar">
+                <div className="progress-fill"></div>
+              </div>
+              <small className="progress-text">
+                {rsvp ? "Updating your RSVP..." : "Submitting your RSVP..."}
+              </small>
+            </div>
           )}
-        </button>
+        </div>
 
         {/* Success/Error Messages */}
         {successMessage && (
