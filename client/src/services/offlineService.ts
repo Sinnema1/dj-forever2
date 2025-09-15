@@ -1,4 +1,6 @@
 // Enhanced Offline Service for Wedding Website PWA
+import { logInfo, logError } from '../utils/logger';
+import { reportError } from './errorReportingService';
 
 export interface OfflineData {
   weddingDetails: any;
@@ -12,7 +14,7 @@ export interface OfflineData {
 export interface PendingRSVP {
   id: string;
   fullName: string;
-  attending: "YES" | "NO" | "MAYBE";
+  attending: 'YES' | 'NO' | 'MAYBE';
   mealPreference: string;
   allergies: string;
   additionalNotes: string;
@@ -28,7 +30,7 @@ export interface PendingPhotoUpload {
 }
 
 class OfflineService {
-  private dbName = "WeddingWebsiteDB";
+  private dbName = 'WeddingWebsiteDB';
   private dbVersion = 1;
   private db: IDBDatabase | null = null;
 
@@ -46,23 +48,23 @@ class OfflineService {
         const db = request.result;
 
         // Store for wedding details and static content
-        if (!db.objectStoreNames.contains("weddingData")) {
-          db.createObjectStore("weddingData", { keyPath: "id" });
+        if (!db.objectStoreNames.contains('weddingData')) {
+          db.createObjectStore('weddingData', { keyPath: 'id' });
         }
 
         // Store for pending RSVP submissions
-        if (!db.objectStoreNames.contains("pendingRSVPs")) {
-          db.createObjectStore("pendingRSVPs", { keyPath: "id" });
+        if (!db.objectStoreNames.contains('pendingRSVPs')) {
+          db.createObjectStore('pendingRSVPs', { keyPath: 'id' });
         }
 
         // Store for pending photo uploads
-        if (!db.objectStoreNames.contains("pendingPhotos")) {
-          db.createObjectStore("pendingPhotos", { keyPath: "id" });
+        if (!db.objectStoreNames.contains('pendingPhotos')) {
+          db.createObjectStore('pendingPhotos', { keyPath: 'id' });
         }
 
         // Store for cached images
-        if (!db.objectStoreNames.contains("cachedImages")) {
-          db.createObjectStore("cachedImages", { keyPath: "url" });
+        if (!db.objectStoreNames.contains('cachedImages')) {
+          db.createObjectStore('cachedImages', { keyPath: 'url' });
         }
       };
     });
@@ -72,8 +74,8 @@ class OfflineService {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(["weddingData"], "readwrite");
-      const store = transaction.objectStore("weddingData");
+      const transaction = this.db!.transaction(['weddingData'], 'readwrite');
+      const store = transaction.objectStore('weddingData');
 
       const request = store.put({
         id: key,
@@ -90,8 +92,8 @@ class OfflineService {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(["weddingData"], "readonly");
-      const store = transaction.objectStore("weddingData");
+      const transaction = this.db!.transaction(['weddingData'], 'readonly');
+      const store = transaction.objectStore('weddingData');
       const request = store.get(key);
 
       request.onsuccess = () => {
@@ -107,8 +109,8 @@ class OfflineService {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(["pendingRSVPs"], "readwrite");
-      const store = transaction.objectStore("pendingRSVPs");
+      const transaction = this.db!.transaction(['pendingRSVPs'], 'readwrite');
+      const store = transaction.objectStore('pendingRSVPs');
 
       const request = store.put(rsvp);
       request.onsuccess = () => {
@@ -126,8 +128,8 @@ class OfflineService {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(["pendingRSVPs"], "readonly");
-      const store = transaction.objectStore("pendingRSVPs");
+      const transaction = this.db!.transaction(['pendingRSVPs'], 'readonly');
+      const store = transaction.objectStore('pendingRSVPs');
       const request = store.getAll();
 
       request.onsuccess = () => resolve(request.result);
@@ -139,8 +141,8 @@ class OfflineService {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(["pendingRSVPs"], "readwrite");
-      const store = transaction.objectStore("pendingRSVPs");
+      const transaction = this.db!.transaction(['pendingRSVPs'], 'readwrite');
+      const store = transaction.objectStore('pendingRSVPs');
 
       const request = store.delete(id);
       request.onsuccess = () => resolve();
@@ -153,8 +155,8 @@ class OfflineService {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(["pendingPhotos"], "readwrite");
-      const store = transaction.objectStore("pendingPhotos");
+      const transaction = this.db!.transaction(['pendingPhotos'], 'readwrite');
+      const store = transaction.objectStore('pendingPhotos');
 
       const request = store.put(photo);
       request.onsuccess = () => {
@@ -172,8 +174,8 @@ class OfflineService {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(["pendingPhotos"], "readonly");
-      const store = transaction.objectStore("pendingPhotos");
+      const transaction = this.db!.transaction(['pendingPhotos'], 'readonly');
+      const store = transaction.objectStore('pendingPhotos');
       const request = store.getAll();
 
       request.onsuccess = () => resolve(request.result);
@@ -185,8 +187,8 @@ class OfflineService {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(["pendingPhotos"], "readwrite");
-      const store = transaction.objectStore("pendingPhotos");
+      const transaction = this.db!.transaction(['pendingPhotos'], 'readwrite');
+      const store = transaction.objectStore('pendingPhotos');
 
       const request = store.delete(id);
       request.onsuccess = () => resolve();
@@ -199,8 +201,8 @@ class OfflineService {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(["cachedImages"], "readwrite");
-      const store = transaction.objectStore("cachedImages");
+      const transaction = this.db!.transaction(['cachedImages'], 'readwrite');
+      const store = transaction.objectStore('cachedImages');
 
       const request = store.put({
         url,
@@ -217,8 +219,8 @@ class OfflineService {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(["cachedImages"], "readonly");
-      const store = transaction.objectStore("cachedImages");
+      const transaction = this.db!.transaction(['cachedImages'], 'readonly');
+      const store = transaction.objectStore('cachedImages');
       const request = store.get(url);
 
       request.onsuccess = () => {
@@ -242,9 +244,14 @@ class OfflineService {
         await this.deletePendingRSVP(rsvp.id);
 
         // Show success notification
-        this.showSyncNotification("RSVP synced successfully!");
+        this.showSyncNotification('RSVP synced successfully!');
       } catch (error) {
-        console.error("Failed to sync RSVP:", error);
+        logError('Failed to sync RSVP', 'OfflineService', error);
+        reportError(error as Error, {
+          component: 'OfflineService',
+          action: 'sync_rsvp',
+          rsvpId: rsvp.id,
+        });
         // Keep in queue for next sync attempt
       }
     }
@@ -262,9 +269,14 @@ class OfflineService {
         await this.deletePendingPhoto(photo.id);
 
         // Show success notification
-        this.showSyncNotification("Photo uploaded successfully!");
+        this.showSyncNotification('Photo uploaded successfully!');
       } catch (error) {
-        console.error("Failed to sync photo:", error);
+        logError('Failed to sync photo', 'OfflineService', error);
+        reportError(error as Error, {
+          component: 'OfflineService',
+          action: 'sync_photo',
+          photoId: photo.id,
+        });
         // Keep in queue for next sync attempt
       }
     }
@@ -272,27 +284,27 @@ class OfflineService {
 
   // Network Status Management
   setupNetworkListeners(): void {
-    window.addEventListener("online", () => {
+    window.addEventListener('online', () => {
       this.onNetworkOnline();
     });
 
-    window.addEventListener("offline", () => {
+    window.addEventListener('offline', () => {
       this.onNetworkOffline();
     });
   }
 
   private async onNetworkOnline(): Promise<void> {
-    console.log("Network came back online, syncing pending data...");
+    logInfo('Network came back online, syncing pending data', 'OfflineService');
 
     // Show reconnection notification
-    this.showSyncNotification("Back online! Syncing your data...");
+    this.showSyncNotification('Back online! Syncing your data...');
 
     // Sync all pending data
     await Promise.all([this.syncPendingRSVPs(), this.syncPendingPhotos()]);
   }
 
   private onNetworkOffline(): void {
-    console.log("Network went offline, entering offline mode...");
+    logInfo('Network went offline, entering offline mode', 'OfflineService');
     this.showSyncNotification(
       "You're now offline. Changes will sync when you reconnect."
     );
@@ -301,10 +313,10 @@ class OfflineService {
   // Utility Methods
   private async submitRSVPToServer(rsvp: PendingRSVP): Promise<void> {
     // This would integrate with your existing GraphQL mutation
-    const response = await fetch("/graphql", {
-      method: "POST",
+    const response = await fetch('/graphql', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         query: `
@@ -329,38 +341,38 @@ class OfflineService {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to submit RSVP");
+      throw new Error('Failed to submit RSVP');
     }
   }
 
   private async uploadPhotoToServer(photo: PendingPhotoUpload): Promise<void> {
     // This would integrate with your photo upload endpoint
     const formData = new FormData();
-    formData.append("photo", photo.file);
-    formData.append("caption", photo.caption);
-    formData.append("guestName", photo.guestName);
+    formData.append('photo', photo.file);
+    formData.append('caption', photo.caption);
+    formData.append('guestName', photo.guestName);
 
-    const response = await fetch("/api/photos/upload", {
-      method: "POST",
+    const response = await fetch('/api/photos/upload', {
+      method: 'POST',
       body: formData,
     });
 
     if (!response.ok) {
-      throw new Error("Failed to upload photo");
+      throw new Error('Failed to upload photo');
     }
   }
 
   private showSyncNotification(message: string): void {
     // This could integrate with your notification system
-    if ("Notification" in window && Notification.permission === "granted") {
-      new Notification("Wedding Website", {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('Wedding Website', {
         body: message,
-        icon: "/favicon.svg",
+        icon: '/favicon.svg',
       });
     }
 
     // You could also show an in-app notification
-    console.log("Sync notification:", message);
+    logInfo('Sync notification', 'OfflineService', { message });
   }
 
   // Status Check
@@ -386,7 +398,7 @@ class OfflineService {
 export const offlineService = new OfflineService();
 
 // Initialize on app start
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   offlineService.init().then(() => {
     offlineService.setupNetworkListeners();
   });

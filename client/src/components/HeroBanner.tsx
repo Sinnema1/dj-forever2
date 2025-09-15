@@ -1,9 +1,7 @@
-import { useAuth } from "../context/AuthContext";
-import CountdownTimer from "./CountdownTimer";
-import React from "react";
+import { useAuth } from '../context/AuthContext';
+import CountdownTimer from './CountdownTimer';
 // Styles now imported globally via main.tsx
-import { analytics } from "../utils/analytics";
-import PersonalizedContent from "./PersonalizedContent";
+import PersonalizedContent from './PersonalizedContent';
 
 export default function HeroBanner() {
   const { user } = useAuth();
@@ -28,7 +26,7 @@ export default function HeroBanner() {
         November 8, 2026, 4:00 PM | Venue at the Grove
       </p>
       <p className="hero-personal-note">
-        We're so glad you're here, {user?.fullName.split(" ")[0]}!
+        We're so glad you're here, {user?.fullName.split(' ')[0]}!
       </p>
     </>
   );

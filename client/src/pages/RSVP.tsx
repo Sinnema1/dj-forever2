@@ -1,5 +1,4 @@
-import React from "react";
-import RSVPForm from "../components/RSVP/RSVPForm";
+import RSVPForm from '../components/RSVP/RSVPForm';
 
 export default function RSVPPage() {
   return (
