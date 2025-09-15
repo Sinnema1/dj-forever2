@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 // Styles now imported globally via main.tsx
 
-const WEDDING_DATE = new Date("2026-11-08T16:00:00-07:00");
+const WEDDING_DATE = new Date('2026-11-08T16:00:00-07:00');
 
 export default function CountdownTimer() {
   const [daysLeft, setDaysLeft] = useState(0);
@@ -33,7 +33,7 @@ export default function CountdownTimer() {
   return (
     <div className="countdown-simple">
       <p className="countdown-text">
-        {daysLeft} {daysLeft === 1 ? "day" : "days"} to the big day
+        {daysLeft} {daysLeft === 1 ? 'day' : 'days'} to the big day
       </p>
     </div>
   );

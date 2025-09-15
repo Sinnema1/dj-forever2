@@ -1,69 +1,71 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 // import { imagetools } from "vite-imagetools"; // Temporarily disabled
-import compression from "vite-plugin-compression";
-import { VitePWA } from "vite-plugin-pwa";
-import viteImagemin from "vite-plugin-imagemin";
+import compression from 'vite-plugin-compression';
+import { VitePWA } from 'vite-plugin-pwa';
+import viteImagemin from 'vite-plugin-imagemin';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
   plugins: [
     react(),
     // imagetools(), // Temporarily disabled to fix development errors
     // Image optimization for production builds only
-    process.env.NODE_ENV === "production" && viteImagemin({
-      gifsicle: { optimizationLevel: 7 },
-      mozjpeg: { quality: 85 }, // Reduce quality from default 90 to 85
-      pngquant: { quality: [0.6, 0.8] },
-      webp: { quality: 85 }, // Generate WebP versions
-    }),
+    process.env.NODE_ENV === 'production' &&
+      viteImagemin({
+        gifsicle: { optimizationLevel: 7 },
+        mozjpeg: { quality: 85 }, // Reduce quality from default 90 to 85
+        pngquant: { quality: [0.6, 0.8] },
+        webp: { quality: 85 }, // Generate WebP versions
+      }),
     compression({
-      algorithm: "gzip",
-      ext: ".gz",
+      algorithm: 'gzip',
+      ext: '.gz',
     }),
     VitePWA({
-      registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "offline.html"],
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg', 'offline.html'],
       devOptions: {
         enabled: false, // set to true only if you want to test SW in dev
       },
       manifest: {
         name: "Dominique & Justin's Wedding",
-        short_name: "D&J Wedding",
-        description: "Join us for our special day - November 8, 2026",
-        theme_color: "#C9A66B",
-        background_color: "#FAF6F0",
-        display: "standalone",
-        orientation: "portrait",
-        start_url: "/",
-        scope: "/",
-        categories: ["lifestyle", "social"],
+        short_name: 'D&J Wedding',
+        description: 'Join us for our special day - November 8, 2026',
+        theme_color: '#C9A66B',
+        background_color: '#FAF6F0',
+        display: 'standalone',
+        orientation: 'portrait',
+        start_url: '/',
+        scope: '/',
+        categories: ['lifestyle', 'social'],
         icons: [
           {
-            src: "favicon.svg",
-            sizes: "32x32 64x64 128x128 256x256",
-            type: "image/svg+xml",
-            purpose: "any maskable",
+            src: 'favicon.svg',
+            sizes: '32x32 64x64 128x128 256x256',
+            type: 'image/svg+xml',
+            purpose: 'any maskable',
           },
         ],
         shortcuts: [
           {
-            name: "RSVP",
-            short_name: "RSVP",
-            description: "Submit your wedding RSVP",
-            url: "/rsvp",
-            icons: [{ src: "favicon.svg", sizes: "96x96" }],
+            name: 'RSVP',
+            short_name: 'RSVP',
+            description: 'Submit your wedding RSVP',
+            url: '/rsvp',
+            icons: [{ src: 'favicon.svg', sizes: '96x96' }],
           },
           {
-            name: "Gallery",
-            short_name: "Photos",
-            description: "View wedding photos",
-            url: "/#gallery",
-            icons: [{ src: "favicon.svg", sizes: "96x96" }],
+            name: 'Gallery',
+            short_name: 'Photos',
+            description: 'View wedding photos',
+            url: '/#gallery',
+            icons: [{ src: 'favicon.svg', sizes: '96x96' }],
           },
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg}"],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg}'],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         skipWaiting: true,
         clientsClaim: true,
@@ -72,9 +74,9 @@ export default defineConfig({
           {
             urlPattern:
               /^https:\/\/dj-forever2-backend\.onrender\.com\/graphql$/,
-            handler: "NetworkFirst",
+            handler: 'NetworkFirst',
             options: {
-              cacheName: "graphql-cache",
+              cacheName: 'graphql-cache',
               expiration: {
                 maxEntries: 20,
                 maxAgeSeconds: 600,
@@ -83,9 +85,9 @@ export default defineConfig({
           },
           {
             urlPattern: /\.(png|jpg|jpeg|svg|webp|gif)$/,
-            handler: "CacheFirst",
+            handler: 'CacheFirst',
             options: {
-              cacheName: "wedding-images-cache",
+              cacheName: 'wedding-images-cache',
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 30 * 24 * 60 * 60,
@@ -94,9 +96,9 @@ export default defineConfig({
           },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com/,
-            handler: "StaleWhileRevalidate",
+            handler: 'StaleWhileRevalidate',
             options: {
-              cacheName: "google-fonts-stylesheets",
+              cacheName: 'google-fonts-stylesheets',
               expiration: {
                 maxAgeSeconds: 7 * 24 * 60 * 60,
               },
@@ -104,9 +106,9 @@ export default defineConfig({
           },
           {
             urlPattern: /^https:\/\/fonts\.gstatic\.com/,
-            handler: "CacheFirst",
+            handler: 'CacheFirst',
             options: {
-              cacheName: "google-fonts-webfonts",
+              cacheName: 'google-fonts-webfonts',
               expiration: {
                 maxEntries: 30,
                 maxAgeSeconds: 365 * 24 * 60 * 60,
@@ -114,10 +116,10 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ request }) => request.destination === "document",
-            handler: "NetworkFirst",
+            urlPattern: ({ request }) => request.destination === 'document',
+            handler: 'NetworkFirst',
             options: {
-              cacheName: "pages-cache",
+              cacheName: 'pages-cache',
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 3600,
@@ -125,10 +127,19 @@ export default defineConfig({
             },
           },
         ],
-        navigateFallback: "/offline.html",
+        navigateFallback: '/offline.html',
         navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
       },
     }),
+    // Bundle analyzer (only in analyze mode)
+    process.env.NODE_ENV === 'analyze' &&
+      visualizer({
+        filename: 'dist/stats.html',
+        open: false, // Don't auto-open to avoid browser dependency
+        gzipSize: true,
+        brotliSize: true,
+        template: 'treemap', // Better visualization for bundle analysis
+      }),
   ].filter(Boolean),
   server: {
     host: true, // ✅ reachable on LAN (iPhone)
@@ -137,27 +148,45 @@ export default defineConfig({
     hmr: {
       // Point this to your machine's LAN IP for iPhone HMR.
       // Replace with your IP (e.g., "192.168.1.23").
-      host: "localhost",
-      protocol: "ws", // ✅ back to regular websockets
+      host: 'localhost',
+      protocol: 'ws', // ✅ back to regular websockets
       port: 3002,
     },
     proxy: {
-      "/graphql": {
-        target: "http://localhost:3001",
+      '/graphql': {
+        target: 'http://localhost:3001',
         changeOrigin: true,
       },
     },
   },
   build: {
-    target: ["es2019", "safari14"], // ✅ safer for older mobile Safari
-    outDir: "dist",
-    assetsDir: "assets",
+    target: ['es2019', 'safari14'], // ✅ safer for older mobile Safari
+    outDir: 'dist',
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ["react", "react-dom"],
-          apollo: ["@apollo/client"],
-          ui: ["react-router-dom"],
+        manualChunks: id => {
+          // Apollo GraphQL and related utilities
+          if (id.includes('@apollo/client') || id.includes('graphql')) {
+            return 'apollo';
+          }
+          // Core React dependencies
+          if (id.includes('react') && !id.includes('react-router')) {
+            return 'react';
+          }
+          // React Router and related
+          if (id.includes('react-router-dom')) {
+            return 'router';
+          }
+          // QR code library (relatively large)
+          if (id.includes('html5-qrcode')) {
+            return 'qr';
+          }
+          // Other large vendor libraries get their own chunks
+          if (id.includes('node_modules')) {
+            // You can add more specific chunking here based on bundle analysis
+            return 'vendor';
+          }
         },
       },
     },

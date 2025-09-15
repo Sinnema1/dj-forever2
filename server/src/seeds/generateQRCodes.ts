@@ -42,7 +42,7 @@ const OUTPUT_DIR = path.resolve(`./qr-codes/${environment}`);
 
 async function main() {
   await mongoose.connect(MONGODB_URI);
-  const users = await User.find({}, "_id fullName email qrToken");
+  const users = await (User.find as any)({}, "_id fullName email qrToken");
   if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR);
 
   for (const user of users) {

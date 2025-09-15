@@ -1,5 +1,7 @@
-import React, { useEffect, useRef, useCallback } from "react";
-import { Html5Qrcode, Html5QrcodeScanType } from "html5-qrcode";
+import React, { useEffect, useRef, useCallback } from 'react';
+import { Html5Qrcode } from 'html5-qrcode';
+// Styles now imported globally via main.tsx
+import { logWarn, logError, logDebug } from '../utils/logger';
 
 interface QrScannerProps {
   onScan: (result: string) => void;
@@ -40,11 +42,11 @@ const QrScanner: React.FC<QrScannerProps> = ({
       // Suppress known stop errors
       const msg = String(err);
       if (
-        !msg.includes("scanner is not running") &&
-        !msg.includes("scanner is not running or paused") &&
-        !msg.includes("Cannot stop, scanner is not running or paused.")
+        !msg.includes('scanner is not running') &&
+        !msg.includes('scanner is not running or paused') &&
+        !msg.includes('Cannot stop, scanner is not running or paused.')
       ) {
-        console.warn("QR Scanner stop error:", err);
+        logWarn('QR Scanner stop error', 'QrScanner', err);
       }
     }
 
@@ -54,8 +56,8 @@ const QrScanner: React.FC<QrScannerProps> = ({
     } catch (err) {
       // Suppress known clear errors
       const msg = String(err);
-      if (!msg.includes("Cannot clear while scan is ongoing")) {
-        console.warn("QR Scanner clear error:", err);
+      if (!msg.includes('Cannot clear while scan is ongoing')) {
+        logWarn('QR Scanner clear error', 'QrScanner', err);
       }
     }
 
@@ -85,21 +87,21 @@ const QrScanner: React.FC<QrScannerProps> = ({
     // Initialize scanner with proper error handling for AbortError
     const initializeScanner = async () => {
       try {
-        console.log("Initializing QR Scanner...", {
+        logDebug('Initializing QR Scanner', 'QrScanner', {
           userAgent: navigator.userAgent,
           protocol: window.location.protocol,
           isSecure:
-            window.location.protocol === "https:" ||
-            window.location.hostname === "localhost",
+            window.location.protocol === 'https:' ||
+            window.location.hostname === 'localhost',
         });
 
         // Check if camera is available first
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          throw new Error("Camera access not supported in this browser");
+          throw new Error('Camera access not supported in this browser');
         }
 
         await html5QrCode.start(
-          { facingMode: "environment" },
+          { facingMode: 'environment' },
           {
             fps,
             qrbox: { width: qrbox, height: qrbox },
@@ -107,43 +109,44 @@ const QrScanner: React.FC<QrScannerProps> = ({
             disableFlip: false,
             // Add mobile-specific configurations
             videoConstraints: {
-              facingMode: "environment",
+              facingMode: 'environment',
               width: { ideal: qrbox },
               height: { ideal: qrbox },
             },
           },
-          (decodedText) => {
-            console.log("QR Code scanned:", decodedText);
+          decodedText => {
+            logDebug('QR Code scanned', 'QrScanner', { decodedText });
             if (isMountedRef.current) {
               onScan(decodedText);
             }
           },
-          (errorMessage) => {
+          errorMessage => {
             // Only report non-routine scanning errors
             if (
               isMountedRef.current &&
               onError &&
-              !errorMessage.includes("NotFoundException") &&
-              !errorMessage.includes("No MultiFormat Readers")
+              !errorMessage.includes('NotFoundException') &&
+              !errorMessage.includes('No MultiFormat Readers')
             ) {
-              console.warn("QR Scan Error:", errorMessage);
+              logWarn('QR Scan Error', 'QrScanner', { errorMessage });
               onError(new Error(errorMessage));
             }
           }
         );
 
-        console.log("QR Scanner initialized successfully");
+        logDebug('QR Scanner initialized successfully', 'QrScanner');
       } catch (err) {
-        console.error("QR Scanner initialization failed:", err);
+        logError('QR Scanner initialization failed', 'QrScanner', err);
         // Handle specific errors
         const errorMsg = String(err);
         if (
-          errorMsg.includes("AbortError") ||
-          errorMsg.includes("media was removed")
+          errorMsg.includes('AbortError') ||
+          errorMsg.includes('media was removed')
         ) {
           // This is expected when the component unmounts during initialization
-          console.debug(
-            "QR Scanner initialization aborted - component unmounted"
+          logDebug(
+            'QR Scanner initialization aborted - component unmounted',
+            'QrScanner'
           );
         } else if (isMountedRef.current && onError) {
           onError(err as Error);
@@ -169,31 +172,31 @@ const QrScanner: React.FC<QrScannerProps> = ({
       style={{
         width: qrbox,
         height: qrbox,
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#000",
-        borderRadius: "8px",
-        overflow: "hidden",
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#000',
+        borderRadius: '8px',
+        overflow: 'hidden',
       }}
     >
       {/* Loading indicator while camera initializes */}
       <div
         style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          color: "#fff",
-          fontSize: "14px",
-          textAlign: "center",
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          color: '#fff',
+          fontSize: '14px',
+          textAlign: 'center',
           zIndex: 1,
-          pointerEvents: "none",
+          pointerEvents: 'none',
         }}
       >
         <div>📷</div>
-        <div style={{ marginTop: "8px", fontSize: "12px" }}>
+        <div style={{ marginTop: '8px', fontSize: '12px' }}>
           Loading camera...
         </div>
       </div>

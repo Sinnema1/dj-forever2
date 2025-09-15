@@ -1,6 +1,4 @@
 import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { typeDefs } from "./graphql/typeDefs.js";
@@ -11,9 +9,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 async function startServer() {
   // Connect to MongoDB
@@ -83,7 +78,7 @@ async function startServer() {
   );
 
   // Health check endpoint
-  app.get("/health", (req, res) => {
+  app.get("/health", (_req, res) => {
     res.status(200).json({
       status: "ok",
       timestamp: new Date().toISOString(),

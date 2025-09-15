@@ -5,13 +5,41 @@
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+
+    /* Strict Type-Checking Options */
     "strict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+
+    /* Additional Checks */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+
+    /* Module Resolution */
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* Output */
     "skipLibCheck": true,
     "outDir": "dist",
     "rootDir": "src",
     "sourceMap": true,
     "declaration": true,
-    "preserveSymlinks": true
+    "declarationMap": true,
+    "removeComments": false,
+    "preserveSymlinks": true,
+
+    /* Interop Constraints */
+    "isolatedModules": true,
+    "verbatimModuleSyntax": false
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "build"]
 }

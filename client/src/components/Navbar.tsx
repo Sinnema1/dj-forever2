@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import QRLoginModal from "./QRLoginModal";
-import MobileDrawer from "./MobileDrawer";
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import QRLoginModal from './QRLoginModal';
+import MobileDrawer from './MobileDrawer';
 
 // Links for the main page sections (hash links)
 const sectionLinks = [
-  { label: "Home", to: "home" },
-  { label: "Our Story", to: "our-story" },
-  { label: "The Details", to: "details" },
-  { label: "Gallery", to: "gallery" },
-  { label: "Travel Guide", to: "travel" },
-  { label: "FAQs", to: "faqs" },
-  { label: "Guestbook", to: "guestbook" },
+  { label: 'Home', to: 'home' },
+  { label: 'Our Story', to: 'our-story' },
+  { label: 'The Details', to: 'details' },
+  { label: 'Gallery', to: 'gallery' },
+  { label: 'Travel Guide', to: 'travel' },
+  { label: 'FAQs', to: 'faqs' },
+  { label: 'Guestbook', to: 'guestbook' },
 ];
 
 // Links for standalone pages (router links)
 const pageLinks = [
-  { label: "Registry", to: "/registry" },
-  { label: "RSVP", to: "/rsvp", requiresInvitation: true },
+  { label: 'Registry', to: '/registry' },
+  { label: 'RSVP', to: '/rsvp', requiresInvitation: true },
 ];
 
 function Navbar() {
@@ -27,34 +27,36 @@ function Navbar() {
   const { user, isLoggedIn, isLoading, logout } = useAuth();
   const location = useLocation();
   const [qrLoginModalOpen, setQrLoginModalOpen] = useState(false);
-  const isHomePage = location.pathname === "/";
+  const isHomePage = location.pathname === '/';
 
   // scroll listener for background
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 100);
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // detect active section on home page
-  const [activeSection, setActiveSection] = useState("home");
+  const [activeSection, setActiveSection] = useState('home');
   useEffect(() => {
     if (isHomePage) {
       const onScroll = () => {
         const pos = window.scrollY + 100;
-        document.querySelectorAll("section[id]").forEach((sec) => {
+        document.querySelectorAll('section[id]').forEach(sec => {
           const el = sec as HTMLElement;
           if (pos >= el.offsetTop && pos < el.offsetTop + el.offsetHeight) {
             setActiveSection(el.id);
           }
         });
       };
-      window.addEventListener("scroll", onScroll);
+      window.addEventListener('scroll', onScroll);
       onScroll();
-      return () => window.removeEventListener("scroll", onScroll);
+      return () => window.removeEventListener('scroll', onScroll);
     }
+    // No cleanup needed when not on home page
+    return undefined;
   }, [isHomePage]);
 
   // close mobile menu on route change
@@ -63,7 +65,7 @@ function Navbar() {
   }, [location.pathname]);
 
   return (
-    <nav className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}>
+    <nav className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}>
       <Link to="/" className="navbar-logo">
         Dominique &amp; Justin
       </Link>
@@ -71,11 +73,11 @@ function Navbar() {
       {/* Desktop Navigation */}
       <ul className="navbar-links desktop-nav">
         {isHomePage ? (
-          sectionLinks.map((link) => (
+          sectionLinks.map(link => (
             <li key={link.to}>
               <a
                 href={`#${link.to}`}
-                className={activeSection === link.to ? "active" : ""}
+                className={activeSection === link.to ? 'active' : ''}
               >
                 {link.label}
               </a>
@@ -83,19 +85,19 @@ function Navbar() {
           ))
         ) : (
           <li>
-            <Link to="/" className={isHomePage ? "active" : ""}>
+            <Link to="/" className={isHomePage ? 'active' : ''}>
               Home
             </Link>
           </li>
         )}
 
-        {pageLinks.map((link) => {
+        {pageLinks.map(link => {
           if (link.requiresInvitation && !user?.isInvited) return null;
           return (
             <li key={link.to}>
               <Link
                 to={link.to}
-                className={location.pathname === link.to ? "active" : ""}
+                className={location.pathname === link.to ? 'active' : ''}
               >
                 {link.label}
               </Link>
@@ -122,8 +124,8 @@ function Navbar() {
           ) : (
             <div className="desktop-user-info">
               <span className="user-greeting">
-                Hello,{" "}
-                {user && user.fullName ? user.fullName.split(" ")[0] : "Guest"}!
+                Hello,{' '}
+                {user && user.fullName ? user.fullName.split(' ')[0] : 'Guest'}!
               </span>
               <button className="btn btn-outline" onClick={() => logout()}>
                 Logout
@@ -135,7 +137,7 @@ function Navbar() {
 
       {/* Mobile Menu Toggle */}
       <button
-        className={`navbar-mobile-toggle ${mobileMenuOpen ? "open" : ""}`}
+        className={`navbar-mobile-toggle ${mobileMenuOpen ? 'open' : ''}`}
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         aria-label="Toggle navigation menu"
         aria-expanded={mobileMenuOpen}
@@ -158,23 +160,23 @@ function Navbar() {
             sectionLinks.map((link, i) => (
               <li
                 key={link.to}
-                style={{ "--item-index": i } as React.CSSProperties}
+                style={{ '--item-index': i } as React.CSSProperties}
               >
                 <a
                   href={`#${link.to}`}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`drawer-link ${activeSection === link.to ? "active" : ""}`}
+                  className={`drawer-link ${activeSection === link.to ? 'active' : ''}`}
                 >
                   {link.label}
                 </a>
               </li>
             ))
           ) : (
-            <li style={{ "--item-index": 0 } as React.CSSProperties}>
+            <li style={{ '--item-index': 0 } as React.CSSProperties}>
               <Link
                 to="/"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`drawer-link ${isHomePage ? "active" : ""}`}
+                className={`drawer-link ${isHomePage ? 'active' : ''}`}
               >
                 Home
               </Link>
@@ -187,12 +189,12 @@ function Navbar() {
             return (
               <li
                 key={link.to}
-                style={{ "--item-index": itemIndex } as React.CSSProperties}
+                style={{ '--item-index': itemIndex } as React.CSSProperties}
               >
                 <Link
                   to={link.to}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`drawer-link ${location.pathname === link.to ? "active" : ""}`}
+                  className={`drawer-link ${location.pathname === link.to ? 'active' : ''}`}
                 >
                   {link.label}
                 </Link>
@@ -203,7 +205,7 @@ function Navbar() {
           {/* Divider */}
           <div
             className="drawer-divider"
-            style={{ "--item-index": 10 } as React.CSSProperties}
+            style={{ '--item-index': 10 } as React.CSSProperties}
           />
         </ul>
 
@@ -228,8 +230,8 @@ function Navbar() {
           ) : (
             <>
               <div className="drawer-user-greeting">
-                Hello,{" "}
-                {user && user.fullName ? user.fullName.split(" ")[0] : "Guest"}!
+                Hello,{' '}
+                {user && user.fullName ? user.fullName.split(' ')[0] : 'Guest'}!
               </div>
               <button
                 className="drawer-auth-button"

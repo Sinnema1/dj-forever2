@@ -21,20 +21,20 @@ async function updateHasRSVPed() {
     // Find all users who have RSVPs but don't have hasRSVPed set to true
     console.log("🔍 Finding users with RSVPs...");
 
-    const rsvps = await RSVP.find({});
+    const rsvps = await (RSVP.find as any)({});
     console.log(`📝 Found ${rsvps.length} RSVPs in database`);
 
     let updatedCount = 0;
 
     for (const rsvp of rsvps) {
-      const user = await User.findById(rsvp.userId);
+      const user = await (User.findById as any)(rsvp.userId);
 
       if (user && !user.hasRSVPed) {
         console.log(
           `📤 Updating hasRSVPed for ${user.fullName} (${user.email})`
         );
 
-        await User.findByIdAndUpdate(user._id, {
+        await (User.findByIdAndUpdate as any)(user._id, {
           hasRSVPed: true,
         });
 

@@ -1,91 +1,114 @@
+import { GraphQLError } from "graphql";
 import { registerUser, loginWithQrToken } from "../services/authService.js";
-import {
-  getRSVP,
-  createRSVP,
-  updateRSVP,
-  submitRSVP,
-} from "../services/rsvpService.js";
+import { getRSVP, createRSVP, updateRSVP } from "../services/rsvpService.js";
+import { AuthenticationError, ValidationError } from "../utils/errors.js";
+import type {
+  GraphQLContext,
+  RegisterUserArgs,
+  LoginArgs,
+  CreateRSVPInput,
+  RSVPInput,
+  SubmitRSVPArgs,
+} from "../types/graphql.js";
+
+// Helper function to ensure user authentication
+function requireAuth(context: GraphQLContext) {
+  if (!context.user) {
+    throw new AuthenticationError("Authentication required");
+  }
+  return context.user;
+}
 
 export const resolvers = {
   Query: {
-    me: async (_: any, __: any, context: any) => {
+    me: async (_: unknown, __: unknown, context: GraphQLContext) => {
       // Return the authenticated user from context
       return context.user || null;
     },
-    getRSVP: async (_: any, __: any, context: any) => {
+    getRSVP: async (_: unknown, __: unknown, context: GraphQLContext) => {
       // Get RSVP for the authenticated user
-      if (!context.user) {
-        throw new Error("Authentication required");
-      }
+      const user = requireAuth(context);
 
       try {
-        return await getRSVP(context.user._id);
+        return await getRSVP(user._id?.toString() || user.id?.toString());
       } catch (error: any) {
         console.error("Error in getRSVP resolver:", error);
-        throw new Error(error?.message || "Failed to fetch RSVP");
+        throw new GraphQLError(error?.message || "Failed to fetch RSVP");
       }
     },
   },
   Mutation: {
-    registerUser: async (_: any, args: any) => {
-      // Register user with qrToken
-      return registerUser(args);
+    registerUser: async (_: unknown, args: RegisterUserArgs) => {
+      try {
+        return await registerUser(args);
+      } catch (error: any) {
+        console.error("Error in registerUser resolver:", error);
+        throw new ValidationError(error?.message || "Registration failed");
+      }
     },
-    loginWithQrToken: async (_: any, args: any) => {
-      // Login user with qrToken
+    loginWithQrToken: async (_: unknown, args: LoginArgs) => {
       const { qrToken } = args;
       try {
         return await loginWithQrToken({ qrToken });
       } catch (error: any) {
-        // Apollo will return this error in the errors array
-        throw new Error(error?.message || "Login failed");
+        console.error("Error in loginWithQrToken resolver:", error);
+        throw new AuthenticationError(error?.message || "Login failed");
       }
     },
-    submitRSVP: async (_: any, args: any, context: any) => {
+    submitRSVP: async (
+      _: unknown,
+      args: SubmitRSVPArgs,
+      context: GraphQLContext
+    ) => {
       // Legacy mutation - create new RSVP
-      if (!context.user) {
-        throw new Error("Authentication required");
-      }
+      const user = requireAuth(context);
 
       try {
         return await createRSVP({
           ...args,
-          userId: context.user._id,
-          fullName: args.fullName || context.user.fullName,
+          userId: user._id?.toString() || user.id?.toString(),
+          fullName: args.fullName || user.fullName,
         });
       } catch (error: any) {
         console.error("Error in submitRSVP resolver:", error);
-        throw new Error(error?.message || "Failed to submit RSVP");
+        throw new GraphQLError(error?.message || "Failed to submit RSVP");
       }
     },
-    createRSVP: async (_: any, { input }: any, context: any) => {
+    createRSVP: async (
+      _: unknown,
+      { input }: { input: CreateRSVPInput },
+      context: GraphQLContext
+    ) => {
       // New mutation for creating RSVP
-      if (!context.user) {
-        throw new Error("Authentication required");
-      }
+      const user = requireAuth(context);
 
       try {
         return await createRSVP({
           ...input,
-          userId: context.user._id,
-          fullName: input.fullName || context.user.fullName,
+          userId: user._id?.toString() || user.id?.toString(),
+          fullName: input.fullName || user.fullName,
         });
       } catch (error: any) {
         console.error("Error in createRSVP resolver:", error);
-        throw new Error(error?.message || "Failed to create RSVP");
+        throw new GraphQLError(error?.message || "Failed to create RSVP");
       }
     },
-    editRSVP: async (_: any, { updates }: any, context: any) => {
+    editRSVP: async (
+      _: unknown,
+      { updates }: { updates: RSVPInput },
+      context: GraphQLContext
+    ) => {
       // Update existing RSVP
-      if (!context.user) {
-        throw new Error("Authentication required");
-      }
+      const user = requireAuth(context);
 
       try {
-        return await updateRSVP(context.user._id, updates);
+        return await updateRSVP(
+          user._id?.toString() || user.id?.toString(),
+          updates
+        );
       } catch (error: any) {
         console.error("Error in editRSVP resolver:", error);
-        throw new Error(error?.message || "Failed to update RSVP");
+        throw new GraphQLError(error?.message || "Failed to update RSVP");
       }
     },
   },
