@@ -60,7 +60,7 @@ const rsvpSchema = new Schema<IRSVP>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: [true, "User ID is required"],
-      index: true,
+      // Note: Index defined at schema level with unique constraint
     },
     attending: {
       type: String,

@@ -26,7 +26,15 @@ async function startServer() {
   }
 
   const app = express();
-  const PORT = Number(process.env.PORT) || 3005; // Using port 3005 to avoid conflicts
+  const PORT = Number(process.env.PORT) || 3001; // Standard development port for this project
+
+  console.log(
+    `[server] Port configuration: ${
+      process.env.PORT
+        ? `ENV override: ${process.env.PORT}`
+        : `Default: ${PORT}`
+    }`
+  );
 
   // Apollo Server setup
   const server = new ApolloServer({

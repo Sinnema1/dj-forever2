@@ -138,10 +138,12 @@ export default function RSVPForm() {
         return isDifferent ? newData : prev;
       });
     }
+  }, [rsvp, successMessage]); // Removed formData.attending to prevent reset loop
 
-    // Show meal options if attending
+  // Separate useEffect for meal options visibility
+  useEffect(() => {
     setShowMealOptions(formData.attending === 'YES');
-  }, [rsvp, successMessage, formData.attending]);
+  }, [formData.attending]);
 
   // Available meal options
   const mealOptions = [
@@ -282,19 +284,24 @@ export default function RSVPForm() {
     if (errorMessage) setErrorMessage('');
   };
 
-  const handleSelectChange = (
-    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  // Enhanced handler for mobile touch events on attendance options
+  const handleAttendanceChange = (value: 'YES' | 'NO' | 'MAYBE') => {
+    console.log(
+      '[RSVPForm] SAFARI DEBUG - handleAttendanceChange called with:',
+      value
+    );
+    setFormData(prev => ({ ...prev, attending: value }));
+
+    // Update meal options visibility
+    setShowMealOptions(value === 'YES');
 
     // Clear meal preference when not attending
-    if (name === 'attending' && value !== 'YES') {
+    if (value !== 'YES') {
       setFormData(prev => ({ ...prev, mealPreference: '' }));
     }
 
     // Real-time validation
-    validateField(name, value);
+    validateField('attending', value);
 
     // Clear success/error messages
     if (successMessage) setSuccessMessage('');
@@ -468,21 +475,46 @@ export default function RSVPForm() {
           </label>
           <div className="attendance-options">
             {[
-              { value: 'YES', label: "✅ Yes, I'll be there!", icon: '🎉' },
-              { value: 'NO', label: "❌ Sorry, I can't make it", icon: '😢' },
-              { value: 'MAYBE', label: "🤔 I'm not sure yet", icon: '⏰' },
+              { value: 'YES', label: "Yes, I'll be there!", icon: '🎉' },
+              { value: 'NO', label: "Sorry, I can't make it", icon: '😢' },
+              { value: 'MAYBE', label: "I'm not sure yet", icon: '⏰' },
             ].map(option => (
               <label
                 key={option.value}
                 className={`attendance-option ${formData.attending === option.value ? 'selected' : ''}`}
+                data-value={option.value}
+                onTouchStart={() => {
+                  console.log(
+                    '[RSVPForm] SAFARI DEBUG - onTouchStart:',
+                    option.value
+                  );
+                }}
+                onClick={() => {
+                  console.log(
+                    '[RSVPForm] SAFARI DEBUG - onClick:',
+                    option.value
+                  );
+                  handleAttendanceChange(
+                    option.value as 'YES' | 'NO' | 'MAYBE'
+                  );
+                }}
               >
+                {/* Hidden radio input for form functionality */}
                 <input
                   type="radio"
                   name="attending"
                   value={option.value}
                   checked={formData.attending === option.value}
-                  onChange={handleSelectChange}
-                  className="attendance-radio"
+                  onChange={e => {
+                    console.log(
+                      '[RSVPForm] SAFARI DEBUG - onChange:',
+                      e.target.value
+                    );
+                    handleAttendanceChange(
+                      e.target.value as 'YES' | 'NO' | 'MAYBE'
+                    );
+                  }}
+                  className="attendance-radio-safari"
                 />
                 <div className="option-content">
                   <span className="option-icon">{option.icon}</span>
