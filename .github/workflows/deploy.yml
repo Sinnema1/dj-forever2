@@ -3,13 +3,9 @@ name: Deploy
 on:
   push:
     branches: [main]
-  pull_request:
-    branches:
-      - main
 
 jobs:
   deploy-server:
-    needs: [ci]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,7 +17,6 @@ jobs:
           curl -X POST "$DEPLOY_URL"
 
   deploy-client:
-    needs: [ci]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

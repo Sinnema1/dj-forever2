@@ -2,7 +2,14 @@ name: CI/CD
 
 on:
   push:
-    branches: [main]
+    branche      - name: Install and build server
+        run: cd server && npm install && npm run build && npm test
+        env:
+          MONGODB_URI: mongodb://localhost:27017
+          MONGODB_DB_NAME: djforever2_test
+          JWT_SECRET: test-jwt-secret-for-ci
+          NODE_ENV: test
+          LOG_LEVEL: ERRORin]
   pull_request:
     branches: [main]
 
@@ -39,5 +46,6 @@ jobs:
         env:
           MONGODB_URI: mongodb://localhost:27017/djforever_test
           MONGODB_DB_NAME: djforever_test
+          JWT_SECRET: test-jwt-secret-for-ci
       - name: Install and build client
         run: cd client && npm install && npm run build && npm test

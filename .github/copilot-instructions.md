@@ -14,7 +14,7 @@ This is a **QR-code-only authentication** wedding website with a client-server m
 
 2. **Monorepo with Concurrent Development**: Root `package.json` uses `concurrently` to run both client and server simultaneously. Always use `npm run dev` from root for development.
 
-3. **Environment-Aware Database Seeding**: Database names are controlled via `MONGODB_DB_NAME` env var. Production uses `djforever2`, testing uses `test_db`, development uses `djforever2_dev`.
+3. **Environment-Aware Database Seeding**: Database names are controlled via `MONGODB_DB_NAME` env var. Production uses `djforever2`, testing uses `djforever2_test`, development uses `djforever2_dev`.
 
 ## Essential Development Workflows
 
@@ -102,7 +102,7 @@ npm run render-build  # Render.com deployment command
 ```bash
 # Server (.env)
 MONGODB_URI=mongodb://localhost:27017
-MONGODB_DB_NAME=djforever2  # or test_db, djforever2_dev
+MONGODB_DB_NAME=djforever2  # or djforever2_test, djforever2_dev
 JWT_SECRET=your-jwt-secret
 CONFIG__FRONTEND_URL=https://dj-forever2.onrender.com
 
@@ -119,7 +119,7 @@ VITE_GRAPHQL_ENDPOINT=/graphql
 
 ## Testing Conventions
 
-- **Database isolation**: Tests use separate `test_db` database, auto-cleaned before each run
+- **Database isolation**: Tests use separate `djforever2_test` database, auto-cleaned before each run
 - **E2E pattern**: Tests are in `/tests/` directories, named `*.e2e.test.ts/tsx`
 - **GraphQL testing**: Use `debug-rsvp-graphql.js` for mutation validation
 - **Mock patterns**: Client tests mock Apollo mutations, server tests use real database
@@ -261,7 +261,7 @@ This project has extensive mobile optimizations:
 ### Testing Patterns
 
 - **Mock Strategy**: Client tests mock Apollo mutations, server tests use real database
-- **Database Isolation**: Tests use separate `test_db` database
+- **Database Isolation**: Tests use separate `djforever2_test` database
 - **E2E Coverage**: Comprehensive RSVP validation suite
 
 ## Performance Optimizations
