@@ -34,7 +34,7 @@
 @import "./components/details.css";
 @import "./components/qr-prompt.css";
 @import "./components/swipeable-lightbox.css";
-@import "./components/timeline-alternative-1.css";
+@import "./components/timeline.css";
 @import "./components/countdown-enhanced.css";
 @import "./components/welcome-banner.css";
 @import "./components/welcome-modal.css";
@@ -43,10 +43,6 @@
 /* Page-specific styles */
 @import "./pages/rsvp-enhancements.css";
 @import "./pages/TravelGuide.css";
-
-/* Page Styles */
-@import url("./pages/TravelGuide.css");
-@import url("./pages/rsvp-enhancements.css");
 
 /* CSS Architecture Successfully Consolidated! 
  * ✅ All sections extracted and organized

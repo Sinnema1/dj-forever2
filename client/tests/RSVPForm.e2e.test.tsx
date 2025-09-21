@@ -106,7 +106,7 @@ const createNonAttendingRSVPMock = {
         guestCount: 1,
         guests: [
           {
-            fullName: '',
+            fullName: 'Test User',
             mealPreference: '',
             allergies: '',
           },
@@ -136,7 +136,7 @@ const createMaybeRSVPMock = {
         guestCount: 1,
         guests: [
           {
-            fullName: '',
+            fullName: 'Test User',
             mealPreference: '',
             allergies: '',
           },
@@ -263,8 +263,8 @@ describe('RSVPForm integration', () => {
       // Should show validation error
       await waitFor(() => {
         expect(
-          screen.getByText(/meal preference is required/i)
-        ).toBeInTheDocument();
+          screen.getAllByText(/please select a meal preference/i)
+        ).toHaveLength(2);
       });
     });
   });
@@ -292,8 +292,8 @@ describe('RSVPForm integration', () => {
 
       // Verify meal preference fields are hidden
       expect(
-        screen.queryByLabelText(/meal preference/i)
-      ).not.toBeInTheDocument();
+        screen.getByLabelText(/meal preference/i).closest('.conditional-fields')
+      ).toHaveClass('hide');
 
       // Add optional note
       const notesTextarea = screen.getByLabelText(
@@ -311,7 +311,7 @@ describe('RSVPForm integration', () => {
       // Should submit successfully without errors
       await waitFor(() => {
         expect(
-          screen.getByText(/we received your response/i)
+          screen.getByText(/thank you for letting us know/i)
         ).toBeInTheDocument();
       });
     });
@@ -374,8 +374,8 @@ describe('RSVPForm integration', () => {
 
       // Verify meal preference fields are hidden
       expect(
-        screen.queryByLabelText(/meal preference/i)
-      ).not.toBeInTheDocument();
+        screen.getByLabelText(/meal preference/i).closest('.conditional-fields')
+      ).toHaveClass('hide');
 
       // Add optional note
       const notesTextarea = screen.getByLabelText(
@@ -393,7 +393,7 @@ describe('RSVPForm integration', () => {
       // Should submit successfully
       await waitFor(() => {
         expect(
-          screen.getByText(/we received your response/i)
+          screen.getByText(/thank you for letting us know/i)
         ).toBeInTheDocument();
       });
     });
@@ -424,23 +424,32 @@ describe('RSVPForm integration', () => {
         'MAYBE'
       ) as HTMLInputElement;
 
-      // Test mobile touch interactions
+      // Test mobile touch interactions - check visual state instead of hidden radio
       await act(async () => {
         await user.click(attendingYesRadio);
       });
-      expect(attendingYesRadio.checked).toBe(true);
+
+      // Check that the option is visually selected (has 'selected' class)
+      const yesOption = attendingYesRadio.closest('.attendance-option');
+      expect(yesOption).toHaveClass('selected');
 
       await act(async () => {
         await user.click(attendingNoRadio);
       });
-      expect(attendingNoRadio.checked).toBe(true);
-      expect(attendingYesRadio.checked).toBe(false);
+
+      // Check visual state
+      const noOption = attendingNoRadio.closest('.attendance-option');
+      expect(noOption).toHaveClass('selected');
+      expect(yesOption).not.toHaveClass('selected');
 
       await act(async () => {
         await user.click(attendingMaybeRadio);
       });
-      expect(attendingMaybeRadio.checked).toBe(true);
-      expect(attendingNoRadio.checked).toBe(false);
+
+      // Check visual state
+      const maybeOption = attendingMaybeRadio.closest('.attendance-option');
+      expect(maybeOption).toHaveClass('selected');
+      expect(noOption).not.toHaveClass('selected');
     });
 
     it('handles rapid touch events on attendance options', async () => {
@@ -457,15 +466,18 @@ describe('RSVPForm integration', () => {
         'NO'
       ) as HTMLInputElement;
 
-      // Rapid clicks should still work correctly
+      // Rapid clicks should still work correctly - check visual state
       await act(async () => {
         await user.click(attendingYesRadio);
         await user.click(attendingNoRadio);
         await user.click(attendingYesRadio);
       });
 
-      expect(attendingYesRadio.checked).toBe(true);
-      expect(attendingNoRadio.checked).toBe(false);
+      // Check final visual state
+      const yesOption = attendingYesRadio.closest('.attendance-option');
+      const noOption = attendingNoRadio.closest('.attendance-option');
+      expect(yesOption).toHaveClass('selected');
+      expect(noOption).not.toHaveClass('selected');
     });
   });
 
@@ -493,7 +505,9 @@ describe('RSVPForm integration', () => {
 
       // Should show validation errors for attending guests
       await waitFor(() => {
-        expect(screen.getByText(/full name is required/i)).toBeInTheDocument();
+        expect(
+          screen.getAllByText(/please enter guest's full name/i)
+        ).toHaveLength(2);
       });
     });
 
@@ -530,10 +544,10 @@ describe('RSVPForm integration', () => {
         await user.click(attendingNoRadio);
       });
 
-      // Meal preference should disappear
+      // Meal preference should be hidden
       expect(
-        screen.queryByLabelText(/meal preference/i)
-      ).not.toBeInTheDocument();
+        screen.getByLabelText(/meal preference/i).closest('.conditional-fields')
+      ).toHaveClass('hide');
 
       // Name should still be filled
       expect(fullNameInput.value).toBe('Test User');

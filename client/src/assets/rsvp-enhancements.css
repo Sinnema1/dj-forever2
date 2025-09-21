@@ -662,11 +662,19 @@
   font-weight: 500;
 }
 
-/* Attendance Options */
+/* Attendance Options - Enhanced UX */
 .attendance-options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-3);
+  display: grid !important;
+  gap: var(--spacing-3) !important;
+  /* Single column on mobile for better touch targets */
+}
+
+@media (min-width: 768px) {
+  .attendance-options {
+    /* Three columns on desktop for better space usage */
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: var(--spacing-4) !important;
+  }
 }
 
 .attendance-option {
@@ -677,15 +685,42 @@
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   touch-action: manipulation;
+  /* Enhanced mobile support */
+  outline: none;
+  border-radius: var(--radius);
+  /* Ensure proper stacking and click handling */
+  z-index: 1;
+  transition: transform 0.1s ease;
 }
 
-.attendance-radio {
+/* Better focus state for accessibility */
+.attendance-option:focus-within .option-content,
+.attendance-option:focus .option-content {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Enhanced mobile touch feedback */
+.attendance-option:active {
+  transform: scale(0.97);
+}
+
+.attendance-option:active .option-content {
+  background: var(--color-accent-10);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(180, 148, 108, 0.2);
+}
+
+/* Safari-compatible visible radio button approach */
+.attendance-radio-safari {
+  /* Hide the actual radio button but keep it functional */
   position: absolute;
   opacity: 0;
-  pointer-events: none;
-  /* Ensure the radio is accessible for screen readers */
-  width: 1px;
-  height: 1px;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+  z-index: 2;
 }
 
 .option-content {
@@ -693,39 +728,175 @@
   align-items: center;
   gap: var(--spacing-3);
   padding: var(--spacing-4);
-  border: 2px solid var(--color-dusty-blue-20);
-  border-radius: var(--radius);
+  border: 3px solid var(--color-dusty-blue-20);
+  border-radius: var(--radius-lg);
   background: white;
-  transition: all 0.2s ease;
-  min-height: 60px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 70px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.attendance-option:hover .option-content {
+/* Add subtle animation background */
+.option-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(180, 148, 108, 0.1),
+    transparent
+  );
+  transition: left 0.4s ease;
+  z-index: 1;
+}
+
+.attendance-option:hover:not(.selected) .option-content {
   border-color: var(--color-accent);
   background: var(--color-cream);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(180, 148, 108, 0.15);
+}
+
+.attendance-option:hover:not(.selected) .option-content::before {
+  left: 100%;
 }
 
 .attendance-option.selected .option-content {
   border-color: var(--color-accent);
-  background: var(--color-accent-10);
-  box-shadow: 0 0 0 1px var(--color-accent);
+  background: linear-gradient(135deg, 
+    rgba(180, 148, 108, 0.08) 0%, 
+    rgba(180, 148, 108, 0.12) 100%
+  );
+  box-shadow: 
+    0 0 0 2px var(--color-accent),
+    0 4px 20px rgba(180, 148, 108, 0.25);
+  transform: translateY(-1px);
+}
+
+.attendance-option.selected .option-content::after {
+  content: "✓";
+  position: absolute;
+  top: var(--spacing-2);
+  right: var(--spacing-2);
+  width: 24px;
+  height: 24px;
+  background: var(--color-accent);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  z-index: 3;
+  animation: checkmarkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes checkmarkPop {
+  0% {
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(360deg);
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 1;
+  }
 }
 
 .option-icon {
-  font-size: 1.5rem;
-  min-width: 2rem;
+  font-size: 2rem;
+  min-width: 3rem;
   text-align: center;
+  z-index: 2;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.attendance-option.selected .option-icon {
+  transform: scale(1.1);
+  filter: brightness(1.1) saturate(1.2);
 }
 
 .option-text {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-charcoal);
   font-size: var(--font-md);
+  z-index: 2;
+  position: relative;
+  flex: 1;
+  line-height: 1.3;
 }
 
 .attendance-option.selected .option-text {
   color: var(--color-charcoal);
-  font-weight: 600;
+  font-weight: 700;
+}
+
+/* Enhanced visual feedback for different states */
+.attendance-option[data-value="YES"] .option-content {
+  border-left: 4px solid #4caf50;
+}
+
+.attendance-option[data-value="YES"].selected .option-content {
+  background: linear-gradient(135deg, 
+    rgba(76, 175, 80, 0.08) 0%, 
+    rgba(76, 175, 80, 0.12) 100%
+  );
+  border-color: #4caf50;
+  box-shadow: 
+    0 0 0 2px #4caf50,
+    0 4px 20px rgba(76, 175, 80, 0.25);
+}
+
+.attendance-option[data-value="YES"].selected .option-content::after {
+  background: #4caf50;
+}
+
+.attendance-option[data-value="NO"] .option-content {
+  border-left: 4px solid #f44336;
+}
+
+.attendance-option[data-value="NO"].selected .option-content {
+  background: linear-gradient(135deg, 
+    rgba(244, 67, 54, 0.08) 0%, 
+    rgba(244, 67, 54, 0.12) 100%
+  );
+  border-color: #f44336;
+  box-shadow: 
+    0 0 0 2px #f44336,
+    0 4px 20px rgba(244, 67, 54, 0.25);
+}
+
+.attendance-option[data-value="NO"].selected .option-content::after {
+  background: #f44336;
+}
+
+.attendance-option[data-value="MAYBE"] .option-content {
+  border-left: 4px solid #ff9800;
+}
+
+.attendance-option[data-value="MAYBE"].selected .option-content {
+  background: linear-gradient(135deg, 
+    rgba(255, 152, 0, 0.08) 0%, 
+    rgba(255, 152, 0, 0.12) 100%
+  );
+  border-color: #ff9800;
+  box-shadow: 
+    0 0 0 2px #ff9800,
+    0 4px 20px rgba(255, 152, 0, 0.25);
+}
+
+.attendance-option[data-value="MAYBE"].selected .option-content::after {
+  background: #ff9800;
 }
 
 /* Conditional Fields Animation */
@@ -915,6 +1086,56 @@
     font-size: var(--font-lg);
   }
 
+  /* Enhanced mobile attendance options */
+  .attendance-options {
+    gap: var(--spacing-3);
+  }
+
+  .option-content {
+    padding: var(--spacing-4);
+    min-height: 80px; /* Larger touch target */
+    border-width: 3px;
+    transition: all 0.15s ease;
+  }
+
+  .attendance-option:active {
+    transform: scale(0.95);
+  }
+
+  .attendance-option:active .option-content {
+    background: var(--color-accent-10);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(180, 148, 108, 0.3);
+  }
+
+  /* Add haptic-like feedback for mobile */
+  .attendance-option:active {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .option-icon {
+    font-size: 2.5rem;
+    min-width: 3.5rem;
+  }
+
+  .option-text {
+    font-size: var(--font-md);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  /* State-specific mobile optimizations */
+  .attendance-option[data-value="YES"]:active .option-content,
+  .attendance-option[data-value="NO"]:active .option-content,
+  .attendance-option[data-value="MAYBE"]:active .option-content {
+    transform: scale(0.97);
+  }
+
+  /* Enhanced visual feedback timing for mobile */
+  .attendance-option.selected .option-content::after {
+    animation-duration: 0.4s;
+  }
+
   /* Enhanced mobile guest sections */
   .guest-form-section {
     padding: var(--spacing-4);
@@ -985,39 +1206,6 @@
     margin-top: var(--spacing-1);
     border-radius: var(--radius);
     font-size: 14px;
-  }
-
-  /* Attendance options mobile enhancements */
-  .attendance-options {
-    gap: var(--spacing-2);
-  }
-
-  .option-content {
-    padding: var(--spacing-3);
-    min-height: 56px; /* Larger touch target */
-    border-width: 2px;
-    transition: all 0.2s ease;
-  }
-
-  .attendance-option:active .option-content {
-    transform: scale(0.98);
-    background: var(--color-accent-10);
-    border-color: var(--color-accent);
-  }
-
-  /* Add touch feedback for better mobile UX */
-  .attendance-option:active {
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-  }
-
-  .option-icon {
-    font-size: 1.5rem;
-    min-width: 2rem;
-  }
-
-  .option-text {
-    font-size: var(--font-sm);
-    font-weight: 500;
   }
 
   /* Enhanced submit button for mobile */

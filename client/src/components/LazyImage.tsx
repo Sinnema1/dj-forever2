@@ -83,10 +83,41 @@ export function LazyImage({
   useEffect(() => {
     if (priority) return; // Skip intersection observer for priority images
 
+    // Small delay to ensure DOM is properly laid out
+    const checkViewport = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const windowHeight =
+          window.innerHeight || document.documentElement.clientHeight;
+
+        // If image is already in viewport (or close to it), load immediately
+        if (rect.top < windowHeight + 100 && rect.bottom > -100) {
+          logDebug(
+            'Image already in viewport, loading immediately',
+            'LazyImage',
+            {
+              src,
+              rectTop: rect.top,
+              windowHeight,
+              isInViewport: true,
+            }
+          );
+          setIsInView(true);
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // Check immediately
+    if (checkViewport()) return;
+
+    // If not in viewport, set up intersection observer
     const observer = new IntersectionObserver(
       entries => {
         const entry = entries[0];
         if (entry?.isIntersecting) {
+          logDebug('Intersection Observer triggered', 'LazyImage', { src });
           setIsInView(true);
           observer.disconnect();
         }
@@ -111,10 +142,21 @@ export function LazyImage({
   useEffect(() => {
     if (priority || isInView) return;
 
+    // Shorter fallback for gallery images (they're usually all visible)
+    const isGalleryImage = src.includes('/gallery/');
+    const fallbackDelay = isGalleryImage ? 1000 : 5000; // 1s for gallery, 5s for others
+
     const fallbackTimer = setTimeout(() => {
-      logDebug('Fallback loading triggered', 'LazyImage', { src });
+      // Only log non-gallery images to reduce console noise
+      if (!isGalleryImage) {
+        logDebug(
+          `Fallback loading triggered (${isGalleryImage ? 'gallery' : 'standard'})`,
+          'LazyImage',
+          { src }
+        );
+      }
       setIsInView(true);
-    }, 2000); // Load after 2 seconds if intersection observer hasn't triggered
+    }, fallbackDelay);
 
     return () => clearTimeout(fallbackTimer);
   }, [priority, isInView, src]);

@@ -148,8 +148,6 @@ async function checkExistingRSVP(authToken) {
         fullName
         mealPreference
         allergies
-        createdAt
-        updatedAt
       }
     }
   `;
@@ -254,6 +252,74 @@ async function testCreateNonAttendingRSVP(authToken) {
     return result.data.createRSVP;
   } else {
     log(`❌ Failed to create non-attending RSVP:`, colors.red);
+    if (result.errors) {
+      result.errors.forEach((error) => {
+        log(`   ${error.message}`, colors.red);
+        log(
+          `   Path: ${error.path ? error.path.join(".") : "N/A"}`,
+          colors.red
+        );
+        log(
+          `   Extensions: ${JSON.stringify(error.extensions, null, 2)}`,
+          colors.red
+        );
+      });
+    }
+    return false;
+  }
+}
+
+async function testEditRSVP(authToken) {
+  log("\n🔍 Testing: Edit existing RSVP to non-attending...", colors.blue);
+
+  const mutation = `
+    mutation EditRSVP($updates: RSVPInput!) {
+      editRSVP(updates: $updates) {
+        _id
+        userId
+        attending
+        guestCount
+        guests {
+          fullName
+          mealPreference
+          allergies
+        }
+        additionalNotes
+        fullName
+        mealPreference
+        allergies
+      }
+    }
+  `;
+
+  const variables = {
+    updates: {
+      attending: "NO",
+      guestCount: 1,
+      guests: [
+        {
+          fullName: "Charlie Williams",
+          mealPreference: "",
+          allergies: "",
+        },
+      ],
+      additionalNotes: "Updated via debug script - changed to non-attending",
+      fullName: "Charlie Williams",
+      mealPreference: "",
+      allergies: "",
+    },
+  };
+
+  const result = await graphqlQuery(mutation, variables, authToken);
+
+  if (result.success) {
+    log(`✅ RSVP edited successfully!`, colors.green);
+    log(`   ID: ${result.data.editRSVP._id}`);
+    log(`   Attending: ${result.data.editRSVP.attending}`);
+    log(`   Notes: ${result.data.editRSVP.additionalNotes}`);
+    return result.data.editRSVP;
+  } else {
+    log(`❌ Failed to edit RSVP:`, colors.red);
     if (result.errors) {
       result.errors.forEach((error) => {
         log(`   ${error.message}`, colors.red);
@@ -381,58 +447,6 @@ async function testCreateAttendingRSVP() {
   }
 }
 
-async function testEditRSVP(existingRSVP) {
-  log("\n🔍 Testing: Edit existing RSVP...", colors.blue);
-
-  const mutation = `
-    mutation EditRSVP($userId: ID!, $input: RSVPInput!) {
-      editRSVP(userId: $userId, input: $input) {
-        _id
-        userId
-        attending
-        guestCount
-        guests {
-          fullName
-          mealPreference
-          allergies
-        }
-        additionalNotes
-      }
-    }
-  `;
-
-  const variables = {
-    userId: CHARLIE_USER_ID,
-    input: {
-      attending: "NO",
-      guestCount: 1,
-      guests: [
-        {
-          fullName: "",
-          mealPreference: "",
-          allergies: "",
-        },
-      ],
-      additionalNotes: "Sorry, can't make it after all",
-    },
-  };
-
-  const result = await graphqlQuery(mutation, variables);
-
-  if (result.success) {
-    log(`✅ RSVP edited successfully!`, colors.green);
-    return result.data.editRSVP;
-  } else {
-    log(`❌ Failed to edit RSVP:`, colors.red);
-    if (result.errors) {
-      result.errors.forEach((error) => {
-        log(`   ${error.message}`, colors.red);
-      });
-    }
-    return false;
-  }
-}
-
 async function testSchemaIntrospection() {
   log("\n🔍 Testing: Schema introspection...", colors.blue);
 
@@ -506,15 +520,25 @@ async function runAllTests() {
     // Step 4: Check existing RSVP
     const existingRSVP = await checkExistingRSVP(authToken);
 
-    // Step 5: Test creating non-attending RSVP
+    // Step 5: Test RSVP creation/editing
     log(
-      `\n${colors.bold}🎯 Main Test: Creating Non-Attending RSVP${colors.reset}`
+      `\n${colors.bold}🎯 Main Test: ${
+        existingRSVP ? "Editing Existing RSVP" : "Creating Non-Attending RSVP"
+      }${colors.reset}`
     );
-    const createResult = await testCreateNonAttendingRSVP(authToken);
 
-    if (createResult) {
+    let rsvpResult;
+    if (existingRSVP) {
+      rsvpResult = await testEditRSVP(authToken);
+    } else {
+      rsvpResult = await testCreateNonAttendingRSVP(authToken);
+    }
+
+    if (rsvpResult) {
       log(
-        `\n${colors.bold}✅ SUCCESS: Non-attending RSVP created successfully!${colors.reset}`,
+        `\n${colors.bold}✅ SUCCESS: ${
+          existingRSVP ? "RSVP edited" : "Non-attending RSVP created"
+        } successfully!${colors.reset}`,
         colors.green
       );
       log(
@@ -523,7 +547,9 @@ async function runAllTests() {
       );
     } else {
       log(
-        `\n${colors.bold}❌ FAILURE: Could not create non-attending RSVP${colors.reset}`,
+        `\n${colors.bold}❌ FAILURE: Could not ${
+          existingRSVP ? "edit existing" : "create"
+        } RSVP${colors.reset}`,
         colors.red
       );
       log(
@@ -544,7 +570,11 @@ async function runAllTests() {
           : "❌ Error"
       }`
     );
-    log(`- Create non-attending RSVP: ${createResult ? "✅" : "❌"}`);
+    log(
+      `- ${
+        existingRSVP ? "Edit existing RSVP" : "Create non-attending RSVP"
+      }: ${rsvpResult ? "✅" : "❌"}`
+    );
   } catch (error) {
     log(`❌ Test suite failed with error: ${error.message}`, colors.red);
     console.error(error);
