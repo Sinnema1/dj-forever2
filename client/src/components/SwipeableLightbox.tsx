@@ -1,12 +1,48 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { createPortal } from "react-dom";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
+/**
+ * Props for the SwipeableLightbox component
+ */
 interface LightboxModalProps {
+  /** Array of image URLs to display in the lightbox */
   images: string[];
+  /** Index of the initial image to display (0-based) */
   initialIndex: number;
+  /** Callback function called when the lightbox is closed */
   onClose: () => void;
 }
 
+/**
+ * SwipeableLightbox - Advanced Image Gallery Modal
+ *
+ * A feature-rich lightbox component with mobile-first design that provides:
+ * - Touch-based swipe navigation for mobile devices
+ * - Double-tap to zoom functionality with pan controls
+ * - Keyboard navigation (arrow keys, escape)
+ * - Mouse click navigation with visual hints
+ * - Smooth transitions and animations
+ * - Body scroll lock when open
+ * - Portal rendering for proper z-index management
+ *
+ * @features
+ * - **Mobile Optimized**: Swipe gestures, touch controls, responsive design
+ * - **Zoom & Pan**: Double-tap or click to zoom, drag to pan when zoomed
+ * - **Navigation**: Swipe/click navigation with visual feedback
+ * - **Accessibility**: Keyboard support, ARIA labels, focus management
+ * - **Performance**: Lazy loading, GPU-accelerated animations
+ *
+ * @example
+ * ```tsx
+ * const images = ['/photo1.jpg', '/photo2.jpg', '/photo3.jpg'];
+ *
+ * <SwipeableLightbox
+ *   images={images}
+ *   initialIndex={0}
+ *   onClose={() => setLightboxOpen(false)}
+ * />
+ * ```
+ */
 const SwipeableLightbox: React.FC<LightboxModalProps> = ({
   images,
   initialIndex,
@@ -40,7 +76,7 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
     if (isTransitioning) return;
     resetZoom();
     setIsTransitioning(true);
-    setCurrent((i) => (i === 0 ? images.length - 1 : i - 1));
+    setCurrent(i => (i === 0 ? images.length - 1 : i - 1));
     setTimeout(() => setIsTransitioning(false), 300);
   };
 
@@ -48,7 +84,7 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
     if (isTransitioning) return;
     resetZoom();
     setIsTransitioning(true);
-    setCurrent((i) => (i === images.length - 1 ? 0 : i + 1));
+    setCurrent(i => (i === images.length - 1 ? 0 : i + 1));
     setTimeout(() => setIsTransitioning(false), 300);
   };
 
@@ -64,9 +100,12 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
         if (isZoomed) {
           resetZoom();
         } else {
+          const touch = e.touches[0];
+          if (!touch) return;
+
           const rect = (e.target as HTMLElement).getBoundingClientRect();
-          const x = e.touches[0].clientX - rect.left;
-          const y = e.touches[0].clientY - rect.top;
+          const x = touch.clientX - rect.left;
+          const y = touch.clientY - rect.top;
 
           // Calculate pan to center the tap point
           const centerX = rect.width / 2;
@@ -88,8 +127,11 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
   // Enhanced touch handling for zoom and pan
   const onTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
+      const touch = e.targetTouches[0];
+      if (!touch) return;
+
       setTouchEnd(null);
-      setTouchStart(e.targetTouches[0].clientX);
+      setTouchStart(touch.clientX);
 
       // Show navigation hints briefly on first touch (mobile)
       if (!showHints) {
@@ -101,15 +143,18 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
 
   const onTouchMove = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
-      setTouchEnd(e.targetTouches[0].clientX);
+      const touch = e.targetTouches[0];
+      if (!touch) return;
+
+      setTouchEnd(touch.clientX);
 
       // If zoomed, allow panning
       if (isZoomed) {
         e.preventDefault();
-        const deltaX = e.targetTouches[0].clientX - (touchStart || 0);
-        const deltaY = e.targetTouches[0].clientY - (touchStart || 0);
-        setPanX((prev) => prev + deltaX * 0.5);
-        setPanY((prev) => prev + deltaY * 0.5);
+        const deltaX = touch.clientX - (touchStart || 0);
+        const deltaY = touch.clientY - (touchStart || 0);
+        setPanX(prev => prev + deltaX * 0.5);
+        setPanY(prev => prev + deltaY * 0.5);
       }
     }
   };
@@ -132,13 +177,13 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
   // Keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") prevImage();
-      if (e.key === "ArrowRight") nextImage();
-      if (e.key === "Escape") onClose();
+      if (e.key === 'ArrowLeft') prevImage();
+      if (e.key === 'ArrowRight') nextImage();
+      if (e.key === 'Escape') onClose();
     };
 
-    document.addEventListener("keydown", handleKeyPress);
-    return () => document.removeEventListener("keydown", handleKeyPress);
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
   }, []);
 
   // Prevent body scroll when modal is open and fix scroll position issue
@@ -147,24 +192,24 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
     const scrollY = window.scrollY;
 
     // Prevent body scroll
-    document.body.style.overflow = "hidden";
-    document.body.style.position = "fixed";
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
     document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = "100%";
+    document.body.style.width = '100%';
 
     return () => {
       // Restore body scroll and position
-      document.body.style.overflow = "unset";
-      document.body.style.position = "unset";
-      document.body.style.top = "unset";
-      document.body.style.width = "unset";
+      document.body.style.overflow = 'unset';
+      document.body.style.position = 'unset';
+      document.body.style.top = 'unset';
+      document.body.style.width = 'unset';
 
       // Restore scroll position immediately without animation
       requestAnimationFrame(() => {
         window.scrollTo({
           top: scrollY,
           left: 0,
-          behavior: "instant",
+          behavior: 'instant',
         });
       });
     };
@@ -179,7 +224,7 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
   // Create portal element to render modal at body level
   const modalContent = (
     <div className="lightbox-overlay" onClick={onClose}>
-      <div className="lightbox-container" onClick={(e) => e.stopPropagation()}>
+      <div className="lightbox-container" onClick={e => e.stopPropagation()}>
         <button
           className="lightbox-close"
           onClick={onClose}
@@ -199,14 +244,14 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
             ref={imageRef}
             src={images[current]}
             alt={`Gallery image ${current + 1}`}
-            className={`lightbox-image ${isTransitioning ? "transitioning" : ""} ${isZoomed ? "zoomed" : ""}`}
+            className={`lightbox-image ${isTransitioning ? 'transitioning' : ''} ${isZoomed ? 'zoomed' : ''}`}
             loading="lazy"
             onTouchStart={handleDoubleTap}
             style={{
               transform: `scale(${scale}) translate(${panX}px, ${panY}px)`,
-              transformOrigin: "center center",
+              transformOrigin: 'center center',
               transition:
-                isTransitioning || !isZoomed ? "transform 0.3s ease" : "none",
+                isTransitioning || !isZoomed ? 'transform 0.3s ease' : 'none',
             }}
           />
 
@@ -214,13 +259,13 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
           {!isZoomed && (
             <>
               <div
-                className={`swipe-hint left ${showHints ? "show-hint" : ""}`}
+                className={`swipe-hint left ${showHints ? 'show-hint' : ''}`}
                 onClick={prevImage}
               >
                 <span>‹</span>
               </div>
               <div
-                className={`swipe-hint right ${showHints ? "show-hint" : ""}`}
+                className={`swipe-hint right ${showHints ? 'show-hint' : ''}`}
                 onClick={nextImage}
               >
                 <span>›</span>

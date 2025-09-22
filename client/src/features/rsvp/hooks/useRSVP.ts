@@ -1,7 +1,8 @@
-import { useQuery, useMutation } from "@apollo/client";
-import { GET_RSVP } from "../graphql/queries";
-import { CREATE_RSVP, EDIT_RSVP } from "../graphql/mutations";
-import { RSVP, CreateRSVPInput, RSVPInput } from "../types/rsvpTypes";
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_RSVP } from '../graphql/queries';
+import { CREATE_RSVP, EDIT_RSVP } from '../graphql/mutations';
+import { RSVP, CreateRSVPInput, RSVPInput } from '../types/rsvpTypes';
+import { reportGraphQLError } from '../../../services/errorReportingService';
 
 interface GetRSVPResponse {
   getRSVP: RSVP | null;
@@ -36,6 +37,7 @@ export const useRSVP = () => {
       });
       refetch();
     } catch (error) {
+      reportGraphQLError(error, 'createRSVP', formData);
       throw error;
     }
   };
@@ -47,6 +49,7 @@ export const useRSVP = () => {
       });
       refetch();
     } catch (error) {
+      reportGraphQLError(error, 'editRSVP', updates);
       throw error;
     }
   };

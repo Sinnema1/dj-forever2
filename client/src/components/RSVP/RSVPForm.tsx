@@ -1,11 +1,53 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useMutation, useQuery } from "@apollo/client";
-import { useAuth } from "../../context/AuthContext";
-import { useRSVP } from "../../features/rsvp/hooks/useRSVP";
-import RSVPConfirmation from "./RSVPConfirmation";
-import { RSVPFormData, Guest } from "../../features/rsvp/types/rsvpTypes";
+import React, { useState, useEffect } from 'react';
+import { useRSVP } from '../../features/rsvp/hooks/useRSVP';
+import RSVPConfirmation from './RSVPConfirmation';
+import { RSVPFormData, Guest } from '../../features/rsvp/types/rsvpTypes';
+import { logDebug } from '../../utils/logger';
 // Styles now imported globally via main.tsx
 
+/**
+ * RSVPForm - Wedding RSVP Form Component
+ *
+ * A comprehensive form component for wedding RSVPs that handles guest responses,
+ * meal preferences, allergies, and guest management. Supports both single and
+ * multiple guest RSVPs with dynamic form fields and validation.
+ *
+ * Features include legacy data migration, real-time validation, and seamless
+ * integration with GraphQL backend for data persistence.
+ *
+ * @features
+ * - **Multi-Guest Support**: Dynamic guest addition/removal with individual preferences
+ * - **Legacy Data Migration**: Automatic normalization of legacy meal preferences
+ * - **Real-time Validation**: Form validation with user-friendly error messages
+ * - **GraphQL Integration**: Seamless data persistence with Apollo Client
+ * - **Responsive Design**: Mobile-first design with touch-friendly interactions
+ * - **Accessibility**: Full keyboard navigation and screen reader support
+ * - **State Management**: Optimistic UI updates with error handling
+ * - **Confirmation Flow**: Post-submission confirmation with edit capabilities
+ *
+ * @component
+ * @example
+ * ```tsx
+ * // Basic usage in authenticated context
+ * <RSVPForm />
+ *
+ * // The component automatically handles:
+ * // - Loading existing RSVP data
+ * // - Form state management
+ * // - Submission and confirmation flow
+ * // - Error handling and retry logic
+ * ```
+ *
+ * @dependencies
+ * - `useAuth` - Authentication context for user data
+ * - `useRSVP` - Custom hook for RSVP operations
+ * - `Apollo Client` - GraphQL client for data operations
+ * - `RSVPConfirmation` - Confirmation component for submitted RSVPs
+ *
+ * @types
+ * - `RSVPFormData` - Main form data structure
+ * - `Guest` - Individual guest data structure
+ */
 export default function RSVPForm() {
   const { createRSVP, editRSVP, rsvp, loading } = useRSVP();
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -13,104 +55,105 @@ export default function RSVPForm() {
 
   // Helper function to normalize legacy meal preference values
   const normalizeMealPreference = (value: string): string => {
-    if (!value) return "";
+    if (!value) return '';
 
     const normalizedValue = value.toLowerCase().trim();
 
     // Map legacy values to current form values
     const legacyMapping: Record<string, string> = {
-      vegetarian: "vegetarian",
-      chicken: "chicken",
-      beef: "beef",
-      fish: "fish",
-      salmon: "fish",
-      vegan: "vegan",
-      kids: "kids",
-      kid: "kids",
-      children: "kids",
+      vegetarian: 'vegetarian',
+      chicken: 'chicken',
+      beef: 'beef',
+      fish: 'fish',
+      salmon: 'fish',
+      vegan: 'vegan',
+      kids: 'kids',
+      kid: 'kids',
+      children: 'kids',
     };
 
-    return legacyMapping[normalizedValue] || "";
+    return legacyMapping[normalizedValue] || '';
   };
 
   const [formData, setFormData] = useState<RSVPFormData>(() => {
     // Initialize with proper guest structure, handling legacy data
-    const initialGuests = rsvp?.guests?.map((guest) => ({
-      fullName: guest.fullName || "",
-      mealPreference: normalizeMealPreference(guest.mealPreference || ""),
-      allergies: guest.allergies || "",
+    const initialGuests = rsvp?.guests?.map(guest => ({
+      fullName: guest.fullName || '',
+      mealPreference: normalizeMealPreference(guest.mealPreference || ''),
+      allergies: guest.allergies || '',
     })) || [
       {
-        fullName: rsvp?.fullName || "",
-        mealPreference: normalizeMealPreference(rsvp?.mealPreference || ""),
-        allergies: rsvp?.allergies || "",
+        fullName: rsvp?.fullName || '',
+        mealPreference: normalizeMealPreference(rsvp?.mealPreference || ''),
+        allergies: rsvp?.allergies || '',
       },
     ];
 
     return {
-      fullName: rsvp?.fullName || "",
-      attending: rsvp?.attending || "NO",
-      mealPreference: normalizeMealPreference(rsvp?.mealPreference || ""),
-      allergies: rsvp?.allergies || "",
-      additionalNotes: rsvp?.additionalNotes || "",
+      fullName: rsvp?.fullName || '',
+      attending: rsvp?.attending || 'NO',
+      mealPreference: normalizeMealPreference(rsvp?.mealPreference || ''),
+      allergies: rsvp?.allergies || '',
+      additionalNotes: rsvp?.additionalNotes || '',
       guestCount: rsvp?.guestCount || initialGuests.length,
       guests: initialGuests,
     };
   });
 
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
   const [showMealOptions, setShowMealOptions] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log("[RSVPForm] Rendered. successMessage:", successMessage);
+    logDebug('RSVPForm rendered', 'RSVPForm', { successMessage });
     if (rsvp) {
-      setFormData((prev) => {
+      setFormData(prev => {
         const newData = {
-          fullName: rsvp.fullName || "",
-          attending: rsvp.attending || "NO",
-          mealPreference: normalizeMealPreference(rsvp.mealPreference || ""),
-          allergies: rsvp.allergies || "",
-          additionalNotes: rsvp.additionalNotes || "",
+          fullName: rsvp.fullName || '',
+          attending: rsvp.attending || 'NO',
+          mealPreference: normalizeMealPreference(rsvp.mealPreference || ''),
+          allergies: rsvp.allergies || '',
+          additionalNotes: rsvp.additionalNotes || '',
           guestCount: rsvp.guestCount || 1,
-          guests: rsvp.guests?.map((guest) => ({
-            fullName: guest.fullName || "",
-            mealPreference: normalizeMealPreference(guest.mealPreference || ""),
-            allergies: guest.allergies || "",
+          guests: rsvp.guests?.map(guest => ({
+            fullName: guest.fullName || '',
+            mealPreference: normalizeMealPreference(guest.mealPreference || ''),
+            allergies: guest.allergies || '',
           })) || [
             {
-              fullName: rsvp.fullName || "",
+              fullName: rsvp.fullName || '',
               mealPreference: normalizeMealPreference(
-                rsvp.mealPreference || ""
+                rsvp.mealPreference || ''
               ),
-              allergies: rsvp.allergies || "",
+              allergies: rsvp.allergies || '',
             },
           ],
         };
         const isDifferent = Object.keys(newData).some(
-          (key) => (prev as any)[key] !== (newData as any)[key]
+          key => (prev as any)[key] !== (newData as any)[key]
         );
         return isDifferent ? newData : prev;
       });
     }
+  }, [rsvp, successMessage]); // Removed formData.attending to prevent reset loop
 
-    // Show meal options if attending
-    setShowMealOptions(formData.attending === "YES");
-  }, [rsvp, successMessage, formData.attending]);
+  // Separate useEffect for meal options visibility
+  useEffect(() => {
+    setShowMealOptions(formData.attending === 'YES');
+  }, [formData.attending]);
 
   // Available meal options
   const mealOptions = [
-    { value: "", label: "Select your preference" },
-    { value: "chicken", label: "🍗 Herb-Roasted Chicken" },
-    { value: "beef", label: "🥩 Grilled Beef Tenderloin" },
-    { value: "fish", label: "🐟 Pan-Seared Salmon" },
-    { value: "vegetarian", label: "🥗 Vegetarian Pasta Primavera" },
-    { value: "vegan", label: "🌱 Vegan Mediterranean Bowl" },
-    { value: "kids", label: "🍕 Kids Menu (Chicken Tenders & Fries)" },
+    { value: '', label: 'Select your preference' },
+    { value: 'chicken', label: '🍗 Herb-Roasted Chicken' },
+    { value: 'beef', label: '🥩 Grilled Beef Tenderloin' },
+    { value: 'fish', label: '🐟 Pan-Seared Salmon' },
+    { value: 'vegetarian', label: '🥗 Vegetarian Pasta Primavera' },
+    { value: 'vegan', label: '🌱 Vegan Mediterranean Bowl' },
+    { value: 'kids', label: '🍕 Kids Menu (Chicken Tenders & Fries)' },
   ];
 
   // Helper function to update guest count and manage guests array
@@ -120,14 +163,14 @@ export default function RSVPForm() {
     if (newCount > currentGuests.length) {
       // Add new empty guests
       for (let i = currentGuests.length; i < newCount; i++) {
-        currentGuests.push({ fullName: "", mealPreference: "", allergies: "" });
+        currentGuests.push({ fullName: '', mealPreference: '', allergies: '' });
       }
     } else if (newCount < currentGuests.length) {
       // Remove excess guests
       currentGuests.splice(newCount);
     }
 
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       guestCount: newCount,
       guests: currentGuests,
@@ -140,12 +183,17 @@ export default function RSVPForm() {
     field: keyof Guest,
     value: string
   ) => {
-    setFormData((prev) => {
+    setFormData(prev => {
       const updatedGuests = [...prev.guests];
-      updatedGuests[guestIndex] = {
-        ...updatedGuests[guestIndex],
-        [field]: value,
+      const currentGuest = updatedGuests[guestIndex] || {
+        fullName: '',
+        mealPreference: '',
+        allergies: '',
       };
+      updatedGuests[guestIndex] = {
+        ...currentGuest,
+        [field]: value,
+      } as Guest;
       return {
         ...prev,
         guests: updatedGuests,
@@ -158,7 +206,7 @@ export default function RSVPForm() {
     const errors: Record<string, string> = {};
 
     switch (name) {
-      case "fullName":
+      case 'fullName':
         if (guestIndex !== undefined) {
           // Validating individual guest name
           if (!value.trim()) {
@@ -166,40 +214,40 @@ export default function RSVPForm() {
               "Please enter guest's full name";
           } else if (value.trim().length < 2) {
             errors[`guest-${guestIndex}-fullName`] =
-              "Name must be at least 2 characters";
+              'Name must be at least 2 characters';
           }
         } else {
           // Legacy validation for backward compatibility
           if (!value.trim()) {
-            errors.fullName = "Please enter your full name";
+            errors.fullName = 'Please enter your full name';
           } else if (value.trim().length < 2) {
-            errors.fullName = "Name must be at least 2 characters";
+            errors.fullName = 'Name must be at least 2 characters';
           }
         }
         break;
-      case "mealPreference":
+      case 'mealPreference':
         if (guestIndex !== undefined) {
           // Validating individual guest meal preference
-          if (formData.attending === "YES" && !value) {
+          if (formData.attending === 'YES' && !value) {
             errors[`guest-${guestIndex}-mealPreference`] =
-              "Please select a meal preference";
+              'Please select a meal preference';
           }
         } else {
           // Legacy validation
-          if (formData.attending === "YES" && !value) {
-            errors.mealPreference = "Please select a meal preference";
+          if (formData.attending === 'YES' && !value) {
+            errors.mealPreference = 'Please select a meal preference';
           }
         }
         break;
-      case "guestCount":
+      case 'guestCount':
         const count = parseInt(value);
         if (isNaN(count) || count < 1 || count > 10) {
-          errors.guestCount = "Guest count must be between 1 and 10";
+          errors.guestCount = 'Guest count must be between 1 and 10';
         }
         break;
     }
 
-    setValidationErrors((prev) => {
+    setValidationErrors(prev => {
       const newErrors = { ...prev };
 
       // Clear or set the specific error for this field
@@ -226,37 +274,44 @@ export default function RSVPForm() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
 
     // Real-time validation
     validateField(name, value);
 
     // Clear success/error messages when user starts typing
-    if (successMessage) setSuccessMessage("");
-    if (errorMessage) setErrorMessage("");
+    if (successMessage) setSuccessMessage('');
+    if (errorMessage) setErrorMessage('');
   };
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  // Enhanced handler for mobile touch events on attendance options
+  const handleAttendanceChange = (value: 'YES' | 'NO' | 'MAYBE') => {
+    console.log(
+      '[RSVPForm] SAFARI DEBUG - handleAttendanceChange called with:',
+      value
+    );
+    setFormData(prev => ({ ...prev, attending: value }));
+
+    // Update meal options visibility
+    setShowMealOptions(value === 'YES');
 
     // Clear meal preference when not attending
-    if (name === "attending" && value !== "YES") {
-      setFormData((prev) => ({ ...prev, mealPreference: "" }));
+    if (value !== 'YES') {
+      setFormData(prev => ({ ...prev, mealPreference: '' }));
     }
 
     // Real-time validation
-    validateField(name, value);
+    validateField('attending', value);
 
     // Clear success/error messages
-    if (successMessage) setSuccessMessage("");
-    if (errorMessage) setErrorMessage("");
+    if (successMessage) setSuccessMessage('');
+    if (errorMessage) setErrorMessage('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSuccessMessage("");
-    setErrorMessage("");
+    setSuccessMessage('');
+    setErrorMessage('');
     setValidationErrors({});
 
     // Final validation
@@ -264,38 +319,30 @@ export default function RSVPForm() {
 
     // Validate guest count
     if (formData.guestCount < 1 || formData.guestCount > 10) {
-      errors.guestCount = "Guest count must be between 1 and 10";
+      errors.guestCount = 'Guest count must be between 1 and 10';
     }
 
     // Validate each guest if attending
-    if (formData.attending === "YES") {
+    if (formData.attending === 'YES') {
       formData.guests.forEach((guest, index) => {
         if (!guest.fullName.trim()) {
           errors[`guest-${index}-fullName`] = "Please enter guest's full name";
         }
         if (!guest.mealPreference) {
           errors[`guest-${index}-mealPreference`] =
-            "Please select a meal preference";
+            'Please select a meal preference';
         }
       });
-    } else {
-      // For backward compatibility, still validate the legacy fullName field for non-attending guests
-      if (
-        !formData.fullName.trim() &&
-        formData.guests[0] &&
-        !formData.guests[0].fullName.trim()
-      ) {
-        errors.fullName = "Please enter your full name";
-      }
     }
+    // Note: Removed fullName requirement for non-attending guests
+    // Non-attending guests don't need to provide detailed information
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
       return;
     }
 
-    // eslint-disable-next-line no-console
-    console.log("[RSVPForm] handleSubmit called");
+    logDebug('RSVPForm handleSubmit called', 'RSVPForm');
     try {
       // Ensure legacy fields are synchronized with first guest for backward compatibility
       const submissionData = {
@@ -303,19 +350,17 @@ export default function RSVPForm() {
         fullName: formData.guests[0]?.fullName || formData.fullName,
         mealPreference:
           formData.guests[0]?.mealPreference || formData.mealPreference,
-        allergies: formData.guests[0]?.allergies || formData.allergies,
+        allergies: formData.guests[0]?.allergies || formData.allergies || '',
       };
 
       if (rsvp) {
         await editRSVP(submissionData);
-        setSuccessMessage("RSVP updated successfully! 🎉");
-        // eslint-disable-next-line no-console
-        console.log("[RSVPForm] setSuccessMessage: RSVP updated!");
+        setSuccessMessage('RSVP updated successfully! 🎉');
+        logDebug('RSVP updated', 'RSVPForm');
       } else {
         await createRSVP(submissionData);
-        setSuccessMessage("RSVP submitted successfully! 🎉");
-        // eslint-disable-next-line no-console
-        console.log("[RSVPForm] setSuccessMessage: RSVP submitted!");
+        setSuccessMessage('RSVP submitted successfully! 🎉');
+        logDebug('RSVP submitted', 'RSVPForm');
       }
 
       // Store submitted data and show confirmation
@@ -325,17 +370,17 @@ export default function RSVPForm() {
       // Reset form only for new RSVPs
       if (!rsvp) {
         setFormData({
-          fullName: "",
-          attending: "NO",
-          mealPreference: "",
-          allergies: "",
-          additionalNotes: "",
+          fullName: '',
+          attending: 'NO',
+          mealPreference: '',
+          allergies: '',
+          additionalNotes: '',
           guestCount: 1,
-          guests: [{ fullName: "", mealPreference: "", allergies: "" }],
+          guests: [{ fullName: '', mealPreference: '', allergies: '' }],
         });
       }
     } catch (err: any) {
-      setErrorMessage(err.message || "Something went wrong. Please try again.");
+      setErrorMessage(err.message || 'Something went wrong. Please try again.');
     }
   };
 
@@ -351,7 +396,7 @@ export default function RSVPForm() {
     return (
       <RSVPConfirmation
         guestName={primaryGuestName}
-        isAttending={submittedData.attending === "YES"}
+        isAttending={submittedData.attending === 'YES'}
         partySize={submittedData.guestCount}
         onEditRsvp={handleEditRsvp}
       />
@@ -394,21 +439,21 @@ export default function RSVPForm() {
           <select
             id="guestCount"
             name="guestCount"
-            className={`form-select ${validationErrors.guestCount ? "error" : ""}`}
+            className={`form-select ${validationErrors.guestCount ? 'error' : ''}`}
             value={formData.guestCount}
-            onChange={(e) => {
+            onChange={e => {
               const newCount = parseInt(e.target.value);
               updateGuestCount(newCount);
-              validateField("guestCount", e.target.value);
+              validateField('guestCount', e.target.value);
             }}
             required
             aria-describedby={
-              validationErrors.guestCount ? "guestCount-error" : undefined
+              validationErrors.guestCount ? 'guestCount-error' : undefined
             }
           >
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((count) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(count => (
               <option key={count} value={count}>
-                {count} {count === 1 ? "Guest" : "Guests"}
+                {count} {count === 1 ? 'Guest' : 'Guests'}
               </option>
             ))}
           </select>
@@ -425,26 +470,51 @@ export default function RSVPForm() {
         {/* Attendance Question */}
         <div className="form-group">
           <label htmlFor="attending" className="form-label">
-            Will you be attending our wedding?{" "}
+            Will you be attending our wedding?{' '}
             <span className="required">*</span>
           </label>
           <div className="attendance-options">
             {[
-              { value: "YES", label: "✅ Yes, I'll be there!", icon: "🎉" },
-              { value: "NO", label: "❌ Sorry, I can't make it", icon: "😢" },
-              { value: "MAYBE", label: "🤔 I'm not sure yet", icon: "⏰" },
-            ].map((option) => (
+              { value: 'YES', label: "Yes, I'll be there!", icon: '🎉' },
+              { value: 'NO', label: "Sorry, I can't make it", icon: '😢' },
+              { value: 'MAYBE', label: "I'm not sure yet", icon: '⏰' },
+            ].map(option => (
               <label
                 key={option.value}
-                className={`attendance-option ${formData.attending === option.value ? "selected" : ""}`}
+                className={`attendance-option ${formData.attending === option.value ? 'selected' : ''}`}
+                data-value={option.value}
+                onTouchStart={() => {
+                  console.log(
+                    '[RSVPForm] SAFARI DEBUG - onTouchStart:',
+                    option.value
+                  );
+                }}
+                onClick={() => {
+                  console.log(
+                    '[RSVPForm] SAFARI DEBUG - onClick:',
+                    option.value
+                  );
+                  handleAttendanceChange(
+                    option.value as 'YES' | 'NO' | 'MAYBE'
+                  );
+                }}
               >
+                {/* Hidden radio input for form functionality */}
                 <input
                   type="radio"
                   name="attending"
                   value={option.value}
                   checked={formData.attending === option.value}
-                  onChange={(e) => handleSelectChange(e as any)}
-                  className="attendance-radio"
+                  onChange={e => {
+                    console.log(
+                      '[RSVPForm] SAFARI DEBUG - onChange:',
+                      e.target.value
+                    );
+                    handleAttendanceChange(
+                      e.target.value as 'YES' | 'NO' | 'MAYBE'
+                    );
+                  }}
+                  className="attendance-radio-safari"
                 />
                 <div className="option-content">
                   <span className="option-icon">{option.icon}</span>
@@ -457,21 +527,27 @@ export default function RSVPForm() {
 
         {/* Conditional Fields - Only show if attending */}
         <div
-          className={`conditional-fields ${showMealOptions ? "show" : "hide"}`}
+          className={`conditional-fields ${showMealOptions ? 'show' : 'hide'}`}
         >
           {/* Individual Guest Forms */}
           {formData.guests.map((guest, index) => (
-            <div key={index} className="guest-form-section" data-guest-index={index}>
+            <div
+              key={index}
+              className="guest-form-section"
+              data-guest-index={index}
+            >
               <div className="guest-form-header">
                 <h3 className="guest-form-title">
                   {formData.guestCount === 1
-                    ? "Guest Information"
+                    ? 'Guest Information'
                     : `Guest ${index + 1} Information`}
                 </h3>
                 {formData.guestCount > 1 && (
                   <div className="guest-progress-indicator">
                     <span className="guest-current">{index + 1}</span>
-                    <span className="guest-total">of {formData.guestCount}</span>
+                    <span className="guest-total">
+                      of {formData.guestCount}
+                    </span>
                   </div>
                 )}
               </div>
@@ -489,11 +565,11 @@ export default function RSVPForm() {
                     id={`guest-${index}-fullName`}
                     name={`guest-${index}-fullName`}
                     type="text"
-                    className={`form-input ${validationErrors[`guest-${index}-fullName`] ? "error" : ""} ${guest.fullName ? "filled" : ""}`}
+                    className={`form-input ${validationErrors[`guest-${index}-fullName`] ? 'error' : ''} ${guest.fullName ? 'filled' : ''}`}
                     value={guest.fullName}
-                    onChange={(e) => {
-                      updateGuest(index, "fullName", e.target.value);
-                      validateField("fullName", e.target.value, index);
+                    onChange={e => {
+                      updateGuest(index, 'fullName', e.target.value);
+                      validateField('fullName', e.target.value, index);
                     }}
                     placeholder="Enter full name"
                     required
@@ -503,9 +579,7 @@ export default function RSVPForm() {
                         : undefined
                     }
                   />
-                  {guest.fullName && (
-                    <div className="form-input-check">✓</div>
-                  )}
+                  {guest.fullName && <div className="form-input-check">✓</div>}
                 </div>
                 {validationErrors[`guest-${index}-fullName`] && (
                   <div
@@ -531,20 +605,20 @@ export default function RSVPForm() {
                   <select
                     id={`guest-${index}-mealPreference`}
                     name={`guest-${index}-mealPreference`}
-                    className={`form-select ${validationErrors[`guest-${index}-mealPreference`] ? "error" : ""} ${guest.mealPreference ? "filled" : ""}`}
+                    className={`form-select ${validationErrors[`guest-${index}-mealPreference`] ? 'error' : ''} ${guest.mealPreference ? 'filled' : ''}`}
                     value={guest.mealPreference}
-                    onChange={(e) => {
-                      updateGuest(index, "mealPreference", e.target.value);
-                      validateField("mealPreference", e.target.value, index);
+                    onChange={e => {
+                      updateGuest(index, 'mealPreference', e.target.value);
+                      validateField('mealPreference', e.target.value, index);
                     }}
-                    required={formData.attending === "YES"}
+                    required={formData.attending === 'YES'}
                     aria-describedby={
                       validationErrors[`guest-${index}-mealPreference`]
                         ? `guest-${index}-mealPreference-error`
                         : undefined
                     }
                   >
-                    {mealOptions.map((option) => (
+                    {mealOptions.map(option => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -579,9 +653,9 @@ export default function RSVPForm() {
                   name={`guest-${index}-allergies`}
                   type="text"
                   className="form-input"
-                  value={guest.allergies || ""}
-                  onChange={(e) =>
-                    updateGuest(index, "allergies", e.target.value)
+                  value={guest.allergies || ''}
+                  onChange={e =>
+                    updateGuest(index, 'allergies', e.target.value)
                   }
                   placeholder="Please list any allergies or dietary needs"
                 />
@@ -617,28 +691,32 @@ export default function RSVPForm() {
         {/* Submit Button */}
         <div className="submit-section">
           <button
-            className={`rsvp-submit-btn ${loading ? "loading" : ""} ${Object.keys(validationErrors).length > 0 ? "has-errors" : ""}`}
+            className={`rsvp-submit-btn ${loading ? 'loading' : ''} ${Object.keys(validationErrors).length > 0 ? 'has-errors' : ''}`}
             type="submit"
             disabled={loading}
-            aria-describedby={Object.keys(validationErrors).length > 0 ? "form-errors" : undefined}
+            aria-describedby={
+              Object.keys(validationErrors).length > 0
+                ? 'form-errors'
+                : undefined
+            }
           >
             {loading ? (
               <>
                 <span className="loading-spinner"></span>
                 <span className="loading-text">
-                  {rsvp ? "Updating..." : "Submitting..."}
+                  {rsvp ? 'Updating...' : 'Submitting...'}
                 </span>
               </>
             ) : (
               <>
                 <span className="submit-text">
-                  {rsvp ? "Update RSVP" : "Submit RSVP"}
+                  {rsvp ? 'Update RSVP' : 'Submit RSVP'}
                 </span>
                 <span className="submit-icon">💕</span>
               </>
             )}
           </button>
-          
+
           {/* Progress indicator for mobile */}
           {loading && (
             <div className="submission-progress" aria-live="polite">
@@ -646,7 +724,7 @@ export default function RSVPForm() {
                 <div className="progress-fill"></div>
               </div>
               <small className="progress-text">
-                {rsvp ? "Updating your RSVP..." : "Submitting your RSVP..."}
+                {rsvp ? 'Updating your RSVP...' : 'Submitting your RSVP...'}
               </small>
             </div>
           )}

@@ -9,6 +9,12 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    env:
+      MONGODB_URI: mongodb://localhost:27017
+      MONGODB_DB_NAME: djforever2_test
+      JWT_SECRET: test-jwt-secret-for-ci
+      NODE_ENV: test
+      LOG_LEVEL: ERROR
     services:
       mongo:
         image: mongo:6
@@ -36,8 +42,5 @@ jobs:
         run: npm install
       - name: Install and build server
         run: cd server && npm install && npm run build && npm test
-        env:
-          MONGODB_URI: mongodb://localhost:27017/djforever_test
-          MONGODB_DB_NAME: djforever_test
       - name: Install and build client
         run: cd client && npm install && npm run build && npm test

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 // Styles now imported globally via main.tsx
-import SwipeableLightbox from "../components/SwipeableLightbox";
-import { LazyImage } from "../components/LazyImage";
-import { analytics } from "../utils/analytics";
+import SwipeableLightbox from '../components/SwipeableLightbox';
+import { LazyImage } from '../components/LazyImage';
+import { analytics } from '../utils/analytics';
 
 const images = Object.values(
-  import.meta.glob("../assets/images/gallery/*.{png,jpg,jpeg,svg}", {
+  import.meta.glob('../assets/images/gallery/*.{png,jpg,jpeg,svg}', {
     eager: true,
-    as: "url",
+    as: 'url',
   })
 ) as string[];
 
@@ -23,7 +23,7 @@ const Gallery: React.FC = () => {
   const openLightbox = (idx: number) => {
     setCurrentIndex(idx);
     setLightboxOpen(true);
-    analytics.track("gallery_image_opened", undefined, { imageIndex: idx });
+    analytics.track('gallery_image_opened', undefined, { imageIndex: idx });
   };
 
   const closeLightbox = () => setLightboxOpen(false);
@@ -37,7 +37,7 @@ const Gallery: React.FC = () => {
             src={src}
             alt={`Gallery image ${idx + 1}`}
             onClick={() => openLightbox(idx)}
-            loading="eager" // Load gallery thumbnails eagerly
+            loading={idx < 6 ? 'eager' : 'lazy'} // Only eager load first 6
             priority={idx < 6} // Load first 6 images immediately
           />
         ))}
