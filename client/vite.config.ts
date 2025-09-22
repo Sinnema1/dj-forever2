@@ -70,8 +70,23 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
+        // Force service worker update on new builds
+        ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
         // Fix cache conflicts by ensuring proper revision handling
         dontCacheBustURLsMatching: /\.\w{8}\./,
+        // Additional configuration to prevent conflicting entries
+        additionalManifestEntries: [],
+        manifestTransforms: [
+          manifestEntries => {
+            // Remove any duplicate entries with different revisions
+            const uniqueEntries = new Map();
+            manifestEntries.forEach(entry => {
+              const url = entry.url.split('?')[0]; // Remove query parameters for comparison
+              uniqueEntries.set(url, entry);
+            });
+            return { manifest: Array.from(uniqueEntries.values()) };
+          },
+        ],
         runtimeCaching: [
           {
             urlPattern:
@@ -168,9 +183,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ["react", "react-dom"],
-          apollo: ["@apollo/client"],
-          ui: ["react-router-dom"],
+          vendor: ['react', 'react-dom'],
+          apollo: ['@apollo/client'],
+          ui: ['react-router-dom'],
         },
       },
     },
