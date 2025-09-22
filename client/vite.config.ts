@@ -85,6 +85,14 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
+        // Fix cache conflicts by using unique revision hashing
+        dontCacheBustURLsMatching: /\.\w{8}\./,
+        mode: 'production',
+        // Exclude problematic files that cause cache conflicts
+        globIgnores: ['**/node_modules/**/*'],
+        modifyURLPrefix: {
+          'assets/': 'assets/',
+        },
         runtimeCaching: [
           {
             // GraphQL API - NetworkFirst for fresh RSVP data
@@ -217,8 +225,16 @@ export default defineConfig({
           ) {
             return 'react-core';
           }
-          // Apollo GraphQL and related utilities
-          if (id.includes('@apollo/client') || id.includes('graphql')) {
+          // Apollo GraphQL and related utilities - ensure ALL Apollo dependencies stay together
+          if (
+            id.includes('@apollo/client') || 
+            id.includes('graphql') ||
+            id.includes('apollo') ||
+            id.includes('@apollo') ||
+            id.includes('apollo-link') ||
+            id.includes('@apollo/client/link') ||
+            id.includes('apollo-utilities')
+          ) {
             return 'apollo';
           }
           // QR code library (relatively large)
