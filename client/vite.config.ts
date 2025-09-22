@@ -166,13 +166,13 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: id => {
+          // Ensure React and ReactDOM stay together to prevent context errors
+          if (id.includes('react/') || id.includes('react-dom/')) {
+            return 'react-core';
+          }
           // Apollo GraphQL and related utilities
           if (id.includes('@apollo/client') || id.includes('graphql')) {
             return 'apollo';
-          }
-          // Core React dependencies
-          if (id.includes('react') && !id.includes('react-router')) {
-            return 'react';
           }
           // React Router and related
           if (id.includes('react-router-dom')) {
