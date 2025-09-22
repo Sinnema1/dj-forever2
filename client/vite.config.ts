@@ -141,13 +141,6 @@ export default defineConfig({
         template: 'treemap', // Better visualization for bundle analysis
       }),
   ].filter(Boolean),
-  resolve: {
-    alias: {
-      // Ensure single React instance to prevent context errors
-      react: 'react',
-      'react-dom': 'react-dom',
-    },
-  },
   server: {
     host: true, // ✅ reachable on LAN (iPhone)
     port: 3002,
@@ -172,17 +165,28 @@ export default defineConfig({
     assetsDir: 'assets',
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Core React chunk (most critical)
-          'react-core': ['react', 'react-dom'],
-          // Apollo and GraphQL
-          apollo: ['@apollo/client', 'graphql'],
-          // React Router
-          router: ['react-router-dom'],
-          // QR code functionality
-          qr: ['html5-qrcode'],
-          // Other vendor libraries
-          vendor: ['react-helmet-async', 'react-icons', 'react-scroll'],
+        manualChunks: id => {
+          // Apollo GraphQL and related utilities
+          if (id.includes('@apollo/client') || id.includes('graphql')) {
+            return 'apollo';
+          }
+          // Core React dependencies
+          if (id.includes('react') && !id.includes('react-router')) {
+            return 'react';
+          }
+          // React Router and related
+          if (id.includes('react-router-dom')) {
+            return 'router';
+          }
+          // QR code library (relatively large)
+          if (id.includes('html5-qrcode')) {
+            return 'qr';
+          }
+          // Other large vendor libraries get their own chunks
+          if (id.includes('node_modules')) {
+            // You can add more specific chunking here based on bundle analysis
+            return 'vendor';
+          }
         },
       },
     },
