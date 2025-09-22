@@ -1,17 +1,17 @@
 /* Import all component-specific styles first */
-@import url("./mobile-enhancements.css");
-@import url("./mobile-drawer.css");
-@import url("./FAQ.css");
-@import url("./TravelGuide.css");
-@import url("./countdown-enhanced.css");
-@import url("./details.css");
-@import url("./qr-prompt.css");
-@import url("./swipeable-lightbox.css");
-@import url("./timeline.css");
-@import url("./welcome-banner.css");
-@import url("./welcome-modal.css");
+@import "./mobile-enhancements.css";
+@import "./mobile-drawer.css";
+@import "./FAQ.css";
+@import "./TravelGuide.css";
+@import "./countdown-enhanced.css";
+@import "./details.css";
+@import "./qr-prompt.css";
+@import "./swipeable-lightbox.css";
+@import "./timeline.css";
+@import "./welcome-banner.css";
+@import "./welcome-modal.css";
 /* RSVP enhancements LAST for highest CSS precedence */
-@import url("./rsvp-enhancements.css");
+@import "./rsvp-enhancements.css";
 
 /* =================== Design Tokens =================== */
 :root {
