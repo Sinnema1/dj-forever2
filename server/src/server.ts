@@ -1,6 +1,4 @@
 import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { typeDefs } from "./graphql/typeDefs.js";
@@ -11,9 +9,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 async function startServer() {
   // Connect to MongoDB
@@ -31,7 +26,15 @@ async function startServer() {
   }
 
   const app = express();
-  const PORT = Number(process.env.PORT) || 3005; // Using port 3005 to avoid conflicts
+  const PORT = Number(process.env.PORT) || 3001; // Standard development port for this project
+
+  console.log(
+    `[server] Port configuration: ${
+      process.env.PORT
+        ? `ENV override: ${process.env.PORT}`
+        : `Default: ${PORT}`
+    }`
+  );
 
   // Apollo Server setup
   const server = new ApolloServer({
@@ -83,7 +86,7 @@ async function startServer() {
   );
 
   // Health check endpoint
-  app.get("/health", (req, res) => {
+  app.get("/health", (_req, res) => {
     res.status(200).json({
       status: "ok",
       timestamp: new Date().toISOString(),

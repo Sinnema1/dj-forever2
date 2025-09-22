@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import QrScanner from "../components/QrScanner";
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import QrScanner from '../components/QrScanner';
+import { logError } from '../utils/logger';
+import { reportError } from '../services/errorReportingService';
 
 interface CheckInData {
   guestId: string;
   checkInTime: Date;
-  location: "ceremony" | "reception" | "venue";
-  guestName?: string;
+  location: 'ceremony' | 'reception' | 'venue';
+  guestName?: string | undefined;
 }
 
 interface CheckInResult {
   success: boolean;
-  guestName?: string;
+  guestName?: string | undefined;
   message: string;
   timestamp: Date;
 }
@@ -20,11 +22,11 @@ const VenueCheckIn: React.FC = () => {
   const { user, token } = useAuth();
   const [isScanning, setIsScanning] = useState(false);
   const [checkInHistory, setCheckInHistory] = useState<CheckInResult[]>([]);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<string>('');
   const [isStaff, setIsStaff] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<
-    "ceremony" | "reception" | "venue"
-  >("venue");
+    'ceremony' | 'reception' | 'venue'
+  >('venue');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [pendingCheckIns, setPendingCheckIns] = useState<CheckInData[]>([]);
 
@@ -38,31 +40,38 @@ const VenueCheckIn: React.FC = () => {
     };
     const handleOffline = () => setIsOnline(false);
 
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
 
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
     };
   }, [user]);
 
   const checkStaffStatus = async () => {
     if (
-      user?.email?.includes("staff") ||
-      user?.email?.includes("coordinator")
+      user?.email?.includes('staff') ||
+      user?.email?.includes('coordinator')
     ) {
       setIsStaff(true);
     }
   };
 
   const loadPendingCheckIns = () => {
-    const stored = localStorage.getItem("pendingCheckIns");
+    const stored = localStorage.getItem('pendingCheckIns');
     if (stored) {
       try {
         setPendingCheckIns(JSON.parse(stored));
       } catch (error) {
-        console.error("Failed to load pending check-ins:", error);
+        logError(
+          'Failed to load pending check-ins',
+          error instanceof Error ? error.message : String(error)
+        );
+        reportError(error as Error, {
+          component: 'VenueCheckIn',
+          action: 'load_pending_checkins',
+        });
       }
     }
   };
@@ -70,7 +79,7 @@ const VenueCheckIn: React.FC = () => {
   const savePendingCheckIn = (checkIn: CheckInData) => {
     const updated = [...pendingCheckIns, checkIn];
     setPendingCheckIns(updated);
-    localStorage.setItem("pendingCheckIns", JSON.stringify(updated));
+    localStorage.setItem('pendingCheckIns', JSON.stringify(updated));
   };
 
   const syncPendingCheckIns = async () => {
@@ -82,7 +91,7 @@ const VenueCheckIn: React.FC = () => {
       }
 
       setPendingCheckIns([]);
-      localStorage.removeItem("pendingCheckIns");
+      localStorage.removeItem('pendingCheckIns');
 
       addCheckInResult({
         success: true,
@@ -90,18 +99,26 @@ const VenueCheckIn: React.FC = () => {
         timestamp: new Date(),
       });
     } catch (error) {
-      console.error("Failed to sync pending check-ins:", error);
+      logError(
+        'Failed to sync pending check-ins',
+        error instanceof Error ? error.message : String(error)
+      );
+      reportError(error as Error, {
+        component: 'VenueCheckIn',
+        action: 'sync_pending_checkins',
+        pendingCount: pendingCheckIns.length,
+      });
     }
   };
 
   const handleQRScan = async (qrData: string) => {
     try {
-      setError("");
+      setError('');
 
       const guestData = parseCheckInQR(qrData);
 
       if (!guestData) {
-        throw new Error("Invalid check-in QR code");
+        throw new Error('Invalid check-in QR code');
       }
 
       const checkInData: CheckInData = {
@@ -144,12 +161,15 @@ const VenueCheckIn: React.FC = () => {
 
       setIsScanning(false);
     } catch (error) {
-      console.error("Check-in error:", error);
-      setError(error instanceof Error ? error.message : "Check-in failed");
+      logError(
+        'Check-in error',
+        error instanceof Error ? error.message : String(error)
+      );
+      setError(error instanceof Error ? error.message : 'Check-in failed');
 
       addCheckInResult({
         success: false,
-        message: error instanceof Error ? error.message : "Check-in failed",
+        message: error instanceof Error ? error.message : 'Check-in failed',
         timestamp: new Date(),
       });
     }
@@ -170,25 +190,27 @@ const VenueCheckIn: React.FC = () => {
       // Not JSON
     }
 
-    if (qrData.includes("guest=") || qrData.includes("id=")) {
+    if (qrData.includes('guest=') || qrData.includes('id=')) {
       try {
         const url = new URL(qrData);
         const guestId =
-          url.searchParams.get("guest") || url.searchParams.get("id");
-        const guestName = url.searchParams.get("name");
+          url.searchParams.get('guest') || url.searchParams.get('id');
+        const guestName = url.searchParams.get('name');
 
         if (guestId) {
-          return { guestId, guestName: guestName || undefined };
+          return {
+            guestId,
+            ...(guestName && { guestName }),
+          };
         }
       } catch {
         // Invalid URL
       }
     }
 
-    if (qrData.includes("@") || /^[a-zA-Z0-9-_]+$/.test(qrData)) {
+    if (qrData.includes('@') || /^[a-zA-Z0-9-_]+$/.test(qrData)) {
       return {
         guestId: qrData,
-        guestName: undefined,
       };
     }
 
@@ -198,10 +220,10 @@ const VenueCheckIn: React.FC = () => {
   const submitCheckInToServer = async (
     checkInData: CheckInData
   ): Promise<void> => {
-    const response = await fetch("/api/checkin", {
-      method: "POST",
+    const response = await fetch('/api/checkin', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
@@ -212,16 +234,16 @@ const VenueCheckIn: React.FC = () => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to submit check-in to server");
+      throw new Error('Failed to submit check-in to server');
     }
   };
 
   const addCheckInResult = (result: CheckInResult) => {
-    setCheckInHistory((prev) => [result, ...prev.slice(0, 9)]);
+    setCheckInHistory(prev => [result, ...prev.slice(0, 9)]);
   };
 
   const manualCheckIn = async () => {
-    const guestId = prompt("Enter guest ID or email:");
+    const guestId = prompt('Enter guest ID or email:');
     if (!guestId) return;
 
     await handleQRScan(guestId);
@@ -242,7 +264,7 @@ const VenueCheckIn: React.FC = () => {
         <h2>🏛️ Venue Check-In</h2>
         <div className="status-bar">
           <div className="connection-status">
-            {isOnline ? "🟢 Online" : "🔴 Offline"}
+            {isOnline ? '🟢 Online' : '🔴 Offline'}
           </div>
           {pendingCheckIns.length > 0 && (
             <div className="pending-status">
@@ -256,7 +278,7 @@ const VenueCheckIn: React.FC = () => {
         <label>Check-in Location:</label>
         <select
           value={currentLocation}
-          onChange={(e) => setCurrentLocation(e.target.value as any)}
+          onChange={e => setCurrentLocation(e.target.value as any)}
         >
           <option value="ceremony">Ceremony</option>
           <option value="reception">Reception</option>
@@ -284,7 +306,7 @@ const VenueCheckIn: React.FC = () => {
           <div className="scanner-container">
             <QrScanner
               onScan={handleQRScan}
-              onError={(err) => setError(err.message)}
+              onError={err => setError(err.message)}
             />
             <button
               className="btn-secondary cancel-btn"
@@ -305,10 +327,10 @@ const VenueCheckIn: React.FC = () => {
             {checkInHistory.map((result, index) => (
               <div
                 key={index}
-                className={`history-item ${result.success ? "success" : "error"}`}
+                className={`history-item ${result.success ? 'success' : 'error'}`}
               >
                 <div className="history-icon">
-                  {result.success ? "✅" : "❌"}
+                  {result.success ? '✅' : '❌'}
                 </div>
                 <div className="history-details">
                   {result.guestName && (

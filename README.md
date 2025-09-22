@@ -31,7 +31,7 @@
    > All scripts accept the `MONGODB_DB_NAME` environment variable. Example:
    >
    > ```sh
-   > MONGODB_DB_NAME=test_db npm run print:users
+   > MONGODB_DB_NAME=djforever2_test npm run print:users
    > MONGODB_DB_NAME=djforever2 npm run print:users
    > ```
 
@@ -59,12 +59,12 @@
   npm run test
   ```
 
-  - Tests use a separate database (`test_db`) and automatically clean it before each run.
+  - Tests use a separate database (`djforever2_test`) and automatically clean it before each run.
   - The test environment uses `.env.test` for configuration. Example:
 
     ```env
     MONGODB_URI=mongodb://localhost:27017
-    MONGODB_DB_NAME=test_db
+    MONGODB_DB_NAME=djforever2_test
     JWT_SECRET=your-test-secret
     ```
 

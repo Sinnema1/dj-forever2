@@ -1,7 +1,7 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client';
 
 export const CREATE_RSVP = gql`
-  mutation CreateRSVP($input: RSVPInput!) {
+  mutation CreateRSVP($input: CreateRSVPInput!) {
     createRSVP(input: $input) {
       _id
       userId

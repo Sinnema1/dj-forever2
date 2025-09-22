@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import coverPhoto from "../assets/images/cover_photo.jpeg";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import coverPhoto from '../assets/images/cover_photo.jpeg';
 // Styles now imported globally via main.tsx
 
 const WelcomeModal: React.FC = () => {
@@ -9,7 +9,7 @@ const WelcomeModal: React.FC = () => {
 
   useEffect(() => {
     // Only show for logged-in users
-    if (!isLoggedIn || !user) return;
+    if (!isLoggedIn || !user) return undefined;
 
     // Check if user has seen the welcome modal before
     const hasSeenWelcome = localStorage.getItem(`welcome-seen-${user._id}`);
@@ -22,23 +22,26 @@ const WelcomeModal: React.FC = () => {
 
       return () => clearTimeout(timer);
     }
+
+    // No cleanup needed when modal shouldn't show
+    return undefined;
   }, [isLoggedIn, user]);
 
   const handleClose = () => {
     setShowModal(false);
     if (user) {
       // Mark as seen so it doesn't show again
-      localStorage.setItem(`welcome-seen-${user._id}`, "true");
+      localStorage.setItem(`welcome-seen-${user._id}`, 'true');
     }
   };
 
   if (!showModal || !isLoggedIn || !user) return null;
 
-  const firstName = user.fullName.split(" ")[0];
+  const firstName = user.fullName.split(' ')[0];
 
   return (
     <div className="welcome-modal-overlay" onClick={handleClose}>
-      <div className="welcome-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="welcome-modal" onClick={e => e.stopPropagation()}>
         <button
           className="welcome-modal-close"
           onClick={handleClose}
@@ -90,7 +93,11 @@ const WelcomeModal: React.FC = () => {
 
           <div className="welcome-modal-footer">
             {!user.hasRSVPed && (
-              <a href="/rsvp" className="welcome-rsvp-btn">
+              <a
+                href="/rsvp"
+                className="welcome-rsvp-btn"
+                onClick={handleClose}
+              >
                 RSVP Now 💌
               </a>
             )}

@@ -1,23 +1,62 @@
-import React, { useEffect, useRef, ReactNode } from "react";
-import { createPortal } from "react-dom";
+import React, { useEffect, useRef, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 
+/**
+ * Props interface for MobileDrawer component
+ */
 interface MobileDrawerProps {
+  /** Whether the drawer is open/visible */
   isOpen: boolean;
+  /** Callback function to close the drawer */
   onClose: () => void;
+  /** Content to render inside the drawer */
   children: ReactNode;
+  /** Optional CSS class name for styling customization */
   className?: string;
 }
 
 /**
- * Modern Mobile Drawer Component
- * Follows WCAG 2.1 AA accessibility standards
- * Implements proper focus management and body scroll lock
+ * MobileDrawer - Accessible Mobile Navigation Drawer
+ *
+ * A modern, accessible mobile drawer component that slides in from the side.
+ * Follows WCAG 2.1 AA accessibility standards with proper focus management,
+ * keyboard navigation, and screen reader support.
+ *
+ * @features
+ * - **Accessibility**: Full WCAG 2.1 AA compliance with ARIA attributes
+ * - **Focus Management**: Automatic focus trapping and restoration
+ * - **Keyboard Navigation**: Tab cycling and Escape key support
+ * - **Body Scroll Lock**: Prevents background scrolling when open
+ * - **Portal Rendering**: Renders outside component hierarchy for proper z-index
+ * - **Touch Interactions**: Backdrop tap to close functionality
+ * - **Screen Reader Support**: Proper semantic markup and labels
+ *
+ * @example
+ * ```tsx
+ * // Basic usage
+ * <MobileDrawer isOpen={isMenuOpen} onClose={closeMenu}>
+ *   <nav>
+ *     <a href="/home">Home</a>
+ *     <a href="/about">About</a>
+ *     <a href="/contact">Contact</a>
+ *   </nav>
+ * </MobileDrawer>
+ *
+ * // With custom styling
+ * <MobileDrawer
+ *   isOpen={isOpen}
+ *   onClose={handleClose}
+ *   className="custom-drawer-style"
+ * >
+ *   <NavigationMenu />
+ * </MobileDrawer>
+ * ```
  */
 const MobileDrawer: React.FC<MobileDrawerProps> = ({
   isOpen,
   onClose,
   children,
-  className = "",
+  className = '',
 }) => {
   const drawerRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -43,24 +82,24 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
   // Body scroll lock
   useEffect(() => {
-    if (isOpen) {
-      // Save current scroll position
-      const scrollY = window.scrollY;
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
-      document.body.dataset.scrollY = scrollY.toString();
+    if (!isOpen) return;
 
-      return () => {
-        // Restore scroll position
-        const scrollY = parseInt(document.body.dataset.scrollY || "0");
-        document.body.style.position = "";
-        document.body.style.top = "";
-        document.body.style.width = "";
-        window.scrollTo(0, scrollY);
-        delete document.body.dataset.scrollY;
-      };
-    }
+    // Save current scroll position
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.dataset.scrollY = scrollY.toString();
+
+    return () => {
+      // Restore scroll position
+      const scrollY = parseInt(document.body.dataset.scrollY || '0');
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
+      delete document.body.dataset.scrollY;
+    };
   }, [isOpen]);
 
   // Keyboard event handling
@@ -69,13 +108,13 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       // Close on Escape
-      if (event.key === "Escape") {
+      if (event.key === 'Escape') {
         onClose();
         return;
       }
 
       // Focus trap
-      if (event.key === "Tab" && drawerRef.current) {
+      if (event.key === 'Tab' && drawerRef.current) {
         const focusableElements = drawerRef.current.querySelectorAll(
           'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
         );
@@ -98,8 +137,8 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;

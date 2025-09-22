@@ -1,0 +1,89 @@
+/* =================== Registry Components =================== */
+.registry-section {
+  padding: 3rem 0;
+  background: var(--color-panel-cream);
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(180, 148, 108, 0.06);
+  margin: 2rem auto;
+  max-width: 700px;
+  text-align: center;
+}
+
+.registry-container {
+  padding: 1rem 2rem;
+}
+
+.registry-intro {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-charcoal);
+}
+
+.registry-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.registry-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.registry-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-sage-20);
+  color: var(--color-charcoal);
+  border: 2px solid var(--color-gold-accent);
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(180, 148, 108, 0.08);
+  transition:
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
+  min-width: 180px;
+  min-height: 60px;
+}
+
+.registry-button:hover {
+  background: var(--color-sage);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(159, 181, 161, 0.16);
+}
+
+.registry-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+}
+
+.registry-logo-container img {
+  max-height: 40px;
+  max-width: 120px;
+  object-fit: contain;
+}
+
+.registry-message {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: var(--color-charcoal);
+}
+
+.registry-thank-you {
+  font-size: 1.05rem;
+  color: var(--color-gold-accent);
+  margin-top: 1.5rem;
+  font-style: italic;
+}

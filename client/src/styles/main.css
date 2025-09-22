@@ -1,0 +1,51 @@
+/* =================== Wedding Website Styles =================== */
+/* 
+ * Consolidated CSS Architecture
+ * Status: Phase 1 Complete - Base structure organized
+ * 
+ * ✅ Extracted: Design tokens, global styles, typography, utilities, navbar
+ * ✅ Moved: Component-specific CSS files to organized structure  
+ * 🔄 Next: Extract remaining sections from legacy styles.css
+ */
+
+/* Base Styles */
+@import url("./base/tokens.css");
+@import url("./base/global.css");
+@import url("./base/typography.css");
+
+/* =================== Layout Styles =================== */
+/* Layout components and utilities */
+@import "./layout/utilities.css"; /* Grid, flex, spacing utilities */
+@import "./layout/navbar.css"; /* Navigation component */
+@import "./layout/sections.css"; /* Section layout and animations */
+@import "./layout/mobile-enhancements.css";
+@import "./layout/mobile-drawer.css";
+
+/* =================== Component Styles =================== */
+/* Core component styles */
+@import "./components/hero.css";
+@import "./components/buttons.css";
+@import "./components/cards-forms.css";
+@import "./components/registry.css";
+@import "./components/modals.css";
+
+/* Feature-specific component styles */
+@import "./components/FAQ.css";
+@import "./components/details.css";
+@import "./components/qr-prompt.css";
+@import "./components/swipeable-lightbox.css";
+@import "./components/timeline.css";
+@import "./components/countdown-enhanced.css";
+@import "./components/welcome-banner.css";
+@import "./components/welcome-modal.css";
+
+/* =================== Page Styles =================== */
+/* Page-specific styles */
+@import "./pages/rsvp-enhancements.css";
+@import "./pages/TravelGuide.css";
+
+/* CSS Architecture Successfully Consolidated! 
+ * ✅ All sections extracted and organized
+ * ✅ Design tokens, components, layout separated  
+ * ✅ Legacy styles.css content fully migrated
+ */

@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 // Styles now imported globally via main.tsx
 
 const PersonalizedWelcome: React.FC = () => {
   const { user, isLoggedIn } = useAuth();
-  const [welcomeMessage, setWelcomeMessage] = useState<string>("");
+  const [welcomeMessage, setWelcomeMessage] = useState<string>('');
   const [showWelcome, setShowWelcome] = useState<boolean>(false);
 
   useEffect(() => {
     if (isLoggedIn && user?.fullName) {
       // Create personalized welcome message
-      const firstName = user.fullName.split(" ")[0];
+      const firstName = user.fullName.split(' ')[0];
 
       // Different messages based on RSVP status
       if (user.hasRSVPed) {
@@ -31,6 +31,8 @@ const PersonalizedWelcome: React.FC = () => {
 
       return () => clearTimeout(timer);
     }
+    // No cleanup needed when condition is false
+    return undefined;
   }, [isLoggedIn, user]);
 
   if (!showWelcome || !isLoggedIn) return null;

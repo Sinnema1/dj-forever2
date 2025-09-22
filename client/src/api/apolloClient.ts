@@ -3,46 +3,67 @@ import {
   InMemoryCache,
   createHttpLink,
   from,
-} from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
-import { onError } from "@apollo/client/link/error";
+} from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import { onError } from '@apollo/client/link/error';
+import { logError, logWarn } from '../utils/logger';
+import {
+  reportGraphQLError,
+  reportNetworkError,
+} from '../services/errorReportingService';
 
 // Create an HTTP link for GraphQL server
 const httpLink = createHttpLink({
-  uri: import.meta.env.VITE_GRAPHQL_ENDPOINT || "/graphql",
+  uri: import.meta.env.VITE_GRAPHQL_ENDPOINT || '/graphql',
 });
 
 // Handle authentication via token in localStorage
 const authLink = setContext((_, { headers }) => {
   // Get auth token from localStorage if it exists
-  const token = localStorage.getItem("id_token");
+  const token = localStorage.getItem('id_token');
 
   // Return headers to the context for the httpLink to use
   return {
     headers: {
       ...headers,
-      authorization: token ? `Bearer ${token}` : "",
+      authorization: token ? `Bearer ${token}` : '',
     },
   };
 });
 
 // Handle GraphQL errors
-const errorLink = onError(({ graphQLErrors, networkError }) => {
+const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
   if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path }) =>
-      console.log(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-      )
-    );
+    graphQLErrors.forEach(error => {
+      logError(`GraphQL error: ${error.message}`, 'ApolloClient', {
+        message: error.message,
+        locations: error.locations,
+        path: error.path,
+      });
+
+      // Report to error tracking service
+      reportGraphQLError(
+        error,
+        operation.operationName || 'unknown',
+        operation.variables
+      );
+    });
   }
 
   if (networkError) {
-    console.log(`[Network error]: ${networkError}`);
+    logWarn('Network error', 'ApolloClient', networkError);
+
+    // Report network error
+    reportNetworkError(
+      networkError as Error,
+      operation.getContext().uri || '/graphql',
+      'POST'
+    );
 
     // Optional: Handle token expiration/auth errors
-    if ("statusCode" in networkError && networkError.statusCode === 401) {
-      localStorage.removeItem("id_token");
-      localStorage.removeItem("user");
+    if ('statusCode' in networkError && networkError.statusCode === 401) {
+      localStorage.removeItem('id_token');
+      localStorage.removeItem('user');
       // Could also trigger a global auth state refresh here
     }
   }
