@@ -70,6 +70,8 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
+        // Fix cache conflicts by ensuring proper revision handling
+        dontCacheBustURLsMatching: /\.\w{8}\./,
         runtimeCaching: [
           {
             urlPattern:
@@ -165,28 +167,10 @@ export default defineConfig({
     assetsDir: 'assets',
     rollupOptions: {
       output: {
-        manualChunks: id => {
-          // Apollo GraphQL and related utilities
-          if (id.includes('@apollo/client') || id.includes('graphql')) {
-            return 'apollo';
-          }
-          // Core React dependencies
-          if (id.includes('react') && !id.includes('react-router')) {
-            return 'react';
-          }
-          // React Router and related
-          if (id.includes('react-router-dom')) {
-            return 'router';
-          }
-          // QR code library (relatively large)
-          if (id.includes('html5-qrcode')) {
-            return 'qr';
-          }
-          // Other large vendor libraries get their own chunks
-          if (id.includes('node_modules')) {
-            // You can add more specific chunking here based on bundle analysis
-            return 'vendor';
-          }
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          apollo: ["@apollo/client"],
+          ui: ["react-router-dom"],
         },
       },
     },
