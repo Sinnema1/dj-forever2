@@ -14,9 +14,7 @@ import {
 
 // Create an HTTP link for GraphQL server
 const httpLink = createHttpLink({
-  uri: import.meta.env.VITE_GRAPHQL_ENDPOINT || 
-       import.meta.env.VITE_API_URL || 
-       '/graphql', // Fallback to relative path in production
+  uri: import.meta.env.VITE_GRAPHQL_ENDPOINT || '/graphql',
 });
 
 // Handle authentication via token in localStorage
@@ -74,24 +72,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
 // Create the Apollo Client
 const client = new ApolloClient({
   link: from([errorLink, authLink, httpLink]),
-  cache: new InMemoryCache({
-    // Add cache configuration to prevent potential issues
-    addTypename: true,
-    resultCaching: true,
-  }),
-  // Add default options to prevent common errors
-  defaultOptions: {
-    watchQuery: {
-      errorPolicy: 'all',
-      fetchPolicy: 'cache-and-network',
-    },
-    query: {
-      errorPolicy: 'all',
-      fetchPolicy: 'cache-first',
-    },
-  },
-  // Enable developer tools in non-production
-  connectToDevTools: process.env.NODE_ENV !== 'production',
+  cache: new InMemoryCache(),
 });
 
 export default client;
