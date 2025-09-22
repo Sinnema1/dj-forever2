@@ -1,31 +1,28 @@
-# Deploy workflow disabled - using Render Auto-Deploy instead
-# This prevents duplicate deployments caused by both Auto-Deploy and webhook triggers
+name: Deploy
 
-# name: Deploy
+on:
+  push:
+    branches: [main]
 
-# on:
-#   push:
-#     branches: [main]
+jobs:
+  deploy-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy Server
+        env:
+          DEPLOY_URL: ${{ secrets.RENDER_SERVER_DEPLOY_HOOK_URL }}
+        run: |
+          echo "Triggering server deploy..."
+          curl -X POST "$DEPLOY_URL"
 
-# jobs:
-#   deploy-server:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v3
-#       - name: Deploy Server
-#         env:
-#           DEPLOY_URL: ${{ secrets.RENDER_SERVER_DEPLOY_HOOK_URL }}
-#         run: |
-#           echo "Triggering server deploy..."
-#           curl -X POST "$DEPLOY_URL"
-
-#   deploy-client:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v3
-#       - name: Deploy Client
-#         env:
-#           DEPLOY_URL: ${{ secrets.RENDER_CLIENT_DEPLOY_HOOK_URL }}
-#         run: |
-#           echo "Triggering client deploy..."
-#           curl -X POST "$DEPLOY_URL"
+  deploy-client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy Client
+        env:
+          DEPLOY_URL: ${{ secrets.RENDER_CLIENT_DEPLOY_HOOK_URL }}
+        run: |
+          echo "Triggering client deploy..."
+          curl -X POST "$DEPLOY_URL"
