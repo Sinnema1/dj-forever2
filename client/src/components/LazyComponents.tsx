@@ -1,15 +1,15 @@
 // Lazy loading for better performance
-import { lazy, Suspense } from "react";
+import { lazy, Suspense } from 'react';
 
 // Lazy load heavy components
-export const Gallery = lazy(() => import("../pages/Gallery"));
-export const RSVP = lazy(() => import("../pages/RSVP"));
-export const TravelGuide = lazy(() => import("../pages/TravelGuide"));
+export const Gallery = lazy(() => import('../pages/Gallery'));
+export const RSVP = lazy(() => import('../pages/RSVP'));
+export const TravelGuide = lazy(() => import('../pages/TravelGuide'));
 
 // Loading component
 // Enhanced loading component with wedding theme
 export function LoadingSpinner({
-  message = "Loading...",
+  message = 'Loading...',
 }: {
   message?: string;
 }) {
@@ -36,7 +36,13 @@ export function LazyComponent({
   [key: string]: any;
 }) {
   return (
-    <Suspense fallback={<LoadingSpinner message={loadingMessage} />}>
+    <Suspense
+      fallback={
+        <LoadingSpinner
+          {...(loadingMessage ? { message: loadingMessage } : {})}
+        />
+      }
+    >
       <Component {...props} />
     </Suspense>
   );

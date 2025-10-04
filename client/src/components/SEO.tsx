@@ -1,5 +1,4 @@
-import React from "react";
-import { Helmet } from "react-helmet-async";
+import { Helmet } from 'react-helmet-async';
 
 interface SEOProps {
   title?: string;
@@ -11,10 +10,10 @@ interface SEOProps {
 
 export function SEO({
   title = "Dominique & Justin's Wedding",
-  description = "Join us as we celebrate our special day. Find all the details about our wedding ceremony, reception, and how to RSVP.",
-  image = "/og-image.jpg",
-  url = "https://dj-forever2.onrender.com",
-  type = "website",
+  description = 'Join us as we celebrate our special day. Find all the details about our wedding ceremony, reception, and how to RSVP.',
+  image = '/og-image.jpg',
+  url = 'https://dj-forever2.onrender.com',
+  type = 'website',
 }: SEOProps) {
   const fullTitle =
     title === "Dominique & Justin's Wedding"

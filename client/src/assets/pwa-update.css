@@ -1,0 +1,311 @@
+/* PWA Update Components Styles */
+
+/* Update Banner - Similar to install banner but with update theme */
+.pwa-update-banner {
+  position: fixed;
+  top: 60px; /* Below install banner if both shown */
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  padding: var(--spacing-3);
+  z-index: 999;
+  transform: translateY(-100%);
+  animation: slideDown 0.5s ease-out forwards;
+  box-shadow: var(--shadow-md);
+}
+
+.update-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: var(--spacing-3);
+}
+
+.update-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.update-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.update-text h3 {
+  margin: 0 0 var(--spacing-1) 0;
+  font-size: var(--font-md);
+  font-weight: 600;
+}
+
+.update-text p {
+  margin: 0;
+  font-size: var(--font-sm);
+  opacity: 0.9;
+}
+
+.update-actions {
+  display: flex;
+  gap: var(--spacing-2);
+  flex-shrink: 0;
+}
+
+.update-btn {
+  padding: var(--spacing-2) var(--spacing-4);
+  border: none;
+  border-radius: var(--radius);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.update-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.update-btn-primary {
+  background: white;
+  color: #28a745;
+}
+
+.update-btn-primary:hover:not(:disabled) {
+  background: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.update-btn-secondary {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.update-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Update Toast - Bottom right corner */
+.pwa-update-toast {
+  position: fixed;
+  bottom: var(--spacing-4);
+  right: var(--spacing-4);
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid #e9ecef;
+  z-index: 1000;
+  animation: slideInFromRight 0.3s ease-out;
+  min-width: 280px;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-4);
+  gap: var(--spacing-3);
+}
+
+.toast-icon {
+  font-size: 1.25rem;
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.toast-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-text p {
+  margin: 0;
+  font-size: var(--font-sm);
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.toast-actions {
+  display: flex;
+  gap: var(--spacing-1);
+  flex-shrink: 0;
+}
+
+.toast-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.toast-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toast-btn-primary {
+  background: var(--color-accent);
+  color: white;
+}
+
+.toast-btn-primary:hover:not(:disabled) {
+  background: var(--color-secondary);
+  transform: scale(1.1);
+}
+
+.toast-btn-secondary {
+  background: #f8f9fa;
+  color: #6c757d;
+}
+
+.toast-btn-secondary:hover:not(:disabled) {
+  background: #e9ecef;
+  color: #495057;
+}
+
+/* Loading states */
+.update-btn:disabled .update-icon,
+.toast-btn:disabled {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .update-content {
+    flex-direction: column;
+    gap: var(--spacing-2);
+    text-align: center;
+  }
+
+  .update-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .update-btn {
+    flex: 1;
+    max-width: 120px;
+  }
+
+  .pwa-update-toast {
+    bottom: var(--spacing-2);
+    right: var(--spacing-2);
+    left: var(--spacing-2);
+    min-width: auto;
+  }
+
+  .toast-content {
+    padding: var(--spacing-3);
+  }
+}
+
+/* Stacked banner positioning */
+.pwa-install-banner + .pwa-update-banner {
+  top: 70px; /* Stack below install banner */
+}
+
+/* iOS Safari adjustments */
+@supports (-webkit-touch-callout: none) {
+  .pwa-update-toast {
+    bottom: calc(var(--spacing-4) + env(safe-area-inset-bottom));
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .pwa-update-banner {
+    background: #000;
+    border-bottom: 2px solid #28a745;
+  }
+
+  .update-btn-primary {
+    background: #fff;
+    color: #000;
+    border: 2px solid #28a745;
+  }
+
+  .pwa-update-toast {
+    border: 2px solid #000;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pwa-update-banner {
+    animation: none;
+    transform: translateY(0);
+  }
+
+  .update-icon {
+    animation: none;
+  }
+
+  .pwa-update-toast {
+    animation: none;
+  }
+
+  .update-btn:hover,
+  .toast-btn:hover {
+    transform: none;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .pwa-update-toast {
+    background: #2d3748;
+    border-color: #4a5568;
+  }
+
+  .toast-text p {
+    color: #e2e8f0;
+  }
+
+  .toast-btn-secondary {
+    background: #4a5568;
+    color: #e2e8f0;
+  }
+
+  .toast-btn-secondary:hover:not(:disabled) {
+    background: #718096;
+  }
+}

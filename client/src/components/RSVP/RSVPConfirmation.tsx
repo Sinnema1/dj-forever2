@@ -1,5 +1,3 @@
-import React from "react";
-
 interface RSVPConfirmationProps {
   guestName?: string;
   email?: string;
@@ -40,7 +38,7 @@ export default function RSVPConfirmation({
           <h2 className="confirmation-title">
             {isAttending
               ? "We can't wait to celebrate with you!"
-              : "Thank you for letting us know"}
+              : 'Thank you for letting us know'}
           </h2>
 
           <div className="confirmation-details">
@@ -57,14 +55,14 @@ export default function RSVPConfirmation({
             )}
 
             <p className="confirmation-detail">
-              <strong>Attendance:</strong>{" "}
-              {isAttending ? "Will be attending" : "Will not be attending"}
+              <strong>Attendance:</strong>{' '}
+              {isAttending ? 'Will be attending' : 'Will not be attending'}
             </p>
 
             {isAttending && partySize && (
               <p className="confirmation-detail">
-                <strong>Party Size:</strong> {partySize}{" "}
-                {partySize === 1 ? "person" : "people"}
+                <strong>Party Size:</strong> {partySize}{' '}
+                {partySize === 1 ? 'person' : 'people'}
               </p>
             )}
           </div>

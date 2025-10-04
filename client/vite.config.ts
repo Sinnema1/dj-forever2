@@ -10,14 +10,32 @@ export default defineConfig({
   plugins: [
     react(),
     // imagetools(), // Temporarily disabled to fix development errors
-    // Image optimization for production builds only
-    process.env.NODE_ENV === 'production' &&
-      viteImagemin({
-        gifsicle: { optimizationLevel: 7 },
-        mozjpeg: { quality: 85 }, // Reduce quality from default 90 to 85
-        pngquant: { quality: [0.6, 0.8] },
-        webp: { quality: 85 }, // Generate WebP versions
-      }),
+
+    // Image optimization - selective approach
+    // Only optimize PNG/SVG files to avoid JPEG compression issues
+    // JPEG files are already optimized and don't benefit from further compression
+    viteImagemin({
+      gifsicle: {
+        optimizationLevel: 3,
+      },
+      // Skip JPEG optimization to prevent build errors - they're already optimized
+      // mozjpeg: {
+      //   quality: 80,
+      //   progressive: true,
+      // },
+      pngquant: {
+        quality: [0.65, 0.8],
+      },
+      svgo: {
+        plugins: [
+          { name: 'removeViewBox', active: false },
+          { name: 'removeEmptyAttrs', active: false },
+        ],
+      },
+      verbose: false,
+      // Additional safety: can be disabled via env var if needed
+      disable: process.env.SKIP_IMAGEMIN === 'true',
+    }),
     compression({
       algorithm: 'gzip',
       ext: '.gz',
@@ -65,17 +83,16 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp}'],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
-        // Force service worker update on new builds
-        ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
-        // Fix cache conflicts by ensuring proper revision handling
+        // Enhanced PWA capabilities
+        ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^v$/, /^_/],
         dontCacheBustURLsMatching: /\.\w{8}\./,
-        // Additional configuration to prevent conflicting entries
-        additionalManifestEntries: [],
+        // Background sync and push notifications support
+        additionalManifestEntries: [{ url: '/offline.html', revision: null }],
         manifestTransforms: [
           manifestEntries => {
             // Remove any duplicate entries with different revisions
@@ -88,26 +105,28 @@ export default defineConfig({
           },
         ],
         runtimeCaching: [
+          // GraphQL API - Network first with offline fallback
           {
-            urlPattern:
-              /^https:\/\/dj-forever2-backend\.onrender\.com\/graphql$/,
+            urlPattern: ({ url }) => url.pathname === '/graphql',
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'graphql-cache',
+              cacheName: 'wedding-graphql-cache',
               expiration: {
-                maxEntries: 20,
-                maxAgeSeconds: 600,
+                maxEntries: 50,
+                maxAgeSeconds: 600, // 10 minutes
               },
+              networkTimeoutSeconds: 5,
             },
           },
+          // Images - Cache first with long expiration
           {
-            urlPattern: /\.(png|jpg|jpeg|svg|webp|gif)$/,
+            urlPattern: /\.(png|jpg|jpeg|svg|webp|gif|avif)$/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'wedding-images-cache',
               expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 30 * 24 * 60 * 60,
+                maxEntries: 150,
+                maxAgeSeconds: 60 * 24 * 60 * 60, // 60 days
               },
             },
           },

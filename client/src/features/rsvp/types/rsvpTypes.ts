@@ -1,3 +1,10 @@
+/**
+ * RSVP Type Definitions
+ * Consolidated types for RSVP functionality with backward compatibility
+ */
+
+export type AttendanceStatus = 'YES' | 'NO' | 'MAYBE';
+
 export interface Guest {
   fullName: string;
   mealPreference: string;
@@ -7,7 +14,7 @@ export interface Guest {
 export interface RSVP {
   _id: string;
   userId: string;
-  attending: 'YES' | 'NO' | 'MAYBE';
+  attending: AttendanceStatus;
   guestCount: number;
   guests: Guest[];
   additionalNotes: string;
@@ -18,7 +25,7 @@ export interface RSVP {
 }
 
 export interface CreateRSVPInput {
-  attending: 'YES' | 'NO' | 'MAYBE';
+  attending: AttendanceStatus;
   guestCount: number;
   guests: Guest[];
   additionalNotes: string;
@@ -29,7 +36,7 @@ export interface CreateRSVPInput {
 }
 
 export interface RSVPFormData {
-  attending: 'YES' | 'NO' | 'MAYBE';
+  attending: AttendanceStatus;
   guestCount: number;
   guests: Guest[];
   additionalNotes: string;
@@ -40,7 +47,7 @@ export interface RSVPFormData {
 }
 
 export interface RSVPInput {
-  attending: 'YES' | 'NO' | 'MAYBE';
+  attending: AttendanceStatus;
   guestCount: number;
   guests: Guest[];
   additionalNotes?: string;

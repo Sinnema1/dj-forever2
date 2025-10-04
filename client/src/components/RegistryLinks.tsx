@@ -1,20 +1,18 @@
-import React from "react";
-
 const registries = [
   {
-    name: "Crate & Barrel",
-    url: "https://www.crateandbarrel.com/gift-registry/",
-    logo: "/images/registries/crate-and-barrel.svg",
+    name: 'Crate & Barrel',
+    url: 'https://www.crateandbarrel.com/gift-registry/',
+    logo: '/images/registries/crate-and-barrel.svg',
   },
   {
-    name: "Williams-Sonoma",
-    url: "https://www.williams-sonoma.com/registry/",
-    logo: "/images/registries/williams-sonoma.svg",
+    name: 'Williams-Sonoma',
+    url: 'https://www.williams-sonoma.com/registry/',
+    logo: '/images/registries/williams-sonoma.svg',
   },
   {
-    name: "Zola",
-    url: "https://www.zola.com/registry/",
-    logo: "/images/registries/zola.svg",
+    name: 'Zola',
+    url: 'https://www.zola.com/registry/',
+    logo: '/images/registries/zola.svg',
   },
   // Add more registries as needed
 ];
