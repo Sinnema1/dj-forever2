@@ -1,4 +1,5 @@
 /* Import all component-specific styles first */
+@import "./sections.css";
 @import "./mobile-enhancements.css";
 @import "./mobile-drawer.css";
 @import "./FAQ.css";
