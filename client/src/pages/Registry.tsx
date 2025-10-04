@@ -1,5 +1,4 @@
-import React from "react";
-import RegistryLinks from "../components/RegistryLinks";
+import RegistryLinks from '../components/RegistryLinks';
 
 export default function Registry() {
   return (

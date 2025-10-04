@@ -11,11 +11,15 @@ import PersonalizedWelcome from './components/PersonalizedWelcome';
 import WelcomeModal from './components/WelcomeModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import ConnectionStatus from './components/ConnectionStatus';
+import { PWAInstallBanner } from './hooks/usePWAInstall';
+import { PWAUpdateToast } from './hooks/usePWAUpdate';
 
 export default function App() {
   return (
     <ErrorBoundary>
       <ConnectionStatus />
+      <PWAInstallBanner />
+      <PWAUpdateToast />
       <Navbar />
       <PersonalizedWelcome />
       <WelcomeModal />

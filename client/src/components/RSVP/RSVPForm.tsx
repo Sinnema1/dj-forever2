@@ -286,10 +286,9 @@ export default function RSVPForm() {
 
   // Enhanced handler for mobile touch events on attendance options
   const handleAttendanceChange = (value: 'YES' | 'NO' | 'MAYBE') => {
-    console.log(
-      '[RSVPForm] SAFARI DEBUG - handleAttendanceChange called with:',
-      value
-    );
+    if (process.env.NODE_ENV === 'development') {
+      logDebug('Attendance change', 'RSVPForm', { value });
+    }
     setFormData(prev => ({ ...prev, attending: value }));
 
     // Update meal options visibility
@@ -484,16 +483,18 @@ export default function RSVPForm() {
                 className={`attendance-option ${formData.attending === option.value ? 'selected' : ''}`}
                 data-value={option.value}
                 onTouchStart={() => {
-                  console.log(
-                    '[RSVPForm] SAFARI DEBUG - onTouchStart:',
-                    option.value
-                  );
+                  if (process.env.NODE_ENV === 'development') {
+                    logDebug('Touch start on attendance option', 'RSVPForm', {
+                      value: option.value,
+                    });
+                  }
                 }}
                 onClick={() => {
-                  console.log(
-                    '[RSVPForm] SAFARI DEBUG - onClick:',
-                    option.value
-                  );
+                  if (process.env.NODE_ENV === 'development') {
+                    logDebug('Click on attendance option', 'RSVPForm', {
+                      value: option.value,
+                    });
+                  }
                   handleAttendanceChange(
                     option.value as 'YES' | 'NO' | 'MAYBE'
                   );
@@ -506,10 +507,11 @@ export default function RSVPForm() {
                   value={option.value}
                   checked={formData.attending === option.value}
                   onChange={e => {
-                    console.log(
-                      '[RSVPForm] SAFARI DEBUG - onChange:',
-                      e.target.value
-                    );
+                    if (process.env.NODE_ENV === 'development') {
+                      logDebug('Radio input change', 'RSVPForm', {
+                        value: e.target.value,
+                      });
+                    }
                     handleAttendanceChange(
                       e.target.value as 'YES' | 'NO' | 'MAYBE'
                     );
