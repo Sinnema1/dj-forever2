@@ -1,115 +1,72 @@
-/* timeline.css */
+/* Mobile-First Timeline: Simple Vertical Cards */
+/* This matches the classes used in OurStory.tsx component */
 
-/* make the timeline itself the positioning context */
-#our-story .timeline {
-  position: relative;
-  margin: 4rem auto;
-  padding: 0;
-  width: 90%;
-}
-
-/* the vertical “spine” */
-#our-story .timeline::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 4px;
-  background: var(--color-sage);
-  transform: translateX(-50%);
-  z-index: 0;
+.story-timeline {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--spacing-4);
 }
 
-/* each item is half the width, with vertical padding only */
-#our-story .timeline-item {
-  position: relative;
-  width: 50%;
-  padding: 2rem 0;
-  box-sizing: border-box;
-}
-
-/* left-side blocks get a right gutter, right-side blocks get a left gutter */
-#our-story .timeline-item.left {
-  left: 0;
-  padding-right: var(--spacing-6);
-  text-align: right;
-}
-#our-story .timeline-item.right {
-  left: 50%;
-  padding-left: var(--spacing-6);
-  text-align: left;
-}
-
-/* the blue “dot” */
-#our-story .timeline-item::after {
-  content: "";
-  position: absolute;
-  top: 2.5rem;                /* tweak this to vertically center the dot */
-  width: 14px;
-  height: 14px;
-  background: var(--color-dusty-blue);
-  border: 3px solid var(--color-cream);
-  border-radius: 50%;
-  transform: translateX(-50%);
-  z-index: 1;
-}
-/* left-items: dot sits at the right edge of that 50% column */
-#our-story .timeline-item.left::after {
-  left: 100%;
-}
-/* right-items: dot sits at the left edge of that 50% column */
-#our-story .timeline-item.right::after {
-  left: 0;
-}
-
-/* the card inside each item */
-#our-story .timeline-content {
-  position: relative;
-  display: inline-block;
-  max-width: 300px;
+.story-event {
   background: var(--color-panel-cream);
   border-radius: var(--radius);
-  padding: 1rem;
-  box-shadow: var(--shadow-md);
-  z-index: 2;
-}
-#our-story .timeline-content img {
-  width: 100%;
-  border-radius: var(--radius);
-  margin-bottom: 0.75rem;
-  object-fit: cover;
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* date + text styling */
-#our-story .timeline-text .timeline-date {
-  display: block;
-  font-size: var(--font-sm);
-  color: var(--color-charcoal);
-  margin-bottom: 0.5rem;
-  font-weight: 600;
+.story-event:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
-#our-story .timeline-text p {
-  margin: 0;
+
+.story-event-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-3);
+}
+
+.story-event-date {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--color-accent);
+  margin-bottom: var(--spacing-2);
+  display: block;
+}
+
+.story-event-text {
   font-size: var(--font-md);
   color: var(--color-charcoal);
+  line-height: 1.5;
+  margin: 0;
 }
 
-/* on narrow viewports, just stack everything */
-@media (max-width: 768px) {
-  #our-story .timeline::before {
-    left: 1rem;
+/* Desktop Enhancement */
+@media (min-width: 768px) {
+  .story-timeline {
+    max-width: 800px;
   }
-  #our-story .timeline-item,
-  #our-story .timeline-item.left,
-  #our-story .timeline-item.right {
-    width: 100%;
-    left: 0 !important;
-    padding: 0 0 2rem 2.5rem;
-    text-align: left;
+
+  .story-event {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-6);
   }
-  #our-story .timeline-item::after {
-    left: 1rem;
-    transform: none;
+
+  .story-event:nth-child(even) {
+    flex-direction: row-reverse;
+  }
+
+  .story-event-image {
+    flex: 0 0 250px;
+    height: 150px;
+    margin-bottom: 0;
+  }
+
+  .story-event-content {
+    flex: 1;
   }
 }
