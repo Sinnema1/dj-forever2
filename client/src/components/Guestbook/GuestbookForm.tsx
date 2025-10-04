@@ -1,10 +1,7 @@
-import React from "react";
+// This component is intentionally removed as Guestbook functionality
+// is handled by the main Guestbook page with "Coming Soon" placeholder
+// If guestbook features are needed in the future, implement here
 
 export default function GuestbookForm() {
-  // TODO: Implement guestbook form
-  return (
-    <form className="guestbook-form">
-      {/* TODO: Guestbook message input will go here */}
-    </form>
-  );
+  return null; // Component stub removed - see Guestbook.tsx for current implementation
 }

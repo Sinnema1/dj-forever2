@@ -1,10 +1,7 @@
-import React from "react";
+// This component is intentionally removed as RSVP access control
+// is handled via QR token authentication system
+// If additional email validation is needed, implement here
 
 export default function RSVPAccessControl() {
-  // TODO: Implement RSVP access control (email check)
-  return (
-    <div className="rsvp-access-control">
-      {/* TODO: Email input and validation will go here */}
-    </div>
-  );
+  return null; // Component stub removed - access control handled by QR authentication
 }
