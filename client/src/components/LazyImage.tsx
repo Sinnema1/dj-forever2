@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { logWarn, logDebug } from '../utils/logger';
 
 /**
  * Props interface for LazyImage component
@@ -76,90 +75,47 @@ export function LazyImage({
   priority = false,
 }: LazyImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(priority); // Load immediately if priority
+  const [isInView, setIsInView] = useState(priority);
   const [hasError, setHasError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (priority) return; // Skip intersection observer for priority images
+    if (priority) return; // Priority images load immediately
 
-    // Small delay to ensure DOM is properly laid out
-    const checkViewport = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const windowHeight =
-          window.innerHeight || document.documentElement.clientHeight;
+    let observer: IntersectionObserver;
+    let fallbackTimer: NodeJS.Timeout;
 
-        // If image is already in viewport (or close to it), load immediately
-        if (rect.top < windowHeight + 100 && rect.bottom > -100) {
-          logDebug(
-            'Image already in viewport, loading immediately',
-            'LazyImage',
-            {
-              src,
-              rectTop: rect.top,
-              windowHeight,
-              isInViewport: true,
-            }
-          );
-          setIsInView(true);
-          return true;
+    // Set up intersection observer
+    if (containerRef.current && window.IntersectionObserver) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          if (entry?.isIntersecting) {
+            setIsInView(true);
+            observer.disconnect();
+          }
+        },
+        {
+          threshold: 0.1,
+          rootMargin: '50px', // Start loading 50px before viewport
         }
-      }
-      return false;
-    };
+      );
 
-    // Check immediately
-    if (checkViewport()) return;
+      observer.observe(containerRef.current);
+    }
 
-    // If not in viewport, set up intersection observer
-    const observer = new IntersectionObserver(
-      entries => {
-        const entry = entries[0];
-        if (entry?.isIntersecting) {
-          logDebug('Intersection Observer triggered', 'LazyImage', { src });
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '100px', // Start loading 100px before entering viewport
-      }
-    );
-
-    const container = containerRef.current;
-    if (container) {
-      observer.observe(container);
+    // Fallback timer for gallery images (in case intersection observer doesn't work)
+    if (src.includes('/gallery/')) {
+      fallbackTimer = setTimeout(() => {
+        setIsInView(true);
+      }, 2000); // 2 second fallback for gallery images
     }
 
     return () => {
-      observer.disconnect();
+      if (observer) observer.disconnect();
+      if (fallbackTimer) clearTimeout(fallbackTimer);
     };
-  }, [priority]);
-
-  // Fallback: if intersection observer fails, load after a delay
-  useEffect(() => {
-    if (priority || isInView) return;
-
-    // Shorter fallback for gallery images (they're usually all visible)
-    const isGalleryImage = src.includes('/gallery/');
-    const fallbackDelay = isGalleryImage ? 1000 : 5000; // 1s for gallery, 5s for others
-
-    const fallbackTimer = setTimeout(() => {
-      // Only log non-gallery images to reduce console noise
-      if (!isGalleryImage) {
-        logDebug(
-          `Fallback loading triggered (${isGalleryImage ? 'gallery' : 'standard'})`,
-          'LazyImage',
-          { src }
-        );
-      }
-      setIsInView(true);
-    }, fallbackDelay);
-
-    return () => clearTimeout(fallbackTimer);
-  }, [priority, isInView, src]);
+  }, [priority, src]);
 
   return (
     <div
@@ -167,31 +123,30 @@ export function LazyImage({
       className={`lazy-image-container ${className || ''}`}
       onClick={onClick}
       style={{
-        minHeight: '200px', // Ensure container has height for intersection observer
+        minHeight: '200px',
         display: 'block',
       }}
     >
-      {isInView && !hasError && (
-        <>
-          {!isLoaded && (
-            <div className="image-placeholder">
-              <div className="loading-shimmer"></div>
-            </div>
-          )}
-          <img
-            src={src}
-            alt={alt}
-            className={`lazy-image ${isLoaded ? 'loaded' : 'loading'}`}
-            onLoad={() => setIsLoaded(true)}
-            onError={() => {
-              setHasError(true);
-              logWarn('Failed to load image', 'LazyImage', { src });
-            }}
-            loading={loading}
-            style={{ display: isLoaded ? 'block' : 'none' }}
-          />
-        </>
+      {/* Always show placeholder until image loads */}
+      {!isLoaded && !hasError && (
+        <div className="image-placeholder">
+          <div className="loading-shimmer"></div>
+        </div>
       )}
+      
+      {/* Only render img tag when we want to load */}
+      {isInView && !hasError && (
+        <img
+          src={src}
+          alt={alt}
+          className={`lazy-image ${isLoaded ? 'loaded' : 'loading'}`}
+          onLoad={() => setIsLoaded(true)}
+          onError={() => setHasError(true)}
+          loading={loading}
+        />
+      )}
+      
+      {/* Error state */}
       {hasError && (
         <div className="image-error">
           <span>📷</span>
