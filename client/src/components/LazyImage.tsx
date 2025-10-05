@@ -66,7 +66,7 @@ interface LazyImageProps {
  * - Implements fallback timer to prevent stuck loading states
  * - Optimizes for Core Web Vitals (LCP, CLS)
  */
-export function LazyImage({
+export default function LazyImage({
   src,
   alt,
   className,
@@ -88,7 +88,7 @@ export function LazyImage({
     // Set up intersection observer
     if (containerRef.current && window.IntersectionObserver) {
       observer = new IntersectionObserver(
-        (entries) => {
+        entries => {
           const entry = entries[0];
           if (entry?.isIntersecting) {
             setIsInView(true);
@@ -133,7 +133,7 @@ export function LazyImage({
           <div className="loading-shimmer"></div>
         </div>
       )}
-      
+
       {/* Only render img tag when we want to load */}
       {isInView && !hasError && (
         <img
@@ -145,7 +145,7 @@ export function LazyImage({
           loading={loading}
         />
       )}
-      
+
       {/* Error state */}
       {hasError && (
         <div className="image-error">
