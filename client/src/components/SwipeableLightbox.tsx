@@ -43,11 +43,11 @@ interface LightboxModalProps {
  * />
  * ```
  */
-const SwipeableLightbox: React.FC<LightboxModalProps> = ({
+export default function SwipeableLightbox({
   images,
   initialIndex,
   onClose,
-}) => {
+}: LightboxModalProps) {
   const [current, setCurrent] = useState(initialIndex);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -286,6 +286,4 @@ const SwipeableLightbox: React.FC<LightboxModalProps> = ({
 
   // Render modal using portal to ensure it's at body level
   return createPortal(modalContent, document.body);
-};
-
-export default SwipeableLightbox;
+}

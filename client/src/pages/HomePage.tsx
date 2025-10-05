@@ -1,42 +1,42 @@
-import React, { useEffect } from "react";
-import HeroBanner from "../components/HeroBanner";
-import SectionDivider from "../components/SectionDivider";
-import { HomePageSEO } from "../components/SEO";
+import { useEffect } from 'react';
+import HeroBanner from '../components/HeroBanner';
+import SectionDivider from '../components/SectionDivider';
+import { HomePageSEO } from '../components/SEO';
 import {
   LazyComponent,
   Gallery,
   TravelGuide,
-} from "../components/LazyComponents";
-import { analytics } from "../utils/analytics";
-import { performanceMonitor } from "../utils/performance";
-import theme from "../theme/theme";
-import OurStory from "./OurStory";
-import TheDetails from "./TheDetails";
-import FAQs from "./FAQs";
-import Guestbook from "./Guestbook";
+} from '../components/LazyComponents';
+import { analytics } from '../utils/analytics';
+import { performanceMonitor } from '../utils/performance';
+import theme from '../theme/theme';
+import OurStory from './OurStory';
+import TheDetails from './TheDetails';
+import FAQs from './FAQs';
+import Guestbook from './Guestbook';
 
-const HomePage: React.FC = () => {
+export default function HomePage() {
   // IntersectionObserver to fade in each .section-content
   useEffect(() => {
-    const endTimer = performanceMonitor.trackComponentRender("HomePage");
+    const endTimer = performanceMonitor.trackComponentRender('HomePage');
 
     // Track homepage view
-    analytics.trackPageView("homepage");
+    analytics.trackPageView('homepage');
 
     // Track page load performance
-    performanceMonitor.trackPageLoad("homepage");
+    performanceMonitor.trackPageLoad('homepage');
 
-    const observerOptions = { root: null, rootMargin: "0px", threshold: 0.2 };
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.2 };
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("fade-in");
+          entry.target.classList.add('fade-in');
           observer.unobserve(entry.target);
         }
       });
     }, observerOptions);
 
-    document.querySelectorAll(".section-content").forEach((section) => {
+    document.querySelectorAll('.section-content').forEach(section => {
       observer.observe(section);
     });
 
@@ -44,7 +44,7 @@ const HomePage: React.FC = () => {
     endTimer();
 
     return () => {
-      document.querySelectorAll(".section-content").forEach((section) => {
+      document.querySelectorAll('.section-content').forEach(section => {
         observer.unobserve(section);
       });
     };
@@ -121,6 +121,4 @@ const HomePage: React.FC = () => {
       </section>
     </>
   );
-};
-
-export default HomePage;
+}

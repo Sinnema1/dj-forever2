@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 // Styles now imported globally via main.tsx
 import SwipeableLightbox from '../components/SwipeableLightbox';
-import { LazyImage } from '../components/LazyImage';
+import LazyImage from '../components/LazyImage';
 import { analytics } from '../utils/analytics';
 
 const images = Object.values(
@@ -11,7 +11,7 @@ const images = Object.values(
   })
 ) as string[];
 
-const Gallery: React.FC = () => {
+export default function Gallery() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -51,6 +51,4 @@ const Gallery: React.FC = () => {
       )}
     </>
   );
-};
-
-export default Gallery;
+}
