@@ -28,7 +28,8 @@ export class WeddingAnalytics {
     this.events.push(analyticsEvent);
 
     // Send to backend or analytics service
-    if (process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
+      // Initialize Google Analytics in production
       const backendData: Omit<AnalyticsEvent, 'timestamp'> = { event };
       if (guestId !== undefined) {
         backendData.guestId = guestId;

@@ -108,7 +108,6 @@ export default function RSVPForm() {
   const [showMealOptions, setShowMealOptions] = useState(false);
 
   useEffect(() => {
-    logDebug('RSVPForm rendered', 'RSVPForm', { successMessage });
     if (rsvp) {
       setFormData(prev => {
         const newData = {
@@ -286,9 +285,6 @@ export default function RSVPForm() {
 
   // Enhanced handler for mobile touch events on attendance options
   const handleAttendanceChange = (value: 'YES' | 'NO' | 'MAYBE') => {
-    if (process.env.NODE_ENV === 'development') {
-      logDebug('Attendance change', 'RSVPForm', { value });
-    }
     setFormData(prev => ({ ...prev, attending: value }));
 
     // Update meal options visibility
@@ -482,19 +478,8 @@ export default function RSVPForm() {
                 key={option.value}
                 className={`attendance-option ${formData.attending === option.value ? 'selected' : ''}`}
                 data-value={option.value}
-                onTouchStart={() => {
-                  if (process.env.NODE_ENV === 'development') {
-                    logDebug('Touch start on attendance option', 'RSVPForm', {
-                      value: option.value,
-                    });
-                  }
-                }}
+                onTouchStart={() => {}}
                 onClick={() => {
-                  if (process.env.NODE_ENV === 'development') {
-                    logDebug('Click on attendance option', 'RSVPForm', {
-                      value: option.value,
-                    });
-                  }
                   handleAttendanceChange(
                     option.value as 'YES' | 'NO' | 'MAYBE'
                   );
@@ -507,11 +492,6 @@ export default function RSVPForm() {
                   value={option.value}
                   checked={formData.attending === option.value}
                   onChange={e => {
-                    if (process.env.NODE_ENV === 'development') {
-                      logDebug('Radio input change', 'RSVPForm', {
-                        value: e.target.value,
-                      });
-                    }
                     handleAttendanceChange(
                       e.target.value as 'YES' | 'NO' | 'MAYBE'
                     );

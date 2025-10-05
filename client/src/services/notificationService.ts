@@ -4,7 +4,7 @@ import { reportError, reportNetworkError } from './errorReportingService';
 
 class WeddingNotificationService {
   private static instance: WeddingNotificationService;
-  private vapidPublicKey = process.env.VITE_VAPID_PUBLIC_KEY;
+  private vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
 
   static getInstance(): WeddingNotificationService {
     if (!WeddingNotificationService.instance) {
