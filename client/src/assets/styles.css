@@ -170,12 +170,12 @@ small {
 
 /* =================== Navbar =================== */
 .navbar {
-  height: 72px;
+  min-height: 72px;
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--spacing-8);
+  padding: var(--spacing-3) var(--spacing-8);
   position: fixed;
   top: var(--spacing-3);
   left: 0;
@@ -228,7 +228,7 @@ small {
   padding: 0;
   justify-content: flex-end;
   align-items: center;
-  height: 100%;
+  min-height: 40px;
 }
 
 /* Hide desktop nav on mobile */
@@ -346,6 +346,10 @@ small {
   align-items: center;
   gap: var(--spacing-3);
   color: #fff;
+  transition: color 0.3s ease;
+}
+.navbar-scrolled .desktop-user-info {
+  color: var(--color-text);
 }
 
 /* Mid breakpoints: small padding on links */
