@@ -208,7 +208,7 @@ const QRLoginModal: React.FC<QRLoginModalProps> = (props) => {
         )}
 
         {/* Quick test section for development */}
-        {process.env.NODE_ENV === "development" && (
+        {import.meta.env.DEV && (
           <details style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
             <summary style={{ cursor: "pointer", color: "#666" }}>
               🧪 Developer Testing
