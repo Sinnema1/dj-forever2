@@ -7,7 +7,7 @@ import { onCLS, onINP, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals';
 
 // Simple logger implementation
 const logDebug = (message: string, context: string, data?: any) => {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env?.DEV) {
     console.log(`[${context}] ${message}`, data || '');
   }
 };
@@ -287,25 +287,43 @@ class PerformanceMonitor {
 
   // Manual performance tracking
   public markStart(name: string) {
-    performance.mark(`${name}-start`);
+    try {
+      performance.mark(`${name}-start`);
+    } catch (error) {
+      logWarn(`Failed to create performance mark: ${name}-start`, 'PerformanceMonitor', { error });
+    }
   }
 
   public markEnd(name: string) {
-    performance.mark(`${name}-end`);
-    performance.measure(name, `${name}-start`, `${name}-end`);
-    
-    const measures = performance.getEntriesByName(name, 'measure');
-    const measure = measures[measures.length - 1];
-    
-    if (measure) {
-      logDebug(`Custom performance measure: ${name}`, 'PerformanceMonitor', {
-        duration: `${measure.duration.toFixed(2)}ms`,
-      });
+    try {
+      performance.mark(`${name}-end`);
+      
+      // Check if start mark exists before measuring
+      const startMarkName = `${name}-start`;
+      const marks = performance.getEntriesByName(startMarkName, 'mark');
+      
+      if (marks.length === 0) {
+        logWarn(`Performance start mark not found: ${startMarkName}`, 'PerformanceMonitor');
+        return;
+      }
+      
+      performance.measure(name, startMarkName, `${name}-end`);
+      
+      const measures = performance.getEntriesByName(name, 'measure');
+      const measure = measures[measures.length - 1];
+      
+      if (measure) {
+        logDebug(`Custom performance measure: ${name}`, 'PerformanceMonitor', {
+          duration: `${measure.duration.toFixed(2)}ms`,
+        });
 
-      analytics.track('custom_performance_measure', undefined, {
-        measure_name: name,
-        duration: measure.duration,
-      });
+        analytics.track('custom_performance_measure', undefined, {
+          measure_name: name,
+          duration: measure.duration,
+        });
+      }
+    } catch (error) {
+      logWarn(`Failed to create performance measure: ${name}`, 'PerformanceMonitor', { error });
     }
   }
 }
