@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 interface PullToRefreshOptions {
   onRefresh: () => Promise<void>;
@@ -18,7 +18,7 @@ export const usePullToRefresh = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
-    if (window.scrollY === 0) {
+    if (window.scrollY === 0 && e.touches[0]) {
       setStartY(e.touches[0].clientY);
       setCanPull(true);
     }
@@ -26,7 +26,7 @@ export const usePullToRefresh = ({
 
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
-      if (!canPull || isRefreshing) return;
+      if (!canPull || isRefreshing || !e.touches[0]) return;
 
       const currentY = e.touches[0].clientY;
       const distance = Math.max(0, (currentY - startY) / resistance);
@@ -61,14 +61,14 @@ export const usePullToRefresh = ({
 
     const options = { passive: false };
 
-    container.addEventListener("touchstart", handleTouchStart, options);
-    container.addEventListener("touchmove", handleTouchMove, options);
-    container.addEventListener("touchend", handleTouchEnd, options);
+    container.addEventListener('touchstart', handleTouchStart, options);
+    container.addEventListener('touchmove', handleTouchMove, options);
+    container.addEventListener('touchend', handleTouchEnd, options);
 
     return () => {
-      container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchmove", handleTouchMove);
-      container.removeEventListener("touchend", handleTouchEnd);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
     };
   }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
 

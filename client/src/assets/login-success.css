@@ -1,0 +1,100 @@
+/* Login Success Page Styling */
+.login-success-container {
+  text-align: center;
+  max-width: 600px;
+  margin: 80px auto;
+  padding: var(--spacing-6) var(--spacing-4);
+  background-color: var(--color-panel-cream);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+}
+
+.login-success-icon {
+  background-color: #4caf50;
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-4) auto;
+  font-size: var(--font-2xl);
+}
+
+.login-success-title {
+  color: #4caf50;
+  margin: 0 0 var(--spacing-4) 0;
+  font-size: var(--font-xl);
+  font-weight: 700;
+}
+
+.login-success-welcome {
+  font-weight: 400;
+  margin: 0 0 var(--spacing-4) 0;
+  color: var(--color-charcoal);
+  font-size: var(--font-lg);
+}
+
+.login-success-message {
+  font-size: var(--font-md);
+  margin: var(--spacing-4) 0;
+  color: var(--color-charcoal);
+  line-height: 1.5;
+}
+
+.login-success-countdown {
+  font-size: var(--font-base);
+  margin: var(--spacing-3) 0;
+  color: var(--color-charcoal);
+}
+
+.login-success-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: var(--spacing-3) var(--spacing-5);
+  border-radius: 4px;
+  font-size: var(--font-base);
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: var(--spacing-4);
+  transition: background-color 0.2s ease;
+  min-height: 48px; /* Touch-friendly */
+  touch-action: manipulation;
+}
+
+.login-success-button:hover {
+  background-color: #45a049;
+}
+
+.login-success-button:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(var(--color-accent-rgb), 0.3);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .login-success-container {
+    margin: var(--spacing-5) var(--spacing-3);
+    padding: var(--spacing-5) var(--spacing-3);
+  }
+
+  .login-success-title {
+    font-size: var(--font-lg);
+  }
+
+  .login-success-welcome {
+    font-size: var(--font-md);
+  }
+
+  .login-success-message {
+    font-size: var(--font-sm);
+  }
+
+  .login-success-button {
+    width: 100%;
+    max-width: 280px;
+  }
+}
