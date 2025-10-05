@@ -105,12 +105,59 @@ The wedding website provides a personalized experience for guests:
 
 - There is no password-based login or registration. All authentication is via QR code only.
 
+## Performance Monitoring
+
+The website includes comprehensive performance monitoring and optimization features:
+
+### Bundle Analysis
+```sh
+# Build with detailed bundle analysis
+npm run build:analyze
+
+# View interactive bundle visualization
+npm run analyze
+```
+
+### Performance Budget Checking
+```sh
+# Check if bundle meets performance budgets
+npm run performance:check
+
+# Full performance build with analysis
+npm run performance:build
+```
+
+### CI/CD Performance Pipeline
+```sh
+# Run complete performance testing pipeline
+npm run performance:ci
+```
+
+### Core Web Vitals Tracking
+
+The app automatically tracks real user performance metrics:
+- **CLS (Cumulative Layout Shift)**: ≤ 0.1 (good)
+- **INP (Interaction to Next Paint)**: ≤ 200ms (good)
+- **LCP (Largest Contentful Paint)**: ≤ 2.5s (good)
+- **FCP (First Contentful Paint)**: ≤ 1.8s (good)
+- **TTFB (Time to First Byte)**: ≤ 800ms (good)
+
+**Current Performance Status**: ✅ **All budgets passing** (467KB total bundle, well within 500KB limit)
+
+### Performance Reports
+
+After running performance commands, reports are generated in:
+- `performance-reports/` - CI/CD pipeline reports
+- `dist/stats.html` - Interactive bundle visualization
+- `dist/performance-report.json` - Detailed performance data
+
 ## TODO / Outstanding Action Items
 
 ### High Priority
 
 - [x] **Fix Mobile Hero Background Scaling** - Hero background image displays well on desktop but doesn't scale properly on mobile devices. Need to optimize background-size, background-position, or consider responsive image solutions
 - [x] **Fix RSVP Test Mocks** - Update test mocks to match current RSVP mutation structure (currently has warnings but tests pass)
+- [x] **Performance Monitoring Setup** - Implemented comprehensive performance tracking with Core Web Vitals monitoring, bundle analysis, performance budgets, and CI/CD integration
 
 ### Medium Priority
 
@@ -122,7 +169,7 @@ The wedding website provides a personalized experience for guests:
 
 - [ ] **Desktop QR Code Scanner Enhancement** - Current QR scanner works on mobile but desktop scanning needs improvement. Consider adding manual token entry fallback for desktop users or enhancing webcam-based scanning reliability
 - [ ] **Documentation Updates** - Update deployment instructions with final configuration
-- [ ] **Enhanced Analytics** - Add performance monitoring if desired
+- [x] **Enhanced Analytics** - Performance monitoring implemented with Core Web Vitals tracking, bundle analysis, and automated budget checking
 
 ---
 

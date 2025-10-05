@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import RSVPStandalonePage from './pages/RSVPStandalonePage';
@@ -11,12 +12,22 @@ import PersonalizedWelcome from './components/PersonalizedWelcome';
 import WelcomeModal from './components/WelcomeModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import ConnectionStatus from './components/ConnectionStatus';
+import PerformanceMonitor from './components/PerformanceMonitor';
 import { PWAInstallBanner } from './hooks/usePWAInstall';
 import { PWAUpdateToast } from './hooks/usePWAUpdate';
+import performanceMonitor from './services/performanceMonitor';
 
 export default function App() {
+  // Track app initialization performance
+  useEffect(() => {
+    performanceMonitor.markStart('app-initialization');
+  }, []);
+
   return (
     <ErrorBoundary>
+      {/* Performance monitoring - tracks Core Web Vitals */}
+      <PerformanceMonitor debug={import.meta.env?.DEV || false} />
+      
       <ConnectionStatus />
       <PWAInstallBanner />
       <PWAUpdateToast />

@@ -8,13 +8,17 @@
     "dev:https": "vite --host --https",
     "build": "tsc --project tsconfig.build.json && vite build",
     "build:strict": "tsc --noEmit && vite build",
+    "build:analyze": "ANALYZE=true npm run build",
+    "analyze": "npm run build:analyze && echo 'Bundle analysis complete! Check dist/bundle-analysis.html'",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "lint": "eslint src/**/*.{ts,tsx}",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "test": "vitest run",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "performance:build": "npm run build && npm run performance:check",
+    "performance:check": "node scripts/performance-budget.js"
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
@@ -26,7 +30,8 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^6.0.0",
     "react-scroll": "^1.9.3",
-    "vite-imagetools": "^7.1.0"
+    "vite-imagetools": "^7.1.0",
+    "web-vitals": "^5.1.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",

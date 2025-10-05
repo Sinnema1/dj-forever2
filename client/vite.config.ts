@@ -167,14 +167,25 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
       },
     }),
-    // Bundle analyzer (only in analyze mode)
-    process.env.NODE_ENV === 'analyze' &&
+    // Bundle analyzer (multiple templates for comprehensive analysis)
+    process.env.ANALYZE === 'true' &&
       visualizer({
-        filename: 'dist/stats.html',
+        filename: 'dist/bundle-analysis.html',
         open: false, // Don't auto-open to avoid browser dependency
         gzipSize: true,
         brotliSize: true,
-        template: 'treemap', // Better visualization for bundle analysis
+        template: 'treemap', // Best for identifying large chunks
+        title: 'Bundle Analysis - DJ Forever 2 Wedding Site',
+      }),
+    
+    // Generate additional analysis formats
+    process.env.ANALYZE === 'true' &&
+      visualizer({
+        filename: 'dist/bundle-sunburst.html',
+        template: 'sunburst', // Good for hierarchical view
+        gzipSize: true,
+        brotliSize: true,
+        title: 'Bundle Hierarchy Analysis',
       }),
   ].filter(Boolean),
   server: {
@@ -199,15 +210,37 @@ export default defineConfig({
     target: ['es2019', 'safari14'], // ✅ safer for older mobile Safari
     outDir: 'dist',
     assetsDir: 'assets',
+    // Performance Budget Configuration
+    chunkSizeWarningLimit: 500, // Warn at 500KB (stricter than default 1000KB)
     rollupOptions: {
+      onwarn(warning, warn) {
+        // Performance budget warnings
+        if (warning.code === 'CIRCULAR_DEPENDENCY') return;
+        if (warning.code === 'THIS_IS_UNDEFINED') return;
+        warn(warning);
+      },
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
           apollo: ['@apollo/client'],
-          ui: ['react-router-dom'],
+          ui: ['react-router-dom', 'react-scroll'],
+          icons: ['react-icons'],
+          qr: ['html5-qrcode'],
+        },
+        // Performance optimization
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: (assetInfo) => {
+          const extType = assetInfo.name?.split('.').pop();
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType ?? '')) {
+            return `assets/images/[name]-[hash][extname]`;
+          }
+          if (/css/i.test(extType ?? '')) {
+            return `assets/styles/[name]-[hash][extname]`;
+          }
+          return `assets/[name]-[hash][extname]`;
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
   },
 });
