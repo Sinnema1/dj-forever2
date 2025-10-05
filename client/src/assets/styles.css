@@ -6,6 +6,10 @@
 @import "./TravelGuide.css";
 @import "./countdown-enhanced.css";
 @import "./details.css";
+@import "./guestbook.css";
+@import "./login-success.css";
+@import "./pwa-install.css";
+@import "./pwa-update.css";
 @import "./qr-prompt.css";
 @import "./swipeable-lightbox.css";
 @import "./timeline.css";

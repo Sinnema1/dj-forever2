@@ -1,5 +1,3 @@
-import React from "react";
-
 interface RSVPProgressIndicatorProps {
   currentStep: number;
   totalSteps: number;
@@ -25,14 +23,14 @@ export default function RSVPProgressIndicator({
             key={index}
             className={`rsvp-progress-step ${
               index < currentStep
-                ? "completed"
+                ? 'completed'
                 : index === currentStep
-                  ? "current"
-                  : "pending"
+                  ? 'current'
+                  : 'pending'
             }`}
           >
             <div className="step-indicator">
-              {index < currentStep ? "✓" : index + 1}
+              {index < currentStep ? '✓' : index + 1}
             </div>
             <span className="step-label">{step}</span>
           </div>
