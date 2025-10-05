@@ -29,6 +29,7 @@
     "test:client": "cd client && npm test",
     "test:rsvp": "./test-rsvp-suite.sh",
     "test:rsvp:server": "cd server && npm test -- tests/rsvp.e2e.test.ts",
+    "performance:ci": "./scripts/performance-ci.sh",
     "test:rsvp:client": "cd client && npm test -- tests/RSVPForm.e2e.test.tsx",
     "test:rsvp:graphql": "node debug-rsvp-graphql.js"
   },
