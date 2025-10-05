@@ -26,7 +26,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       {/* Performance monitoring - tracks Core Web Vitals */}
-      <PerformanceMonitor debug={process.env.NODE_ENV === 'development'} />
+      <PerformanceMonitor debug={import.meta.env?.DEV || false} />
       
       <ConnectionStatus />
       <PWAInstallBanner />

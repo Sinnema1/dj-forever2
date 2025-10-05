@@ -28,7 +28,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
     // Only initialize once
     isInitialized.current = true;
 
-    if (debug && process.env.NODE_ENV === 'development') {
+    if (debug && import.meta.env?.DEV) {
       console.log('Performance monitoring initialized');
       
       // Log performance summary after a delay
@@ -38,8 +38,10 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
       }, 5000);
     }
 
-    // Track component mount performance
-    performanceMonitor.markEnd('app-initialization');
+    // Track component mount performance - add a small delay to ensure App's useEffect runs first
+    setTimeout(() => {
+      performanceMonitor.markEnd('app-initialization');
+    }, 0);
 
   }, [debug]);
 
