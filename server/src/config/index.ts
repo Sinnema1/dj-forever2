@@ -1,6 +1,51 @@
 /**
- * Configuration Management
- * Centralized configuration with proper validation and environment handling
+ * @fileoverview Configuration Management for DJ Forever 2 Wedding Website
+ * @module config/index
+ * @version 1.0.0
+ *
+ * Centralized configuration management system with environment variable validation,
+ * deployment-aware settings, and type-safe configuration interfaces. Handles all
+ * application settings for development, staging, and production deployments with
+ * proper validation and fallback values.
+ *
+ * Configuration Categories:
+ * - Server: Port, host, and environment settings
+ * - Database: MongoDB connection URI and database naming
+ * - Authentication: JWT secret keys and token expiration
+ * - Frontend: CORS origins and frontend URL configuration
+ * - Logging: Log levels and output configuration
+ * - Apollo: GraphQL server introspection and playground settings
+ *
+ * Environment Validation:
+ * - Required variables validation with startup failure on missing vars
+ * - Type coercion for numeric and boolean values
+ * - Environment-specific defaults for development vs production
+ * - Deployment platform detection (Render.com, local, etc.)
+ *
+ * Deployment Patterns:
+ * - Development: localhost with introspection enabled
+ * - Production: Render.com with security hardening
+ * - Testing: isolated database with minimal logging
+ * - Environment variable override support for all settings
+ *
+ * Security Features:
+ * - JWT secret validation (required, no defaults)
+ * - Database URI validation and secure connection options
+ * - CORS origin whitelist management
+ * - Introspection disabled in production
+ *
+ * @example
+ * // Basic configuration usage:
+ * // import { config } from '../config/index.js';
+ * // const server = new ApolloServer({ introspection: config.apollo.introspection });
+ *
+ * @example
+ * // Individual config imports:
+ * // import { authConfig, databaseConfig } from '../config/index.js';
+ * // const token = jwt.sign(payload, authConfig.jwtSecret);
+ *
+ * @dependencies
+ * - dotenv: Environment variable loading from .env files
  */
 
 import dotenv from "dotenv";
@@ -8,6 +53,18 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
+/**
+ * Main configuration interface defining all application settings.
+ * Provides type safety for configuration access throughout the application.
+ *
+ * @interface Config
+ * @property {Object} server - HTTP server configuration
+ * @property {Object} database - MongoDB connection configuration
+ * @property {Object} auth - JWT authentication configuration
+ * @property {Object} frontend - Frontend URL and CORS configuration
+ * @property {Object} logging - Application logging configuration
+ * @property {Object} apollo - GraphQL server configuration
+ */
 interface Config {
   server: {
     port: number;

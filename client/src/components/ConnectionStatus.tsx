@@ -1,10 +1,10 @@
 /**
  * @fileoverview Network connection status indicator component
- * 
+ *
  * Real-time network connection status display with visual indicators for
  * online, offline, and connection quality states. Provides user feedback
  * for network-dependent operations like RSVP submission and photo uploads.
- * 
+ *
  * Features:
  * - Real-time connection monitoring
  * - Connection quality indicators (fast/slow)
@@ -13,22 +13,22 @@
  * - Configurable visibility options
  * - Accessible design with clear visual cues
  * - Mobile-optimized positioning
- * 
+ *
  * @module ConnectionStatus
  * @version 2.0.0
  * @author DJ Forever Wedding Team
  * @since 1.0.0
- * 
+ *
  * @example
  * ```typescript
  * // Basic usage (only shows when offline/connecting)
  * <ConnectionStatus />
- * 
+ *
  * // Always visible with connection quality
  * <ConnectionStatus showWhenOnline={true} />
- * 
+ *
  * // With custom styling
- * <ConnectionStatus 
+ * <ConnectionStatus
  *   className="custom-connection-status"
  *   showWhenOnline={false}
  * />
@@ -50,27 +50,27 @@ interface ConnectionStatusProps {
 
 /**
  * Real-time network connection status indicator
- * 
+ *
  * Displays current network connectivity status with visual indicators
  * for different connection states. Provides immediate feedback to users
  * about network availability for wedding website operations.
- * 
+ *
  * @component
  * @param props Configuration options for connection status display
  * @returns JSX element with connection status indicator or null
- * 
+ *
  * @example
  * ```typescript
  * * @example\n * ```typescript\n * // Standard usage - only shows when offline or connecting\n * // <ConnectionStatus />\n * \n * // Always show status including connection quality\n * // <ConnectionStatus showWhenOnline={true} />\n * \n * // RSVP form with connection awareness\n * // Shows connection status above form for user feedback\n * ```
  * ```
- * 
+ *
  * @features
  * - **Smart Visibility**: Only shows when relevant (offline/connecting)
  * - **Connection Quality**: Indicates slow vs fast connections
  * - **Visual Feedback**: Color-coded status with emoji indicators
  * - **Responsive Design**: Fixed positioning optimized for mobile
  * - **Accessibility**: Clear text and color contrast
- * 
+ *
  * @dependencies
  * - `useNetworkStatus` - Real-time network monitoring hook
  */

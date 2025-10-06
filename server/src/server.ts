@@ -2,12 +2,12 @@
  * @fileoverview Express + Apollo GraphQL Server for DJ Forever 2 Wedding Website
  * @module server
  * @version 1.0.0
- * 
+ *
  * Production-ready Node.js server combining Express.js with Apollo GraphQL Server.
  * Handles wedding website backend including QR-based authentication, RSVP management,
  * and MongoDB integration. Configured for Render.com deployment with environment-aware
  * database connection and CORS settings.
- * 
+ *
  * Key Features:
  * - QR-only authentication system (no passwords)
  * - GraphQL API for RSVP and user management
@@ -15,19 +15,19 @@
  * - Production security and CORS handling
  * - Health check endpoint for deployment monitoring
  * - QR token redirect handling for mobile scanning
- * 
+ *
  * Architecture:
  * - Express.js for HTTP server and middleware
  * - Apollo Server for GraphQL endpoint
  * - Mongoose for MongoDB connection and ODM
  * - JWT-based authentication context
  * - Environment-aware configuration management
- * 
+ *
  * Deployment:
  * - Development: localhost:3001 with hot reload
  * - Production: Render.com with environment variables
  * - Database: MongoDB Atlas with environment-specific databases
- * 
+ *
  * @example
  * // Environment Variables Required:
  * // MONGODB_URI=mongodb+srv://...
@@ -35,17 +35,17 @@
  * // JWT_SECRET=your-secret-key
  * // CONFIG__FRONTEND_URL=https://dj-forever2.onrender.com
  * // PORT=3001 (optional, defaults to 3001)
- * 
+ *
  * @example
  * // Development startup:
  * // npm run dev (from root) - starts both server and client
  * // cd server && npm run dev - server only
- * 
+ *
  * @example
  * // Production deployment:
  * // npm run render-build - Render.com build command
  * // Automatically starts server on assigned PORT
- * 
+ *
  * @dependencies
  * - express: HTTP server framework
  * - @apollo/server: GraphQL server implementation
@@ -70,7 +70,7 @@ dotenv.config();
 /**
  * Main server startup function - initializes MongoDB connection, Apollo GraphQL server,
  * Express middleware, and starts HTTP server on configured port.
- * 
+ *
  * Handles complete server lifecycle including:
  * - Environment-aware MongoDB connection with proper database naming
  * - Apollo Server configuration with development/production settings
@@ -78,12 +78,12 @@ dotenv.config();
  * - GraphQL endpoint with JWT authentication context
  * - Health check and QR redirect endpoints
  * - Production-ready error handling and logging
- * 
+ *
  * @async
  * @function startServer
  * @throws {Error} MongoDB connection failures cause process exit
  * @returns {Promise<void>} Server startup completion
- * 
+ *
  * @example
  * // Automatic startup - called at module load
  * // Server will be available at:
