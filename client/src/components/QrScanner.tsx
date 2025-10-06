@@ -1,31 +1,125 @@
+/**
+ * @fileoverview QR code scanner component for mobile and desktop
+ * 
+ * Production-ready QR code scanner using html5-qrcode library with
+ * comprehensive error handling, resource management, and mobile optimization.
+ * Provides reliable QR scanning for wedding guest authentication with
+ * graceful cleanup and performance optimization.
+ * 
+ * Features:
+ * - Mobile camera access with permission handling
+ * - Desktop webcam support with fallback options
+ * - Comprehensive error handling and resource cleanup
+ * - Performance-optimized scanning parameters
+ * - Unique scanner ID generation for multiple instances
+ * - Automatic cleanup on component unmount
+ * - Logging integration for debugging and monitoring
+ * 
+ * @module QrScanner
+ * @version 2.0.0
+ * @author DJ Forever Wedding Team
+ * @since 1.0.0
+ * 
+ * @example
+ * ```typescript
+ * // Basic QR scanner
+ * <QrScanner onScan={(token) => handleLogin(token)} />
+ * 
+ * // With error handling and custom settings
+ * <QrScanner
+ *   onScan={(token) => authenticate(token)}
+ *   onError={(error) => showError(error)}
+ *   fps={15}
+ *   qrbox={300}
+ * />
+ * ```
+ * 
+ * @see {@link https://github.com/mebjas/html5-qrcode} html5-qrcode library
+ */
+
 import React, { useEffect, useRef, useCallback } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 // Styles now imported globally via main.tsx
 import { logWarn, logError, logDebug } from '../utils/logger';
 
+/**
+ * Props interface for QrScanner component
+ * @interface QrScannerProps
+ */
 interface QrScannerProps {
+  /** Callback function when QR code is successfully scanned */
   onScan: (result: string) => void;
+  /** Optional error handler for scanning failures */
   onError?: (error: Error) => void;
+  /** Frames per second for scanning (default: 10) */
   fps?: number;
+  /** Size of QR scanning box in pixels (default: 250) */
   qrbox?: number;
 }
 
+/**
+ * QR code scanner component with mobile-first design and robust error handling
+ * 
+ * Provides reliable QR code scanning for wedding guest authentication using
+ * html5-qrcode library. Includes comprehensive resource management, error
+ * handling, and performance optimization for both mobile and desktop usage.
+ * 
+ * @component
+ * @param props QR scanner configuration options
+ * @returns JSX element containing QR scanner interface
+ * 
+ * @example
+ * ```typescript
+ * // Wedding guest authentication scanner
+ * <QrScanner
+ *   onScan={(qrToken) => {
+ *     console.log('QR token scanned:', qrToken);
+ *     authenticateGuest(qrToken);
+ *   }}
+ *   onError={(error) => {
+ *     console.error('Scan error:', error);
+ *     showErrorMessage('Please try scanning again');
+ *   }}
+ *   fps={12}
+ *   qrbox={280}
+ * />
+ * ```
+ * 
+ * @features
+ * - **Mobile Optimized**: Camera access with permission handling
+ * - **Resource Management**: Automatic cleanup on unmount
+ * - **Error Recovery**: Graceful handling of scanner failures
+ * - **Performance**: Optimized scanning parameters
+ * - **Logging**: Comprehensive debug and error logging
+ * - **Multi-instance**: Unique IDs for multiple scanners
+ */
 const QrScanner: React.FC<QrScannerProps> = ({
   onScan,
   onError,
   fps = 10,
   qrbox = 250,
 }) => {
+  /** Reference to scanner container DOM element */
   const scannerRef = useRef<HTMLDivElement>(null);
+  /** Reference to html5-qrcode scanner instance */
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
+  /** Unique scanner ID for multiple instances */
   const scannerIdRef = useRef(
     `qr-scanner-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   );
+  /** Flag to prevent duplicate initialization */
   const isInitializingRef = useRef(false);
+  /** Component mount status for cleanup safety */
   const isMountedRef = useRef(true);
+  /** Cleanup operation status flag */
   const isCleaningUpRef = useRef(false);
 
-  // Cleanup function with proper error handling
+  /**
+   * Cleanup function with comprehensive error handling
+   * 
+   * Safely stops QR scanner and releases camera resources with proper
+   * error suppression for known harmless errors during cleanup process.
+   */
   const cleanup = useCallback(async () => {
     if (!html5QrCodeRef.current || isCleaningUpRef.current) return;
 
