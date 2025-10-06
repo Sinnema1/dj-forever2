@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import Navbar from './components/Navbar';
+import EnhancedSuspense from './components/EnhancedSuspense';
 import HomePage from './pages/HomePage';
 import RSVPStandalonePage from './pages/RSVPStandalonePage';
 import RegistryStandalonePage from './pages/RegistryStandalonePage';
@@ -34,6 +35,8 @@ import performanceMonitor from './services/performanceMonitor';
  * - **Protected Routes**: RSVP access limited to invited guests only
  * - **Real-time Status**: Connection status and update notifications
  * - **Personalization**: Dynamic content based on guest authentication
+ * - **React 18+ Concurrent Features**: Enhanced Suspense boundaries for all routes
+ * - **Concurrent Rendering**: Optimized for React 18+ automatic batching and transitions
  *
  * @architecture
  * - Uses React Router for client-side routing
@@ -87,19 +90,80 @@ export default function App() {
       <WelcomeModal />
       <main>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/"
+            element={
+              <EnhancedSuspense
+                name="homepage"
+                loadingMessage="Loading our wedding website..."
+                enhanced={true}
+              >
+                <HomePage />
+              </EnhancedSuspense>
+            }
+          />
           <Route
             path="/rsvp"
             element={
               <InvitedRoute>
-                <RSVPStandalonePage />
+                <EnhancedSuspense
+                  name="rsvp-page"
+                  loadingMessage="Loading RSVP form..."
+                  enhanced={true}
+                >
+                  <RSVPStandalonePage />
+                </EnhancedSuspense>
               </InvitedRoute>
             }
           />
-          <Route path="/registry" element={<RegistryStandalonePage />} />
-          <Route path="/login/qr/:qrToken" element={<QRTokenLogin />} />
-          <Route path="/login/success" element={<LoginSuccess />} />
-          <Route path="/qr-help" element={<QRInfoPage />} />
+          <Route
+            path="/registry"
+            element={
+              <EnhancedSuspense
+                name="registry-page"
+                loadingMessage="Loading registry information..."
+                enhanced={true}
+              >
+                <RegistryStandalonePage />
+              </EnhancedSuspense>
+            }
+          />
+          <Route
+            path="/login/qr/:qrToken"
+            element={
+              <EnhancedSuspense
+                name="qr-login"
+                loadingMessage="Processing QR authentication..."
+                enhanced={true}
+              >
+                <QRTokenLogin />
+              </EnhancedSuspense>
+            }
+          />
+          <Route
+            path="/login/success"
+            element={
+              <EnhancedSuspense
+                name="login-success"
+                loadingMessage="Confirming authentication..."
+                enhanced={true}
+              >
+                <LoginSuccess />
+              </EnhancedSuspense>
+            }
+          />
+          <Route
+            path="/qr-help"
+            element={
+              <EnhancedSuspense
+                name="qr-help"
+                loadingMessage="Loading help information..."
+                enhanced={true}
+              >
+                <QRInfoPage />
+              </EnhancedSuspense>
+            }
+          />
         </Routes>
       </main>
     </ErrorBoundary>

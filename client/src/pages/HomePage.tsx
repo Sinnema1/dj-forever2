@@ -2,11 +2,8 @@ import { useEffect } from 'react';
 import HeroBanner from '../components/HeroBanner';
 import SectionDivider from '../components/SectionDivider';
 import { HomePageSEO } from '../components/SEO';
-import {
-  LazyComponent,
-  Gallery,
-  TravelGuide,
-} from '../components/LazyComponents';
+import { Gallery, TravelGuide } from '../components/LazyComponents';
+import { EnhancedLazyComponent } from '../components/EnhancedSuspense';
 import { analytics } from '../utils/analytics';
 import { performanceMonitor } from '../utils/performance';
 import theme from '../theme/theme';
@@ -80,9 +77,11 @@ export default function HomePage() {
         <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">Gallery</h2>
         <div className="section-content">
-          <LazyComponent
+          <EnhancedLazyComponent
             Component={Gallery}
-            loadingMessage="Loading photo gallery..."
+            name="gallery"
+            loadingMessage="Loading our beautiful photo gallery..."
+            enhanced={true}
           />
         </div>
         <SectionDivider position="bottom" color={theme.colors.cream} />
@@ -93,9 +92,11 @@ export default function HomePage() {
         <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">Travel Guide</h2>
         <div className="section-content">
-          <LazyComponent
+          <EnhancedLazyComponent
             Component={TravelGuide}
-            loadingMessage="Loading travel information..."
+            name="travel-guide"
+            loadingMessage="Loading travel information and accommodations..."
+            enhanced={true}
           />
         </div>
         <SectionDivider position="bottom" color={theme.colors.cream} />
