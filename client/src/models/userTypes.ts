@@ -1,6 +1,6 @@
 /**
  * User Type Definitions
- * 
+ *
  * Core user interfaces for authentication and user management in the DJ Forever 2
  * wedding website. These types define the structure for user data, authentication
  * context, and user-related operations throughout the application.
@@ -12,7 +12,7 @@
 
 /**
  * User - Core User Data Interface
- * 
+ *
  * Represents a wedding guest or admin user in the system. Contains all essential
  * user information including invitation status, RSVP completion state, and
  * administrative privileges. Matches the GraphQL User type from the backend.
@@ -49,10 +49,10 @@ export interface User {
 
 /**
  * UserType - Legacy Type Alias
- * 
+ *
  * Maintains backward compatibility with existing code that imports UserType.
  * New code should use the User interface directly for clarity.
- * 
+ *
  * @deprecated Use `User` interface directly for new code
  * @type {User}
  */
@@ -60,7 +60,7 @@ export type UserType = User;
 
 /**
  * AuthContextType - Authentication Context Interface
- * 
+ *
  * Defines the structure and methods available through the authentication context.
  * Provides user state, authentication status, and authentication operations
  * throughout the application via React Context.
@@ -70,9 +70,9 @@ export type UserType = User;
  * ```typescript
  * const AuthComponent = () => {
  *   const { user, isLoggedIn, loginWithQrToken, logout } = useAuth();
- *   
+ *
  *   if (isLoading) return <LoadingSpinner />;
- *   
+ *
  *   if (!isLoggedIn) {
  *     return (
  *       <button onClick={() => loginWithQrToken('user-qr-token')}>
@@ -80,7 +80,7 @@ export type UserType = User;
  *       </button>
  *     );
  *   }
- *   
+ *
  *   return (
  *     <div>
  *       <h1>Welcome, {user?.fullName}!</h1>
@@ -91,41 +91,41 @@ export type UserType = User;
  * ```
  */
 export interface AuthContextType {
-  /** 
+  /**
    * Current authenticated user data or null if not logged in
    * Contains all user information including invitation status and RSVP state
    */
   user: User | null;
-  
-  /** 
+
+  /**
    * JWT authentication token or null if not authenticated
    * Used for API authorization and stored in localStorage for persistence
    */
   token: string | null;
-  
-  /** 
+
+  /**
    * Computed boolean indicating if user is currently authenticated
    * True when both user and token are present
    */
   isLoggedIn: boolean;
-  
-  /** 
+
+  /**
    * Loading state indicator for authentication operations
    * True during initial app load, login attempts, or token validation
    */
   isLoading: boolean;
-  
-  /** 
+
+  /**
    * QR Code Authentication Function
-   * 
+   *
    * Authenticates a user using their unique QR token from wedding invitation.
    * Handles the complete login flow including token validation, user data
    * retrieval, and local storage persistence.
-   * 
+   *
    * @param qrToken - Unique QR token from user's wedding invitation
    * @returns Promise that resolves on successful authentication
    * @throws {Error} When QR token is invalid, expired, or network errors occur
-   * 
+   *
    * @example
    * ```typescript
    * try {
@@ -137,15 +137,15 @@ export interface AuthContextType {
    * ```
    */
   loginWithQrToken: (qrToken: string) => Promise<void>;
-  
-  /** 
+
+  /**
    * Logout Function
-   * 
+   *
    * Clears all authentication data including user state, JWT token, and
    * local storage. Resets the authentication context to logged-out state.
-   * 
+   *
    * @returns void
-   * 
+   *
    * @example
    * ```typescript
    * const handleLogout = () => {

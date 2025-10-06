@@ -19,7 +19,7 @@ interface QRLoginModalProps {
  * QRLoginModal - QR Code Authentication Modal
  *
  * Interactive modal component for QR code authentication with manual token input
- * fallback. Provides multiple authentication methods including QR scanning 
+ * fallback. Provides multiple authentication methods including QR scanning
  * recommendations and manual token entry for guests who need alternative login
  * options beyond scanning invitation QR codes.
  *

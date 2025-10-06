@@ -1,16 +1,117 @@
-// Enhanced analytics for tracking guest engagement
+/**
+ * Wedding Analytics Service
+ *
+ * Comprehensive analytics tracking system for wedding website guest engagement.
+ * Provides event tracking, user behavior analysis, and performance monitoring
+ * specifically tailored for wedding website interactions including RSVP flows,
+ * QR code authentication, photo viewing, and guest engagement patterns.
+ *
+ * @fileoverview Analytics service for wedding guest engagement tracking
+ * @version 2.0
+ * @since 1.0.0
+ *
+ * @features
+ * - **Guest Journey Tracking**: Complete user flow analytics from QR scan to RSVP
+ * - **Event-Based Analytics**: Custom events for wedding-specific interactions
+ * - **Privacy Conscious**: No personal data collection, only engagement metrics
+ * - **Backend Integration**: Seamless integration with GraphQL backend
+ * - **Real-time Insights**: Immediate event processing and reporting
+ * - **Performance Monitoring**: Page load times and user experience metrics
+ */
+
 import { logDebug, logWarn } from './logger';
 
+/**
+ * Analytics event structure for consistent event tracking
+ *
+ * @interface AnalyticsEvent
+ */
 interface AnalyticsEvent {
+  /** Event name/type (e.g., 'qr_login', 'rsvp_submit', 'photo_view') */
   event: string;
+  /** Optional guest identifier for personalized analytics */
   guestId?: string;
+  /** Timestamp when the event occurred */
   timestamp: Date;
+  /** Additional event-specific data and context */
   metadata?: Record<string, any>;
 }
 
+/**
+ * WeddingAnalytics Class - Core Analytics Implementation
+ *
+ * Manages all analytics tracking for the wedding website including guest
+ * interactions, RSVP completions, QR code usage, and engagement metrics.
+ * Provides both development debugging and production analytics integration.
+ *
+ * @class WeddingAnalytics
+ * @example
+ * ```typescript
+ * const analytics = new WeddingAnalytics();
+ *
+ * // Track QR code login
+ * analytics.track('qr_login', guestId, {
+ *   qrToken: 'abc123',
+ *   loginTime: new Date(),
+ *   userAgent: navigator.userAgent
+ * });
+ *
+ * // Track RSVP submission
+ * analytics.track('rsvp_submit', guestId, {
+ *   attending: 'YES',
+ *   guestCount: 2,
+ *   completionTime: 45000 // ms
+ * });
+ *
+ * // Track photo engagement
+ * analytics.track('photo_view', guestId, {
+ *   photoId: 'gallery-img-5',
+ *   viewDuration: 3000,
+ *   interactions: ['zoom', 'swipe']
+ * });
+ * ```
+ */
 export class WeddingAnalytics {
   private events: AnalyticsEvent[] = [];
 
+  /**
+   * Track Analytics Event
+   *
+   * Records an analytics event with optional guest identification and metadata.
+   * Handles both development logging and production analytics integration.
+   * Events are stored locally and sent to backend services for analysis.
+   *
+   * @param event - Event name/identifier (e.g., 'qr_login', 'rsvp_submit')
+   * @param guestId - Optional guest identifier for personalized analytics
+   * @param metadata - Optional additional event data and context
+   *
+   * @example
+   * ```typescript
+   * // Basic event tracking
+   * analytics.track('page_view');
+   *
+   * // Event with guest context
+   * analytics.track('qr_login', 'guest-123');
+   *
+   * // Event with rich metadata
+   * analytics.track('rsvp_submit', 'guest-123', {
+   *   attending: 'YES',
+   *   guestCount: 2,
+   *   mealPreferences: ['chicken', 'vegetarian'],
+   *   completionTime: 45000,
+   *   formErrors: 0,
+   *   userAgent: navigator.userAgent
+   * });
+   *
+   * // Performance tracking
+   * analytics.track('performance_metric', undefined, {
+   *   metric: 'LCP',
+   *   value: 1250,
+   *   rating: 'good',
+   *   url: window.location.pathname
+   * });
+   * ```
+   */
   track(event: string, guestId?: string, metadata?: Record<string, any>) {
     const analyticsEvent: AnalyticsEvent = {
       event,

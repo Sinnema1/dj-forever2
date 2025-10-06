@@ -1,3 +1,16 @@
+/**
+ * Apollo Client Configuration
+ *
+ * Comprehensive GraphQL client setup for the DJ Forever 2 wedding website.
+ * Provides authentication, error handling, and network resilience for all
+ * GraphQL operations including RSVP management, user authentication, and
+ * data fetching.
+ *
+ * @fileoverview Apollo Client with authentication and error handling
+ * @version 2.0
+ * @since 1.0.0
+ */
+
 import {
   ApolloClient,
   InMemoryCache,
@@ -12,12 +25,34 @@ import {
   reportNetworkError,
 } from '../services/errorReportingService';
 
-// Create an HTTP link for GraphQL server
+/**
+ * HTTP Link Configuration
+ *
+ * Creates the core HTTP transport for GraphQL operations. Uses environment
+ * variable for endpoint configuration with fallback to '/graphql' for
+ * development and production consistency.
+ */
 const httpLink = createHttpLink({
   uri: import.meta.env.VITE_GRAPHQL_ENDPOINT || '/graphql',
 });
 
-// Handle authentication via token in localStorage
+/**
+ * Authentication Link
+ *
+ * Automatically attaches JWT authentication tokens to all GraphQL requests.
+ * Retrieves the token from localStorage and adds it to the Authorization header.
+ * Supports the QR-code authentication flow by automatically including tokens
+ * from successful QR logins.
+ *
+ * @example
+ * ```typescript
+ * // Token is automatically retrieved and attached:
+ * // Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *
+ * // No manual token management needed:
+ * const { data } = useQuery(GET_RSVP); // Automatically authenticated
+ * ```
+ */
 const authLink = setContext((_, { headers }) => {
   // Get auth token from localStorage if it exists
   const token = localStorage.getItem('id_token');
@@ -31,7 +66,29 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-// Handle GraphQL errors
+/**
+ * Error Handling Link
+ *
+ * Comprehensive error handling for GraphQL and network errors. Provides
+ * automatic error reporting, logging, and user-friendly error management.
+ * Integrates with the error reporting service for production monitoring.
+ *
+ * Handles:
+ * - GraphQL errors (validation, authorization, server errors)
+ * - Network errors (connectivity issues, timeouts)
+ * - Authentication errors (invalid tokens, expired sessions)
+ *
+ * @example
+ * ```typescript
+ * // Errors are automatically caught and reported:
+ * try {
+ *   await createRSVP({ variables: { input: rsvpData } });
+ * } catch (error) {
+ *   // Error already logged and reported automatically
+ *   // Handle user-facing error messaging here
+ * }
+ * ```
+ */
 const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(error => {
