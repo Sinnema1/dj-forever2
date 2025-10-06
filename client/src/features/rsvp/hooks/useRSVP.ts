@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client/react/hooks';
 import { GET_RSVP } from '../graphql/queries';
 import { CREATE_RSVP, EDIT_RSVP } from '../graphql/mutations';
 import { RSVP, CreateRSVPInput, RSVPInput } from '../types/rsvpTypes';

@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client/core';
 
 export const LOGIN_WITH_QR_TOKEN = gql`
   mutation loginWithQrToken($qrToken: String!) {

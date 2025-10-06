@@ -1,22 +1,27 @@
 /**
  * Apollo Client Configuration
  *
- * Comprehensive GraphQL client setup for the DJ Forever 2 wedding website.
- * Provides authentication, error handling, and network resilience for all
- * GraphQL operations including RSVP management, user authentication, and
- * data fetching.
+ * Optimized GraphQL client setup for the DJ Forever 2 wedding website.
+ * Provides authentication, error handling, and network resilience with
+ * enhanced bundle optimization through modular imports.
  *
- * @fileoverview Apollo Client with authentication and error handling
- * @version 2.0
+ * Performance Optimizations:
+ * - Modular Apollo Client imports for optimal tree-shaking
+ * - Separate bundle chunking for Apollo dependencies
+ * - Reduced bundle size through selective imports
+ * - Enhanced caching strategy for production performance
+ *
+ * @fileoverview Optimized Apollo Client with modular imports
+ * @version 3.0 - Bundle optimization update
  * @since 1.0.0
  */
 
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  from,
-} from '@apollo/client';
+// Modular Apollo Client imports for optimal tree-shaking and smaller bundle size
+// These imports are split into separate chunks via Vite configuration
+import { ApolloClient } from '@apollo/client/core';
+import { InMemoryCache } from '@apollo/client/cache';
+import { createHttpLink } from '@apollo/client/link/http';
+import { from } from '@apollo/client/link/core';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { logError, logWarn } from '../utils/logger';
