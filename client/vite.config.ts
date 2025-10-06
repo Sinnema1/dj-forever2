@@ -41,8 +41,10 @@ export default defineConfig({
       ext: '.gz',
     }),
     VitePWA({
+      // AUTO UPDATE: Updates happen automatically without user intervention
+      // This provides the best UX for wedding guests - no confusing notifications
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'offline.html'],
+      // Let Workbox handle all assets automatically via globPatterns
       devOptions: {
         enabled: false, // set to true only if you want to test SW in dev
       },
@@ -83,27 +85,26 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp}'],
+        globPatterns: [
+          '**/*.{js,css,html}',
+          'assets/**/*.{png,svg,jpg,jpeg,webp}', // Only assets folder for images
+          'images/**/*.{png,svg,jpg,jpeg,webp}', // Images in public/images
+          'favicon.svg', // Root favicon
+          'offline.html', // Offline page
+          'manifest.webmanifest', // PWA manifest
+        ],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
-        skipWaiting: true,
-        clientsClaim: true,
+        // AUTOMATIC UPDATE CONFIGURATION
+        skipWaiting: true, // New SW takes control immediately
+        clientsClaim: true, // SW controls all clients immediately
         cleanupOutdatedCaches: true,
         // Enhanced PWA capabilities
         ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^v$/, /^_/],
         dontCacheBustURLsMatching: /\.\w{8}\./,
-        // Background sync and push notifications support
-        additionalManifestEntries: [{ url: '/offline.html', revision: null }],
-        manifestTransforms: [
-          manifestEntries => {
-            // Remove any duplicate entries with different revisions
-            const uniqueEntries = new Map();
-            manifestEntries.forEach(entry => {
-              const url = entry.url.split('?')[0]; // Remove query parameters for comparison
-              uniqueEntries.set(url, entry);
-            });
-            return { manifest: Array.from(uniqueEntries.values()) };
-          },
-        ],
+        // Explicitly exclude files to prevent double inclusion
+        globIgnores: ['**/node_modules/**/*'],
+        // FIXED: Remove navigateFallback to prevent offline.html duplication
+        navigateFallback: null,
         runtimeCaching: [
           // GraphQL API - Network first with offline fallback
           {
@@ -163,8 +164,6 @@ export default defineConfig({
             },
           },
         ],
-        navigateFallback: '/offline.html',
-        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
       },
     }),
     // Bundle analyzer (multiple templates for comprehensive analysis)
