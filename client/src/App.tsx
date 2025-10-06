@@ -20,7 +20,7 @@ import performanceMonitor from './services/performanceMonitor';
 /**
  * App - Main Application Component
  *
- * The root component for DJ Forever 2 wedding website. Provides the main 
+ * The root component for DJ Forever 2 wedding website. Provides the main
  * application structure with routing, authentication, error boundaries, and
  * performance monitoring. Features QR-code-only authentication and progressive
  * web app capabilities.

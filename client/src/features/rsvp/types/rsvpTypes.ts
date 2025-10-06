@@ -1,6 +1,6 @@
 /**
  * RSVP Type Definitions
- * 
+ *
  * Comprehensive type definitions for the wedding RSVP system with full
  * backward compatibility support. These types handle both modern multi-guest
  * RSVPs and legacy single-guest data formats, ensuring smooth data migration
@@ -13,21 +13,21 @@
 
 /**
  * Guest attendance status options for wedding RSVP responses
- * 
+ *
  * @typedef {string} AttendanceStatus
  * @enum {string}
  */
-export type AttendanceStatus = 
+export type AttendanceStatus =
   /** Confirmed attendance - guest will attend the wedding */
-  | 'YES' 
+  | 'YES'
   /** Declined attendance - guest cannot attend the wedding */
-  | 'NO' 
+  | 'NO'
   /** Uncertain attendance - guest is unsure about attending */
   | 'MAYBE';
 
 /**
  * Individual guest information for multi-guest RSVP entries
- * 
+ *
  * Each guest in a party has their own meal preferences and dietary restrictions.
  * This interface supports the modern multi-guest RSVP system where families
  * or couples can RSVP for multiple attendees with individual preferences.
@@ -43,12 +43,12 @@ export interface Guest {
 
 /**
  * Complete RSVP record as stored in the database
- * 
+ *
  * Represents a full RSVP response with both modern multi-guest fields and
  * legacy single-guest fields for backward compatibility. The legacy fields
  * are automatically populated from the first guest's data when using the
  * modern format.
- * 
+ *
  * @example
  * ```typescript
  * const rsvp: RSVP = {
@@ -63,7 +63,7 @@ export interface Guest {
  *       allergies: 'None'
  *     },
  *     {
- *       fullName: 'Jane Doe', 
+ *       fullName: 'Jane Doe',
  *       mealPreference: 'vegetarian',
  *       allergies: 'Gluten sensitivity'
  *     }
@@ -89,7 +89,7 @@ export interface RSVP {
   guests: Guest[];
   /** Additional notes, special requests, or messages from guests */
   additionalNotes: string;
-  
+
   // Legacy fields for backward compatibility with v1.0 RSVPs
   /** @deprecated Use guests[0].fullName - kept for legacy API compatibility */
   fullName: string;
@@ -101,11 +101,11 @@ export interface RSVP {
 
 /**
  * Input data structure for creating new RSVP entries
- * 
+ *
  * Used when submitting new RSVP responses through the GraphQL createRSVP
  * mutation. Includes both modern multi-guest fields and legacy fields to
  * ensure compatibility with existing API consumers.
- * 
+ *
  * @example
  * ```typescript
  * const newRSVP: CreateRSVPInput = {
@@ -133,7 +133,7 @@ export interface CreateRSVPInput {
   guests: Guest[];
   /** Additional notes or special requests */
   additionalNotes: string;
-  
+
   // Legacy fields for API compatibility
   /** @deprecated Use guests[0].fullName - required for legacy API support */
   fullName: string;
@@ -145,11 +145,11 @@ export interface CreateRSVPInput {
 
 /**
  * Form data structure used by RSVPForm component
- * 
+ *
  * Represents the current state of the RSVP form during user input. This
  * interface matches CreateRSVPInput to ensure seamless form submission
  * without data transformation.
- * 
+ *
  * @example
  * ```typescript
  * const [formData, setFormData] = useState<RSVPFormData>({
@@ -172,7 +172,7 @@ export interface RSVPFormData {
   guests: Guest[];
   /** Additional notes text area content */
   additionalNotes: string;
-  
+
   // Legacy form fields
   /** @deprecated Legacy form field - use guests[0].fullName */
   fullName: string;
@@ -184,10 +184,10 @@ export interface RSVPFormData {
 
 /**
  * Input structure for updating existing RSVP entries
- * 
+ *
  * Used with editRSVP mutation to modify existing RSVP responses. Contains
  * only the essential fields needed for updates, with optional additional notes.
- * 
+ *
  * @example
  * ```typescript
  * const updateData: RSVPInput = {

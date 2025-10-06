@@ -69,15 +69,15 @@ interface EditRSVPResponse {
  *   // Show existing RSVP or create new one
  *   if (rsvp) {
  *     return (
- *       <RSVPSummary 
- *         rsvp={rsvp} 
+ *       <RSVPSummary
+ *         rsvp={rsvp}
  *         onEdit={(updates) => editRSVP(updates)}
  *       />
  *     );
  *   }
  *
  *   return (
- *     <RSVPForm 
+ *     <RSVPForm
  *       onSubmit={(formData) => createRSVP(formData)}
  *     />
  *   );
@@ -135,15 +135,15 @@ export const useRSVP = () => {
 
   /**
    * Create New RSVP
-   * 
+   *
    * Creates a new RSVP submission for the authenticated user. Handles the complete
    * creation flow including GraphQL mutation, error reporting, and automatic data
    * refetch to update the UI with the new RSVP.
-   * 
+   *
    * @param formData - Complete RSVP form data including guest details and preferences
    * @returns Promise that resolves when RSVP is successfully created
    * @throws {Error} When RSVP creation fails due to validation or network errors
-   * 
+   *
    * @example
    * ```typescript
    * const newRSVP: CreateRSVPInput = {
@@ -158,7 +158,7 @@ export const useRSVP = () => {
    *   mealPreference: 'chicken',
    *   allergies: 'None'
    * };
-   * 
+   *
    * await createRSVP(newRSVP);
    * ```
    */
@@ -176,15 +176,15 @@ export const useRSVP = () => {
 
   /**
    * Edit Existing RSVP
-   * 
+   *
    * Updates an existing RSVP with new information. Handles the complete update
    * flow including GraphQL mutation, error reporting, and automatic data refetch
    * to update the UI with the modified RSVP.
-   * 
+   *
    * @param updates - RSVP update data containing modified fields
    * @returns Promise that resolves when RSVP is successfully updated
    * @throws {Error} When RSVP update fails due to validation or network errors
-   * 
+   *
    * @example
    * ```typescript
    * const updates: RSVPInput = {
@@ -197,7 +197,7 @@ export const useRSVP = () => {
    *   }],
    *   additionalNotes: 'Unfortunately cannot attend due to conflict'
    * };
-   * 
+   *
    * await editRSVP(updates);
    * ```
    */

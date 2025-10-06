@@ -1,32 +1,88 @@
 /**
- * Performance Monitoring Service
- * Tracks Core Web Vitals and sends performance data to analytics
+ * @fileoverview Production-ready performance monitoring service for wedding website
+ *
+ * Comprehensive Core Web Vitals tracking with Google's latest recommendations.
+ * Monitors user experience metrics, resource timing, and navigation performance
+ * with intelligent thresholds and analytics integration for performance optimization.
+ *
+ * Features:
+ * - Core Web Vitals tracking (CLS, INP, LCP, FCP, TTFB)
+ * - Resource timing analysis with size and speed optimization
+ * - Navigation timing metrics for page load optimization
+ * - Performance threshold alerts with actionable insights
+ * - Connection-aware performance analysis
+ * - Custom performance measurement tools
+ * - Analytics integration for performance trend analysis
+ *
+ * @module PerformanceMonitor
+ * @version 2.0.0
+ * @author DJ Forever Wedding Team
+ * @since 1.0.0
+ *
+ * @example
+ * ```typescript
+ * // Initialize performance monitoring (automatic)
+ * import { performanceMonitor } from './services/performanceMonitor';
+ *
+ * // Custom performance measurements
+ * performanceMonitor.markStart('photo-gallery-load');
+ * // ... photo loading logic
+ * performanceMonitor.markEnd('photo-gallery-load');
+ *
+ * // Get performance summary
+ * const summary = performanceMonitor.getPerformanceSummary();
+ * console.log('Current Core Web Vitals:', summary);
+ * ```
+ *
+ * @see {@link https://web.dev/vitals/} Google Core Web Vitals
+ * @see {@link https://web.dev/user-centric-performance-metrics/} User-centric metrics
  */
 
 import { onCLS, onINP, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals';
 
-// Simple logger implementation
+/**
+ * Debug logging utility for development environment
+ * @internal
+ * @param message - Log message
+ * @param context - Component context for debugging
+ * @param data - Optional data object to log
+ */
 const logDebug = (message: string, context: string, data?: any) => {
   if (import.meta.env?.DEV) {
     console.log(`[${context}] ${message}`, data || '');
   }
 };
 
+/**
+ * Warning logging utility for performance issues
+ * @internal
+ * @param message - Warning message
+ * @param context - Component context for debugging
+ * @param data - Optional data object to log
+ */
 const logWarn = (message: string, context: string, data?: any) => {
   console.warn(`[${context}] ${message}`, data || '');
 };
 
-// Analytics interface (will be implemented later)
+/**
+ * Analytics service interface for performance data tracking
+ * @interface AnalyticsService
+ */
 interface AnalyticsService {
+  /** Track general events with optional user context */
   track: (
     event: string,
     userId?: string,
     properties?: Record<string, any>
   ) => void;
+  /** Track performance-specific metrics */
   trackPerformance: (data: Record<string, any>) => void;
 }
 
-// Simple analytics implementation
+/**
+ * Analytics service implementation with development logging
+ * @internal
+ */
 const analytics: AnalyticsService = {
   track: (event: string, userId?: string, properties?: Record<string, any>) => {
     if (process.env.NODE_ENV === 'development') {
@@ -42,16 +98,29 @@ const analytics: AnalyticsService = {
   },
 };
 
+/**
+ * Performance thresholds based on Google's Core Web Vitals recommendations
+ * @interface PerformanceThresholds
+ *
+ * @see {@link https://web.dev/defining-core-web-vitals-thresholds/} Threshold definitions
+ */
 interface PerformanceThresholds {
-  // Core Web Vitals thresholds (Google's recommendations)
+  /** Cumulative Layout Shift - visual stability metric */
   CLS: { good: 0.1; needsImprovement: 0.25 };
-  INP: { good: 200; needsImprovement: 500 }; // Interaction to Next Paint (replaces FID in 2024)
+  /** Interaction to Next Paint - responsiveness metric (replaces FID in 2024) */
+  INP: { good: 200; needsImprovement: 500 };
+  /** Largest Contentful Paint - loading performance metric */
   LCP: { good: 2500; needsImprovement: 4000 };
-  // Additional metrics
+  /** First Contentful Paint - initial loading metric */
   FCP: { good: 1800; needsImprovement: 3000 };
+  /** Time to First Byte - server response metric */
   TTFB: { good: 800; needsImprovement: 1800 };
 }
 
+/**
+ * Google's recommended performance thresholds for Core Web Vitals
+ * Values in milliseconds (except CLS which is a score)
+ */
 const PERFORMANCE_THRESHOLDS: PerformanceThresholds = {
   CLS: { good: 0.1, needsImprovement: 0.25 },
   INP: { good: 200, needsImprovement: 500 },
@@ -60,14 +129,54 @@ const PERFORMANCE_THRESHOLDS: PerformanceThresholds = {
   TTFB: { good: 800, needsImprovement: 1800 },
 };
 
+/**
+ * Production-ready performance monitoring service
+ *
+ * Automatically tracks Core Web Vitals and provides intelligent performance analysis
+ * for wedding website optimization. Integrates with analytics for trend monitoring
+ * and provides real-time performance alerts for poor user experience detection.
+ *
+ * @class PerformanceMonitor
+ * @version 2.0.0
+ *
+ * @example
+ * ```typescript
+ * // Automatic initialization on import
+ * const monitor = new PerformanceMonitor();
+ *
+ * // Custom performance tracking
+ * monitor.markStart('rsvp-submission');
+ * await submitRSVP(formData);
+ * monitor.markEnd('rsvp-submission');
+ *
+ * // Performance analysis
+ * const summary = monitor.getPerformanceSummary();
+ * if (summary.LCP?.rating === 'poor') {
+ *   console.warn('LCP needs improvement:', summary.LCP.value);
+ * }
+ * ```
+ *
+ * @see {@link https://web.dev/vitals/} Core Web Vitals Guide
+ */
 class PerformanceMonitor {
+  /** Internal storage for performance metrics */
   private metrics: Map<string, Metric> = new Map();
+  /** Initialization flag to prevent duplicate setup */
   private isInitialized = false;
 
+  /**
+   * Initialize performance monitoring service
+   * Automatically sets up Core Web Vitals tracking and resource monitoring
+   */
   constructor() {
     this.initializeMonitoring();
   }
 
+  /**
+   * Initialize Core Web Vitals monitoring and resource tracking
+   * Sets up observers for all performance metrics with proper error handling
+   * @private
+   */
   private initializeMonitoring() {
     if (this.isInitialized || typeof window === 'undefined') {
       return;
@@ -89,6 +198,12 @@ class PerformanceMonitor {
     this.isInitialized = true;
   }
 
+  /**
+   * Handle incoming performance metrics from web-vitals library
+   * Stores metrics, sends to analytics, and checks performance thresholds
+   * @private
+   * @param metric - Performance metric from web-vitals
+   */
   private handleMetric(metric: Metric) {
     const { name, value, rating } = metric;
 
@@ -192,7 +307,8 @@ class PerformanceMonitor {
     };
 
     const nav = navigator as NavigatorWithConnection;
-    const connection = nav.connection || nav.mozConnection || nav.webkitConnection;
+    const connection =
+      nav.connection || nav.mozConnection || nav.webkitConnection;
 
     return {
       effectiveType: connection?.effectiveType || 'unknown',
@@ -304,10 +420,38 @@ class PerformanceMonitor {
   }
 
   // Public API methods
+
+  /**
+   * Get a specific performance metric by name
+   * @public
+   * @param metricName - Name of the metric (CLS, INP, LCP, FCP, TTFB)
+   * @returns The metric object or undefined if not found
+   *
+   * @example
+   * ```typescript
+   * const lcp = performanceMonitor.getMetric('LCP');
+   * if (lcp && lcp.value > 2500) {
+   *   console.warn('LCP is slower than recommended');
+   * }
+   * ```
+   */
   public getMetric(metricName: string): Metric | undefined {
     return this.metrics.get(metricName);
   }
 
+  /**
+   * Get all collected performance metrics
+   * @public
+   * @returns Object containing all metrics keyed by metric name
+   *
+   * @example
+   * ```typescript
+   * const allMetrics = performanceMonitor.getAllMetrics();
+   * Object.entries(allMetrics).forEach(([name, metric]) => {
+   *   console.log(`${name}: ${metric.value}ms (${metric.rating})`);
+   * });
+   * ```
+   */
   public getAllMetrics(): Record<string, Metric> {
     const metrics: Record<string, Metric> = {};
     this.metrics.forEach((metric, name) => {
@@ -316,6 +460,21 @@ class PerformanceMonitor {
     return metrics;
   }
 
+  /**
+   * Get performance summary with ratings and thresholds
+   * Provides actionable insights for each Core Web Vital
+   * @public
+   * @returns Summary object with ratings and threshold information
+   *
+   * @example
+   * ```typescript
+   * const summary = performanceMonitor.getPerformanceSummary();
+   * if (summary.LCP?.rating === 'poor') {
+   *   // Optimize images, use CDN, improve server response
+   *   console.warn('LCP needs improvement:', summary.LCP.value);
+   * }
+   * ```
+   */
   public getPerformanceSummary() {
     const summary: Record<string, any> = {};
 
@@ -334,7 +493,20 @@ class PerformanceMonitor {
     return summary;
   }
 
-  // Manual performance tracking
+  /**
+   * Start custom performance measurement
+   * Use for measuring specific operations like RSVP submission or photo loading
+   * @public
+   * @param name - Unique name for the performance measurement
+   *
+   * @example
+   * ```typescript
+   * // Measure photo gallery loading time
+   * performanceMonitor.markStart('photo-gallery-load');
+   * await loadPhotoGallery();
+   * performanceMonitor.markEnd('photo-gallery-load');
+   * ```
+   */
   public markStart(name: string) {
     try {
       performance.mark(`${name}-start`);
@@ -347,6 +519,24 @@ class PerformanceMonitor {
     }
   }
 
+  /**
+   * End custom performance measurement and send to analytics
+   * Automatically calculates duration and sends to analytics service
+   * @public
+   * @param name - Name matching the markStart() call
+   *
+   * @example
+   * ```typescript
+   * // Measure RSVP form submission
+   * performanceMonitor.markStart('rsvp-submission');
+   * try {
+   *   await submitRSVP(formData);
+   *   performanceMonitor.markEnd('rsvp-submission'); // Success measurement
+   * } catch (error) {
+   *   performanceMonitor.markEnd('rsvp-submission-error'); // Error measurement
+   * }
+   * ```
+   */
   public markEnd(name: string) {
     try {
       performance.mark(`${name}-end`);
