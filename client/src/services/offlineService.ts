@@ -1,39 +1,162 @@
-// Enhanced Offline Service for Wedding Website PWA
+/**
+ * @fileoverview Enhanced offline service for wedding website PWA
+ *
+ * Comprehensive offline-first data management with IndexedDB storage,
+ * background sync capabilities, and intelligent network-aware synchronization.
+ * Ensures seamless user experience even without internet connectivity by
+ * storing RSVPs, photo uploads, and wedding data locally with automatic
+ * sync when connection is restored.
+ *
+ * Features:
+ * - IndexedDB data persistence with versioned schema
+ * - Offline RSVP submission with background sync
+ * - Photo upload queue with automatic retry
+ * - Wedding data caching for offline access
+ * - Network status detection and sync management
+ * - Push notification integration for sync status
+ * - Automatic conflict resolution and error handling
+ *
+ * @module OfflineService
+ * @version 2.0.0
+ * @author DJ Forever Wedding Team
+ * @since 1.0.0
+ *
+ * @example
+ * ```typescript
+ * import { offlineService } from './services/offlineService';
+ *
+ * // Save RSVP for offline submission
+ * await offlineService.savePendingRSVP({
+ *   id: 'unique-id',
+ *   fullName: 'Guest Name',
+ *   attending: 'YES',
+ *   mealPreference: 'Vegetarian',
+ *   timestamp: Date.now()
+ * });
+ *
+ * // Check offline status
+ * const status = await offlineService.getOfflineStatus();
+ * console.log(`Pending RSVPs: ${status.pendingRSVPs}`);
+ * ```
+ *
+ * @see {@link https://web.dev/offline-cookbook/} Offline patterns
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API} IndexedDB Guide
+ */
+
 import { logInfo, logError } from '../utils/logger';
 import { reportError } from './errorReportingService';
 
+/**
+ * Complete offline data structure for wedding website
+ * @interface OfflineData
+ */
 export interface OfflineData {
+  /** Wedding ceremony and reception details */
   weddingDetails: any;
+  /** Guest information and preferences */
   guestInfo: any;
+  /** URLs of cached images for offline viewing */
   cachedImages: string[];
+  /** Draft RSVP submissions pending sync */
   rsvpDrafts: any[];
+  /** Photo uploads queued for sync */
   photoUploads: any[];
+  /** Timestamp of last successful sync */
   lastSync: number;
 }
 
+/**
+ * Pending RSVP submission stored locally
+ * @interface PendingRSVP
+ */
 export interface PendingRSVP {
+  /** Unique identifier for the RSVP */
   id: string;
+  /** Full name of the guest */
   fullName: string;
+  /** Attendance status */
   attending: 'YES' | 'NO' | 'MAYBE';
+  /** Dietary preference selection */
   mealPreference: string;
+  /** Allergy information */
   allergies: string;
+  /** Additional guest notes */
   additionalNotes: string;
+  /** Creation timestamp for sync ordering */
   timestamp: number;
 }
 
+/**
+ * Photo upload queued for background sync
+ * @interface PendingPhotoUpload
+ */
 export interface PendingPhotoUpload {
+  /** Unique identifier for the upload */
   id: string;
+  /** Image file to upload */
   file: File;
+  /** Photo caption text */
   caption: string;
+  /** Name of guest who uploaded photo */
   guestName: string;
+  /** Upload queue timestamp */
   timestamp: number;
 }
 
+/**
+ * Production-ready offline service with IndexedDB storage
+ *
+ * Provides comprehensive offline-first data management for wedding website
+ * with intelligent background synchronization, network-aware operations,
+ * and robust error handling for seamless user experience.
+ *
+ * @class OfflineService
+ * @version 2.0.0
+ *
+ * @example
+ * ```typescript
+ * // Initialize service (automatic on import)
+ * await offlineService.init();
+ *
+ * // Save wedding data for offline access
+ * await offlineService.saveWeddingData('venue-info', {
+ *   name: 'Wedding Venue',
+ *   address: '123 Wedding St',
+ *   coordinates: { lat: 40.7128, lng: -74.0060 }
+ * });
+ *
+ * // Handle offline RSVP submission
+ * const pendingRsvp = {
+ *   id: crypto.randomUUID(),
+ *   fullName: 'John Doe',
+ *   attending: 'YES' as const,
+ *   mealPreference: 'Chicken',
+ *   allergies: 'None',
+ *   additionalNotes: 'Excited to celebrate!',
+ *   timestamp: Date.now()
+ * };
+ * await offlineService.savePendingRSVP(pendingRsvp);
+ * ```
+ */
 class OfflineService {
+  /** IndexedDB database name for wedding website */
   private dbName = 'WeddingWebsiteDB';
+  /** Database version for schema migrations */
   private dbVersion = 1;
+  /** Active IndexedDB connection */
   private db: IDBDatabase | null = null;
 
+  /**
+   * Initialize IndexedDB with wedding-specific object stores
+   * Creates database schema for wedding data, RSVPs, photos, and cache
+   * @returns Promise that resolves when database is ready
+   *
+   * @example
+   * ```typescript
+   * await offlineService.init();
+   * console.log('Offline service ready for use');
+   * ```
+   */
   async init(): Promise<void> {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.dbVersion);

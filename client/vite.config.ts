@@ -177,7 +177,7 @@ export default defineConfig({
         template: 'treemap', // Best for identifying large chunks
         title: 'Bundle Analysis - DJ Forever 2 Wedding Site',
       }),
-    
+
     // Generate additional analysis formats
     process.env.ANALYZE === 'true' &&
       visualizer({
@@ -230,7 +230,7 @@ export default defineConfig({
         // Performance optimization
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: (assetInfo) => {
+        assetFileNames: assetInfo => {
           const extType = assetInfo.name?.split('.').pop();
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType ?? '')) {
             return `assets/images/[name]-[hash][extname]`;

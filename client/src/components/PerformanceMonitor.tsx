@@ -24,13 +24,13 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
 
   useEffect(() => {
     if (isInitialized.current) return;
-    
+
     // Only initialize once
     isInitialized.current = true;
 
     if (debug && import.meta.env?.DEV) {
       console.log('Performance monitoring initialized');
-      
+
       // Log performance summary after a delay
       setTimeout(() => {
         const summary = performanceMonitor.getPerformanceSummary();
@@ -42,7 +42,6 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
     setTimeout(() => {
       performanceMonitor.markEnd('app-initialization');
     }, 0);
-
   }, [debug]);
 
   // This component renders nothing - it's just for side effects
@@ -85,11 +84,15 @@ export function withPerformanceTracking<T extends object>(
   measureName?: string
 ) {
   const ComponentWithPerformanceTracking = (props: T) => {
-    const componentName = measureName || WrappedComponent.displayName || WrappedComponent.name || 'Component';
-    
+    const componentName =
+      measureName ||
+      WrappedComponent.displayName ||
+      WrappedComponent.name ||
+      'Component';
+
     useEffect(() => {
       performanceMonitor.markStart(`${componentName}-render`);
-      
+
       return () => {
         performanceMonitor.markEnd(`${componentName}-render`);
       };

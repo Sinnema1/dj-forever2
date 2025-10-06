@@ -1,33 +1,105 @@
 /**
- * Production-ready logging utility
- * Provides environment-aware logging with different levels
+ * Logger Service - Production-Ready Logging Utility
+ *
+ * Comprehensive logging system for the DJ Forever 2 wedding website with
+ * environment-aware log levels, structured log entries, and external service
+ * integration capabilities. Provides development debugging and production
+ * error monitoring with automatic log persistence and reporting.
+ *
+ * @fileoverview Production-ready logging with multiple levels and external integration
+ * @version 2.0
+ * @since 1.0.0
+ *
+ * @features
+ * - **Environment Awareness**: Different log levels for development vs production
+ * - **Structured Logging**: Consistent log entry format with metadata
+ * - **External Integration**: Built-in support for external logging services
+ * - **Local Persistence**: Automatic error log storage for debugging
+ * - **Performance Optimized**: Minimal overhead in production builds
+ * - **Type Safety**: Full TypeScript support with proper interfaces
  */
 
+/**
+ * Log severity levels with numeric priorities
+ *
+ * Lower numbers indicate higher priority. Used to control which
+ * messages are shown in different environments.
+ *
+ * @enum {number}
+ */
 export enum LogLevel {
+  /** Critical errors requiring immediate attention (always shown) */
   ERROR = 0,
+  /** Important warnings that should be monitored (prod + dev) */
   WARN = 1,
+  /** Informational messages for debugging (dev only) */
   INFO = 2,
+  /** Detailed debugging information (dev only) */
   DEBUG = 3,
 }
 
+/**
+ * Structured log entry interface for consistent logging format
+ *
+ * @interface LogEntry
+ */
 interface LogEntry {
+  /** Severity level of the log entry */
   level: LogLevel;
+  /** Primary log message */
   message: string;
+  /** Optional context identifier (component, service, etc.) */
   context?: string;
+  /** Optional additional data or error details */
   data?: any;
+  /** ISO timestamp when log entry was created */
   timestamp: string;
+  /** Browser user agent string for debugging */
   userAgent?: string;
 }
 
+/**
+ * Logger Class - Core Logging Implementation
+ *
+ * Singleton logger service that handles all application logging with
+ * environment-aware behavior, structured output, and external service
+ * integration for production error monitoring.
+ *
+ * @class Logger
+ * @example
+ * ```typescript
+ * const logger = new Logger();
+ *
+ * // Development: Shows in console
+ * logger.debug('Component mounted', 'MyComponent', { props });
+ *
+ * // Production: Shows in console AND reports to external service
+ * logger.error('API call failed', 'UserService', { error, endpoint });
+ * ```
+ */
 class Logger {
   private level: LogLevel;
   private isDevelopment: boolean;
 
+  /**
+   * Logger Constructor
+   *
+   * Initializes the logger with environment-appropriate settings.
+   * Development builds show all log levels, production builds only
+   * show warnings and errors.
+   */
   constructor() {
     this.isDevelopment = import.meta.env.DEV;
     this.level = this.isDevelopment ? LogLevel.DEBUG : LogLevel.WARN;
   }
 
+  /**
+   * Determines if a log entry should be processed based on current log level
+   *
+   * @private
+   * @param level - Log level to check
+   * @returns true if the log should be processed
+   */
   private shouldLog(level: LogLevel): boolean {
     return level <= this.level;
   }

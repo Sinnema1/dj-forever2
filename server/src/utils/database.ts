@@ -1,9 +1,64 @@
+/**
+ * @fileoverview Database Management Utilities for DJ Forever 2 Wedding Website
+ * @module utils/database
+ * @version 1.0.0
+ *
+ * Comprehensive MongoDB connection management and database utilities using singleton pattern.
+ * Provides robust connection handling, statistics collection, and operational tools for
+ * development, testing, and production environments.
+ *
+ * Database Management Features:
+ * - Singleton connection manager for consistent database access
+ * - Environment-aware database naming (dev, test, production)
+ * - Connection pooling with optimized settings
+ * - Automatic reconnection and error handling
+ * - Database statistics and health monitoring
+ *
+ * Operational Utilities:
+ * - Database clearing for testing and development
+ * - Complete database dropping with confirmation
+ * - Connection lifecycle management
+ * - Statistics collection for monitoring
+ * - Batch operation support with connection management
+ *
+ * Script Integration:
+ * - withConnection: Automatic connection management for scripts
+ * - Connection status monitoring
+ * - Graceful connection cleanup
+ * - Error handling with proper logging
+ *
+ * Security Features:
+ * - Confirmation required for destructive operations
+ * - Environment-specific database isolation
+ * - Connection timeout and retry logic
+ * - Secure connection options for production
+ *
+ * @example
+ * // Basic connection usage:
+ * // await dbManager.connect({ dbName: 'djforever2_test' });
+ * // await performDatabaseOperations();
+ * // await dbManager.disconnect();
+ *
+ * @example
+ * // Script execution with automatic connection management:
+ * // await dbManager.withConnection(async () => {
+ * //   await seedDatabase();
+ * // }, { dbName: 'djforever2_dev' });
+ *
+ * @dependencies
+ * - mongoose: MongoDB ODM for connection management and operations
+ * - ../config: Database configuration and connection settings
+ * - ./logger: Database operation logging and error tracking
+ */
+
 import mongoose from "mongoose";
 import { config } from "../config/index";
 import { logger } from "./logger";
 
 /**
- * Database connection utility for scripts and services
+ * Singleton database connection manager providing centralized MongoDB access.
+ * Implements connection pooling, error handling, and operational utilities
+ * for consistent database management across the application.
  */
 export class DatabaseManager {
   private static instance: DatabaseManager;

@@ -1,42 +1,152 @@
+/**
+ * PWA Installation Hook
+ *
+ * Comprehensive Progressive Web App installation management for the DJ Forever 2
+ * wedding website. Provides seamless app installation experience for wedding guests,
+ * allowing them to add the website to their home screen for quick access to RSVP,
+ * photos, and wedding information.
+ *
+ * @fileoverview PWA installation hook with elegant user experience
+ * @version 2.0
+ * @since 1.0.0
+ *
+ * @features
+ * - **Install Prompt Management**: Handles browser install prompts elegantly
+ * - **Installation Detection**: Detects if app is already installed
+ * - **Cross-Platform Support**: Works on iOS, Android, and desktop browsers
+ * - **User Experience**: Provides smooth installation flow with proper timing
+ * - **Analytics Integration**: Tracks installation events and user choices
+ * - **Fallback Support**: Graceful handling for unsupported browsers
+ */
+
 import { useState, useEffect } from 'react';
 import { logInfo, logWarn, logError } from '../utils/logger';
 
+/**
+ * Browser's beforeinstallprompt event interface
+ *
+ * Extended Event interface that includes PWA installation methods
+ * provided by modern browsers for controlling app installation.
+ */
 interface BeforeInstallPromptEvent extends Event {
+  /** Triggers the browser's installation prompt */
   prompt(): Promise<void>;
+  /** Promise that resolves with user's installation choice */
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
 }
 
+/**
+ * PWA installation state interface
+ *
+ * @interface PWAInstallState
+ */
 interface PWAInstallState {
+  /** Whether the app can be installed (browser supports PWA installation) */
   isInstallable: boolean;
+  /** Whether the app is currently installed (running in standalone mode) */
   isInstalled: boolean;
+  /** Whether to show the custom installation prompt */
   showInstallPrompt: boolean;
+  /** The browser's install prompt event (null if not available) */
   installPromptEvent: BeforeInstallPromptEvent | null;
 }
 
 /**
- * Enhanced PWA Install Hook
+ * usePWAInstall - Progressive Web App Installation Hook
  *
- * Manages Progressive Web App installation prompts and state.
- * Provides elegant install prompts for wedding guests to add
- * the website to their home screen for easy access.
+ * Manages the complete PWA installation lifecycle including installation detection,
+ * prompt management, and user experience optimization. Provides wedding guests with
+ * an elegant way to install the website as an app for quick access to RSVP forms,
+ * photo galleries, and wedding information.
  *
- * @returns PWA install state and control functions
+ * @hook
+ * @returns {Object} PWA installation utilities and state
+ * @returns {boolean} returns.canInstall - Whether PWA installation is available
+ * @returns {boolean} returns.isInstalled - Whether app is currently installed
+ * @returns {boolean} returns.isInstalling - Installation process in progress
+ * @returns {Function} returns.promptInstall - Function to trigger installation prompt
+ * @returns {Function} returns.dismissPrompt - Function to dismiss installation prompt
  *
  * @example
  * ```tsx
+ * // Basic installation banner
  * function InstallBanner() {
- *   const { isInstallable, showInstallPrompt, handleInstall } = usePWAInstall();
+ *   const { canInstall, isInstalled, promptInstall } = usePWAInstall();
  *
- *   if (!isInstallable) return null;
+ *   if (isInstalled || !canInstall) return null;
  *
  *   return (
  *     <div className="install-banner">
- *       <p>Add to home screen for quick access!</p>
- *       <button onClick={handleInstall}>Install App</button>
+ *       <h3>📱 Add to Home Screen</h3>
+ *       <p>Get quick access to wedding info, RSVP, and photos!</p>
+ *       <button onClick={promptInstall}>Install App</button>
  *     </div>
  *   );
  * }
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Advanced installation card with analytics
+ * function PWAInstallCard() {
+ *   const {
+ *     canInstall,
+ *     isInstalled,
+ *     isInstalling,
+ *     promptInstall,
+ *     dismissPrompt
+ *   } = usePWAInstall();
+ *
+ *   const handleInstall = async () => {
+ *     try {
+ *       await promptInstall();
+ *       analytics.track('pwa_install_completed');
+ *     } catch (error) {
+ *       analytics.track('pwa_install_failed', undefined, { error: error.message });
+ *     }
+ *   };
+ *
+ *   if (isInstalled) {
+ *     return (
+ *       <div className="install-success">
+ *         ✅ App installed! Access from your home screen.
+ *       </div>
+ *     );
+ *   }
+ *
+ *   if (!canInstall) return null;
+ *
+ *   return (
+ *     <Card className="pwa-install-card">
+ *       <CardHeader>
+ *         <h3>Install Wedding App</h3>
+ *         <button onClick={dismissPrompt} aria-label="Dismiss">×</button>
+ *       </CardHeader>
+ *       <CardContent>
+ *         <p>Add our wedding website to your home screen for:</p>
+ *         <ul>
+ *           <li>🎉 Quick access to RSVP</li>
+ *           <li>📸 Easy photo viewing</li>
+ *           <li>📅 Wedding day reminders</li>
+ *           <li>🗺️ Travel information</li>
+ *         </ul>
+ *         <button
+ *           onClick={handleInstall}
+ *           disabled={isInstalling}
+ *           className="install-button"
+ *         >
+ *           {isInstalling ? 'Installing...' : 'Add to Home Screen'}
+ *         </button>
+ *       </CardContent>
+ *     </Card>
+ *   );
+ * }
+ * ```
+ *
+ * @dependencies
+ * - `logger` - Debug logging and error reporting
+ * - Browser PWA support - beforeinstallprompt event
+ * - Service Worker - Required for PWA installation
  */
 export function usePWAInstall() {
   const [state, setState] = useState<PWAInstallState>({
