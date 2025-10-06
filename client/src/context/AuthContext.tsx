@@ -8,7 +8,7 @@ import React, {
   useCallback,
   ReactNode,
 } from 'react';
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react/hooks';
 import { LOGIN_WITH_QR_TOKEN } from '../features/auth/graphql/loginWithQrToken';
 import { AuthContextType, UserType } from '../models/userTypes';
 import { logInfo, logWarn } from '../utils/logger';

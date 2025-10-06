@@ -1,10 +1,12 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client/react';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
 import './assets/styles.css'; // Enhanced styles with improved RSVP experience
+import './assets/enhanced-suspense.css'; // React 18+ enhanced Suspense styling
+import './assets/gallery-search.css'; // Enhanced Gallery search with useDeferredValue
 import client from './api/apolloClient';
 import { AuthProvider } from './context/AuthContext';
 
