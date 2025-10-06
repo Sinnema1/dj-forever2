@@ -6,6 +6,60 @@ import { analytics } from '../utils/analytics';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { logDebug, logError } from '../utils/logger';
 
+/**
+ * QRTokenLogin - QR Code Authentication Page
+ *
+ * Handles authentication via QR code tokens from wedding invitations. This page
+ * is accessed when guests scan their unique QR codes, automatically extracting
+ * the token from the URL and attempting login. Provides comprehensive error
+ * handling and network resilience for seamless guest authentication.
+ *
+ * @features
+ * - **Automatic Authentication**: Extracts QR token from URL parameters
+ * - **Network Resilience**: Handles offline/online state transitions
+ * - **Error Recovery**: Retry mechanisms for failed authentication attempts
+ * - **User Feedback**: Clear error messages and loading states
+ * - **Help Integration**: Quick access to QR code troubleshooting
+ * - **Analytics Integration**: Tracks successful and failed login attempts
+ * - **Responsive Design**: Optimized for mobile devices (primary use case)
+ * - **Accessibility**: Screen reader support and keyboard navigation
+ *
+ * @workflow
+ * 1. Guest scans QR code from invitation
+ * 2. Browser opens `/login/qr/:qrToken` URL
+ * 3. Component extracts token and calls authentication API
+ * 4. On success: Redirects to home with personalized content
+ * 5. On error: Shows user-friendly error with retry options
+ *
+ * @urlStructure
+ * - URL Pattern: `/login/qr/:qrToken`
+ * - Example: `/login/qr/abc123def456`
+ * - Token: Unique identifier from guest's invitation
+ *
+ * @errorHandling
+ * - Invalid/expired tokens: User-friendly messaging
+ * - Network errors: Retry button with connection status
+ * - Server errors: Generic error with help modal access
+ * - Already logged in: Immediate redirect to home
+ *
+ * @component
+ * @example
+ * ```tsx
+ * // Accessed via React Router when QR code is scanned
+ * <Route path="/login/qr/:qrToken" element={<QRTokenLogin />} />
+ *
+ * // QR codes generate URLs like:
+ * // https://domain.com/login/qr/abc123def456
+ * ```
+ *
+ * @dependencies
+ * - `useAuth` - Authentication context for login operations
+ * - `useParams` - React Router hook for URL parameter extraction
+ * - `useNavigate` - React Router navigation
+ * - `useNetworkStatus` - Network connectivity monitoring
+ * - `analytics` - Event tracking for login success/failure
+ * - `QRHelpModal` - Help modal for troubleshooting QR issues
+ */
 const QRTokenLogin: React.FC = () => {
   const { qrToken } = useParams<{ qrToken: string }>();
   const { isLoggedIn, loginWithQrToken, user } = useAuth();

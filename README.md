@@ -110,6 +110,7 @@ The wedding website provides a personalized experience for guests:
 The website includes comprehensive performance monitoring and optimization features:
 
 ### Bundle Analysis
+
 ```sh
 # Build with detailed bundle analysis
 npm run build:analyze
@@ -119,6 +120,7 @@ npm run analyze
 ```
 
 ### Performance Budget Checking
+
 ```sh
 # Check if bundle meets performance budgets
 npm run performance:check
@@ -128,6 +130,7 @@ npm run performance:build
 ```
 
 ### CI/CD Performance Pipeline
+
 ```sh
 # Run complete performance testing pipeline
 npm run performance:ci
@@ -136,6 +139,7 @@ npm run performance:ci
 ### Core Web Vitals Tracking
 
 The app automatically tracks real user performance metrics:
+
 - **CLS (Cumulative Layout Shift)**: ≤ 0.1 (good)
 - **INP (Interaction to Next Paint)**: ≤ 200ms (good)
 - **LCP (Largest Contentful Paint)**: ≤ 2.5s (good)
@@ -147,6 +151,7 @@ The app automatically tracks real user performance metrics:
 ### Performance Reports
 
 After running performance commands, reports are generated in:
+
 - `performance-reports/` - CI/CD pipeline reports
 - `dist/stats.html` - Interactive bundle visualization
 - `dist/performance-report.json` - Detailed performance data

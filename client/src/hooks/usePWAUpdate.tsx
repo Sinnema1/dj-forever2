@@ -1,39 +1,136 @@
+/**
+ * PWA Update Management Hook
+ *
+ * Comprehensive Progressive Web App update system for the DJ Forever 2 wedding
+ * website. Manages service worker lifecycle, automatic update detection, and
+ * provides seamless update experience for wedding guests without interrupting
+ * their browsing experience.
+ *
+ * @fileoverview PWA update hook with seamless user experience
+ * @version 2.0
+ * @since 1.0.0
+ *
+ * @features
+ * - **Automatic Update Detection**: Monitors for new app versions
+ * - **Seamless Updates**: Non-disruptive update process
+ * - **User Control**: Optional manual update triggers
+ * - **Background Updates**: Updates downloaded in background
+ * - **Update Notifications**: Elegant user notifications for updates
+ * - **Rollback Support**: Handles update failures gracefully
+ */
+
 import { useState, useEffect } from 'react';
 import { logInfo, logWarn, logError } from '../utils/logger';
 import { notificationService } from '../services/notificationService';
 
+/**
+ * PWA update state interface
+ *
+ * @interface PWAUpdateState
+ */
 interface PWAUpdateState {
+  /** Whether a new version is available for installation */
   updateAvailable: boolean;
+  /** Whether an update installation is currently in progress */
   installing: boolean;
+  /** Whether to skip waiting for existing clients to close */
   skipWaiting: boolean;
+  /** Reference to the new service worker ready to activate */
   newServiceWorker: ServiceWorker | null;
 }
 
 /**
- * Enhanced PWA Update Hook
+ * usePWAUpdate - Progressive Web App Update Hook
  *
- * Manages Progressive Web App updates and service worker lifecycle.
- * Provides seamless update experience for wedding website visitors.
+ * Manages the complete PWA update lifecycle including update detection, download,
+ * installation, and activation. Provides wedding guests with seamless access to
+ * the latest features and bug fixes without disrupting their current session.
  *
- * @returns PWA update state and control functions
+ * @hook
+ * @returns {Object} PWA update utilities and state
+ * @returns {boolean} returns.updateAvailable - Whether a new version is ready
+ * @returns {boolean} returns.isInstalling - Update installation in progress
+ * @returns {Function} returns.applyUpdate - Function to install pending update
+ * @returns {Function} returns.skipUpdate - Function to defer update to later
+ * @returns {Function} returns.checkForUpdate - Function to manually check for updates
  *
  * @example
  * ```tsx
+ * // Simple update notification
  * function UpdateNotification() {
- *   const { updateAvailable, handleUpdate, isInstalling } = usePWAUpdate();
+ *   const { updateAvailable, applyUpdate, isInstalling } = usePWAUpdate();
  *
  *   if (!updateAvailable) return null;
  *
  *   return (
- *     <div className="update-banner">
- *       <p>New version available!</p>
- *       <button onClick={handleUpdate} disabled={isInstalling}>
+ *     <div className="update-notification">
+ *       <span>🚀 New version available!</span>
+ *       <button onClick={applyUpdate} disabled={isInstalling}>
  *         {isInstalling ? 'Updating...' : 'Update Now'}
  *       </button>
  *     </div>
  *   );
  * }
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Advanced update banner with user choices
+ * function UpdateBanner() {
+ *   const {
+ *     updateAvailable,
+ *     isInstalling,
+ *     applyUpdate,
+ *     skipUpdate,
+ *     checkForUpdate
+ *   } = usePWAUpdate();
+ *
+ *   const [dismissed, setDismissed] = useState(false);
+ *
+ *   const handleUpdate = async () => {
+ *     try {
+ *       await applyUpdate();
+ *       analytics.track('pwa_update_applied');
+ *     } catch (error) {
+ *       analytics.track('pwa_update_failed', undefined, { error: error.message });
+ *     }
+ *   };
+ *
+ *   if (!updateAvailable || dismissed) return null;
+ *
+ *   return (
+ *     <Toast className="update-toast">
+ *       <div className="update-content">
+ *         <h4>✨ Website Updated!</h4>
+ *         <p>New features and improvements are ready.</p>
+ *         <div className="update-actions">
+ *           <button
+ *             onClick={handleUpdate}
+ *             disabled={isInstalling}
+ *             className="primary"
+ *           >
+ *             {isInstalling ? 'Applying...' : 'Restart & Update'}
+ *           </button>
+ *           <button
+ *             onClick={() => {
+ *               skipUpdate();
+ *               setDismissed(true);
+ *             }}
+ *             className="secondary"
+ *           >
+ *             Later
+ *           </button>
+ *         </div>
+ *       </div>
+ *     </Toast>
+ *   );
+ * }
+ * ```
+ *
+ * @dependencies
+ * - `logger` - Update process logging and error reporting
+ * - `notificationService` - User notifications for update status
+ * - Service Worker API - Required for PWA update functionality
  */
 export function usePWAUpdate() {
   const [state, setState] = useState<PWAUpdateState>({

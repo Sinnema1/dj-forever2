@@ -1,7 +1,65 @@
+/**
+ * @fileoverview GraphQL Schema Type Definitions for DJ Forever 2 Wedding Website
+ * @module graphql/typeDefs
+ * @version 1.0.0
+ *
+ * Complete GraphQL schema definition using Schema Definition Language (SDL).
+ * Defines all types, enums, inputs, queries, and mutations for the wedding website API.
+ * Implements QR-based authentication system with comprehensive RSVP management including
+ * multi-guest support and legacy compatibility for seamless data migration.
+ *
+ * Schema Features:
+ * - QR-only authentication (no password fields in User type)
+ * - Multi-guest RSVP support with individual preferences
+ * - Legacy single-guest compatibility for backward compatibility
+ * - Comprehensive user profile with invitation and RSVP status
+ * - Flexible guest management with meal preferences and allergies
+ *
+ * Type Safety:
+ * - All fields properly typed with GraphQL scalar types
+ * - Non-null fields marked with ! for required data
+ * - Optional fields for flexible data entry
+ * - Enum types for controlled vocabulary (AttendanceStatus)
+ *
+ * Authentication Model:
+ * - User.qrToken: Unique token embedded in QR codes for authentication
+ * - AuthPayload: JWT token + user data returned from login mutations
+ * - No password fields - authentication is QR-code only
+ *
+ * Legacy Compatibility:
+ * - RSVP type includes both new guest array and legacy single-guest fields
+ * - CreateRSVPInput and RSVPInput support both formats
+ * - submitRSVP mutation maintains backward compatibility
+ *
+ * @example
+ * // Query Examples:
+ * // query { me { fullName email hasRSVPed qrToken } }
+ * // query { getRSVP { attending guests { fullName mealPreference } } }
+ *
+ * @example
+ * // Mutation Examples:
+ * // mutation { loginWithQrToken(qrToken: "abc123") { token user { fullName } } }
+ * // mutation { createRSVP(input: { attending: YES, guests: [...] }) { _id } }
+ *
+ * @see ../models/User.ts - Mongoose User model implementation
+ * @see ../models/RSVP.ts - Mongoose RSVP model implementation
+ * @see ./resolvers.ts - GraphQL resolver implementations
+ */
+
+/**
+ * Complete GraphQL schema definition in Schema Definition Language (SDL) format.
+ * Exported as template literal string for Apollo Server configuration.
+ *
+ * @const {string} typeDefs - GraphQL schema definition
+ */
 export const typeDefs = `
+  """Attendance status enumeration for RSVP responses. Used to track guest attendance intentions."""
   enum AttendanceStatus {
+    """Confirmed attendance - guest will attend the wedding"""
     YES
+    """Declined attendance - guest will not attend the wedding"""
     NO
+    """Uncertain attendance - guest is unsure about attendance"""
     MAYBE
   }
 

@@ -1,10 +1,41 @@
+/**
+ * @fileoverview Responsive navigation component for wedding website
+ *
+ * Comprehensive navigation system with mobile-first design, authentication
+ * integration, and dynamic section highlighting. Features responsive drawer
+ * navigation, QR code login integration, and intelligent route management
+ * with guest access controls.
+ *
+ * Features:
+ * - Responsive design with desktop nav and mobile drawer
+ * - QR code authentication integration
+ * - Dynamic section highlighting on scroll
+ * - Guest access control for protected routes
+ * - Smooth scroll behavior for section navigation
+ * - Modern mobile drawer with animations
+ * - Authentication state management
+ * - Accessible navigation with ARIA attributes
+ *
+ * @module Navbar
+ * @version 2.0.0
+ * @author DJ Forever Wedding Team
+ * @since 1.0.0
+ *
+ * @example\n * ```typescript\n * // Navbar is automatically included in App.tsx\n * // Navigation automatically adapts based on:\n * // - User authentication state\n * // - Current route (home vs standalone pages) \n * // - Guest invitation status\n * // - Mobile vs desktop viewport\n * ```
+ *
+ * @see {@link https://www.w3.org/WAI/ARIA/apg/patterns/menubar/} ARIA Navigation Pattern
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import QRLoginModal from './QRLoginModal';
 import MobileDrawer from './MobileDrawer';
 
-// Links for the main page sections (hash links)
+/**
+ * Navigation links for home page sections (hash-based navigation)
+ * These links use smooth scrolling to navigate within the main page
+ */
 const sectionLinks = [
   { label: 'Home', to: 'home' },
   { label: 'Our Story', to: 'our-story' },
@@ -15,21 +46,59 @@ const sectionLinks = [
   { label: 'Guestbook', to: 'guestbook' },
 ];
 
-// Links for standalone pages (router links)
+/**
+ * Navigation links for standalone pages (React Router based)
+ * These links navigate to separate pages with full page loads
+ */
 const pageLinks = [
   { label: 'Registry', to: '/registry' },
   { label: 'RSVP', to: '/rsvp', requiresInvitation: true },
 ];
 
+/**
+ * Responsive navigation component with authentication and mobile support
+ *
+ * Provides comprehensive navigation for wedding website with adaptive behavior
+ * based on route, authentication state, and viewport size. Includes QR login
+ * integration, smooth section scrolling, and mobile drawer navigation.
+ *
+ * @component
+ * @returns JSX element containing the complete navigation system
+ *
+ * @example\n * ```typescript\n * // Automatically handles different navigation modes:\n * \n * // Home page: Shows section links with active highlighting\n * // - Smooth scrolls to sections on same page\n * // - Highlights current section based on scroll position\n * \n * // Other pages: Shows \"Home\" link to return to main page\n * // - React Router navigation for standalone pages\n * \n * // Authentication states:\n * // - Loading: Shows loading spinner\n * // - Not logged in: Shows QR login button\n * // - Logged in: Shows user greeting and logout\n * \n * // Mobile behavior:\n * // - Hamburger menu toggles mobile drawer\n * // - Touch-friendly navigation with animations\n * // - Automatic menu closure on route changes\n * ```
+ *
+ * @features
+ * - **Responsive Design**: Desktop navbar + mobile drawer
+ * - **Authentication**: QR login modal integration
+ * - **Section Highlighting**: Active section detection on scroll
+ * - **Access Control**: RSVP link only for invited guests
+ * - **Mobile UX**: Touch-optimized drawer with smooth animations
+ * - **Accessibility**: ARIA labels and keyboard navigation support
+ *
+ * @dependencies
+ * - `useAuth` - Authentication context for user state
+ * - `useLocation` - React Router for route detection
+ * - `QRLoginModal` - QR code authentication modal
+ * - `MobileDrawer` - Mobile navigation drawer component
+ */
 function Navbar() {
+  /** Navbar background state based on scroll position */
   const [scrolled, setScrolled] = useState(false);
+  /** Mobile drawer open/closed state */
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  /** Authentication context for user state management */
   const { user, isLoggedIn, isLoading, logout } = useAuth();
+  /** Current route location for navigation state */
   const location = useLocation();
+  /** QR login modal visibility state */
   const [qrLoginModalOpen, setQrLoginModalOpen] = useState(false);
+  /** Flag indicating if current page is home page */
   const isHomePage = location.pathname === '/';
 
-  // scroll listener for background
+  /**
+   * Scroll listener for navbar background transparency effect
+   * Updates navbar styling based on scroll position for visual hierarchy
+   */
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 100);
@@ -38,7 +107,10 @@ function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // detect active section on home page
+  /**
+   * Active section detection for navigation highlighting
+   * Tracks which section is currently in view and updates navigation state
+   */
   const [activeSection, setActiveSection] = useState('home');
   useEffect(() => {
     if (isHomePage) {
@@ -59,7 +131,10 @@ function Navbar() {
     return undefined;
   }, [isHomePage]);
 
-  // close mobile menu on route change
+  /**
+   * Automatically close mobile menu when navigating to different pages
+   * Improves UX by preventing stuck open mobile menus after navigation
+   */
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
