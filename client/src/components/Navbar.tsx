@@ -1,11 +1,11 @@
 /**
  * @fileoverview Responsive navigation component for wedding website
- * 
+ *
  * Comprehensive navigation system with mobile-first design, authentication
  * integration, and dynamic section highlighting. Features responsive drawer
  * navigation, QR code login integration, and intelligent route management
  * with guest access controls.
- * 
+ *
  * Features:
  * - Responsive design with desktop nav and mobile drawer
  * - QR code authentication integration
@@ -15,14 +15,14 @@
  * - Modern mobile drawer with animations
  * - Authentication state management
  * - Accessible navigation with ARIA attributes
- * 
+ *
  * @module Navbar
  * @version 2.0.0
  * @author DJ Forever Wedding Team
  * @since 1.0.0
- * 
-  * @example\n * ```typescript\n * // Navbar is automatically included in App.tsx\n * // Navigation automatically adapts based on:\n * // - User authentication state\n * // - Current route (home vs standalone pages) \n * // - Guest invitation status\n * // - Mobile vs desktop viewport\n * ```
- * 
+ *
+ * @example\n * ```typescript\n * // Navbar is automatically included in App.tsx\n * // Navigation automatically adapts based on:\n * // - User authentication state\n * // - Current route (home vs standalone pages) \n * // - Guest invitation status\n * // - Mobile vs desktop viewport\n * ```
+ *
  * @see {@link https://www.w3.org/WAI/ARIA/apg/patterns/menubar/} ARIA Navigation Pattern
  */
 
@@ -57,16 +57,16 @@ const pageLinks = [
 
 /**
  * Responsive navigation component with authentication and mobile support
- * 
+ *
  * Provides comprehensive navigation for wedding website with adaptive behavior
  * based on route, authentication state, and viewport size. Includes QR login
  * integration, smooth section scrolling, and mobile drawer navigation.
- * 
+ *
  * @component
  * @returns JSX element containing the complete navigation system
- * 
-  * @example\n * ```typescript\n * // Automatically handles different navigation modes:\n * \n * // Home page: Shows section links with active highlighting\n * // - Smooth scrolls to sections on same page\n * // - Highlights current section based on scroll position\n * \n * // Other pages: Shows \"Home\" link to return to main page\n * // - React Router navigation for standalone pages\n * \n * // Authentication states:\n * // - Loading: Shows loading spinner\n * // - Not logged in: Shows QR login button\n * // - Logged in: Shows user greeting and logout\n * \n * // Mobile behavior:\n * // - Hamburger menu toggles mobile drawer\n * // - Touch-friendly navigation with animations\n * // - Automatic menu closure on route changes\n * ```
- * 
+ *
+ * @example\n * ```typescript\n * // Automatically handles different navigation modes:\n * \n * // Home page: Shows section links with active highlighting\n * // - Smooth scrolls to sections on same page\n * // - Highlights current section based on scroll position\n * \n * // Other pages: Shows \"Home\" link to return to main page\n * // - React Router navigation for standalone pages\n * \n * // Authentication states:\n * // - Loading: Shows loading spinner\n * // - Not logged in: Shows QR login button\n * // - Logged in: Shows user greeting and logout\n * \n * // Mobile behavior:\n * // - Hamburger menu toggles mobile drawer\n * // - Touch-friendly navigation with animations\n * // - Automatic menu closure on route changes\n * ```
+ *
  * @features
  * - **Responsive Design**: Desktop navbar + mobile drawer
  * - **Authentication**: QR login modal integration
@@ -74,7 +74,7 @@ const pageLinks = [
  * - **Access Control**: RSVP link only for invited guests
  * - **Mobile UX**: Touch-optimized drawer with smooth animations
  * - **Accessibility**: ARIA labels and keyboard navigation support
- * 
+ *
  * @dependencies
  * - `useAuth` - Authentication context for user state
  * - `useLocation` - React Router for route detection

@@ -1,11 +1,11 @@
 /**
  * @fileoverview QR code scanner component for mobile and desktop
- * 
+ *
  * Production-ready QR code scanner using html5-qrcode library with
  * comprehensive error handling, resource management, and mobile optimization.
  * Provides reliable QR scanning for wedding guest authentication with
  * graceful cleanup and performance optimization.
- * 
+ *
  * Features:
  * - Mobile camera access with permission handling
  * - Desktop webcam support with fallback options
@@ -14,17 +14,17 @@
  * - Unique scanner ID generation for multiple instances
  * - Automatic cleanup on component unmount
  * - Logging integration for debugging and monitoring
- * 
+ *
  * @module QrScanner
  * @version 2.0.0
  * @author DJ Forever Wedding Team
  * @since 1.0.0
- * 
+ *
  * @example
  * ```typescript
  * // Basic QR scanner
  * <QrScanner onScan={(token) => handleLogin(token)} />
- * 
+ *
  * // With error handling and custom settings
  * <QrScanner
  *   onScan={(token) => authenticate(token)}
@@ -33,7 +33,7 @@
  *   qrbox={300}
  * />
  * ```
- * 
+ *
  * @see {@link https://github.com/mebjas/html5-qrcode} html5-qrcode library
  */
 
@@ -59,15 +59,15 @@ interface QrScannerProps {
 
 /**
  * QR code scanner component with mobile-first design and robust error handling
- * 
+ *
  * Provides reliable QR code scanning for wedding guest authentication using
  * html5-qrcode library. Includes comprehensive resource management, error
  * handling, and performance optimization for both mobile and desktop usage.
- * 
+ *
  * @component
  * @param props QR scanner configuration options
  * @returns JSX element containing QR scanner interface
- * 
+ *
  * @example
  * ```typescript
  * // Wedding guest authentication scanner
@@ -84,7 +84,7 @@ interface QrScannerProps {
  *   qrbox={280}
  * />
  * ```
- * 
+ *
  * @features
  * - **Mobile Optimized**: Camera access with permission handling
  * - **Resource Management**: Automatic cleanup on unmount
@@ -116,7 +116,7 @@ const QrScanner: React.FC<QrScannerProps> = ({
 
   /**
    * Cleanup function with comprehensive error handling
-   * 
+   *
    * Safely stops QR scanner and releases camera resources with proper
    * error suppression for known harmless errors during cleanup process.
    */

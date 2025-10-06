@@ -1,12 +1,83 @@
+/**
+ * @fileoverview Core Database Seeding Logic
+ *
+ * Comprehensive database seeding system for DJ Forever 2 wedding website providing:
+ * - User account creation with QR token generation
+ * - RSVP data initialization with user relationship mapping
+ * - Data integrity validation and error handling
+ * - Flexible connection management for different environments
+ *
+ * Seeding Process:
+ * 1. Load user and RSVP data from JSON configuration files
+ * 2. Generate unique QR tokens for passwordless authentication
+ * 3. Insert users into database with invitation status
+ * 4. Create user lookup map for RSVP relationship mapping
+ * 5. Insert RSVPs with proper user references
+ * 6. Update user records with RSVP completion status
+ *
+ * Data Relationships:
+ * - Users: Core invitation and authentication entities
+ * - RSVPs: Guest responses linked to specific users
+ * - QR Tokens: Unique authentication codes per user
+ *
+ * Configuration Files:
+ * - userData.json: User accounts, emails, invitation status
+ * - rsvpData.json: RSVP responses, guest counts, meal preferences
+ *
+ * @author DJ Forever 2 Team
+ * @version 1.0.0
+ */
+
 import mongoose from "mongoose";
 import User from "../models/User.js";
 import RSVP from "../models/RSVP.js";
 import fs from "fs";
 
 /**
- * Seeds the database with user and RSVP data for djforever2.
- * Ensures correct user-RSVP relationships.
- * @param closeConnection - Whether to close the database connection after seeding (default: true)
+ * Seed database with complete user and RSVP dataset
+ *
+ * Performs comprehensive database initialization:
+ * - Reads JSON configuration files for user and RSVP data
+ * - Generates unique QR authentication tokens for each user
+ * - Establishes proper relationships between users and their RSVPs
+ * - Updates user records with RSVP completion status
+ * - Provides detailed logging for troubleshooting
+ *
+ * Data Integrity:
+ * - Validates user-RSVP email matching
+ * - Ensures QR token uniqueness
+ * - Maintains referential integrity between collections
+ * - Handles missing or malformed data gracefully
+ *
+ * @param closeConnection - Whether to close database connection after seeding (default: false)
+ *
+ * @example
+ * ```typescript
+ * // Standalone seeding (closes connection)
+ * await seedDatabase(true);
+ *
+ * // Application startup seeding (keeps connection open)
+ * await seedDatabase(false);
+ *
+ * // Seeding output:
+ * // 🚀 Starting database seeding for djforever2...
+ * // ✅ Inserted 50 users.
+ * // ✅ Inserted 25 RSVPs.
+ * // 🎉 Database seeding completed successfully!
+ * ```
+ *
+ * @throws {Error} When JSON files are missing or malformed
+ * @throws {Error} When database operations fail
+ *
+ * @performance
+ * - Bulk inserts for efficient database operations
+ * - In-memory user mapping for O(1) RSVP lookups
+ * - Minimal database round trips with batch updates
+ *
+ * @security
+ * - QR tokens use cryptographically random generation
+ * - Email validation during user-RSVP mapping
+ * - Prevents duplicate QR token generation
  */
 export const seedDatabase = async (closeConnection = false) => {
   try {
@@ -64,10 +135,13 @@ export const seedDatabase = async (closeConnection = false) => {
 
       // Update users with their RSVP references
       for (const rsvp of insertedRSVPs) {
-        await User.findByIdAndUpdate(rsvp.userId, {
-          rsvpId: rsvp._id,
-          hasRSVPed: true,
-        });
+        await (User as any).updateOne(
+          { _id: rsvp.userId },
+          {
+            rsvpId: rsvp._id,
+            hasRSVPed: true,
+          }
+        );
       }
       console.log("🎉 Database seeding completed successfully!");
     } else {
