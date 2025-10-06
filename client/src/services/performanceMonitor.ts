@@ -18,7 +18,11 @@ const logWarn = (message: string, context: string, data?: any) => {
 
 // Analytics interface (will be implemented later)
 interface AnalyticsService {
-  track: (event: string, userId?: string, properties?: Record<string, any>) => void;
+  track: (
+    event: string,
+    userId?: string,
+    properties?: Record<string, any>
+  ) => void;
   trackPerformance: (data: Record<string, any>) => void;
 }
 
@@ -35,17 +39,17 @@ const analytics: AnalyticsService = {
       console.log('Performance Data:', data);
     }
     // TODO: Integrate with actual analytics service
-  }
+  },
 };
 
 interface PerformanceThresholds {
   // Core Web Vitals thresholds (Google's recommendations)
-  CLS: { good: 0.1, needsImprovement: 0.25 };
-  INP: { good: 200, needsImprovement: 500 }; // Interaction to Next Paint (replaces FID in 2024)
-  LCP: { good: 2500, needsImprovement: 4000 };
+  CLS: { good: 0.1; needsImprovement: 0.25 };
+  INP: { good: 200; needsImprovement: 500 }; // Interaction to Next Paint (replaces FID in 2024)
+  LCP: { good: 2500; needsImprovement: 4000 };
   // Additional metrics
-  FCP: { good: 1800, needsImprovement: 3000 };
-  TTFB: { good: 800, needsImprovement: 1800 };
+  FCP: { good: 1800; needsImprovement: 3000 };
+  TTFB: { good: 800; needsImprovement: 1800 };
 }
 
 const PERFORMANCE_THRESHOLDS: PerformanceThresholds = {
@@ -81,13 +85,13 @@ class PerformanceMonitor {
     // Track custom performance metrics
     this.trackResourceTiming();
     this.trackNavigationTiming();
-    
+
     this.isInitialized = true;
   }
 
   private handleMetric(metric: Metric) {
     const { name, value, rating } = metric;
-    
+
     // Store metric
     this.metrics.set(name, metric);
 
@@ -109,7 +113,10 @@ class PerformanceMonitor {
     return PERFORMANCE_THRESHOLDS[metricName] || null;
   }
 
-  private getRating(metricName: keyof PerformanceThresholds, value: number): 'good' | 'needs-improvement' | 'poor' {
+  private getRating(
+    metricName: keyof PerformanceThresholds,
+    value: number
+  ): 'good' | 'needs-improvement' | 'poor' {
     const threshold = this.getThreshold(metricName);
     if (!threshold) return 'good';
 
@@ -123,12 +130,16 @@ class PerformanceMonitor {
     const rating = this.getRating(name as keyof PerformanceThresholds, value);
 
     if (rating === 'poor') {
-      logWarn(`Poor performance detected: ${name} = ${value}`, 'PerformanceMonitor', {
-        metric: name,
-        value,
-        rating,
-        threshold: this.getThreshold(name as keyof PerformanceThresholds),
-      });
+      logWarn(
+        `Poor performance detected: ${name} = ${value}`,
+        'PerformanceMonitor',
+        {
+          metric: name,
+          value,
+          rating,
+          threshold: this.getThreshold(name as keyof PerformanceThresholds),
+        }
+      );
 
       // Send performance alert to analytics
       analytics.track('performance_issue', undefined, {
@@ -158,9 +169,31 @@ class PerformanceMonitor {
   }
 
   private getConnectionInfo() {
-    // @ts-ignore - NetworkInformation is not in TypeScript types yet
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    
+    // NetworkInformation API type definition
+    type NavigatorWithConnection = Navigator & {
+      connection?: {
+        effectiveType?: string;
+        downlink?: number;
+        rtt?: number;
+        saveData?: boolean;
+      };
+      mozConnection?: {
+        effectiveType?: string;
+        downlink?: number;
+        rtt?: number;
+        saveData?: boolean;
+      };
+      webkitConnection?: {
+        effectiveType?: string;
+        downlink?: number;
+        rtt?: number;
+        saveData?: boolean;
+      };
+    };
+
+    const nav = navigator as NavigatorWithConnection;
+    const connection = nav.connection || nav.mozConnection || nav.webkitConnection;
+
     return {
       effectiveType: connection?.effectiveType || 'unknown',
       downlink: connection?.downlink || 0,
@@ -173,9 +206,9 @@ class PerformanceMonitor {
     if (!('PerformanceObserver' in window)) return;
 
     try {
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         const entries = list.getEntries();
-        entries.forEach((entry) => {
+        entries.forEach(entry => {
           if (entry.entryType === 'resource') {
             this.analyzeResourceTiming(entry as PerformanceResourceTiming);
           }
@@ -184,15 +217,20 @@ class PerformanceMonitor {
 
       observer.observe({ entryTypes: ['resource'] });
     } catch (error) {
-      logWarn('Failed to setup resource timing observer', 'PerformanceMonitor', { error });
+      logWarn(
+        'Failed to setup resource timing observer',
+        'PerformanceMonitor',
+        { error }
+      );
     }
   }
 
   private analyzeResourceTiming(entry: PerformanceResourceTiming) {
     const { name, transferSize, duration } = entry;
-    
+
     // Track large resources
-    if (transferSize > 500 * 1024) { // 500KB
+    if (transferSize > 500 * 1024) {
+      // 500KB
       logWarn(`Large resource detected: ${name}`, 'PerformanceMonitor', {
         size: `${(transferSize / 1024).toFixed(2)} KB`,
         duration: `${duration.toFixed(2)}ms`,
@@ -206,10 +244,13 @@ class PerformanceMonitor {
     }
 
     // Track slow resources
-    if (duration > 2000) { // 2 seconds
+    if (duration > 2000) {
+      // 2 seconds
       logWarn(`Slow resource detected: ${name}`, 'PerformanceMonitor', {
         duration: `${duration.toFixed(2)}ms`,
-        size: transferSize ? `${(transferSize / 1024).toFixed(2)} KB` : 'unknown',
+        size: transferSize
+          ? `${(transferSize / 1024).toFixed(2)} KB`
+          : 'unknown',
       });
 
       analytics.track('slow_resource_loaded', undefined, {
@@ -234,16 +275,21 @@ class PerformanceMonitor {
       return;
     }
 
-    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    
+    const navigation = performance.getEntriesByType(
+      'navigation'
+    )[0] as PerformanceNavigationTiming;
+
     if (!navigation) return;
 
     const metrics = {
       dns_lookup: navigation.domainLookupEnd - navigation.domainLookupStart,
       tcp_connect: navigation.connectEnd - navigation.connectStart,
       request_response: navigation.responseEnd - navigation.requestStart,
-      dom_parsing: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
-      resource_loading: navigation.loadEventEnd - navigation.domContentLoadedEventEnd,
+      dom_parsing:
+        navigation.domContentLoadedEventEnd -
+        navigation.domContentLoadedEventStart,
+      resource_loading:
+        navigation.loadEventEnd - navigation.domContentLoadedEventEnd,
       total_load_time: navigation.loadEventEnd - navigation.fetchStart,
     };
 
@@ -272,9 +318,12 @@ class PerformanceMonitor {
 
   public getPerformanceSummary() {
     const summary: Record<string, any> = {};
-    
+
     this.metrics.forEach((metric, name) => {
-      const rating = this.getRating(name as keyof PerformanceThresholds, metric.value);
+      const rating = this.getRating(
+        name as keyof PerformanceThresholds,
+        metric.value
+      );
       summary[name] = {
         value: metric.value,
         rating,
@@ -290,28 +339,35 @@ class PerformanceMonitor {
     try {
       performance.mark(`${name}-start`);
     } catch (error) {
-      logWarn(`Failed to create performance mark: ${name}-start`, 'PerformanceMonitor', { error });
+      logWarn(
+        `Failed to create performance mark: ${name}-start`,
+        'PerformanceMonitor',
+        { error }
+      );
     }
   }
 
   public markEnd(name: string) {
     try {
       performance.mark(`${name}-end`);
-      
+
       // Check if start mark exists before measuring
       const startMarkName = `${name}-start`;
       const marks = performance.getEntriesByName(startMarkName, 'mark');
-      
+
       if (marks.length === 0) {
-        logWarn(`Performance start mark not found: ${startMarkName}`, 'PerformanceMonitor');
+        logWarn(
+          `Performance start mark not found: ${startMarkName}`,
+          'PerformanceMonitor'
+        );
         return;
       }
-      
+
       performance.measure(name, startMarkName, `${name}-end`);
-      
+
       const measures = performance.getEntriesByName(name, 'measure');
       const measure = measures[measures.length - 1];
-      
+
       if (measure) {
         logDebug(`Custom performance measure: ${name}`, 'PerformanceMonitor', {
           duration: `${measure.duration.toFixed(2)}ms`,
@@ -323,7 +379,11 @@ class PerformanceMonitor {
         });
       }
     } catch (error) {
-      logWarn(`Failed to create performance measure: ${name}`, 'PerformanceMonitor', { error });
+      logWarn(
+        `Failed to create performance measure: ${name}`,
+        'PerformanceMonitor',
+        { error }
+      );
     }
   }
 }

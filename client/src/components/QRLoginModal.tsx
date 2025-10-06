@@ -1,13 +1,87 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * Props interface for QRLoginModal component
+ */
 interface QRLoginModalProps {
+  /** Controls modal visibility state */
   isOpen: boolean;
+  /** Callback function to close the modal */
   onClose: () => void;
+  /** Callback function executed on successful authentication */
   onLoginSuccess: () => void;
-  testScanValue?: string; // For testing only
+  /** Optional test scan value for development/testing (bypasses QR scanning) */
+  testScanValue?: string;
 }
 
+/**
+ * QRLoginModal - QR Code Authentication Modal
+ *
+ * Interactive modal component for QR code authentication with manual token input
+ * fallback. Provides multiple authentication methods including QR scanning 
+ * recommendations and manual token entry for guests who need alternative login
+ * options beyond scanning invitation QR codes.
+ *
+ * @features
+ * - **QR Code Guidance**: Instructions for optimal QR scanning experience
+ * - **Manual Token Input**: Fallback option for manual token entry
+ * - **Real-time Validation**: Input validation and loading states
+ * - **Error Handling**: User-friendly error messages and recovery
+ * - **Test Integration**: Development testing utilities and quick tokens
+ * - **Accessibility**: Full keyboard navigation and screen reader support
+ * - **Mobile Optimization**: Touch-friendly interface for mobile devices
+ * - **Body Scroll Lock**: Prevents background scrolling when modal is open
+ *
+ * @userFlow
+ * 1. User clicks login button to open modal
+ * 2. Modal shows QR scanning recommendations
+ * 3. User can scan QR code OR manually enter token
+ * 4. Authentication attempt with loading state
+ * 5. Success: Execute callback and close modal
+ * 6. Error: Display error message with retry option
+ *
+ * @accessibility
+ * - ARIA modal role with proper labeling
+ * - Keyboard navigation support (Enter to submit, Escape to close)
+ * - Focus management for modal open/close
+ * - Screen reader announcements for status changes
+ * - High contrast error states
+ *
+ * @testingSupport
+ * - Development-only test token buttons
+ * - `testScanValue` prop for automated testing
+ * - Quick access to common test scenarios
+ *
+ * @component
+ * @example
+ * ```tsx
+ * function LoginButton() {
+ *   const [showModal, setShowModal] = useState(false);
+ *
+ *   return (
+ *     <>
+ *       <button onClick={() => setShowModal(true)}>
+ *         Login with QR Code
+ *       </button>
+ *       <QRLoginModal
+ *         isOpen={showModal}
+ *         onClose={() => setShowModal(false)}
+ *         onLoginSuccess={() => {
+ *           setShowModal(false);
+ *           // Handle successful login
+ *         }}
+ *       />
+ *     </>
+ *   );
+ * }
+ * ```
+ *
+ * @dependencies
+ * - `useAuth` - Authentication context for login operations
+ * - CSS classes for modal styling (defined globally)
+ * - Body scroll lock for mobile UX
+ */
 export default function QRLoginModal(props: QRLoginModalProps) {
   const { isOpen, onClose, onLoginSuccess, testScanValue } = props;
   // For testing: simulate a scan if testScanValue is provided

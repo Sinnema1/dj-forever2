@@ -27,11 +27,11 @@ const PERFORMANCE_BUDGET = {
 
   // Specific chunk budgets
   chunks: {
-    'vendor': 300,
-    'apollo': 200,
-    'ui': 100,
-    'icons': 50,
-    'qr': 100,
+    vendor: 300,
+    apollo: 200,
+    ui: 100,
+    icons: 50,
+    qr: 100,
   },
 };
 
@@ -55,7 +55,7 @@ function formatSize(bytes) {
 
 function analyzeBundle() {
   const distDir = path.join(__dirname, '..', 'dist');
-  
+
   if (!fs.existsSync(distDir)) {
     log('❌ Dist directory not found. Run "npm run build" first.', colors.red);
     process.exit(1);
@@ -71,13 +71,14 @@ function analyzeBundle() {
   };
 
   // Analyze JavaScript files
-  const jsFiles = fs.readdirSync(path.join(distDir, 'assets'))
+  const jsFiles = fs
+    .readdirSync(path.join(distDir, 'assets'))
     .filter(file => file.endsWith('.js'))
     .map(file => {
       const filePath = path.join(distDir, 'assets', file);
       const stats = fs.statSync(filePath);
       const sizeKB = stats.size / 1024;
-      
+
       return {
         name: file,
         size: stats.size,
@@ -88,13 +89,14 @@ function analyzeBundle() {
     .sort((a, b) => b.size - a.size);
 
   // Analyze CSS files
-  const cssFiles = fs.readdirSync(path.join(distDir, 'assets'))
+  const cssFiles = fs
+    .readdirSync(path.join(distDir, 'assets'))
     .filter(file => file.endsWith('.css'))
     .map(file => {
       const filePath = path.join(distDir, 'assets', file);
       const stats = fs.statSync(filePath);
       const sizeKB = stats.size / 1024;
-      
+
       return {
         name: file,
         size: stats.size,
@@ -116,30 +118,40 @@ function analyzeBundle() {
   log(`CSS: ${formatSize(totalCSSSize)} (${cssFiles.length} files)`);
 
   if (totalBundleSizeKB <= PERFORMANCE_BUDGET.maxBundleSize) {
-    results.passed.push(`✅ Total bundle size: ${formatSize(totalBundleSize)} (within ${PERFORMANCE_BUDGET.maxBundleSize} KB budget)`);
+    results.passed.push(
+      `✅ Total bundle size: ${formatSize(totalBundleSize)} (within ${PERFORMANCE_BUDGET.maxBundleSize} KB budget)`
+    );
   } else {
-    results.errors.push(`❌ Total bundle size: ${formatSize(totalBundleSize)} exceeds ${PERFORMANCE_BUDGET.maxBundleSize} KB budget`);
+    results.errors.push(
+      `❌ Total bundle size: ${formatSize(totalBundleSize)} exceeds ${PERFORMANCE_BUDGET.maxBundleSize} KB budget`
+    );
   }
 
   // Check individual JS files
   log(`\n${colors.blue}📄 JavaScript Files:${colors.reset}`);
   jsFiles.forEach(file => {
     log(`  ${file.name}: ${formatSize(file.size)}`);
-    
+
     // Check against chunk-specific budgets
-    const chunkName = Object.keys(PERFORMANCE_BUDGET.chunks).find(chunk => 
+    const chunkName = Object.keys(PERFORMANCE_BUDGET.chunks).find(chunk =>
       file.name.includes(chunk)
     );
-    
+
     if (chunkName) {
       const budget = PERFORMANCE_BUDGET.chunks[chunkName];
       if (file.sizeKB <= budget) {
-        results.passed.push(`✅ ${chunkName} chunk: ${formatSize(file.size)} (within ${budget} KB budget)`);
+        results.passed.push(
+          `✅ ${chunkName} chunk: ${formatSize(file.size)} (within ${budget} KB budget)`
+        );
       } else {
-        results.errors.push(`❌ ${chunkName} chunk: ${formatSize(file.size)} exceeds ${budget} KB budget`);
+        results.errors.push(
+          `❌ ${chunkName} chunk: ${formatSize(file.size)} exceeds ${budget} KB budget`
+        );
       }
     } else if (file.sizeKB > PERFORMANCE_BUDGET.maxChunkSize) {
-      results.warnings.push(`⚠️  Large chunk: ${file.name} (${formatSize(file.size)}) exceeds ${PERFORMANCE_BUDGET.maxChunkSize} KB recommendation`);
+      results.warnings.push(
+        `⚠️  Large chunk: ${file.name} (${formatSize(file.size)}) exceeds ${PERFORMANCE_BUDGET.maxChunkSize} KB recommendation`
+      );
     }
   });
 
@@ -148,20 +160,26 @@ function analyzeBundle() {
     log(`\n${colors.blue}🎨 CSS Files:${colors.reset}`);
     cssFiles.forEach(file => {
       log(`  ${file.name}: ${formatSize(file.size)}`);
-      
+
       if (file.sizeKB > PERFORMANCE_BUDGET.maxCSSSize) {
-        results.warnings.push(`⚠️  Large CSS file: ${file.name} (${formatSize(file.size)}) exceeds ${PERFORMANCE_BUDGET.maxCSSSize} KB recommendation`);
+        results.warnings.push(
+          `⚠️  Large CSS file: ${file.name} (${formatSize(file.size)}) exceeds ${PERFORMANCE_BUDGET.maxCSSSize} KB recommendation`
+        );
       }
     });
   }
 
   // Check file count budgets
   if (jsFiles.length > PERFORMANCE_BUDGET.maxJSFiles) {
-    results.warnings.push(`⚠️  Too many JS files: ${jsFiles.length} exceeds ${PERFORMANCE_BUDGET.maxJSFiles} recommendation`);
+    results.warnings.push(
+      `⚠️  Too many JS files: ${jsFiles.length} exceeds ${PERFORMANCE_BUDGET.maxJSFiles} recommendation`
+    );
   }
 
   if (cssFiles.length > PERFORMANCE_BUDGET.maxCSSFiles) {
-    results.warnings.push(`⚠️  Too many CSS files: ${cssFiles.length} exceeds ${PERFORMANCE_BUDGET.maxCSSFiles} recommendation`);
+    results.warnings.push(
+      `⚠️  Too many CSS files: ${cssFiles.length} exceeds ${PERFORMANCE_BUDGET.maxCSSFiles} recommendation`
+    );
   }
 
   // Display results
@@ -186,13 +204,13 @@ function analyzeBundle() {
   // Performance recommendations
   log(`\n${colors.blue}💡 Performance Recommendations:${colors.reset}`);
   log('━'.repeat(50));
-  
+
   if (totalBundleSizeKB > PERFORMANCE_BUDGET.maxBundleSize * 0.8) {
     log('• Consider code splitting for larger components', colors.yellow);
     log('• Review and remove unused dependencies', colors.yellow);
     log('• Implement dynamic imports for non-critical features', colors.yellow);
   }
-  
+
   if (jsFiles.length > 10) {
     log('• Consider consolidating smaller chunks', colors.yellow);
   }
@@ -203,12 +221,21 @@ function analyzeBundle() {
 
   // Exit with error code if budget exceeded
   if (results.errors.length > 0) {
-    log(`\n${colors.red}${colors.bold}💥 Performance budget exceeded!${colors.reset}`, colors.red);
+    log(
+      `\n${colors.red}${colors.bold}💥 Performance budget exceeded!${colors.reset}`,
+      colors.red
+    );
     process.exit(1);
   } else if (results.warnings.length > 0) {
-    log(`\n${colors.yellow}${colors.bold}⚠️  Performance budget passed with warnings.${colors.reset}`, colors.yellow);
+    log(
+      `\n${colors.yellow}${colors.bold}⚠️  Performance budget passed with warnings.${colors.reset}`,
+      colors.yellow
+    );
   } else {
-    log(`\n${colors.green}${colors.bold}🎉 All performance budgets passed!${colors.reset}`, colors.green);
+    log(
+      `\n${colors.green}${colors.bold}🎉 All performance budgets passed!${colors.reset}`,
+      colors.green
+    );
   }
 }
 
@@ -216,7 +243,7 @@ function analyzeBundle() {
 function generateReport() {
   const distDir = path.join(__dirname, '..', 'dist');
   const reportPath = path.join(distDir, 'performance-report.json');
-  
+
   const report = {
     timestamp: new Date().toISOString(),
     budget: PERFORMANCE_BUDGET,
