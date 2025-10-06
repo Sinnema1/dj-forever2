@@ -34,18 +34,28 @@
 import { lazy, Suspense } from 'react';
 
 /**
- * Lazy-loaded heavy components for code splitting
- * These components are loaded on-demand to improve initial page load performance
+ * Lazy-loaded components for route-based code splitting
+ *
+ * These components are loaded on-demand to improve initial page load performance.
+ * Only includes components that are not needed immediately on page load.
+ *
+ * Components NOT included here (loaded statically for performance):
+ * - RSVPForm: Critical component needed immediately on RSVP pages
+ * - CountdownTimer: Essential component for homepage hero section
  */
 
 /** Gallery component - Photo gallery with lightbox functionality */
 export const Gallery = lazy(() => import('../pages/Gallery'));
 
-/** RSVP component - RSVP form and management interface */
+/** RSVP page wrapper - RSVP form and management interface */
 export const RSVP = lazy(() => import('../pages/RSVP'));
 
 /** TravelGuide component - Travel information and accommodations */
 export const TravelGuide = lazy(() => import('../pages/TravelGuide'));
+
+// Note: RSVPForm and CountdownTimer are not lazy-loaded here because they are
+// critical components needed immediately on page load by HeroBanner and RSVP pages.
+// Static imports in those components are more appropriate for performance.
 
 /**
  * Enhanced loading spinner with wedding theme

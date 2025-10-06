@@ -211,21 +211,46 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     // Performance Budget Configuration
-    chunkSizeWarningLimit: 500, // Warn at 500KB (stricter than default 1000KB)
+    chunkSizeWarningLimit: 400, // Stricter limit for better performance (was 500KB)
+
+    // Enhanced build optimizations for smaller bundles
+    minify: 'esbuild', // Fastest and most efficient minifier
+    reportCompressedSize: true, // Report compressed bundle sizes
+
+    // CSS optimization
+    cssMinify: 'esbuild',
+    cssCodeSplit: true, // Split CSS per route/chunk
     rollupOptions: {
+      // Enhanced tree-shaking configuration (more conservative)
+      treeshake: {
+        preset: 'recommended',
+        moduleSideEffects: 'no-external', // Less aggressive - keep side effects for internal modules
+        propertyReadSideEffects: false,
+        tryCatchDeoptimization: false,
+      },
+
       onwarn(warning, warn) {
         // Performance budget warnings
         if (warning.code === 'CIRCULAR_DEPENDENCY') return;
         if (warning.code === 'THIS_IS_UNDEFINED') return;
+        if (warning.code === 'EVAL') return; // Suppress eval warnings for dev tools
         warn(warning);
       },
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          apollo: ['@apollo/client'],
-          ui: ['react-router-dom', 'react-scroll'],
-          icons: ['react-icons'],
-          qr: ['html5-qrcode'],
+          // Core React dependencies (most stable)
+          vendor: [
+            'react',
+            'react-dom',
+            'react-router-dom',
+            'react-helmet-async',
+          ],
+
+          // Apollo Client and GraphQL (large, optimize separately)
+          apollo: ['@apollo/client', 'graphql'],
+
+          // UI and utility libraries
+          ui: ['react-icons', 'web-vitals', 'html5-qrcode'],
         },
         // Performance optimization
         chunkFileNames: 'assets/[name]-[hash].js',
