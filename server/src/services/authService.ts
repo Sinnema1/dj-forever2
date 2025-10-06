@@ -1,3 +1,52 @@
+/**
+ * @fileoverview Authentication Service for DJ Forever 2 Wedding Website
+ * @module services/authService
+ * @version 1.0.0
+ * 
+ * Comprehensive authentication service implementing QR-code-only authentication system.
+ * Handles user registration, QR token validation, JWT token generation, and request
+ * authentication for the wedding website. Designed for secure, passwordless authentication
+ * where guests authenticate using unique QR codes embedded in wedding invitations.
+ * 
+ * Authentication Flow:
+ * 1. QR codes generated during wedding invitation seeding process
+ * 2. Guests scan QR code → qrToken extracted from URL
+ * 3. Frontend calls loginWithQrToken mutation with qrToken
+ * 4. Service validates token, generates JWT, returns AuthResult
+ * 5. Subsequent requests include JWT in Authorization header
+ * 6. getUserFromRequest extracts and validates JWT for protected operations
+ * 
+ * Security Features:
+ * - QR tokens are unique, non-guessable identifiers
+ * - JWT tokens have configurable expiration (default: 7 days)
+ * - Database validation ensures user existence and invitation status
+ * - Input validation prevents injection attacks
+ * - Graceful error handling with proper error types
+ * 
+ * Integration:
+ * - Used by GraphQL resolvers for authentication mutations
+ * - Integrated with GraphQL context creation for request authentication
+ * - Supports both registration (optional) and login flows
+ * - Compatible with existing user management and RSVP systems
+ * 
+ * @example
+ * // QR Token Login:
+ * // const result = await loginWithQrToken({ qrToken: 'abc123def456' });
+ * // Returns: { token: 'jwt...', user: { _id, fullName, email, ... } }
+ * 
+ * @example
+ * // Request Authentication:
+ * // const user = await getUserFromRequest(req);
+ * // Returns: User object or null if not authenticated
+ * 
+ * @dependencies
+ * - ../models/User: User model for database operations
+ * - jsonwebtoken: JWT token generation and verification
+ * - ../config: Environment configuration for JWT secrets
+ * - ../utils/errors: Custom error classes for proper error handling
+ * - ../utils/validation: Input validation and sanitization functions
+ */
+
 import User, { IUser } from "../models/User.js";
 import jwt from "jsonwebtoken";
 import { Document } from "mongoose";
@@ -9,16 +58,40 @@ import {
   validateQRToken,
 } from "../utils/validation.js";
 
+/**
+ * Input interface for user registration operations.
+ * Used for optional user registration flow when QR token registration is enabled.
+ * 
+ * @interface RegisterUserInput
+ * @property {string} fullName - Full name of the user (validated and trimmed)
+ * @property {string} email - Email address (validated, unique, and normalized)
+ * @property {string} qrToken - Unique QR token from wedding invitation
+ */
 export interface RegisterUserInput {
   fullName: string;
   email: string;
   qrToken: string;
 }
 
+/**
+ * Input interface for QR token authentication operations.
+ * Primary authentication method for the wedding website.
+ * 
+ * @interface LoginInput
+ * @property {string} qrToken - Unique QR token from scanned wedding invitation
+ */
 export interface LoginInput {
   qrToken: string;
 }
 
+/**
+ * Authentication result interface returned by login and registration operations.
+ * Contains JWT token and complete user profile for frontend state management.
+ * 
+ * @interface AuthResult
+ * @property {string} token - JWT token for subsequent authenticated requests
+ * @property {IUser} user - Complete user profile with invitation and RSVP status
+ */
 export interface AuthResult {
   token: string;
   user: IUser;
