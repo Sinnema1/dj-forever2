@@ -15,7 +15,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import ConnectionStatus from './components/ConnectionStatus';
 import PerformanceMonitor from './components/PerformanceMonitor';
 import { PWAInstallBanner } from './hooks/usePWAInstall';
-import { PWAUpdateToast } from './hooks/usePWAUpdate';
+// import { PWAUpdateToast } from './hooks/usePWAUpdate'; // Disabled: autoUpdate configured in Vite
 import performanceMonitor from './services/performanceMonitor';
 
 /**
@@ -69,7 +69,7 @@ import performanceMonitor from './services/performanceMonitor';
  * - `AuthProvider` - Authentication context and state management
  * - `ErrorBoundary` - Error handling and fallback UI
  * - `PerformanceMonitor` - Core Web Vitals and performance tracking
- * - `PWA Hooks` - Progressive Web App install and update notifications
+ * - `PWA Hooks` - Progressive Web App install notifications (updates handled automatically)
  */
 export default function App() {
   // Track app initialization performance
@@ -84,7 +84,7 @@ export default function App() {
 
       <ConnectionStatus />
       <PWAInstallBanner />
-      <PWAUpdateToast />
+      {/* <PWAUpdateToast /> - Disabled: autoUpdate configured in Vite handles updates automatically */}
       <Navbar />
       <PersonalizedWelcome />
       <WelcomeModal />
