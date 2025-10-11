@@ -183,3 +183,78 @@ export interface SubmitRSVPArgs {
   additionalNotes?: string;
   fullName?: string; // Include fullName for legacy support
 }
+
+/**
+ * Admin-specific types for wedding management interface
+ */
+
+/**
+ * Administrative statistics for wedding planning and guest management
+ *
+ * @interface AdminStats
+ */
+export interface AdminStats {
+  totalInvited: number;
+  totalRSVPed: number;
+  totalAttending: number;
+  totalNotAttending: number;
+  totalMaybe: number;
+  rsvpPercentage: number;
+  mealPreferences: MealPreferenceCount[];
+  dietaryRestrictions: string[];
+}
+
+/**
+ * Meal preference count for catering planning
+ *
+ * @interface MealPreferenceCount
+ */
+export interface MealPreferenceCount {
+  preference: string;
+  count: number;
+}
+
+/**
+ * Enhanced user data for admin management
+ *
+ * @interface AdminUser
+ */
+export interface AdminUser {
+  _id: string;
+  fullName: string;
+  email: string;
+  isAdmin: boolean;
+  hasRSVPed: boolean;
+  isInvited: boolean;
+  qrToken: string;
+  rsvp?: any;
+  createdAt?: string;
+  lastUpdated?: string;
+}
+
+/**
+ * Input for admin RSVP updates
+ *
+ * @interface AdminRSVPUpdateInput
+ */
+export interface AdminRSVPUpdateInput {
+  attending?: "YES" | "NO" | "MAYBE";
+  guestCount?: number;
+  guests?: Array<{
+    fullName: string;
+    mealPreference: string;
+    allergies?: string;
+  }>;
+  additionalNotes?: string;
+}
+
+/**
+ * Input for updating user details from admin interface
+ *
+ * @interface AdminUserUpdateInput
+ */
+export interface AdminUserUpdateInput {
+  fullName?: string;
+  email?: string;
+  isInvited?: boolean;
+}

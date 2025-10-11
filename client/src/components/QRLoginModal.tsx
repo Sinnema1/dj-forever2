@@ -295,7 +295,9 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                 borderRadius: '4px',
               }}
             >
-              <p style={{ margin: '0 0 0.5rem 0' }}>Quick test tokens:</p>
+              <p style={{ margin: '0 0 0.5rem 0' }}>
+                Quick test tokens (🔧 = Admin):
+              </p>
               <button
                 onClick={() => handleTokenSubmit('r24gpj3wntgqwqfberlas')}
                 disabled={loading}
@@ -343,6 +345,24 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                 title="Charlie Williams"
               >
                 Charlie
+              </button>
+              <button
+                onClick={() => handleTokenSubmit('obnzixyen8f6fzr5xwznda')}
+                disabled={loading}
+                style={{
+                  margin: '2px',
+                  padding: '4px 8px',
+                  fontSize: '0.8rem',
+                  backgroundColor: loading ? '#f0f0f0' : '#d4edda',
+                  border: '1px solid #28a745',
+                  borderRadius: '3px',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  color: '#155724',
+                  fontWeight: 'bold',
+                }}
+                title="Admin User - Full admin access"
+              >
+                🔧 Admin
               </button>
             </div>
           </details>

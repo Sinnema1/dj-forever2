@@ -46,6 +46,14 @@
 import { GraphQLError } from "graphql";
 import { registerUser, loginWithQrToken } from "../services/authService.js";
 import { getRSVP, createRSVP, updateRSVP } from "../services/rsvpService.js";
+import {
+  getWeddingStats,
+  getAllUsersWithRSVPs,
+  exportGuestListCSV,
+  adminUpdateRSVP,
+  adminUpdateUser,
+  adminDeleteRSVP,
+} from "../services/adminService.js";
 import { AuthenticationError, ValidationError } from "../utils/errors.js";
 import type {
   GraphQLContext,
@@ -54,6 +62,8 @@ import type {
   CreateRSVPInput,
   RSVPInput,
   SubmitRSVPArgs,
+  AdminRSVPUpdateInput,
+  AdminUserUpdateInput,
 } from "../types/graphql.js";
 
 /**
@@ -78,6 +88,16 @@ function requireAuth(context: GraphQLContext) {
     throw new AuthenticationError("Authentication required");
   }
   return context.user;
+}
+
+function requireAdmin(context: GraphQLContext) {
+  const user = requireAuth(context);
+  if (!user.isAdmin) {
+    throw new GraphQLError("Admin access required", {
+      extensions: { code: "FORBIDDEN" },
+    });
+  }
+  return user;
 }
 
 /**
@@ -140,6 +160,48 @@ export const resolvers = {
       } catch (error: any) {
         console.error("Error in getRSVP resolver:", error);
         throw new GraphQLError(error?.message || "Failed to fetch RSVP");
+      }
+    },
+    // Admin queries
+    adminGetAllRSVPs: async (
+      _: unknown,
+      __: unknown,
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        return await getAllUsersWithRSVPs();
+      } catch (error: any) {
+        console.error("Error in adminGetAllRSVPs resolver:", error);
+        throw new GraphQLError(error?.message || "Failed to fetch RSVP data");
+      }
+    },
+    adminGetUserStats: async (
+      _: unknown,
+      __: unknown,
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        return await getWeddingStats();
+      } catch (error: any) {
+        console.error("Error in adminGetUserStats resolver:", error);
+        throw new GraphQLError(
+          error?.message || "Failed to fetch wedding statistics"
+        );
+      }
+    },
+    adminExportGuestList: async (
+      _: unknown,
+      __: unknown,
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        return await exportGuestListCSV();
+      } catch (error: any) {
+        console.error("Error in adminExportGuestList resolver:", error);
+        throw new GraphQLError(error?.message || "Failed to export guest list");
       }
     },
   },
@@ -215,6 +277,47 @@ export const resolvers = {
       } catch (error: any) {
         console.error("Error in editRSVP resolver:", error);
         throw new GraphQLError(error?.message || "Failed to update RSVP");
+      }
+    },
+    // Admin mutations
+    adminUpdateRSVP: async (
+      _: unknown,
+      args: { rsvpId: string; updates: AdminRSVPUpdateInput },
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        return await adminUpdateRSVP(args.rsvpId, args.updates);
+      } catch (error: any) {
+        console.error("Error in adminUpdateRSVP resolver:", error);
+        throw new GraphQLError(error?.message || "Failed to update RSVP");
+      }
+    },
+    adminUpdateUser: async (
+      _: unknown,
+      args: { userId: string; updates: AdminUserUpdateInput },
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        return await adminUpdateUser(args.userId, args.updates);
+      } catch (error: any) {
+        console.error("Error in adminUpdateUser resolver:", error);
+        throw new GraphQLError(error?.message || "Failed to update user");
+      }
+    },
+    adminDeleteRSVP: async (
+      _: unknown,
+      args: { rsvpId: string },
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        await adminDeleteRSVP(args.rsvpId);
+        return true;
+      } catch (error: any) {
+        console.error("Error in adminDeleteRSVP resolver:", error);
+        throw new GraphQLError(error?.message || "Failed to delete RSVP");
       }
     },
   },

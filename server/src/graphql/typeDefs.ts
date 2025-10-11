@@ -127,9 +127,72 @@ export const typeDefs = `
     allergies: String
   }
 
+  """Administrative statistics for wedding planning and guest management"""
+  type AdminStats {
+    """Total number of invited guests"""
+    totalInvited: Int!
+    """Number of guests who have submitted RSVPs"""
+    totalRSVPed: Int!
+    """Number of guests attending (YES responses)"""
+    totalAttending: Int!
+    """Number of guests not attending (NO responses)"""
+    totalNotAttending: Int!
+    """Number of guests with uncertain attendance (MAYBE responses)"""
+    totalMaybe: Int!
+    """Percentage of invited guests who have RSVPed"""
+    rsvpPercentage: Float!
+    """Breakdown of meal preferences for catering"""
+    mealPreferences: [MealPreferenceCount!]!
+    """Dietary restrictions and allergies summary"""
+    dietaryRestrictions: [String!]!
+  }
+
+  """Meal preference count for catering planning"""
+  type MealPreferenceCount {
+    preference: String!
+    count: Int!
+  }
+
+  """Enhanced user data for admin management"""
+  type AdminUser {
+    _id: ID!
+    fullName: String!
+    email: String!
+    isAdmin: Boolean!
+    hasRSVPed: Boolean!
+    isInvited: Boolean!
+    qrToken: String!
+    rsvp: RSVP
+    """Date when user was created/invited"""
+    createdAt: String
+    """Date of last RSVP update"""
+    lastUpdated: String
+  }
+
+  """Input for updating user details from admin interface"""
+  input AdminUserUpdateInput {
+    fullName: String
+    email: String
+    isInvited: Boolean
+  }
+
+  """Input for admin RSVP updates"""
+  input AdminRSVPUpdateInput {
+    attending: AttendanceStatus
+    guestCount: Int
+    guests: [GuestInput!]
+    additionalNotes: String
+  }
+
   type Query {
     me: User
     getRSVP: RSVP
+    
+    """Admin-only queries for wedding management"""
+    adminGetAllRSVPs: [AdminUser!]!
+    adminGetUserStats: AdminStats!
+    adminGetGuestList: [AdminUser!]!
+    adminExportGuestList: String!
   }
 
   type Mutation {
@@ -141,6 +204,12 @@ export const typeDefs = `
     loginWithQrToken(qrToken: String!): AuthPayload
     createRSVP(input: CreateRSVPInput!): RSVP
     editRSVP(updates: RSVPInput!): RSVP
+    
+    """Admin-only mutations for wedding management"""
+    adminUpdateRSVP(userId: ID!, input: AdminRSVPUpdateInput!): RSVP!
+    adminUpdateUser(userId: ID!, input: AdminUserUpdateInput!): AdminUser!
+    adminDeleteRSVP(userId: ID!): Boolean!
+    
     # Legacy mutation for backward compatibility
     submitRSVP(
       attending: AttendanceStatus!
