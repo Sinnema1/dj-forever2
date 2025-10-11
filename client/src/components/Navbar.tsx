@@ -33,6 +33,16 @@ import QRLoginModal from './QRLoginModal';
 import MobileDrawer from './MobileDrawer';
 
 /**
+ * Interface for navigation link configuration
+ */
+interface NavigationLink {
+  label: string;
+  to: string;
+  requiresInvitation?: boolean;
+  requiresAdmin?: boolean;
+}
+
+/**
  * Navigation links for home page sections (hash-based navigation)
  * These links use smooth scrolling to navigate within the main page
  */
@@ -50,9 +60,10 @@ const sectionLinks = [
  * Navigation links for standalone pages (React Router based)
  * These links navigate to separate pages with full page loads
  */
-const pageLinks = [
+const pageLinks: NavigationLink[] = [
   { label: 'Registry', to: '/registry' },
   { label: 'RSVP', to: '/rsvp', requiresInvitation: true },
+  { label: 'Admin', to: '/admin', requiresAdmin: true },
 ];
 
 /**
@@ -168,6 +179,7 @@ function Navbar() {
 
         {pageLinks.map(link => {
           if (link.requiresInvitation && !user?.isInvited) return null;
+          if (link.requiresAdmin && !user?.isAdmin) return null;
           return (
             <li key={link.to}>
               <Link
@@ -260,6 +272,7 @@ function Navbar() {
 
           {pageLinks.map((link, idx) => {
             if (link.requiresInvitation && !user?.isInvited) return null;
+            if (link.requiresAdmin && !user?.isAdmin) return null;
             const itemIndex = idx + (isHomePage ? sectionLinks.length : 1);
             return (
               <li

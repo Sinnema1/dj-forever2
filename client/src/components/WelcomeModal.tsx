@@ -8,8 +8,8 @@ const WelcomeModal: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    // Only show for logged-in users
-    if (!isLoggedIn || !user) return undefined;
+    // Only show for logged-in users (but not admin users)
+    if (!isLoggedIn || !user || user.isAdmin) return undefined;
 
     // Check if user has seen the welcome modal before
     const hasSeenWelcome = localStorage.getItem(`welcome-seen-${user._id}`);
@@ -35,7 +35,7 @@ const WelcomeModal: React.FC = () => {
     }
   };
 
-  if (!showModal || !isLoggedIn || !user) return null;
+  if (!showModal || !isLoggedIn || !user || user.isAdmin) return null;
 
   const firstName = user.fullName.split(' ')[0];
 
