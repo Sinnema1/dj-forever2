@@ -8,7 +8,9 @@ import RegistryStandalonePage from './pages/RegistryStandalonePage';
 import QRTokenLogin from './pages/QRTokenLogin';
 import LoginSuccess from './pages/LoginSuccess';
 import QRInfoPage from './pages/QRInfoPage';
+import AdminPage from './pages/AdminPage';
 import InvitedRoute from './components/InvitedRoute';
+import AdminRoute from './components/AdminRoute';
 import PersonalizedWelcome from './components/PersonalizedWelcome';
 import WelcomeModal from './components/WelcomeModal';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -162,6 +164,20 @@ export default function App() {
               >
                 <QRInfoPage />
               </EnhancedSuspense>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <EnhancedSuspense
+                  name="admin-dashboard"
+                  loadingMessage="Loading admin dashboard..."
+                  enhanced={true}
+                >
+                  <AdminPage />
+                </EnhancedSuspense>
+              </AdminRoute>
             }
           />
         </Routes>
