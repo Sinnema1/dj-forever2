@@ -172,6 +172,11 @@
   background: #e8f5e8;
 }
 
+.guest-status-card.maybe {
+  border-left-color: #17a2b8;
+  background: #e7f6f8;
+}
+
 .guest-status-card.not-attending {
   border-left-color: #dc3545;
   background: #fdeaea;

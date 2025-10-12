@@ -1,5 +1,5 @@
-import React from "react";
-import { useAuth } from "../context/AuthContext";
+import React from 'react';
+import { useAuth } from '../context/AuthContext';
 
 interface PersonalizedContentProps {
   children: React.ReactNode;
@@ -22,6 +22,11 @@ const PersonalizedContent: React.FC<PersonalizedContentProps> = ({
 
   if (!isLoggedIn) {
     // Default content for all visitors
+    return <>{children}</>;
+  }
+
+  // Don't show personalized content for admin users
+  if (user?.isAdmin) {
     return <>{children}</>;
   }
 

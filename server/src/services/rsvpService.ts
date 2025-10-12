@@ -191,11 +191,6 @@ function validateGuests(
  */
 export async function createRSVP(input: CreateRSVPInput): Promise<any> {
   try {
-    console.log(
-      `[DEBUG] createRSVP called with input:`,
-      JSON.stringify(input, null, 2)
-    );
-
     const {
       userId,
       fullName,
@@ -220,11 +215,9 @@ export async function createRSVP(input: CreateRSVPInput): Promise<any> {
 
     // Validate attendance
     const validatedAttending = validateAttendance(attending);
-    console.log(`[DEBUG] Validated attendance: ${validatedAttending}`);
 
     // Validate guest count
     const validatedGuestCount = guestCount ? validateGuestCount(guestCount) : 1;
-    console.log(`[DEBUG] Validated guest count: ${validatedGuestCount}`);
 
     // Validate guests array
     let validatedGuests: IGuest[] = [];

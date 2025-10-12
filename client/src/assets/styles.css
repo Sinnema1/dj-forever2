@@ -352,6 +352,21 @@ small {
   color: var(--color-text);
 }
 
+/* Admin Badge Styling */
+.admin-badge {
+  display: inline-block;
+  background: var(--color-accent);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 /* Mid breakpoints: small padding on links */
 @media (max-width: 1024px) and (min-width: 769px) {
   .navbar-links a {

@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 import User from "./dist/models/User.js";
 
-async function createProductionAdmin() {
+async function createDevAdmin() {
   try {
-    // Use MongoDB Atlas production URI
-    const uri =
-      "mongodb+srv://sinnema1:vegetable@cluster0.uu42ab9.mongodb.net/djforever2?retryWrites=true&w=majority";
+    // Use local MongoDB for development
+    const uri = "mongodb://localhost:27017";
+    const dbName = "djforever2_dev";
 
-    console.log("Connecting to MongoDB Atlas production database: djforever2");
-    await mongoose.connect(uri);
+    console.log(`Connecting to local database: ${dbName}`);
+    await mongoose.connect(uri, { dbName });
     console.log("Connected to database");
 
     // Check if admin user already exists
@@ -16,20 +16,10 @@ async function createProductionAdmin() {
 
     if (existingAdmin) {
       console.log(
-        "Admin user already exists in production:",
+        "Admin user already exists in development:",
         existingAdmin.fullName
       );
       console.log("Current admin token:", existingAdmin.qrToken);
-
-      // Update with a valid token format if needed
-      if (!existingAdmin.qrToken || existingAdmin.qrToken.includes("-")) {
-        const validToken =
-          Math.random().toString(36).substring(2) +
-          Math.random().toString(36).substring(2);
-        existingAdmin.qrToken = validToken;
-        await existingAdmin.save();
-        console.log("Updated admin token to valid format:", validToken);
-      }
     } else {
       // Create new admin user
       const validToken =
@@ -46,7 +36,7 @@ async function createProductionAdmin() {
       });
 
       await adminUser.save();
-      console.log("Created production admin user:", adminUser.fullName);
+      console.log("Created development admin user:", adminUser.fullName);
       console.log("Admin QR token:", adminUser.qrToken);
     }
 
@@ -58,4 +48,4 @@ async function createProductionAdmin() {
   }
 }
 
-createProductionAdmin();
+createDevAdmin();

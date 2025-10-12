@@ -4,6 +4,8 @@ import { GET_ADMIN_STATS, GET_ADMIN_RSVPS } from '../../api/adminQueries';
 import AdminStatsCard from './AdminStatsCard';
 import AdminRSVPManager from './AdminRSVPManager';
 import AdminGuestExport from './AdminGuestExport';
+import AdminAnalytics from './AdminAnalytics';
+import AdminEmailReminders from './AdminEmailReminders';
 import './AdminDashboard.css';
 
 /**
@@ -12,9 +14,9 @@ import './AdminDashboard.css';
  * wedding statistics, guest management, and data export functionality.
  */
 const AdminDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'guests' | 'export'>(
-    'overview'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'analytics' | 'guests' | 'reminders' | 'export'
+  >('overview');
 
   const {
     data: statsData,
@@ -83,10 +85,22 @@ const AdminDashboard: React.FC = () => {
           Overview
         </button>
         <button
+          className={`tab-button ${activeTab === 'analytics' ? 'active' : ''}`}
+          onClick={() => setActiveTab('analytics')}
+        >
+          Analytics
+        </button>
+        <button
           className={`tab-button ${activeTab === 'guests' ? 'active' : ''}`}
           onClick={() => setActiveTab('guests')}
         >
           Guest Management
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'reminders' ? 'active' : ''}`}
+          onClick={() => setActiveTab('reminders')}
+        >
+          Email Reminders
         </button>
         <button
           className={`tab-button ${activeTab === 'export' ? 'active' : ''}`}
@@ -112,9 +126,11 @@ const AdminDashboard: React.FC = () => {
                         ? 'not-invited'
                         : !guest.hasRSVPed
                           ? 'pending'
-                          : guest.rsvp?.attending
+                          : guest.rsvp?.attending === 'YES'
                             ? 'attending'
-                            : 'not-attending'
+                            : guest.rsvp?.attending === 'MAYBE'
+                              ? 'maybe'
+                              : 'not-attending'
                     }`}
                   >
                     <div className="guest-name">{guest.fullName}</div>
@@ -123,9 +139,11 @@ const AdminDashboard: React.FC = () => {
                         ? 'Not Invited'
                         : !guest.hasRSVPed
                           ? 'Pending RSVP'
-                          : guest.rsvp?.attending
+                          : guest.rsvp?.attending === 'YES'
                             ? `Attending (${guest.rsvp.guestCount})`
-                            : 'Not Attending'}
+                            : guest.rsvp?.attending === 'MAYBE'
+                              ? `Maybe (${guest.rsvp.guestCount})`
+                              : 'Not Attending'}
                     </div>
                   </div>
                 ))}
@@ -134,9 +152,15 @@ const AdminDashboard: React.FC = () => {
           </div>
         )}
 
+        {activeTab === 'analytics' && stats && (
+          <AdminAnalytics stats={stats} guests={guests} />
+        )}
+
         {activeTab === 'guests' && (
           <AdminRSVPManager guests={guests} onUpdate={refetchRSVPs} />
         )}
+
+        {activeTab === 'reminders' && <AdminEmailReminders guests={guests} />}
 
         {activeTab === 'export' && <AdminGuestExport />}
       </div>

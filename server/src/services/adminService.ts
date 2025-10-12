@@ -41,15 +41,7 @@
 import User from "../models/User.js";
 import RSVP from "../models/RSVP.js";
 import { ValidationError } from "../utils/errors.js";
-
-// Helper functions for consistent logging
-function logInfo(message: string, context: string) {
-  console.log(`[${context}] INFO: ${message}`);
-}
-
-function logError(message: string, context: string, error?: any) {
-  console.error(`[${context}] ERROR: ${message}`, error);
-}
+import { logger } from "../utils/logger.js";
 
 import type {
   AdminStats,
@@ -74,7 +66,7 @@ import type {
  */
 export async function getWeddingStats(): Promise<AdminStats> {
   try {
-    logInfo("Fetching wedding statistics", "AdminService");
+    logger.info("Fetching wedding statistics", { service: "AdminService" });
 
     // Get all invited users with their RSVPs
     const users = await (User.find as any)({ isInvited: true }).populate(
@@ -108,29 +100,32 @@ export async function getWeddingStats(): Promise<AdminStats> {
           break;
       }
 
-      // Count meal preferences from guests array or legacy fields
-      if (rsvp.guests && rsvp.guests.length > 0) {
-        for (const guest of rsvp.guests) {
-          const preference = guest.mealPreference || "Not specified";
+      // ONLY count meal preferences for guests who are attending (YES)
+      // Don't count meal preferences for NO or MAYBE responses
+      if (rsvp.attending === "YES") {
+        if (rsvp.guests && rsvp.guests.length > 0) {
+          for (const guest of rsvp.guests) {
+            const preference = guest.mealPreference || "Not specified";
+            mealPreferenceCounts.set(
+              preference,
+              (mealPreferenceCounts.get(preference) || 0) + 1
+            );
+
+            if (guest.allergies) {
+              dietaryRestrictions.add(guest.allergies);
+            }
+          }
+        } else {
+          // Legacy format
+          const preference = rsvp.mealPreference || "Not specified";
           mealPreferenceCounts.set(
             preference,
             (mealPreferenceCounts.get(preference) || 0) + 1
           );
 
-          if (guest.allergies) {
-            dietaryRestrictions.add(guest.allergies);
+          if (rsvp.allergies) {
+            dietaryRestrictions.add(rsvp.allergies);
           }
-        }
-      } else {
-        // Legacy format
-        const preference = rsvp.mealPreference || "Not specified";
-        mealPreferenceCounts.set(
-          preference,
-          (mealPreferenceCounts.get(preference) || 0) + 1
-        );
-
-        if (rsvp.allergies) {
-          dietaryRestrictions.add(rsvp.allergies);
         }
       }
     }
@@ -155,7 +150,7 @@ export async function getWeddingStats(): Promise<AdminStats> {
       dietaryRestrictions: Array.from(dietaryRestrictions).sort(),
     };
 
-    logInfo(
+    logger.info(
       `Wedding stats calculated: ${totalRSVPed}/${totalInvited} RSVPs (${rsvpPercentage.toFixed(
         1
       )}%)`,
@@ -163,7 +158,10 @@ export async function getWeddingStats(): Promise<AdminStats> {
     );
     return stats;
   } catch (error) {
-    logError("Failed to get wedding statistics", "AdminService", error);
+    logger.error("Failed to get wedding statistics", {
+      service: "AdminService",
+      error,
+    });
     throw new Error("Failed to retrieve wedding statistics");
   }
 }
@@ -176,7 +174,9 @@ export async function getWeddingStats(): Promise<AdminStats> {
  */
 export async function getAllUsersWithRSVPs(): Promise<AdminUser[]> {
   try {
-    logInfo("Fetching all users with RSVPs for admin", "AdminService");
+    logger.info("Fetching all users with RSVPs for admin", {
+      service: "AdminService",
+    });
 
     const users = await (User.find as any)({ isInvited: true })
       .populate("rsvp")
@@ -195,13 +195,16 @@ export async function getAllUsersWithRSVPs(): Promise<AdminUser[]> {
       lastUpdated: user.updatedAt?.toISOString(),
     }));
 
-    logInfo(
+    logger.info(
       `Retrieved ${adminUsers.length} users for admin interface`,
       "AdminService"
     );
     return adminUsers;
   } catch (error) {
-    logError("Failed to get users with RSVPs", "AdminService", error);
+    logger.error("Failed to get users with RSVPs", {
+      service: "AdminService",
+      error,
+    });
     throw new Error("Failed to retrieve user data");
   }
 }
@@ -214,7 +217,7 @@ export async function getAllUsersWithRSVPs(): Promise<AdminUser[]> {
  */
 export async function exportGuestListCSV(): Promise<string> {
   try {
-    logInfo("Exporting guest list to CSV", "AdminService");
+    logger.info("Exporting guest list to CSV", { service: "AdminService" });
 
     const users = await getAllUsersWithRSVPs();
 
@@ -269,10 +272,15 @@ export async function exportGuestListCSV(): Promise<string> {
 
     const csv = [csvHeader, ...csvRows].join("\n");
 
-    logInfo(`Exported ${users.length} guests to CSV`, "AdminService");
+    logger.info(`Exported ${users.length} guests to CSV`, {
+      service: "AdminService",
+    });
     return csv;
   } catch (error) {
-    logError("Failed to export guest list CSV", "AdminService", error);
+    logger.error("Failed to export guest list CSV", {
+      service: "AdminService",
+      error,
+    });
     throw new Error("Failed to export guest list");
   }
 }
@@ -290,7 +298,9 @@ export async function adminUpdateRSVP(
   input: AdminRSVPUpdateInput
 ): Promise<any> {
   try {
-    logInfo(`Admin updating RSVP for user ${userId}`, "AdminService");
+    logger.info(`Admin updating RSVP for user ${userId}`, {
+      service: "AdminService",
+    });
 
     const user = await (User.findById as any)(userId);
     if (!user) {
@@ -324,13 +334,16 @@ export async function adminUpdateRSVP(
     user.rsvpId = rsvp._id;
     await user.save();
 
-    logInfo(
+    logger.info(
       `Admin successfully updated RSVP for user ${userId}`,
       "AdminService"
     );
     return rsvp;
   } catch (error) {
-    logError(`Failed to update RSVP for user ${userId}`, "AdminService", error);
+    logger.error(`Failed to update RSVP for user ${userId}`, {
+      service: "AdminService",
+      error,
+    });
     if (error instanceof ValidationError) throw error;
     throw new Error("Failed to update RSVP");
   }
@@ -349,7 +362,7 @@ export async function adminUpdateUser(
   input: AdminUserUpdateInput
 ): Promise<AdminUser> {
   try {
-    logInfo(`Admin updating user ${userId}`, "AdminService");
+    logger.info(`Admin updating user ${userId}`, { service: "AdminService" });
 
     const user = await (User.findById as any)(userId).populate("rsvp");
     if (!user) {
@@ -375,12 +388,123 @@ export async function adminUpdateUser(
       lastUpdated: user.updatedAt?.toISOString(),
     };
 
-    logInfo(`Admin successfully updated user ${userId}`, "AdminService");
+    logger.info(`Admin successfully updated user ${userId}`, {
+      service: "AdminService",
+    });
     return adminUser;
   } catch (error) {
-    logError(`Failed to update user ${userId}`, "AdminService", error);
+    logger.error(`Failed to update user ${userId}`, {
+      service: "AdminService",
+      error,
+    });
     if (error instanceof ValidationError) throw error;
     throw new Error("Failed to update user");
+  }
+}
+
+/**
+ * Create a new user (admin only)
+ *
+ * @param {object} input - User creation data
+ * @returns {Promise<AdminUser>} Created user data
+ * @throws {ValidationError} If email already exists or invalid input
+ */
+export async function adminCreateUser(input: {
+  fullName: string;
+  email: string;
+  isInvited: boolean;
+}): Promise<AdminUser> {
+  try {
+    logger.info(`Admin creating new user: ${input.email}`, {
+      service: "AdminService",
+    });
+
+    // Check if user with email already exists
+    const existingUser = await (User.findOne as any)({ email: input.email });
+    if (existingUser) {
+      throw new ValidationError("A user with this email already exists");
+    }
+
+    // Generate unique QR token
+    const qrToken =
+      Math.random().toString(36).substring(2) +
+      Math.random().toString(36).substring(2) +
+      Date.now().toString(36);
+
+    // Create new user
+    const user = new User({
+      fullName: input.fullName,
+      email: input.email,
+      isInvited: input.isInvited,
+      isAdmin: false,
+      hasRSVPed: false,
+      qrToken,
+    });
+
+    await user.save();
+
+    const adminUser: AdminUser = {
+      _id: user._id.toString(),
+      fullName: user.fullName,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      hasRSVPed: user.hasRSVPed,
+      isInvited: user.isInvited,
+      qrToken: user.qrToken,
+      rsvp: undefined,
+      createdAt: user.createdAt?.toISOString(),
+      lastUpdated: user.updatedAt?.toISOString(),
+    };
+
+    logger.info(`Admin successfully created user ${user._id}`, {
+      service: "AdminService",
+    });
+    return adminUser;
+  } catch (error) {
+    logger.error("Failed to create user", { service: "AdminService", error });
+    if (error instanceof ValidationError) throw error;
+    throw new Error("Failed to create user");
+  }
+}
+
+/**
+ * Delete a user completely (admin only)
+ *
+ * @param {string} userId - User ID to delete
+ * @returns {Promise<boolean>} Success status
+ * @throws {ValidationError} If user not found or trying to delete admin
+ */
+export async function adminDeleteUser(userId: string): Promise<boolean> {
+  try {
+    logger.info(`Admin deleting user ${userId}`, { service: "AdminService" });
+
+    const user = await (User.findById as any)(userId);
+    if (!user) {
+      throw new ValidationError("User not found");
+    }
+
+    // Prevent deletion of admin users
+    if (user.isAdmin) {
+      throw new ValidationError("Cannot delete admin users");
+    }
+
+    // Delete associated RSVP if exists
+    await (RSVP.deleteOne as any)({ userId });
+
+    // Delete user
+    await (User.deleteOne as any)({ _id: userId });
+
+    logger.info(`Admin successfully deleted user ${userId}`, {
+      service: "AdminService",
+    });
+    return true;
+  } catch (error) {
+    logger.error(`Failed to delete user ${userId}`, {
+      service: "AdminService",
+      error,
+    });
+    if (error instanceof ValidationError) throw error;
+    throw new Error("Failed to delete user");
   }
 }
 
@@ -393,7 +517,9 @@ export async function adminUpdateUser(
  */
 export async function adminDeleteRSVP(userId: string): Promise<boolean> {
   try {
-    logInfo(`Admin deleting RSVP for user ${userId}`, "AdminService");
+    logger.info(`Admin deleting RSVP for user ${userId}`, {
+      service: "AdminService",
+    });
 
     const user = await (User.findById as any)(userId);
     if (!user) {
@@ -408,13 +534,16 @@ export async function adminDeleteRSVP(userId: string): Promise<boolean> {
     user.rsvpId = undefined;
     await user.save();
 
-    logInfo(
+    logger.info(
       `Admin successfully deleted RSVP for user ${userId}`,
       "AdminService"
     );
     return true;
   } catch (error) {
-    logError(`Failed to delete RSVP for user ${userId}`, "AdminService", error);
+    logger.error(`Failed to delete RSVP for user ${userId}`, {
+      service: "AdminService",
+      error,
+    });
     if (error instanceof ValidationError) throw error;
     throw new Error("Failed to delete RSVP");
   }
