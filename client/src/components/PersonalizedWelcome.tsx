@@ -9,27 +9,44 @@ const PersonalizedWelcome: React.FC = () => {
 
   useEffect(() => {
     if (isLoggedIn && user?.fullName) {
-      // Create personalized welcome message
-      const firstName = user.fullName.split(' ')[0];
-
-      // Different messages based on RSVP status
-      if (user.hasRSVPed) {
-        setWelcomeMessage(`Welcome back, ${firstName}! Thanks for your RSVP.`);
-      } else {
+      if (user.isAdmin) {
+        // Show admin access banner for admin users
         setWelcomeMessage(
-          `Welcome, ${firstName}! Don't forget to RSVP for our big day.`
+          'Welcome, Admin! Access your dashboard to manage wedding details.'
         );
+        setShowWelcome(true);
+
+        // Keep admin banner visible longer (10 seconds)
+        const timer = setTimeout(() => {
+          setShowWelcome(false);
+        }, 10000);
+
+        return () => clearTimeout(timer);
+      } else {
+        // Create personalized welcome message for regular users
+        const firstName = user.fullName.split(' ')[0];
+
+        // Different messages based on RSVP status
+        if (user.hasRSVPed) {
+          setWelcomeMessage(
+            `Welcome back, ${firstName}! Thanks for your RSVP.`
+          );
+        } else {
+          setWelcomeMessage(
+            `Welcome, ${firstName}! Don't forget to RSVP for our big day.`
+          );
+        }
+
+        // Show welcome banner
+        setShowWelcome(true);
+
+        // Hide after 5 seconds
+        const timer = setTimeout(() => {
+          setShowWelcome(false);
+        }, 5000);
+
+        return () => clearTimeout(timer);
       }
-
-      // Show welcome banner
-      setShowWelcome(true);
-
-      // Hide after 5 seconds
-      const timer = setTimeout(() => {
-        setShowWelcome(false);
-      }, 5000);
-
-      return () => clearTimeout(timer);
     }
     // No cleanup needed when condition is false
     return undefined;
@@ -43,10 +60,16 @@ const PersonalizedWelcome: React.FC = () => {
       data-testid="personalized-welcome-banner"
     >
       <p>{welcomeMessage}</p>
-      {!user?.hasRSVPed && (
-        <a href="#rsvp" className="btn btn-small">
-          RSVP Now
+      {user?.isAdmin ? (
+        <a href="/admin" className="btn btn-small admin-dashboard-btn">
+          Admin Dashboard
         </a>
+      ) : (
+        !user?.hasRSVPed && (
+          <a href="#rsvp" className="btn btn-small">
+            RSVP Now
+          </a>
+        )
       )}
     </div>
   );

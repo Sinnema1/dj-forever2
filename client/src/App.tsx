@@ -9,6 +9,7 @@ import QRTokenLogin from './pages/QRTokenLogin';
 import LoginSuccess from './pages/LoginSuccess';
 import QRInfoPage from './pages/QRInfoPage';
 import AdminPage from './pages/AdminPage';
+import AuthDebug from './pages/AuthDebug';
 import InvitedRoute from './components/InvitedRoute';
 import AdminRoute from './components/AdminRoute';
 import PersonalizedWelcome from './components/PersonalizedWelcome';
@@ -178,6 +179,18 @@ export default function App() {
                   <AdminPage />
                 </EnhancedSuspense>
               </AdminRoute>
+            }
+          />
+          <Route
+            path="/auth-debug"
+            element={
+              <EnhancedSuspense
+                name="auth-debug"
+                loadingMessage="Loading debug info..."
+                enhanced={false}
+              >
+                <AuthDebug />
+              </EnhancedSuspense>
             }
           />
         </Routes>

@@ -213,6 +213,7 @@ function Navbar() {
               <span className="user-greeting">
                 Hello,{' '}
                 {user && user.fullName ? user.fullName.split(' ')[0] : 'Guest'}!
+                {user?.isAdmin && <span className="admin-badge">ADMIN</span>}
               </span>
               <button className="btn btn-outline" onClick={() => logout()}>
                 Logout
@@ -320,6 +321,7 @@ function Navbar() {
               <div className="drawer-user-greeting">
                 Hello,{' '}
                 {user && user.fullName ? user.fullName.split(' ')[0] : 'Guest'}!
+                {user?.isAdmin && <span className="admin-badge">ADMIN</span>}
               </div>
               <button
                 className="drawer-auth-button"
