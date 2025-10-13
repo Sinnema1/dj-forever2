@@ -184,6 +184,13 @@ export const typeDefs = `
     additionalNotes: String
   }
 
+  """Input for creating a new user from admin interface"""
+  input AdminCreateUserInput {
+    fullName: String!
+    email: String!
+    isInvited: Boolean!
+  }
+
   type Query {
     me: User
     getRSVP: RSVP
@@ -206,9 +213,16 @@ export const typeDefs = `
     editRSVP(updates: RSVPInput!): RSVP
     
     """Admin-only mutations for wedding management"""
+    adminCreateUser(input: AdminCreateUserInput!): AdminUser!
     adminUpdateRSVP(userId: ID!, input: AdminRSVPUpdateInput!): RSVP!
     adminUpdateUser(userId: ID!, input: AdminUserUpdateInput!): AdminUser!
+    adminDeleteUser(userId: ID!): Boolean!
     adminDeleteRSVP(userId: ID!): Boolean!
+    
+    # Email reminder mutations
+    adminSendReminderEmail(userId: ID!): EmailResult!
+    adminSendBulkReminderEmails(userIds: [ID!]): BulkEmailResult!
+    adminSendReminderToAllPending: BulkEmailResult!
     
     # Legacy mutation for backward compatibility
     submitRSVP(
@@ -217,5 +231,19 @@ export const typeDefs = `
       allergies: String
       additionalNotes: String
     ): RSVP
+  }
+  
+  # Email operation result types
+  type EmailResult {
+    success: Boolean!
+    email: String!
+    error: String
+  }
+  
+  type BulkEmailResult {
+    totalSent: Int!
+    successCount: Int!
+    failureCount: Int!
+    results: [EmailResult!]!
   }
 `;

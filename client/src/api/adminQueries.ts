@@ -4,16 +4,17 @@ import { gql } from '@apollo/client';
 export const GET_ADMIN_STATS = gql`
   query GetAdminStats {
     adminGetUserStats {
-      totalUsers
-      invitedUsers
-      rsvpedUsers
-      attendingUsers
-      totalGuests
-      attendingGuests
+      totalInvited
+      totalRSVPed
+      totalAttending
+      totalNotAttending
+      totalMaybe
+      rsvpPercentage
       mealPreferences {
-        mealType
+        preference
         count
       }
+      dietaryRestrictions
     }
   }
 `;
@@ -28,19 +29,20 @@ export const GET_ADMIN_RSVPS = gql`
       isInvited
       isAdmin
       hasRSVPed
+      qrToken
+      createdAt
+      lastUpdated
       rsvp {
         _id
+        userId
         attending
         guestCount
         guests {
           fullName
           mealPreference
+          allergies
         }
-        dietaryRestrictions
-        songRequests
-        specialAccommodations
-        createdAt
-        updatedAt
+        additionalNotes
       }
     }
   }
@@ -55,18 +57,18 @@ export const EXPORT_GUEST_LIST = gql`
 
 // Admin Update RSVP Mutation
 export const ADMIN_UPDATE_RSVP = gql`
-  mutation AdminUpdateRSVP($rsvpId: ID!, $updates: AdminRSVPUpdateInput!) {
-    adminUpdateRSVP(rsvpId: $rsvpId, updates: $updates) {
+  mutation AdminUpdateRSVP($userId: ID!, $input: AdminRSVPUpdateInput!) {
+    adminUpdateRSVP(userId: $userId, input: $input) {
       _id
+      userId
       attending
       guestCount
       guests {
         fullName
         mealPreference
+        allergies
       }
-      dietaryRestrictions
-      songRequests
-      specialAccommodations
+      additionalNotes
     }
   }
 `;
@@ -87,7 +89,71 @@ export const ADMIN_UPDATE_USER = gql`
 
 // Admin Delete RSVP Mutation
 export const ADMIN_DELETE_RSVP = gql`
-  mutation AdminDeleteRSVP($rsvpId: ID!) {
-    adminDeleteRSVP(rsvpId: $rsvpId)
+  mutation AdminDeleteRSVP($userId: ID!) {
+    adminDeleteRSVP(userId: $userId)
+  }
+`;
+
+// Admin Create User Mutation
+export const ADMIN_CREATE_USER = gql`
+  mutation AdminCreateUser($input: AdminCreateUserInput!) {
+    adminCreateUser(input: $input) {
+      _id
+      fullName
+      email
+      isInvited
+      isAdmin
+      hasRSVPed
+      qrToken
+      createdAt
+    }
+  }
+`;
+
+// Admin Delete User Mutation
+export const ADMIN_DELETE_USER = gql`
+  mutation AdminDeleteUser($userId: ID!) {
+    adminDeleteUser(userId: $userId)
+  }
+`;
+
+// Admin Email Reminder Mutations
+export const ADMIN_SEND_REMINDER_EMAIL = gql`
+  mutation AdminSendReminderEmail($userId: ID!) {
+    adminSendReminderEmail(userId: $userId) {
+      success
+      email
+      error
+    }
+  }
+`;
+
+export const ADMIN_SEND_BULK_REMINDER_EMAILS = gql`
+  mutation AdminSendBulkReminderEmails($userIds: [ID!]!) {
+    adminSendBulkReminderEmails(userIds: $userIds) {
+      totalSent
+      successCount
+      failureCount
+      results {
+        success
+        email
+        error
+      }
+    }
+  }
+`;
+
+export const ADMIN_SEND_REMINDER_TO_ALL_PENDING = gql`
+  mutation AdminSendReminderToAllPending {
+    adminSendReminderToAllPending {
+      totalSent
+      successCount
+      failureCount
+      results {
+        success
+        email
+        error
+      }
+    }
   }
 `;

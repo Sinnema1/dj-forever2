@@ -1,0 +1,66 @@
+feat: Add admin dashboard with analytics, email system, and bug fixes
+
+Complete admin dashboard suite with guest management, analytics visualizations,
+email reminders, plus critical bug fixes and performance improvements.
+
+## Features
+
+**Admin Dashboard (Tasks #1-5)**
+- Guest Management: Create/delete users with auto QR generation
+- RSVP Editing: Comprehensive forms for meal prefs, dietary restrictions, song requests
+- CSV Export: Full guest data export with browser-based download
+- Analytics: 7 visualizations (insights, timeline, meals, party size, day analysis)
+- Email System: SMTP-ready reminder system with bulk operations and HTML templates
+
+**Components Added**
+- AdminAnalytics (447 lines + 541 CSS)
+- AdminEmailReminders (408 lines + 462 CSS)
+- Enhanced AdminRSVPManager (542 lines)
+- emailService.ts backend (470 lines with JSDoc)
+
+## Bug Fixes
+
+- **Stats Alignment (#7)**: Fix boolean vs string enum for guest status ('YES'/'NO'/'MAYBE')
+- **Meal Counting (#8)**: Only count attending guests for meal preferences/dietary restrictions
+- **Vite Deprecation (#9)**: Upgrade Vite 4→5, eliminate punycode warning, 58% faster builds (3.5s→1.46s)
+
+## Technical
+
+**Backend**
+- 3 GraphQL email mutations (single/bulk/all pending)
+- User model: compound indexes, static methods
+- nodemailer integration with auto-detection (console/SMTP modes)
+
+**Frontend**
+- Vite 5.4.20, @vitejs/plugin-react 4.3.0, vite-plugin-pwa 0.20.5
+- 104 lines new GraphQL mutations in adminQueries.ts
+- useMemo optimizations in analytics
+
+**Documentation**
+- Organized 23 files into `/docs` structure (admin, bug-fixes, guides, development)
+- 100% JSDoc coverage on new code
+- Comprehensive index (docs/README.md)
+
+**Code Quality**
+- Removed debug logs, proper logger utility usage
+- Fixed TypeScript errors, clean builds
+- Zero warnings, zero deprecation errors
+
+## Performance
+
+- Bundle: 125.34 kB (gzip: 33.98 kB)
+- Build: 1.46s (58% faster)
+- Zero TypeScript errors
+
+## Deployment
+
+Configure SMTP in server .env for production email sending:
+```
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+```
+
+---
+45+ files changed (+5,200/-1,500), 28 new files, 14 moved to /docs

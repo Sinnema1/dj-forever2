@@ -65,21 +65,20 @@ const AdminGuestExport: React.FC = () => {
             <ul>
               <li>Full Name</li>
               <li>Email Address</li>
-              <li>Invitation Status</li>
               <li>RSVP Status</li>
-              <li>Admin Status</li>
+              <li>QR Token</li>
+              <li>Invited Date</li>
             </ul>
           </div>
 
           <div className="content-section">
             <h4>RSVP Details</h4>
             <ul>
-              <li>Attendance Status</li>
+              <li>Attendance Status (YES/NO/MAYBE)</li>
               <li>Guest Count</li>
-              <li>Guest Names & Meal Preferences</li>
-              <li>Dietary Restrictions</li>
-              <li>Song Requests</li>
-              <li>Special Accommodations</li>
+              <li>Meal Preferences (per guest)</li>
+              <li>Dietary Restrictions/Allergies</li>
+              <li>Additional Notes</li>
             </ul>
           </div>
         </div>
@@ -115,12 +114,16 @@ const AdminGuestExport: React.FC = () => {
         <h3>Notes</h3>
         <ul>
           <li>
-            The export includes all guests regardless of invitation or RSVP
+            The export includes all invited guests with their current RSVP
             status
           </li>
           <li>File will be saved as "wedding-guest-list-[date].csv"</li>
           <li>Data is current as of the time of export</li>
-          <li>Sensitive information like QR tokens is not included</li>
+          <li>QR tokens are included for reference (keep this file secure)</li>
+          <li>
+            CSV can be opened in Excel, Google Sheets, or any spreadsheet
+            software
+          </li>
         </ul>
       </div>
     </div>

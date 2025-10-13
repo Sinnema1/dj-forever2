@@ -52,3 +52,22 @@
     margin-top: 8px;
   }
 }
+
+/* Admin Dashboard Button Styling */
+.admin-dashboard-btn {
+  background: var(--color-accent) !important;
+  color: white !important;
+  border: 2px solid var(--color-accent) !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  transition: all 0.3s ease !important;
+}
+
+.admin-dashboard-btn:hover {
+  background: transparent !important;
+  color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
