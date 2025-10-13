@@ -122,10 +122,6 @@ export default function LazyImage({
       ref={containerRef}
       className={`lazy-image-container ${className || ''}`}
       onClick={onClick}
-      style={{
-        minHeight: '200px',
-        display: 'block',
-      }}
     >
       {/* Always show placeholder until image loads */}
       {!isLoaded && !hasError && (

@@ -76,6 +76,7 @@ export interface IUser extends Document {
   isAdmin: boolean;
   isInvited: boolean;
   hasRSVPed: boolean;
+  rsvpId?: mongoose.Types.ObjectId;
   qrToken: string;
   createdAt: Date;
   updatedAt: Date;
@@ -115,6 +116,10 @@ const userSchema = new Schema<IUser>(
       default: false,
       index: true,
     },
+    rsvpId: {
+      type: Schema.Types.ObjectId,
+      ref: "RSVP",
+    },
     qrToken: {
       type: String,
       required: [true, "QR token is required"],
@@ -149,6 +154,18 @@ userSchema.virtual("status").get(function () {
   if (this.hasRSVPed) return "rsvped";
   return "invited";
 });
+
+// Virtual populate for RSVP data
+userSchema.virtual("rsvp", {
+  ref: "RSVP",
+  localField: "_id",
+  foreignField: "userId",
+  justOne: true,
+});
+
+// Ensure virtuals are included in JSON/Object output
+userSchema.set("toJSON", { virtuals: true });
+userSchema.set("toObject", { virtuals: true });
 
 // Pre-save middleware for data validation
 userSchema.pre("save", function (next) {

@@ -53,7 +53,15 @@ import {
   adminUpdateRSVP,
   adminUpdateUser,
   adminDeleteRSVP,
+  adminCreateUser,
+  adminDeleteUser,
 } from "../services/adminService.js";
+import {
+  sendRSVPReminder,
+  sendBulkRSVPReminders,
+  getPendingRSVPRecipients,
+} from "../services/emailService.js";
+import User from "../models/User.js";
 import { AuthenticationError, ValidationError } from "../utils/errors.js";
 import type {
   GraphQLContext,
@@ -318,6 +326,141 @@ export const resolvers = {
       } catch (error: any) {
         console.error("Error in adminDeleteRSVP resolver:", error);
         throw new GraphQLError(error?.message || "Failed to delete RSVP");
+      }
+    },
+    adminCreateUser: async (
+      _: unknown,
+      args: { input: { fullName: string; email: string; isInvited: boolean } },
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        return await adminCreateUser(args.input);
+      } catch (error: any) {
+        console.error("Error in adminCreateUser resolver:", error);
+        throw new GraphQLError(error?.message || "Failed to create user");
+      }
+    },
+    adminDeleteUser: async (
+      _: unknown,
+      args: { userId: string },
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        return await adminDeleteUser(args.userId);
+      } catch (error: any) {
+        console.error("Error in adminDeleteUser resolver:", error);
+        throw new GraphQLError(error?.message || "Failed to delete user");
+      }
+    },
+    adminSendReminderEmail: async (
+      _: unknown,
+      args: { userId: string },
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        const user = await (User.findById as any)(args.userId);
+        if (!user) {
+          throw new GraphQLError("User not found");
+        }
+
+        if (!user.isInvited || user.hasRSVPed) {
+          throw new GraphQLError("User is not eligible for reminder email");
+        }
+
+        const success = await sendRSVPReminder({
+          _id: user._id.toString(),
+          fullName: user.fullName,
+          email: user.email,
+          qrToken: user.qrToken,
+        });
+
+        return {
+          success,
+          email: user.email,
+          error: success ? null : "Failed to send email",
+        };
+      } catch (error: any) {
+        console.error("Error in adminSendReminderEmail resolver:", error);
+        return {
+          success: false,
+          email: "",
+          error: error?.message || "Failed to send reminder email",
+        };
+      }
+    },
+    adminSendBulkReminderEmails: async (
+      _: unknown,
+      args: { userIds: string[] },
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        const users = await (User.find as any)({
+          _id: { $in: args.userIds },
+          isInvited: true,
+          hasRSVPed: false,
+        });
+
+        const recipients = users.map((user: any) => ({
+          _id: user._id.toString(),
+          fullName: user.fullName,
+          email: user.email,
+          qrToken: user.qrToken,
+        }));
+
+        const results = await sendBulkRSVPReminders(recipients);
+
+        return {
+          totalSent: results.length,
+          successCount: results.filter((r) => r.success).length,
+          failureCount: results.filter((r) => !r.success).length,
+          results,
+        };
+      } catch (error: any) {
+        console.error("Error in adminSendBulkReminderEmails resolver:", error);
+        throw new GraphQLError(
+          error?.message || "Failed to send bulk reminder emails"
+        );
+      }
+    },
+    adminSendReminderToAllPending: async (
+      _: unknown,
+      _args: Record<string, never>,
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        const allUsers = await (User.find as any)({});
+        const recipients = getPendingRSVPRecipients(allUsers);
+
+        if (recipients.length === 0) {
+          return {
+            totalSent: 0,
+            successCount: 0,
+            failureCount: 0,
+            results: [],
+          };
+        }
+
+        const results = await sendBulkRSVPReminders(recipients);
+
+        return {
+          totalSent: results.length,
+          successCount: results.filter((r) => r.success).length,
+          failureCount: results.filter((r) => !r.success).length,
+          results,
+        };
+      } catch (error: any) {
+        console.error(
+          "Error in adminSendReminderToAllPending resolver:",
+          error
+        );
+        throw new GraphQLError(
+          error?.message || "Failed to send reminders to all pending guests"
+        );
       }
     },
   },

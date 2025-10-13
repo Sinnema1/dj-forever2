@@ -2,18 +2,19 @@ import React from 'react';
 import './AdminStatsCard.css';
 
 interface MealPreference {
-  mealType: string;
+  preference: string;
   count: number;
 }
 
 interface AdminStats {
-  totalUsers: number;
-  invitedUsers: number;
-  rsvpedUsers: number;
-  attendingUsers: number;
-  totalGuests: number;
-  attendingGuests: number;
+  totalInvited: number;
+  totalRSVPed: number;
+  totalAttending: number;
+  totalNotAttending: number;
+  totalMaybe: number;
+  rsvpPercentage: number;
   mealPreferences: MealPreference[];
+  dietaryRestrictions: string[];
 }
 
 interface AdminStatsCardProps {
@@ -25,13 +26,10 @@ interface AdminStatsCardProps {
  * Displays key metrics including guest counts, RSVP rates, and meal preferences.
  */
 const AdminStatsCard: React.FC<AdminStatsCardProps> = ({ stats }) => {
-  const rsvpRate =
-    stats.invitedUsers > 0
-      ? ((stats.rsvpedUsers / stats.invitedUsers) * 100).toFixed(1)
-      : '0';
+  const rsvpRate = stats.rsvpPercentage.toFixed(1);
   const attendanceRate =
-    stats.rsvpedUsers > 0
-      ? ((stats.attendingUsers / stats.rsvpedUsers) * 100).toFixed(1)
+    stats.totalRSVPed > 0
+      ? ((stats.totalAttending / stats.totalRSVPed) * 100).toFixed(1)
       : '0';
 
   return (
@@ -40,22 +38,22 @@ const AdminStatsCard: React.FC<AdminStatsCardProps> = ({ stats }) => {
 
       <div className="stats-grid">
         <div className="stat-item primary">
-          <div className="stat-number">{stats.attendingGuests}</div>
+          <div className="stat-number">{stats.totalAttending}</div>
           <div className="stat-label">Attending Guests</div>
         </div>
 
         <div className="stat-item">
-          <div className="stat-number">{stats.attendingUsers}</div>
-          <div className="stat-label">Attending Invitees</div>
-        </div>
-
-        <div className="stat-item">
-          <div className="stat-number">{stats.rsvpedUsers}</div>
+          <div className="stat-number">{stats.totalRSVPed}</div>
           <div className="stat-label">RSVPs Received</div>
         </div>
 
         <div className="stat-item">
-          <div className="stat-number">{stats.invitedUsers}</div>
+          <div className="stat-number">{stats.totalMaybe}</div>
+          <div className="stat-label">Maybe Responses</div>
+        </div>
+
+        <div className="stat-item">
+          <div className="stat-number">{stats.totalInvited}</div>
           <div className="stat-label">Total Invited</div>
         </div>
       </div>
@@ -84,12 +82,25 @@ const AdminStatsCard: React.FC<AdminStatsCardProps> = ({ stats }) => {
 
       {stats.mealPreferences && stats.mealPreferences.length > 0 && (
         <div className="meal-preferences">
-          <h3>Meal Preferences</h3>
+          <h3>Meal Preferences (Attending Guests Only)</h3>
           <div className="meal-grid">
             {stats.mealPreferences.map(meal => (
-              <div key={meal.mealType} className="meal-item">
+              <div key={meal.preference} className="meal-item">
                 <div className="meal-count">{meal.count}</div>
-                <div className="meal-type">{meal.mealType}</div>
+                <div className="meal-type">{meal.preference}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {stats.dietaryRestrictions && stats.dietaryRestrictions.length > 0 && (
+        <div className="dietary-restrictions">
+          <h3>Dietary Restrictions (Attending Guests Only)</h3>
+          <div className="restrictions-list">
+            {stats.dietaryRestrictions.map((restriction, index) => (
+              <div key={index} className="restriction-item">
+                {restriction}
               </div>
             ))}
           </div>
