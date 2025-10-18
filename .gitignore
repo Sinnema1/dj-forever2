@@ -78,3 +78,7 @@ circleci/
 .pnp.*
 WEBSITE_PROJECT_TEMPLATE.md
 DJ-Forever
+
+# Temporary commit planning files
+*COMMIT_MESSAGE*.txt
+READY_TO_COMMIT.md

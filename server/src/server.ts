@@ -61,6 +61,7 @@ import { expressMiddleware } from "@apollo/server/express4";
 import { typeDefs } from "./graphql/typeDefs.js";
 import { resolvers } from "./graphql/resolvers.js";
 import { getUserFromRequest } from "./services/authService.js";
+import { healthRouter } from "./routes/health.js";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -166,14 +167,8 @@ async function startServer() {
     })
   );
 
-  // Health check endpoint
-  app.get("/health", (_req, res) => {
-    res.status(200).json({
-      status: "ok",
-      timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || "development",
-    });
-  });
+  // Health check endpoints
+  app.use("/health", healthRouter);
 
   // Handle QR login redirect
   app.get("/login/qr/:qrToken", (req, res) => {

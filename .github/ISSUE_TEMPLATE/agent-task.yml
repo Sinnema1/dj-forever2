@@ -1,0 +1,22 @@
+name: Agent Task
+description: Structured task for coding agent
+labels: [agent-task]
+body:
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - High (critical path)
+        - Medium (quality of life)
+        - Low (defer)
+    validations:
+      required: true
+  - type: textarea
+    id: spec
+    attributes:
+      label: Task JSON
+      description: Paste a valid JSON object matching copilot/agent_task_schema.json
+      render: json
+    validations:
+      required: true
