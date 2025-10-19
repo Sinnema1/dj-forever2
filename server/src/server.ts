@@ -62,6 +62,7 @@ import { typeDefs } from "./graphql/typeDefs.js";
 import { resolvers } from "./graphql/resolvers.js";
 import { getUserFromRequest } from "./services/authService.js";
 import { healthRouter } from "./routes/health.js";
+import { withRequestId } from "./middleware/logging.js";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -137,6 +138,9 @@ async function startServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  // Request ID middleware for distributed tracing
+  app.use(withRequestId);
+
   // CORS setup
   app.use(
     cors({
@@ -184,6 +188,19 @@ async function startServer() {
     console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
     console.log(`🚀 GraphQL endpoint at http://0.0.0.0:${PORT}/graphql`);
   });
+
+  // Start email retry queue processor
+  // Processes pending/retrying email jobs every minute
+  const { processEmailQueue } = await import("./services/emailService.js");
+  setInterval(async () => {
+    try {
+      await processEmailQueue();
+    } catch (error) {
+      console.error("Email queue processing error:", error);
+    }
+  }, 60 * 1000); // Run every minute
+
+  console.log("📧 Email retry queue processor started");
 }
 
 startServer();

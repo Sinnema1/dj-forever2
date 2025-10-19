@@ -3,12 +3,20 @@ import request from "supertest";
 import mongoose from "mongoose";
 import { createTestServer } from "./utils/testServer";
 import { setupTestUser } from "./utils/setupTestUser";
+import User from "../src/models/User";
+import RSVP from "../src/models/RSVP";
+import EmailJob from "../src/models/EmailJob";
 
 let app: any;
 let stop: () => Promise<void>;
 
 describe("Auth End-to-End", () => {
   beforeAll(async () => {
+    // Clean up any existing test data
+    await User.deleteMany({});
+    await RSVP.deleteMany({});
+    await EmailJob.deleteMany({});
+
     const server = await createTestServer();
     app = server.app;
     stop = server.stop;
@@ -21,7 +29,6 @@ describe("Auth End-to-End", () => {
 
   afterAll(async () => {
     await stop();
-    await mongoose.disconnect();
   });
 
   it("logs in a seeded user via QR token", async () => {

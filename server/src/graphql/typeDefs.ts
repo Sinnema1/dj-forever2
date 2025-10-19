@@ -200,6 +200,10 @@ export const typeDefs = `
     adminGetUserStats: AdminStats!
     adminGetGuestList: [AdminUser!]!
     adminExportGuestList: String!
+    
+    """Email system queries for admin"""
+    emailPreview(userId: ID!, template: String!): EmailPreview!
+    emailSendHistory(limit: Int, status: String): [EmailJobHistory!]!
   }
 
   type Mutation {
@@ -245,5 +249,27 @@ export const typeDefs = `
     successCount: Int!
     failureCount: Int!
     results: [EmailResult!]!
+  }
+  
+  # Email preview type
+  type EmailPreview {
+    subject: String!
+    htmlContent: String!
+    to: String!
+    template: String!
+  }
+  
+  # Email job history for admin visibility
+  type EmailJobHistory {
+    _id: ID!
+    userId: ID!
+    userEmail: String!
+    userName: String!
+    template: String!
+    status: String!
+    attempts: Int!
+    lastError: String
+    createdAt: String!
+    sentAt: String
   }
 `;
