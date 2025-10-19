@@ -9,6 +9,7 @@
 When testing the production RSVP form at https://dj-forever2.onrender.com, selecting "Yes, I'll be there!" did not reveal the guest count and meal preference fields. The conditional fields remained hidden despite the attendance status being set to "YES".
 
 ### User Impact
+
 - Users could not complete RSVP submissions when attending
 - Form appeared broken in production
 - Critical functionality blocked
@@ -25,13 +26,13 @@ const [showMealOptions, setShowMealOptions] = useState(false);
 
 // useEffect trying to sync state
 useEffect(() => {
-  setShowMealOptions(formData.attending === 'YES');
+  setShowMealOptions(formData.attending === "YES");
 }, [formData.attending]);
 
 // Handler also setting state directly
 const handleAttendanceChange = (value) => {
-  setFormData(prev => ({ ...prev, attending: value }));
-  setShowMealOptions(value === 'YES'); // Race condition!
+  setFormData((prev) => ({ ...prev, attending: value }));
+  setShowMealOptions(value === "YES"); // Race condition!
   // ... more updates
 };
 ```
@@ -68,20 +69,20 @@ Instead of storing `showMealOptions` as state, we compute it directly from `form
 // Removed: useEffect(() => { setShowMealOptions(...) }, [formData.attending]);
 
 // Compute directly from source of truth
-const showMealOptions = formData.attending === 'YES';
+const showMealOptions = formData.attending === "YES";
 
 // Simplified handler - no need to manage separate state
 const handleAttendanceChange = (value) => {
-  setFormData(prev => ({ ...prev, attending: value }));
-  
-  if (value !== 'YES') {
-    setFormData(prev => ({ ...prev, mealPreference: '' }));
+  setFormData((prev) => ({ ...prev, attending: value }));
+
+  if (value !== "YES") {
+    setFormData((prev) => ({ ...prev, mealPreference: "" }));
   }
-  
-  validateField('attending', value);
-  
-  if (successMessage) setSuccessMessage('');
-  if (errorMessage) setErrorMessage('');
+
+  validateField("attending", value);
+
+  if (successMessage) setSuccessMessage("");
+  if (errorMessage) setErrorMessage("");
 };
 ```
 
@@ -98,15 +99,19 @@ const handleAttendanceChange = (value) => {
 ### React Best Practices Applied
 
 **Derived State Pattern**:
+
 - Don't store state that can be computed from other state
 - Calculate derived values during render
 - Reduces bugs from state synchronization issues
 
 **State Management Principles**:
+
 ```typescript
 // ❌ Bad: Storing derived state
 const [total, setTotal] = useState(0);
-useEffect(() => { setTotal(price * quantity); }, [price, quantity]);
+useEffect(() => {
+  setTotal(price * quantity);
+}, [price, quantity]);
 
 // ✅ Good: Computing derived state
 const total = price * quantity;
@@ -136,7 +141,7 @@ The conditional rendering works with CSS transitions:
 The JSX applies classes based on computed value:
 
 ```typescript
-<div className={`conditional-fields ${showMealOptions ? 'show' : 'hide'}`}>
+<div className={`conditional-fields ${showMealOptions ? "show" : "hide"}`}>
   {/* Guest forms with meal preferences */}
 </div>
 ```
@@ -146,14 +151,17 @@ The JSX applies classes based on computed value:
 ### Test Results
 
 ✅ **Client Tests**: 23/23 passing
+
 - RSVPForm E2E tests validate conditional field display
 - State management tests verify attendance changes
 
 ✅ **Server Tests**: 45/45 passing
+
 - RSVP API endpoints working correctly
 - Sequential execution maintained
 
 ✅ **Build**: TypeScript compilation successful
+
 - No type errors
 - Production bundle built correctly
 
@@ -192,7 +200,9 @@ Look for these antipatterns in codebase:
 // ❌ Antipattern: Syncing state with useEffect
 const [a, setA] = useState(0);
 const [b, setB] = useState(0);
-useEffect(() => { setB(a * 2); }, [a]);
+useEffect(() => {
+  setB(a * 2);
+}, [a]);
 
 // ✅ Correct: Derive the value
 const [a, setA] = useState(0);

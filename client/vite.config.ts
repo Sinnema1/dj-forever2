@@ -89,7 +89,7 @@ export default defineConfig({
           '**/*.{js,css,html}',
           'assets/**/*.{png,svg,jpg,jpeg,webp}', // Only assets folder for images
           'images/**/*.{png,svg,jpg,jpeg,webp}', // Images in public/images
-          'favicon.svg', // Root favicon
+          // Note: favicon.svg excluded to prevent duplicate caching with different revisions
           'offline.html', // Offline page
           'manifest.webmanifest', // PWA manifest
         ],
