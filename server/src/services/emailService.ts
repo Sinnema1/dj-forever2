@@ -753,16 +753,18 @@ export async function getEmailHistory(
     .limit(limit)
     .populate("userId", "email fullName");
 
-  return jobs.map((job: any) => ({
-    _id: job._id.toString(),
-    userId: job.userId._id.toString(),
-    userEmail: job.userId.email,
-    userName: job.userId.fullName,
-    template: job.template,
-    status: job.status,
-    attempts: job.attempts,
-    lastError: job.lastError || null,
-    createdAt: job.createdAt.toISOString(),
-    sentAt: job.sentAt ? job.sentAt.toISOString() : null,
-  }));
+  return jobs
+    .filter((job: any) => job.userId) // Filter out jobs where user was deleted
+    .map((job: any) => ({
+      _id: job._id.toString(),
+      userId: job.userId._id.toString(),
+      userEmail: job.userId.email,
+      userName: job.userId.fullName,
+      template: job.template,
+      status: job.status,
+      attempts: job.attempts,
+      lastError: job.lastError || null,
+      createdAt: job.createdAt.toISOString(),
+      sentAt: job.sentAt ? job.sentAt.toISOString() : null,
+    }));
 }
