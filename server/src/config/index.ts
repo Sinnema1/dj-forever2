@@ -101,7 +101,8 @@ function validateConfig(): Config {
 
   // In test environment, supply safe defaults so tests don't require secrets or real DB URIs
   if (environment === "test") {
-    process.env.JWT_SECRET = process.env.JWT_SECRET || "test-jwt-secret-32-characters-min";
+    process.env.JWT_SECRET =
+      process.env.JWT_SECRET || "test-jwt-secret-32-characters-min";
     process.env.MONGODB_URI =
       process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/djforever2_test";
   }

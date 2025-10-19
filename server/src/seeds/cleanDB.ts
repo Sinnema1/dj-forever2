@@ -1,10 +1,15 @@
 dotenv.config();
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 import dotenv from "dotenv";
-import User from "../models/User.js";
-import RSVP from "../models/RSVP.js";
+import UserModel from "../models/User.js";
+import RSVPModel from "../models/RSVP.js";
+import type { IUser } from "../models/User.js";
 
 dotenv.config();
+
+// Type assertions to fix Mongoose model union type issue
+const User = UserModel as Model<IUser>;
+const RSVP = RSVPModel as Model<any>;
 
 const dbName = process.env.MONGODB_DB_NAME || "djforever2";
 const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
@@ -25,7 +30,7 @@ export const cleanDatabase = async (): Promise<void> => {
   }
 };
 
-const run = async () => {
+const run = async (): Promise<void> => {
   try {
     await mongoose.connect(uri, { dbName });
     await cleanDatabase();
