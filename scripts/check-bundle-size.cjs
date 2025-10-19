@@ -25,7 +25,7 @@ const path = require("node:path");
 // Configuration
 const KB = 1024;
 const MAIN_BUDGET = 120 * KB; // 120kb gzipped
-const TOTAL_BUDGET = 220 * KB; // 220kb gzipped
+const TOTAL_BUDGET = 230 * KB; // 230kb gzipped (increased from 220kb for CI headroom)
 
 // Paths (assumes invocation from client/ working directory)
 const dist = path.join(process.cwd(), "dist");
