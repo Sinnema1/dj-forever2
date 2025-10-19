@@ -8,6 +8,10 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      JWT_SECRET: test-jwt-secret-for-ci-pipeline-32-chars
+      MONGODB_URI: mongodb://127.0.0.1:27017/djforever2_test
 
     steps:
       - name: Checkout code
