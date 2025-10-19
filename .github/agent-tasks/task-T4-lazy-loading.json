@@ -1,0 +1,65 @@
+{
+  "task_id": "T4",
+  "priority": "high",
+  "estimate_hours": 2,
+  "title": "Route-level code splitting with React.lazy for admin and gallery",
+  "motivation": "Bundle size is 221.8kb/230kb (96.5% of budget). Admin dashboard is 11kb but most users are wedding guests who never access it. Lazy loading admin routes reduces initial bundle for 99% of users and provides headroom for future features.",
+  "touched_paths": [
+    "client/src/App.tsx",
+    "client/src/pages/AdminPage.tsx",
+    "client/src/pages/Gallery.tsx",
+    "client/vite.config.ts",
+    "scripts/check-bundle-size.cjs",
+    "client/tests/App.lazy-loading.test.tsx"
+  ],
+  "implementation_steps": [
+    "Convert AdminPage to lazy import: const AdminPage = lazy(() => import('./pages/AdminPage'))",
+    "Convert Gallery to lazy import: const Gallery = lazy(() => import('./pages/Gallery'))",
+    "Wrap lazy routes in Suspense with EnhancedSuspense component (already exists)",
+    "Verify vite.config.ts manualChunks splits lazy routes into separate chunks",
+    "Update check-bundle-size.cjs to exclude lazy-loaded chunks from main bundle calculation",
+    "Add loading states with EnhancedSuspense for admin and gallery routes",
+    "Test that chunks load correctly on navigation"
+  ],
+  "tests": [
+    "Build verification: AdminPage chunk is separate from main bundle (verify dist/assets/)",
+    "Build verification: Gallery chunk is separate from main bundle",
+    "Bundle size gate: main bundle reduced by ~11kb (admin) + gallery size",
+    "E2E: navigate to /admin, verify AdminPage loads after brief suspense",
+    "E2E: navigate to /#gallery, verify Gallery loads correctly",
+    "E2E: verify no console errors during lazy loading",
+    "Performance: measure time-to-interactive remains <3s on 3G"
+  ],
+  "acceptance_criteria": [
+    "Main bundle size reduced to <200kb (from current 221.8kb)",
+    "AdminPage and Gallery load correctly with <500ms delay on broadband",
+    "EnhancedSuspense shows loading message during chunk fetch",
+    "Bundle visualizer shows separate chunks for admin and gallery",
+    "All 23 existing tests still pass",
+    "Build time remains under 5 seconds"
+  ],
+  "out_of_scope": [
+    "Pre-loading chunks on hover (future enhancement)",
+    "Service worker cache for lazy chunks (already handled by PWA config)",
+    "Lazy loading other routes (only admin and gallery for now)",
+    "Reducing vendor chunk sizes (separate task)"
+  ],
+  "rollback_plan": {
+    "steps": [
+      "Revert App.tsx to use static imports for AdminPage and Gallery",
+      "Remove lazy() and Suspense wrappers",
+      "Verify build produces single main bundle again",
+      "Run test suite to confirm no breakage",
+      "Verify bundle size returns to previous ~222kb (acceptable)"
+    ],
+    "safe_rollback": true,
+    "reason": "Code splitting is purely a build optimization, no runtime logic changes beyond Suspense"
+  },
+  "performance_targets": {
+    "main_bundle_before": "221.8kb",
+    "main_bundle_after": "<200kb",
+    "admin_chunk": "~11kb",
+    "gallery_chunk": "~3kb",
+    "time_to_interactive": "<3s on 3G"
+  }
+}

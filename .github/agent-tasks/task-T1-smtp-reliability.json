@@ -1,0 +1,65 @@
+{
+  "task_id": "T1",
+  "priority": "high",
+  "estimate_hours": 4,
+  "title": "SMTP reliability: health check, retry queue, send logs, preview mode",
+  "motivation": "Email reminder system exists but lacks observability and reliability. Wedding guests need reliable RSVP reminders. Admins need confidence that emails actually send. Currently single-attempt sends with no retry or visibility into failures.",
+  "touched_paths": [
+    "server/src/services/emailService.ts",
+    "server/src/models/EmailJob.ts",
+    "server/src/routes/health.ts",
+    "server/src/graphql/resolvers.ts",
+    "server/src/graphql/typeDefs.ts",
+    "server/src/server.ts",
+    "client/src/components/admin/AdminEmailReminders.tsx",
+    "server/tests/services/emailService.retry.test.ts"
+  ],
+  "implementation_steps": [
+    "Create GET /health/smtp endpoint that verifies SMTP AUTH and measures latency",
+    "Create EmailJob Mongoose model with fields: userId, template, status, attempts, lastError, createdAt, sentAt",
+    "Add compound index on EmailJob: { status: 1, createdAt: 1 } for queue processing",
+    "Implement retry queue with exponential backoff: 1min, 5min, 15min (max 5 attempts)",
+    "Add GraphQL query: emailPreview(userId: ID!, template: String!): EmailPreview! for dry-run",
+    "Add GraphQL query: emailSendHistory(limit: Int, filters: EmailHistoryFilter): [EmailJob!]! for admin audit",
+    "Update AdminEmailReminders UI: health status badge, preview button, send history table with status icons",
+    "Add background job processor for retrying failed sends (use setInterval or simple cron)"
+  ],
+  "tests": [
+    "Supertest: GET /health/smtp returns {ok: true, latencyMs: <1000, lastChecked: ISO8601}",
+    "Supertest: GET /health/smtp handles SMTP down gracefully (timeout after 5s)",
+    "Unit: emailPreview returns HTML without sending actual email",
+    "Integration: enqueue 3 EmailJobs, verify status progression (pending → retrying → sent)",
+    "Integration: simulate 4xx/5xx SMTP errors, assert exponential backoff schedule",
+    "E2E (client): health badge shows green/yellow/red based on /health/smtp response",
+    "E2E (client): preview modal renders email HTML correctly for test user"
+  ],
+  "acceptance_criteria": [
+    "Health endpoint shows green status before admins can send emails",
+    "Failed email sends automatically retry with visible progress in admin UI",
+    "Preview button shows exact HTML email without actually sending",
+    "Admin can view last 50 email send attempts with timestamps and error messages",
+    "Retry queue processes in background without blocking server",
+    "All SMTP credentials still loaded from environment variables (no hardcoding)"
+  ],
+  "out_of_scope": [
+    "External queue system like Bull/BullMQ (use simple in-memory or DB queue)",
+    "Email deliverability tracking (open rates, click tracking)",
+    "Template editor (use existing hardcoded template)",
+    "Scheduled sending (send immediately or retry only)"
+  ],
+  "rollback_plan": {
+    "steps": [
+      "Remove EmailJob model and drop collection from MongoDB",
+      "Remove /health/smtp route from server",
+      "Revert emailService.ts to original single-attempt behavior",
+      "Remove health badge and send history UI from AdminEmailReminders",
+      "Verify email sending still works with original flow",
+      "Run full test suite to confirm no regressions"
+    ],
+    "safe_rollback": true,
+    "reason": "EmailJob collection is new, health endpoint is new route, existing email sending unchanged until activated"
+  },
+  "dependencies": [
+    "T9 (request tracing) - recommended but not required, improves debugging"
+  ]
+}
