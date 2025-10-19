@@ -94,10 +94,22 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
     return () => {
       // Restore scroll position
       const scrollY = parseInt(document.body.dataset.scrollY || '0');
+
+      // Remove styles first
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
-      window.scrollTo(0, scrollY);
+
+      // Use double requestAnimationFrame to ensure scroll restoration
+      // happens after the drawer animation completes and browser repaints
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          // Use numeric overload for iOS Safari 12+ compatibility
+          // ScrollToOptions (object parameter) not supported in older Safari
+          window.scrollTo(0, scrollY);
+        });
+      });
+
       delete document.body.dataset.scrollY;
     };
   }, [isOpen]);
