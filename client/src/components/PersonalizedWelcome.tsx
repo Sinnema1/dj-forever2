@@ -66,7 +66,7 @@ const PersonalizedWelcome: React.FC = () => {
         </a>
       ) : (
         !user?.hasRSVPed && (
-          <a href="#rsvp" className="btn btn-small">
+          <a href="/rsvp" className="btn btn-small">
             RSVP Now
           </a>
         )
