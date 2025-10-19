@@ -499,42 +499,6 @@ export default function RSVPForm() {
           </div>
         )}
 
-        {/* Guest Count Field */}
-        <div className="form-group">
-          <label htmlFor="guestCount" className="form-label">
-            Guest Count <span className="required">*</span>
-          </label>
-          <select
-            id="guestCount"
-            name="guestCount"
-            className={`form-select ${validationErrors.guestCount ? 'error' : ''}`}
-            value={formData.guestCount}
-            onChange={e => {
-              const newCount = parseInt(e.target.value);
-              updateGuestCount(newCount);
-              validateField('guestCount', e.target.value);
-            }}
-            required
-            aria-describedby={
-              validationErrors.guestCount ? 'guestCount-error' : undefined
-            }
-          >
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(count => (
-              <option key={count} value={count}>
-                {count} {count === 1 ? 'Guest' : 'Guests'}
-              </option>
-            ))}
-          </select>
-          {validationErrors.guestCount && (
-            <div id="guestCount-error" className="field-error" role="alert">
-              {validationErrors.guestCount}
-            </div>
-          )}
-          <small className="form-hint">
-            How many people will be attending from your invitation?
-          </small>
-        </div>
-
         {/* Attendance Question */}
         <div className="form-group">
           <label htmlFor="attending" className="form-label">
@@ -584,6 +548,42 @@ export default function RSVPForm() {
         <div
           className={`conditional-fields ${showMealOptions ? 'show' : 'hide'}`}
         >
+          {/* Guest Count Field */}
+          <div className="form-group">
+            <label htmlFor="guestCount" className="form-label">
+              Guest Count <span className="required">*</span>
+            </label>
+            <select
+              id="guestCount"
+              name="guestCount"
+              className={`form-select ${validationErrors.guestCount ? 'error' : ''}`}
+              value={formData.guestCount}
+              onChange={e => {
+                const newCount = parseInt(e.target.value);
+                updateGuestCount(newCount);
+                validateField('guestCount', e.target.value);
+              }}
+              required
+              aria-describedby={
+                validationErrors.guestCount ? 'guestCount-error' : undefined
+              }
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(count => (
+                <option key={count} value={count}>
+                  {count} {count === 1 ? 'Guest' : 'Guests'}
+                </option>
+              ))}
+            </select>
+            {validationErrors.guestCount && (
+              <div id="guestCount-error" className="field-error" role="alert">
+                {validationErrors.guestCount}
+              </div>
+            )}
+            <small className="form-hint">
+              How many people will be attending from your invitation?
+            </small>
+          </div>
+
           {/* Individual Guest Forms */}
           {formData.guests.map((guest, index) => (
             <div
