@@ -94,7 +94,22 @@ interface Config {
 
 // Validate required environment variables
 function validateConfig(): Config {
-  const requiredVars = ["JWT_SECRET", "MONGODB_URI"];
+  const environment = (process.env.NODE_ENV || "development") as
+    | "development"
+    | "production"
+    | "test";
+
+  // In test environment, supply safe defaults so tests don't require secrets or real DB URIs
+  if (environment === "test") {
+    process.env.JWT_SECRET =
+      process.env.JWT_SECRET || "test-jwt-secret-32-characters-min";
+    process.env.MONGODB_URI =
+      process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/djforever2_test";
+  }
+
+  // Now enforce required vars for non-test environments
+  const requiredVars =
+    environment === "test" ? [] : ["JWT_SECRET", "MONGODB_URI"];
   const missingVars = requiredVars.filter((varName) => !process.env[varName]);
 
   if (missingVars.length > 0) {
@@ -102,11 +117,6 @@ function validateConfig(): Config {
       `Missing required environment variables: ${missingVars.join(", ")}`
     );
   }
-
-  const environment = (process.env.NODE_ENV || "development") as
-    | "development"
-    | "production"
-    | "test";
 
   return {
     server: {

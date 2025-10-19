@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Task Schema",
+  "description": "Schema for structured GitHub agent tasks in DJ Forever 2 project",
+  "type": "object",
+  "required": [
+    "title",
+    "motivation",
+    "touched_paths",
+    "prohibited_paths",
+    "implementation_steps",
+    "tests",
+    "ci_requirements",
+    "acceptance_criteria",
+    "out_of_scope",
+    "rollback_plan"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Concise task title (50-80 chars)",
+      "minLength": 10,
+      "maxLength": 120
+    },
+    "motivation": {
+      "type": "string",
+      "description": "Why this task matters - business/technical value"
+    },
+    "touched_paths": {
+      "type": "array",
+      "description": "Files that may be modified or created",
+      "items": {
+        "type": "string",
+        "pattern": "^(client|server|scripts|docs|.github)/.*"
+      },
+      "minItems": 1
+    },
+    "prohibited_paths": {
+      "type": "array",
+      "description": "Files/directories that must not be touched",
+      "items": {
+        "type": "string"
+      }
+    },
+    "implementation_steps": {
+      "type": "array",
+      "description": "Ordered list of implementation steps",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 3
+    },
+    "tests": {
+      "type": "array",
+      "description": "Required test coverage",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "ci_requirements": {
+      "type": "array",
+      "description": "CI/CD gates that must pass",
+      "items": {
+        "type": "string"
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "description": "Binary pass/fail criteria for task completion",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2
+    },
+    "out_of_scope": {
+      "type": "array",
+      "description": "Explicitly excluded from this task",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rollback_plan": {
+      "type": "string",
+      "description": "How to safely revert this change if needed"
+    }
+  }
+}
