@@ -1,0 +1,46 @@
+{
+  "task_id": "T9",
+  "priority": "high",
+  "estimate_hours": 0.25,
+  "title": "Add request ID middleware for distributed tracing",
+  "motivation": "Enable request correlation across server logs. Makes debugging GraphQL errors and SMTP failures much easier by connecting frontend errors to backend logs.",
+  "touched_paths": [
+    "server/src/middleware/logging.ts",
+    "server/src/server.ts",
+    "server/src/graphql/context.ts"
+  ],
+  "implementation_steps": [
+    "Create middleware/logging.ts that generates UUID for each request",
+    "Attach requestId to Express req.context object",
+    "Add TypeScript declaration merging for Express.Request.context",
+    "Wire middleware in server.ts before GraphQL handler",
+    "Include requestId in all logger calls via context",
+    "Add X-Request-ID response header for client debugging"
+  ],
+  "tests": [
+    "Supertest: verify X-Request-ID header present on all responses",
+    "Supertest: verify same requestId appears in all log lines for single request",
+    "Unit test: verify UUID v4 format for generated IDs"
+  ],
+  "acceptance_criteria": [
+    "Every HTTP response includes X-Request-ID header",
+    "Server logs include requestId field for correlation",
+    "GraphQL context includes requestId for resolver access",
+    "No performance degradation (UUID generation is <1ms)"
+  ],
+  "out_of_scope": [
+    "Client-side request ID propagation (future enhancement)",
+    "Log aggregation service integration",
+    "Distributed tracing beyond single-server"
+  ],
+  "rollback_plan": {
+    "steps": [
+      "Remove middleware from server.ts",
+      "Delete middleware/logging.ts file",
+      "Verify server starts without errors",
+      "Run test suite to confirm no breakage"
+    ],
+    "safe_rollback": true,
+    "reason": "Middleware is additive-only, no data dependencies"
+  }
+}
