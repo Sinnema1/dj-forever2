@@ -195,6 +195,9 @@ describe("Email Service Retry Queue", () => {
 
       await processEmailJob(job);
 
+      // Delay to ensure database write completes (increased for CI)
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // Re-query to get updated job
       const updatedJob = await EmailJob.findById(job._id);
       expect(updatedJob).toBeDefined();
@@ -213,6 +216,9 @@ describe("Email Service Retry Queue", () => {
       const result = await processEmailJob(job);
 
       expect(result).toBe(false);
+
+      // Small delay to ensure database write completes
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const updatedJob = await EmailJob.findById(job._id);
       expect(updatedJob?.status).toBe("failed");
@@ -300,8 +306,12 @@ describe("Email Service Retry Queue", () => {
         createdAt: new Date("2025-01-02"),
       });
 
+      // Small delay to ensure database writes complete
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       const history = await getEmailHistory(10);
 
+      expect(history).toHaveLength(2);
       expect(history[0]._id).toBe(job2._id.toString());
       expect(history[1]._id).toBe(job1._id.toString());
     });
@@ -320,9 +330,9 @@ describe("Email Service Retry Queue", () => {
 
       expect(processed).toBe(1);
 
-      // Increased delay to ensure database write completes in CI environment
-      // CI has slower disk I/O, needs more time for atomic updates to persist
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      // Increased delay for CI environment (slower disk I/O and network conditions)
+      // CI needs significantly more time than local for atomic updates to persist
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const job = await EmailJob.findOne({ userId: testUser._id });
       expect(job?.status).toBe("sent");
