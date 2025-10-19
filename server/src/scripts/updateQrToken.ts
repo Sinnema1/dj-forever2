@@ -1,11 +1,15 @@
 // Script to update a user's QR token in the database
 // Usage: node --loader ts-node/esm src/scripts/updateQrToken.ts
 
-import mongoose from "mongoose";
-import User from "../models/User.js";
+import mongoose, { Model } from "mongoose";
+import UserModel from "../models/User.js";
 import dotenv from "dotenv";
+import type { IUser } from "../models/User.js";
 
 dotenv.config();
+
+// Type assertion to fix Mongoose model union type issue
+const User = UserModel as Model<IUser>;
 
 const dbName = process.env.MONGODB_DB_NAME || "djforever2";
 let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017";
@@ -16,7 +20,7 @@ console.log(
   `[updateQrToken] Connecting to MongoDB URI: ${MONGODB_URI}, DB Name: ${dbName}`
 );
 
-async function main() {
+async function main(): Promise<void> {
   await mongoose.connect(MONGODB_URI);
 
   // Update Alice's QR token to match the one in the QR code

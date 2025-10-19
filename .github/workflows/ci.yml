@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, feature-branch]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      JWT_SECRET: test-jwt-secret-for-ci-pipeline-32-chars
+      MONGODB_URI: mongodb://127.0.0.1:27017/djforever2_test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      # Start MongoDB for tests
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.11.0
+        with:
+          mongodb-version: "6.0"
+
+      # Install dependencies
+      - name: Install server dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Install client dependencies
+        working-directory: client
+        run: npm ci
+
+      # Run tests
+      - name: Test server
+        working-directory: server
+        run: npm test
+
+      - name: Test client
+        working-directory: client
+        run: npm test
+
+      # TypeScript compilation check
+      - name: Typecheck client
+        working-directory: client
+        run: npx tsc --noEmit
+
+      - name: Typecheck server
+        working-directory: server
+        run: npx tsc --noEmit
+
+      # Build client
+      - name: Build client
+        working-directory: client
+        run: npm run build
+
+      # Enforce bundle size budget
+      - name: Bundle size gate
+        working-directory: client
+        run: node ../scripts/check-bundle-size.cjs
+
+      # Optional: Generate and upload bundle analysis
+      - name: Generate bundle visualizer
+        if: github.event_name == 'pull_request'
+        working-directory: client
+        run: ANALYZE=true npm run build
+        continue-on-error: true
+
+      - name: Upload bundle report
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-analysis
+          path: |
+            client/dist/bundle-analysis.html
+            client/dist/bundle-sunburst.html
+          retention-days: 30
+        continue-on-error: true
