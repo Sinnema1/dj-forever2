@@ -106,14 +106,14 @@ const createNonAttendingRSVPMock = {
         guestCount: 1,
         guests: [
           {
-            fullName: 'Test User',
+            fullName: '',
             mealPreference: '',
             allergies: '',
           },
         ],
         additionalNotes: "Sorry, can't make it",
-        // Legacy fields
-        fullName: 'Test User',
+        // Legacy fields - empty for non-attending
+        fullName: '',
         mealPreference: '',
         allergies: '',
       },
@@ -136,14 +136,14 @@ const createMaybeRSVPMock = {
         guestCount: 1,
         guests: [
           {
-            fullName: 'Test User',
+            fullName: '',
             mealPreference: '',
             allergies: '',
           },
         ],
         additionalNotes: 'Not sure yet',
-        // Legacy fields
-        fullName: 'Test User',
+        // Legacy fields - empty for maybe
+        fullName: '',
         mealPreference: '',
         allergies: '',
       },
@@ -277,16 +277,12 @@ describe('RSVPForm integration', () => {
         renderRSVPForm([initialRSVPMock, createNonAttendingRSVPMock]);
       });
 
-      const fullNameInput = screen.getByLabelText(
-        /full name/i
-      ) as HTMLInputElement;
       const attendingNoRadio = screen.getByDisplayValue(
         'NO'
       ) as HTMLInputElement;
 
-      // Fill out form for non-attending
+      // Fill out form for non-attending (no name required)
       await act(async () => {
-        await user.type(fullNameInput, 'Test User');
         await user.click(attendingNoRadio);
       });
 
@@ -359,16 +355,12 @@ describe('RSVPForm integration', () => {
         renderRSVPForm([initialRSVPMock, createMaybeRSVPMock]);
       });
 
-      const fullNameInput = screen.getByLabelText(
-        /full name/i
-      ) as HTMLInputElement;
       const attendingMaybeRadio = screen.getByDisplayValue(
         'MAYBE'
       ) as HTMLInputElement;
 
-      // Fill out form for maybe attending
+      // Fill out form for maybe attending (no name required)
       await act(async () => {
-        await user.type(fullNameInput, 'Test User');
         await user.click(attendingMaybeRadio);
       });
 
