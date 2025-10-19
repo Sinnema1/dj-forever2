@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 interface RSVPButtonProps {
@@ -9,18 +9,13 @@ export default function RSVPButton({
   className = 'btn btn-primary',
 }: RSVPButtonProps) {
   const { user } = useAuth();
-  const location = useLocation();
-  const isHomePage = location.pathname === '/';
 
   if (!user?.isInvited) {
     return null; // Don't show RSVP button for non-invited users
   }
 
-  return isHomePage ? (
-    <a href="#rsvp" className={className}>
-      RSVP
-    </a>
-  ) : (
+  // Always navigate to standalone RSVP page (no #rsvp section exists on homepage)
+  return (
     <Link to="/rsvp" className={className}>
       RSVP
     </Link>
