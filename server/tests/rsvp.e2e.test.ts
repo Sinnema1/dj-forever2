@@ -1,10 +1,11 @@
 import { describe, beforeAll, afterAll, it, expect, beforeEach } from "vitest";
 import request from "supertest";
-import mongoose from "mongoose";
 import { createTestServer } from "./utils/testServer";
 import { Application } from "express-serve-static-core";
 import { setupTestUser } from "./utils/setupTestUser";
 import RSVP from "../src/models/RSVP.js";
+import User from "../src/models/User";
+import EmailJob from "../src/models/EmailJob";
 
 let app: any;
 let stop: () => Promise<void>;
@@ -20,6 +21,14 @@ describe("RSVP End-to-End", () => {
   });
 
   beforeEach(async () => {
+    // Clear all collections for test isolation
+    await User.deleteMany({});
+    await RSVP.deleteMany({});
+    await EmailJob.deleteMany({});
+
+    // Small delay to ensure cleanup completes
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
     // Setup fresh test user for each test
     // Generate QR token that matches validation pattern (alphanumeric only, 10-40 chars)
     testQrToken = `test${Date.now()}${Math.random()
@@ -29,8 +38,8 @@ describe("RSVP End-to-End", () => {
 
     await setupTestUser(testQrToken, testUserEmail);
 
-    // Clean up any existing RSVPs for test user
-    await RSVP.deleteMany({ userId: { $exists: true } });
+    // Small delay to ensure user creation completes
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Login to get JWT token
     const loginRes = await request(app)
@@ -48,11 +57,13 @@ describe("RSVP End-to-End", () => {
 
     expect(loginRes.body.data.loginWithQrToken).not.toBeNull();
     jwtToken = loginRes.body.data.loginWithQrToken.token;
+
+    // Small delay to ensure auth state is ready
+    await new Promise((resolve) => setTimeout(resolve, 50));
   });
 
   afterAll(async () => {
     await stop();
-    await mongoose.disconnect();
   });
 
   describe("Legacy RSVP Submission (submitRSVP)", () => {
