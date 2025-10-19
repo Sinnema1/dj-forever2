@@ -35,6 +35,8 @@ import { logger } from "../utils/logger.js";
 import { config } from "../config/index.js";
 import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
+import EmailJob from "../models/EmailJob.js";
+import User from "../models/User.js";
 
 // Type definitions for email operations
 interface EmailRecipient {
@@ -466,4 +468,301 @@ export function validateEmailConfig(): {
     mode: missing.length === 0 ? "smtp" : "console",
     missing,
   };
+}
+
+/**
+ * Email preview generation for admin testing
+ * Generates email HTML without actually sending it
+ *
+ * @param {string} userId - User ID to generate preview for
+ * @param {string} template - Template identifier (e.g., 'rsvp_reminder')
+ * @returns {Promise<object>} Email preview with subject, HTML content, recipient
+ */
+export async function generateEmailPreview(
+  userId: string,
+  template: string
+): Promise<{
+  subject: string;
+  htmlContent: string;
+  to: string;
+  template: string;
+}> {
+  const user = await (User as any).findById(userId);
+  if (!user) {
+    throw new Error(`User not found: ${userId}`);
+  }
+
+  const emailRecipient: EmailRecipient = {
+    _id: user._id.toString(),
+    fullName: user.fullName,
+    email: user.email,
+    qrToken: user.qrToken,
+  };
+
+  let subject: string;
+  let htmlContent: string;
+
+  switch (template) {
+    case "rsvp_reminder":
+      subject = "🎉 Friendly Reminder: Please RSVP to Our Wedding";
+      htmlContent = createRSVPReminderTemplate(emailRecipient);
+      break;
+    default:
+      throw new Error(`Unknown template: ${template}`);
+  }
+
+  logger.info(`Generated email preview for user ${userId}`, {
+    service: "EmailService",
+    template,
+    to: user.email,
+  });
+
+  return {
+    subject,
+    htmlContent,
+    to: user.email,
+    template,
+  };
+}
+
+/**
+ * Enqueue email job for retry-capable sending
+ * Creates EmailJob record in database for background processing
+ *
+ * @param {string} userId - User ID to send email to
+ * @param {string} template - Template identifier
+ * @returns {Promise<any>} Created EmailJob document
+ */
+export async function enqueueEmail(
+  userId: string,
+  template: string
+): Promise<any> {
+  const job = await EmailJob.create({
+    userId,
+    template,
+    status: "pending",
+    attempts: 0,
+  });
+
+  logger.info(`Enqueued email job for user ${userId}`, {
+    service: "EmailService",
+    jobId: job._id.toString(),
+    template,
+  });
+
+  return job;
+}
+
+/**
+ * Process email job with retry logic
+ * Attempts to send email and updates job status
+ * Implements exponential backoff: 1min, 5min, 15min
+ *
+ * @param {any} job - EmailJob document to process
+ * @returns {Promise<boolean>} Success status
+ */
+export async function processEmailJob(job: any): Promise<boolean> {
+  const MAX_ATTEMPTS = 5;
+  const user = await (User as any).findById(job.userId);
+
+  if (!user) {
+    logger.error(`User not found for email job ${job._id}`, {
+      service: "EmailService",
+      userId: job.userId,
+    });
+
+    // Use findByIdAndUpdate for atomic update
+    await EmailJob.findByIdAndUpdate(job._id, {
+      status: "failed",
+      lastError: "User not found",
+    });
+
+    return false;
+  }
+
+  const emailRecipient: EmailRecipient = {
+    _id: user._id.toString(),
+    fullName: user.fullName,
+    email: user.email,
+    qrToken: user.qrToken,
+  };
+
+  try {
+    // Increment attempts atomically
+    const updatedJob = await EmailJob.findByIdAndUpdate(
+      job._id,
+      {
+        $inc: { attempts: 1 },
+        status: job.attempts > 0 ? "retrying" : "pending",
+      },
+      { new: true }
+    );
+
+    if (!updatedJob) {
+      throw new Error("Job not found during update");
+    }
+
+    // Attempt to send email
+    await sendRSVPReminder(emailRecipient);
+
+    // Success! Update job status atomically
+    await EmailJob.findByIdAndUpdate(job._id, {
+      status: "sent",
+      sentAt: new Date(),
+    });
+
+    logger.info(`Email job ${job._id} completed successfully`, {
+      service: "EmailService",
+      attempts: updatedJob.attempts,
+      userId: job.userId,
+    });
+
+    return true;
+  } catch (error: any) {
+    const currentAttempts = job.attempts + 1;
+    const updateData: any = {
+      lastError: error.message,
+    };
+
+    if (currentAttempts >= MAX_ATTEMPTS) {
+      updateData.status = "failed";
+      logger.error(
+        `Email job ${job._id} failed after ${MAX_ATTEMPTS} attempts`,
+        {
+          service: "EmailService",
+          error: error.message,
+          userId: job.userId,
+        }
+      );
+    } else {
+      updateData.status = "retrying";
+      logger.warn(
+        `Email job ${job._id} failed, will retry (attempt ${currentAttempts}/${MAX_ATTEMPTS})`,
+        {
+          service: "EmailService",
+          error: error.message,
+          userId: job.userId,
+        }
+      );
+    }
+
+    await EmailJob.findByIdAndUpdate(job._id, updateData);
+    return false;
+  }
+}
+
+/**
+ * Get retry delay based on attempt number
+ * Implements exponential backoff: 1min, 5min, 15min, 30min, 1hr
+ *
+ * @param {number} attempts - Number of previous attempts
+ * @returns {number} Delay in milliseconds
+ */
+export function getRetryDelay(attempts: number): number {
+  const delays = [
+    60 * 1000, // 1 minute
+    5 * 60 * 1000, // 5 minutes
+    15 * 60 * 1000, // 15 minutes
+    30 * 60 * 1000, // 30 minutes
+    60 * 60 * 1000, // 1 hour
+  ];
+
+  return delays[Math.min(attempts, delays.length - 1)];
+}
+
+/**
+ * Process pending and retrying email jobs
+ * Background job processor for retry queue
+ * Should be called periodically (e.g., every minute)
+ *
+ * @returns {Promise<number>} Number of jobs processed
+ */
+export async function processEmailQueue(): Promise<number> {
+  const now = new Date();
+  let processed = 0;
+
+  try {
+    // Find jobs that need processing
+    const jobs = await EmailJob.find({
+      status: { $in: ["pending", "retrying"] },
+    })
+      .sort({ createdAt: 1 })
+      .limit(10); // Process max 10 jobs per run
+
+    for (const job of jobs) {
+      // Check if enough time has passed for retry
+      if (job.attempts > 0) {
+        const delay = getRetryDelay(job.attempts - 1);
+        const nextRetryTime = new Date(job.createdAt.getTime() + delay);
+
+        if (now < nextRetryTime) {
+          logger.info(
+            `Skipping job ${
+              job._id
+            }, retry scheduled for ${nextRetryTime.toISOString()}`,
+            {
+              service: "EmailService",
+              attempts: job.attempts,
+            }
+          );
+          continue; // Not ready for retry yet
+        }
+      }
+
+      // Process the job
+      await processEmailJob(job);
+      processed++;
+
+      // Small delay between jobs to avoid rate limiting
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    if (processed > 0) {
+      logger.info(`Processed ${processed} email jobs from queue`, {
+        service: "EmailService",
+      });
+    }
+  } catch (error: any) {
+    logger.error(`Error processing email queue`, {
+      service: "EmailService",
+      error: error.message,
+    });
+  }
+
+  return processed;
+}
+
+/**
+ * Get email send history for admin visibility
+ *
+ * @param {number} limit - Maximum number of records to return
+ * @param {string} status - Optional status filter
+ * @returns {Promise<any[]>} Array of email job history records
+ */
+export async function getEmailHistory(
+  limit: number = 50,
+  status?: string
+): Promise<any[]> {
+  const query: any = {};
+  if (status) {
+    query.status = status;
+  }
+
+  const jobs = await EmailJob.find(query)
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .populate("userId", "email fullName");
+
+  return jobs.map((job: any) => ({
+    _id: job._id.toString(),
+    userId: job.userId._id.toString(),
+    userEmail: job.userId.email,
+    userName: job.userId.fullName,
+    template: job.template,
+    status: job.status,
+    attempts: job.attempts,
+    lastError: job.lastError || null,
+    createdAt: job.createdAt.toISOString(),
+    sentAt: job.sentAt ? job.sentAt.toISOString() : null,
+  }));
 }

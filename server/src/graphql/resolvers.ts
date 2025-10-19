@@ -212,6 +212,58 @@ export const resolvers = {
         throw new GraphQLError(error?.message || "Failed to export guest list");
       }
     },
+
+    /**
+     * Generate email preview without sending
+     * Admin-only query for testing email templates
+     *
+     * @param {string} userId - User ID to generate preview for
+     * @param {string} template - Template identifier (e.g., 'rsvp_reminder')
+     * @returns {Promise<object>} Email preview with subject and HTML content
+     */
+    emailPreview: async (
+      _: unknown,
+      args: { userId: string; template: string },
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        const { generateEmailPreview } = await import(
+          "../services/emailService.js"
+        );
+        return await generateEmailPreview(args.userId, args.template);
+      } catch (error: any) {
+        console.error("Error in emailPreview resolver:", error);
+        throw new GraphQLError(
+          error?.message || "Failed to generate email preview"
+        );
+      }
+    },
+
+    /**
+     * Get email send history for admin visibility
+     * Shows recent email jobs with status and error details
+     *
+     * @param {number} limit - Maximum number of records to return (default: 50)
+     * @param {string} status - Optional status filter (pending, retrying, sent, failed)
+     * @returns {Promise<any[]>} Array of email job history records
+     */
+    emailSendHistory: async (
+      _: unknown,
+      args: { limit?: number; status?: string },
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        const { getEmailHistory } = await import("../services/emailService.js");
+        return await getEmailHistory(args.limit || 50, args.status);
+      } catch (error: any) {
+        console.error("Error in emailSendHistory resolver:", error);
+        throw new GraphQLError(
+          error?.message || "Failed to fetch email history"
+        );
+      }
+    },
   },
   Mutation: {
     registerUser: async (_: unknown, args: RegisterUserArgs) => {
