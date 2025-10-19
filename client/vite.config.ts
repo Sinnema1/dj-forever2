@@ -246,14 +246,22 @@ export default defineConfig({
               return 'apollo';
             }
 
-            // React core libs together (frequently used together)
+            // Split React packages more granularly for better caching
             if (
-              id.includes('react') ||
-              id.includes('react-dom') ||
               id.includes('react-router-dom') ||
-              id.includes('react-helmet-async')
+              id.includes('react-router')
             ) {
+              return 'vendor-react-router';
+            }
+
+            // React core (react + react-dom)
+            if (id.includes('react') || id.includes('react-dom')) {
               return 'vendor-react';
+            }
+
+            // React helmet
+            if (id.includes('react-helmet-async')) {
+              return 'vendor-react-helmet';
             }
 
             // Isolate react-icons (can be surprisingly large)
