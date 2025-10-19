@@ -319,7 +319,7 @@ export default function RSVPForm() {
   const handleAttendanceChange = (value: 'YES' | 'NO' | 'MAYBE') => {
     setFormData(prev => {
       // When switching to YES, ensure guests array is properly initialized
-      if (value === 'YES' && (!prev.guests || prev.guests.length === 0)) {
+      if (value === 'YES' && prev.guests.length === 0) {
         const initialGuest = {
           fullName: prev.fullName || '',
           mealPreference: prev.mealPreference || '',
