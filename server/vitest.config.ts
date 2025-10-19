@@ -5,6 +5,7 @@ export default defineConfig({
     setupFiles: ["./tests/vitest.setup.ts"],
     environment: "node",
     globals: true,
+    maxConcurrency: 1, // Run tests sequentially to avoid database race conditions
     coverage: {
       provider: "c8",
       reporter: ["text", "json", "html"],

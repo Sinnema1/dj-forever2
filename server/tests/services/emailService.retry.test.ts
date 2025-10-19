@@ -320,8 +320,9 @@ describe("Email Service Retry Queue", () => {
 
       expect(processed).toBe(1);
 
-      // Small delay to ensure database write completes (CI timing issue)
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Increased delay to ensure database write completes in CI environment
+      // CI has slower disk I/O, needs more time for atomic updates to persist
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       const job = await EmailJob.findOne({ userId: testUser._id });
       expect(job?.status).toBe("sent");
