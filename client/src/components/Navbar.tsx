@@ -150,9 +150,20 @@ function Navbar() {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
+  /**
+   * Handle logo click - scroll to top if already on homepage
+   */
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isHomePage) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    // Otherwise, let React Router handle navigation to "/"
+  };
+
   return (
     <nav className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}>
-      <Link to="/" className="navbar-logo">
+      <Link to="/" className="navbar-logo" onClick={handleLogoClick}>
         Dominique &amp; Justin
       </Link>
 

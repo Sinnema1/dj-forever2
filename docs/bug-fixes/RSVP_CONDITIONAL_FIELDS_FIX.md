@@ -223,5 +223,106 @@ const b = a * 2;
 
 ---
 
-**Status**: ✅ Fixed, tested, committed, pushed to feature-branch  
+## Update: Additional UX Issue Discovered (Oct 19, 2025)
+
+### Problem 2: Guest Count Always Visible
+
+After deploying the first fix, testing revealed another issue:
+
+- **Guest count selector was always visible**, even when selecting "No" or "Maybe"
+- **Guest detail fields only appeared after changing guest count**
+- This created a confusing UX where users saw the guest count question before confirming attendance
+
+### Root Cause 2: Structural Layout Issue
+
+The guest count field was positioned **outside** the `conditional-fields` wrapper:
+
+```typescript
+// PROBLEMATIC STRUCTURE (first fix)
+<div className="form-group">  <!-- Guest count -->
+  <select>1-10 guests</select>
+</div>
+
+<div className="attendance-options">  <!-- Attendance selection -->
+  Yes / No / Maybe
+</div>
+
+<div className="conditional-fields show/hide">  <!-- Guest details -->
+  {formData.guests.map(...)}
+</div>
+```
+
+This meant:
+
+1. Guest count was always visible (not conditional)
+2. Attendance selection came AFTER guest count (backwards flow)
+3. Only guest details were conditional
+
+### Solution 2: Restructure Form Layout
+
+Move guest count **inside** the conditional fields wrapper:
+
+```typescript
+// FIXED STRUCTURE
+<div className="attendance-options">  <!-- Step 1: Attendance -->
+  Yes / No / Maybe
+</div>
+
+<div className="conditional-fields show/hide">  <!-- Only if YES -->
+  <div className="form-group">  <!-- Step 2: Guest count -->
+    <select>1-10 guests</select>
+  </div>
+
+  {formData.guests.map(...)}  <!-- Step 3: Guest details -->
+</div>
+```
+
+### Benefits of Restructure
+
+1. **Logical Flow**: Attendance → Guest Count → Guest Details
+2. **Progressive Disclosure**: Only show relevant fields based on attendance
+3. **Cleaner UX**: No confusing fields when not attending
+4. **Mobile-Friendly**: Stepped form reduces cognitive load
+5. **Accessibility**: Clearer form structure for screen readers
+
+### Additional Fix: Workbox PWA Warning
+
+**Console Error Resolved**:
+
+```
+Uncaught (in promise) add-to-cache-list-conflicting-entries
+```
+
+**Cause**: `favicon.svg` was being included in Workbox glob patterns, causing it to be cached with multiple revision hashes (once as part of glob pattern, once as manifest icon).
+
+**Solution**: Exclude `favicon.svg` from `globPatterns` in `vite.config.ts`:
+
+```typescript
+workbox: {
+  globPatterns: [
+    '**/*.{js,css,html}',
+    'assets/**/*.{png,svg,jpg,jpeg,webp}',
+    'images/**/*.{png,svg,jpg,jpeg,webp}',
+    // Note: favicon.svg excluded to prevent duplicate caching
+    'offline.html',
+    'manifest.webmanifest',
+  ],
+}
+```
+
+**Result**:
+
+- ✅ Reduced precache from 58 to 57 entries
+- ✅ Eliminated duplicate caching warning
+- ✅ Cleaner service worker initialization
+
+---
+
+**Status**: ✅✅ Both fixes implemented, tested, committed, pushed to feature-branch  
+**Commits**:
+
+- `2c9d3e9` - fix(rsvp): resolve conditional fields not showing when attending YES
+- `ad3f156` - docs: add comprehensive documentation for RSVP conditional fields fix
+- `094e155` - fix(rsvp): restructure form to show fields only when attending YES
+
 **Next**: Wait for CI, merge to main, verify in production
