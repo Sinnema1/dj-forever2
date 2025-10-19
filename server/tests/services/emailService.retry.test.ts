@@ -33,9 +33,9 @@ describe("Email Service Retry Queue", () => {
     originalSmtpUser = process.env.SMTP_USER;
     delete process.env.SMTP_USER;
 
-    // Clean up existing data first
+    // Clean up existing data - order matters (EmailJob references User)
     await EmailJob.deleteMany({});
-    await (User as any).deleteMany({ email: "test@example.com" });
+    await (User as any).deleteMany({});
 
     // Create test user - using test@example.com since we're not actually sending
     testUser = await (User as any).create({
@@ -53,11 +53,11 @@ describe("Email Service Retry Queue", () => {
       process.env.SMTP_USER = originalSmtpUser;
     }
 
-    // Clean up after each test (but only if testUser exists)
+    // Clean up after test (order matters - EmailJob first, then User)
+    await EmailJob.deleteMany({});
     if (testUser) {
       await (User as any).deleteMany({ _id: testUser._id });
     }
-    // Note: EmailJob cleanup happens in beforeEach for next test
   });
 
   describe("Email Preview", () => {
@@ -107,6 +107,9 @@ describe("Email Service Retry Queue", () => {
       // Verify the returned job
       expect(job).toBeDefined();
       expect(job._id).toBeDefined();
+
+      // Small delay to ensure write completes (MongoDB eventual consistency)
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       // Query database to ensure it was persisted
       const savedJob = await EmailJob.findById(job._id);
@@ -195,9 +198,6 @@ describe("Email Service Retry Queue", () => {
 
       await processEmailJob(job);
 
-      // Delay to ensure database write completes (increased for CI)
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
       // Re-query to get updated job
       const updatedJob = await EmailJob.findById(job._id);
       expect(updatedJob).toBeDefined();
@@ -216,9 +216,6 @@ describe("Email Service Retry Queue", () => {
       const result = await processEmailJob(job);
 
       expect(result).toBe(false);
-
-      // Small delay to ensure database write completes
-      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const updatedJob = await EmailJob.findById(job._id);
       expect(updatedJob?.status).toBe("failed");
@@ -306,9 +303,6 @@ describe("Email Service Retry Queue", () => {
         createdAt: new Date("2025-01-02"),
       });
 
-      // Small delay to ensure database writes complete
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
       const history = await getEmailHistory(10);
 
       expect(history).toHaveLength(2);
@@ -329,10 +323,6 @@ describe("Email Service Retry Queue", () => {
       const processed = await processEmailQueue();
 
       expect(processed).toBe(1);
-
-      // Increased delay for CI environment (slower disk I/O and network conditions)
-      // CI needs significantly more time than local for atomic updates to persist
-      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const job = await EmailJob.findOne({ userId: testUser._id });
       expect(job?.status).toBe("sent");
