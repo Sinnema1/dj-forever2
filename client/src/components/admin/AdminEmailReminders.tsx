@@ -1,9 +1,11 @@
-import React, { useState, useMemo } from 'react';
-import { useMutation } from '@apollo/client';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import {
   ADMIN_SEND_REMINDER_EMAIL,
   ADMIN_SEND_BULK_REMINDER_EMAILS,
   ADMIN_SEND_REMINDER_TO_ALL_PENDING,
+  ADMIN_EMAIL_PREVIEW,
+  ADMIN_EMAIL_SEND_HISTORY,
 } from '../../api/adminQueries';
 import './AdminEmailReminders.css';
 
@@ -26,6 +28,32 @@ interface EmailResult {
   error?: string;
 }
 
+interface EmailPreview {
+  subject: string;
+  htmlContent: string;
+  to: string;
+  template: string;
+}
+
+interface EmailJobHistory {
+  _id: string;
+  userId: string;
+  userEmail: string;
+  userName: string;
+  template: string;
+  status: string;
+  attempts: number;
+  lastError?: string;
+  createdAt: string;
+  sentAt?: string;
+}
+
+interface SMTPHealthStatus {
+  healthy: boolean;
+  message: string;
+  lastChecked?: string;
+}
+
 /**
  * Admin Email Reminders - Email management interface for sending RSVP reminders.
  * Allows admins to send individual or bulk reminder emails to guests who haven't RSVP'd.
@@ -38,12 +66,66 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
   const [isSending, setIsSending] = useState(false);
   const [lastResults, setLastResults] = useState<EmailResult[] | null>(null);
   const [showResults, setShowResults] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewData, setPreviewData] = useState<EmailPreview | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [smtpHealth, setSMTPHealth] = useState<SMTPHealthStatus>({
+    healthy: false,
+    message: 'Checking...',
+  });
 
   const [sendSingleReminder] = useMutation(ADMIN_SEND_REMINDER_EMAIL);
   const [sendBulkReminders] = useMutation(ADMIN_SEND_BULK_REMINDER_EMAILS);
   const [sendAllPendingReminders] = useMutation(
     ADMIN_SEND_REMINDER_TO_ALL_PENDING
   );
+
+  const [getEmailPreview, { loading: previewLoading }] = useLazyQuery(
+    ADMIN_EMAIL_PREVIEW,
+    {
+      fetchPolicy: 'network-only',
+    }
+  );
+
+  const { data: historyData, refetch: refetchHistory } = useQuery(
+    ADMIN_EMAIL_SEND_HISTORY,
+    {
+      variables: { limit: 50 },
+      fetchPolicy: 'network-only',
+    }
+  );
+
+  // Check SMTP health on mount and every 5 minutes
+  useEffect(() => {
+    const checkSMTPHealth = async () => {
+      try {
+        const graphqlEndpoint =
+          import.meta.env.VITE_GRAPHQL_ENDPOINT || '/graphql';
+        const baseUrl = graphqlEndpoint.replace('/graphql', '');
+        const response = await fetch(`${baseUrl}/health/smtp`);
+        const data = await response.json();
+
+        setSMTPHealth({
+          healthy: data.healthy,
+          message:
+            data.message || (data.healthy ? 'SMTP is healthy' : 'SMTP is down'),
+          lastChecked: new Date().toISOString(),
+        });
+      } catch (error) {
+        console.error('Failed to check SMTP health:', error);
+        setSMTPHealth({
+          healthy: false,
+          message: 'Failed to check SMTP status',
+          lastChecked: new Date().toISOString(),
+        });
+      }
+    };
+
+    checkSMTPHealth();
+    const interval = setInterval(checkSMTPHealth, 5 * 60 * 1000); // Check every 5 minutes
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Filter to show only pending RSVP guests (invited, not responded, not admin)
   const pendingGuests = useMemo(() => {
@@ -187,6 +269,7 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
       );
 
       setSelectedGuests(new Set());
+      refetchHistory(); // Refresh history after sending
     } catch (error: any) {
       console.error('Failed to send all reminders:', error);
       alert(
@@ -197,10 +280,68 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
     }
   };
 
+  // Show email preview for a guest
+  const handleShowPreview = async (guestId: string) => {
+    try {
+      const { data } = await getEmailPreview({
+        variables: { userId: guestId, template: 'rsvp_reminder' },
+      });
+
+      if (data?.emailPreview) {
+        setPreviewData(data.emailPreview);
+        setShowPreview(true);
+      }
+    } catch (error: any) {
+      console.error('Failed to generate preview:', error);
+      alert(
+        `❌ Failed to generate preview: ${error.message || 'Please try again.'}`
+      );
+    }
+  };
+
+  // Show email send history
+  const handleShowHistory = () => {
+    refetchHistory();
+    setShowHistory(true);
+  };
+
+  // Format date for display
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleString();
+  };
+
+  // Get status badge color
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'sent':
+        return 'status-success';
+      case 'failed':
+        return 'status-error';
+      case 'retrying':
+        return 'status-warning';
+      case 'pending':
+        return 'status-info';
+      default:
+        return 'status-default';
+    }
+  };
+
   return (
     <div className="admin-email-reminders">
       <div className="email-header">
-        <h2>RSVP Email Reminders</h2>
+        <div className="header-title-section">
+          <h2>RSVP Email Reminders</h2>
+          <div
+            className={`smtp-health-badge ${smtpHealth.healthy ? 'healthy' : 'unhealthy'}`}
+          >
+            <span className="health-icon">
+              {smtpHealth.healthy ? '✓' : '✕'}
+            </span>
+            <span className="health-text">{smtpHealth.message}</span>
+          </div>
+        </div>
         <p className="header-description">
           Send reminder emails to guests who haven't responded yet
         </p>
@@ -237,6 +378,13 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
         </div>
         <div className="button-group">
           <button
+            onClick={handleShowHistory}
+            className="action-button info"
+            disabled={isSending}
+          >
+            📊 View History
+          </button>
+          <button
             onClick={handleSelectAll}
             className="action-button secondary"
             disabled={filteredGuests.length === 0 || isSending}
@@ -248,7 +396,9 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
           <button
             onClick={handleSendToSelected}
             className="action-button primary"
-            disabled={selectedGuests.size === 0 || isSending}
+            disabled={
+              selectedGuests.size === 0 || isSending || !smtpHealth.healthy
+            }
           >
             {isSending
               ? 'Sending...'
@@ -257,7 +407,9 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
           <button
             onClick={handleSendToAll}
             className="action-button warning"
-            disabled={pendingGuests.length === 0 || isSending}
+            disabled={
+              pendingGuests.length === 0 || isSending || !smtpHealth.healthy
+            }
           >
             Send to All Pending
           </button>
@@ -292,13 +444,23 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
                   <div className="guest-name">{guest.fullName}</div>
                   <div className="guest-email">{guest.email}</div>
                 </div>
-                <button
-                  onClick={() => handleSendSingle(guest._id)}
-                  className="send-single-button"
-                  disabled={isSending}
-                >
-                  📧 Send Reminder
-                </button>
+                <div className="guest-actions">
+                  <button
+                    onClick={() => handleShowPreview(guest._id)}
+                    className="preview-button"
+                    disabled={isSending || previewLoading}
+                    title="Preview email"
+                  >
+                    👁️ Preview
+                  </button>
+                  <button
+                    onClick={() => handleSendSingle(guest._id)}
+                    className="send-single-button"
+                    disabled={isSending || !smtpHealth.healthy}
+                  >
+                    📧 Send Reminder
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -356,6 +518,154 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
             <div className="modal-footer">
               <button
                 onClick={() => setShowResults(false)}
+                className="action-button primary"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Email Preview Modal */}
+      {showPreview && previewData && (
+        <div
+          className="results-modal-overlay"
+          onClick={() => setShowPreview(false)}
+        >
+          <div className="preview-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Email Preview</h3>
+              <button
+                className="modal-close"
+                onClick={() => setShowPreview(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="preview-info">
+                <div className="preview-field">
+                  <strong>To:</strong> {previewData.to}
+                </div>
+                <div className="preview-field">
+                  <strong>Subject:</strong> {previewData.subject}
+                </div>
+                <div className="preview-field">
+                  <strong>Template:</strong> {previewData.template}
+                </div>
+              </div>
+              <div className="preview-content">
+                <h4>Email Content:</h4>
+                <div
+                  className="preview-html"
+                  dangerouslySetInnerHTML={{ __html: previewData.htmlContent }}
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                onClick={() => setShowPreview(false)}
+                className="action-button secondary"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Email Send History Modal */}
+      {showHistory && (
+        <div
+          className="results-modal-overlay"
+          onClick={() => setShowHistory(false)}
+        >
+          <div className="history-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Email Send History</h3>
+              <button
+                className="modal-close"
+                onClick={() => setShowHistory(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              {historyData?.emailSendHistory &&
+              historyData.emailSendHistory.length > 0 ? (
+                <div className="history-table-container">
+                  <table className="history-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Recipient</th>
+                        <th>Status</th>
+                        <th>Attempts</th>
+                        <th>Sent At</th>
+                        <th>Error</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historyData.emailSendHistory.map(
+                        (job: EmailJobHistory) => (
+                          <tr key={job._id}>
+                            <td>{formatDate(job.createdAt)}</td>
+                            <td>
+                              <div className="history-recipient">
+                                <div className="recipient-name">
+                                  {job.userName}
+                                </div>
+                                <div className="recipient-email">
+                                  {job.userEmail}
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <span
+                                className={`status-badge ${getStatusColor(job.status)}`}
+                              >
+                                {job.status}
+                              </span>
+                            </td>
+                            <td className="attempts-cell">{job.attempts}</td>
+                            <td>{formatDate(job.sentAt)}</td>
+                            <td className="error-cell">
+                              {job.lastError && (
+                                <span
+                                  className="error-text"
+                                  title={job.lastError}
+                                >
+                                  {job.lastError.substring(0, 50)}
+                                  {job.lastError.length > 50 ? '...' : ''}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <div className="empty-icon">📭</div>
+                  <h3>No Email History</h3>
+                  <p>No emails have been sent yet.</p>
+                </div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button
+                onClick={() => {
+                  refetchHistory();
+                }}
+                className="action-button secondary"
+              >
+                Refresh
+              </button>
+              <button
+                onClick={() => setShowHistory(false)}
                 className="action-button primary"
               >
                 Close

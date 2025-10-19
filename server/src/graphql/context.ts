@@ -52,10 +52,12 @@ import User from "../models/User.js";
  * @interface Context
  * @property {import('../models/User.js').IUser | undefined} user - Authenticated user document or undefined
  * @property {boolean} isAuthenticated - Boolean flag indicating authentication status
+ * @property {string} [requestId] - Unique request identifier for tracing and log correlation
  */
 export interface Context {
   user?: any;
   isAuthenticated: boolean;
+  requestId?: string;
 }
 
 /**
@@ -66,22 +68,23 @@ export interface Context {
  * - Extracts Bearer token from Authorization header
  * - Validates JWT signature and expiration
  * - Fetches user document from database using token payload
- * - Returns context with user and authentication status
+ * - Includes request ID from middleware for log correlation
+ * - Returns context with user, authentication status, and request ID
  *
  * @async
  * @function createContext
  * @param {Object} params - Context creation parameters
- * @param {Express.Request} params.req - Express request object with headers
- * @returns {Promise<Context>} GraphQL context with user and authentication status
+ * @param {Express.Request} params.req - Express request object with headers and context
+ * @returns {Promise<Context>} GraphQL context with user, authentication status, and requestId
  *
  * @example
  * // Request with valid JWT token:
  * // Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- * // Returns: { user: UserDocument, isAuthenticated: true }
+ * // Returns: { user: UserDocument, isAuthenticated: true, requestId: '123e4567-e89b-12d3-a456-426614174000' }
  *
  * @example
  * // Request without token or invalid token:
- * // Returns: { isAuthenticated: false }
+ * // Returns: { isAuthenticated: false, requestId: '123e4567-e89b-12d3-a456-426614174000' }
  */
 export async function createContext({ req }: { req: any }): Promise<Context> {
   let token = req.headers.authorization || "";
@@ -90,8 +93,11 @@ export async function createContext({ req }: { req: any }): Promise<Context> {
     token = token.slice(7);
   }
 
+  // Extract requestId from middleware context
+  const requestId = req.context?.requestId;
+
   if (!token) {
-    return { isAuthenticated: false };
+    return { isAuthenticated: false, requestId };
   }
 
   try {
@@ -101,8 +107,9 @@ export async function createContext({ req }: { req: any }): Promise<Context> {
     return {
       user,
       isAuthenticated: !!user,
+      requestId,
     };
   } catch {
-    return { isAuthenticated: false };
+    return { isAuthenticated: false, requestId };
   }
 }

@@ -7,10 +7,47 @@
   margin-bottom: 2rem;
 }
 
+.header-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .email-header h2 {
   color: var(--primary-color, #2c3e50);
   font-size: 1.75rem;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
+}
+
+/* SMTP Health Badge */
+.smtp-health-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.smtp-health-badge.healthy {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.smtp-health-badge.unhealthy {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.health-icon {
+  font-size: 1rem;
+  font-weight: bold;
 }
 
 .header-description {
@@ -144,6 +181,17 @@
   box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
 }
 
+.action-button.info {
+  background: var(--info-color, #17a2b8);
+  color: white;
+}
+
+.action-button.info:hover:not(:disabled) {
+  background: #138496;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+}
+
 /* Guest List Container */
 .guest-list-container {
   background: white;
@@ -201,6 +249,36 @@
 .guest-email {
   color: var(--text-muted, #6c757d);
   font-size: 0.9rem;
+}
+
+.guest-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.preview-button {
+  padding: 0.5rem 1rem;
+  background: var(--info-color, #17a2b8);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.preview-button:hover:not(:disabled) {
+  background: #138496;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
+}
+
+.preview-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .send-single-button {
@@ -431,10 +509,190 @@
   margin-bottom: 0;
 }
 
+/* Preview Modal */
+.preview-modal {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.preview-info {
+  background: var(--background-light, #f8f9fa);
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+}
+
+.preview-field {
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.preview-field:last-child {
+  margin-bottom: 0;
+}
+
+.preview-field strong {
+  color: var(--primary-color, #2c3e50);
+  margin-right: 0.5rem;
+}
+
+.preview-content h4 {
+  color: var(--primary-color, #2c3e50);
+  font-size: 1rem;
+  margin: 0 0 1rem 0;
+}
+
+.preview-html {
+  background: white;
+  border: 1px solid var(--border-color, #dee2e6);
+  border-radius: 6px;
+  padding: 1.5rem;
+  max-height: 500px;
+  overflow-y: auto;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* History Modal */
+.history-modal {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  max-width: 1200px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.history-table-container {
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.history-table thead {
+  background: var(--background-light, #f8f9fa);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.history-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--primary-color, #2c3e50);
+  border-bottom: 2px solid var(--border-color, #dee2e6);
+  white-space: nowrap;
+}
+
+.history-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color, #dee2e6);
+  vertical-align: top;
+}
+
+.history-table tbody tr:hover {
+  background: var(--background-light, #f8f9fa);
+}
+
+.history-recipient {
+  min-width: 200px;
+}
+
+.recipient-name {
+  font-weight: 600;
+  color: var(--primary-color, #2c3e50);
+  margin-bottom: 0.25rem;
+}
+
+.recipient-email {
+  font-size: 0.85rem;
+  color: var(--text-muted, #6c757d);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.status-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.status-badge.status-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.status-badge.status-warning {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.status-badge.status-info {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.status-badge.status-default {
+  background: var(--background-light, #f8f9fa);
+  color: var(--text-muted, #6c757d);
+  border: 1px solid var(--border-color, #dee2e6);
+}
+
+.attempts-cell {
+  text-align: center;
+  font-weight: 600;
+  color: var(--primary-color, #2c3e50);
+}
+
+.error-cell {
+  max-width: 300px;
+}
+
+.error-text {
+  color: var(--danger-color, #dc3545);
+  font-size: 0.85rem;
+  display: block;
+  word-break: break-word;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .admin-email-reminders {
     padding: 1rem;
+  }
+
+  .header-title-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .smtp-health-badge {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
   }
 
   .email-stats {
@@ -462,12 +720,32 @@
     gap: 0.75rem;
   }
 
+  .guest-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .preview-button,
   .send-single-button {
     width: 100%;
   }
 
   .results-summary {
     grid-template-columns: 1fr;
+  }
+
+  .history-table {
+    font-size: 0.8rem;
+  }
+
+  .history-table th,
+  .history-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .preview-modal,
+  .history-modal {
+    max-width: 95vw;
   }
 }
 
