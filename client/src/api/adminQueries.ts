@@ -157,3 +157,33 @@ export const ADMIN_SEND_REMINDER_TO_ALL_PENDING = gql`
     }
   }
 `;
+
+// Admin Email Preview Query
+export const ADMIN_EMAIL_PREVIEW = gql`
+  query AdminEmailPreview($userId: ID!, $template: String!) {
+    emailPreview(userId: $userId, template: $template) {
+      subject
+      htmlContent
+      to
+      template
+    }
+  }
+`;
+
+// Admin Email Send History Query
+export const ADMIN_EMAIL_SEND_HISTORY = gql`
+  query AdminEmailSendHistory($limit: Int, $status: String) {
+    emailSendHistory(limit: $limit, status: $status) {
+      _id
+      userId
+      userEmail
+      userName
+      template
+      status
+      attempts
+      lastError
+      createdAt
+      sentAt
+    }
+  }
+`;

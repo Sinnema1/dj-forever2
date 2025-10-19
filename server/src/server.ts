@@ -188,6 +188,19 @@ async function startServer() {
     console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
     console.log(`🚀 GraphQL endpoint at http://0.0.0.0:${PORT}/graphql`);
   });
+
+  // Start email retry queue processor
+  // Processes pending/retrying email jobs every minute
+  const { processEmailQueue } = await import("./services/emailService.js");
+  setInterval(async () => {
+    try {
+      await processEmailQueue();
+    } catch (error) {
+      console.error("Email queue processing error:", error);
+    }
+  }, 60 * 1000); // Run every minute
+
+  console.log("📧 Email retry queue processor started");
 }
 
 startServer();
