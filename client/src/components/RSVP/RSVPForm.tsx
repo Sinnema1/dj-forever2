@@ -317,7 +317,24 @@ export default function RSVPForm() {
 
   // Enhanced handler for mobile touch events on attendance options
   const handleAttendanceChange = (value: 'YES' | 'NO' | 'MAYBE') => {
-    setFormData(prev => ({ ...prev, attending: value }));
+    setFormData(prev => {
+      // When switching to YES, ensure guests array is properly initialized
+      if (value === 'YES' && prev.guests.length === 0) {
+        const initialGuest = {
+          fullName: prev.fullName || '',
+          mealPreference: prev.mealPreference || '',
+          allergies: prev.allergies || '',
+        };
+        return {
+          ...prev,
+          attending: value,
+          guestCount: 1,
+          guests: [initialGuest],
+        };
+      }
+
+      return { ...prev, attending: value };
+    });
 
     // Clear meal preference when not attending
     if (value !== 'YES') {
