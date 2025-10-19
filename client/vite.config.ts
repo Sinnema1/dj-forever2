@@ -236,20 +236,44 @@ export default defineConfig({
         warn(warning);
       },
       output: {
-        manualChunks: {
-          // Core React dependencies (most stable)
-          vendor: [
-            'react',
-            'react-dom',
-            'react-router-dom',
-            'react-helmet-async',
-          ],
+        // Smart per-package chunking for optimal bundle splitting
+        manualChunks(id) {
+          if (!id) return;
 
-          // Apollo Client and GraphQL (large, optimize separately)
-          apollo: ['@apollo/client', 'graphql'],
+          if (id.includes('node_modules')) {
+            // Apollo and GraphQL grouped together (work best as single chunk)
+            if (id.includes('@apollo/client') || id.includes('graphql')) {
+              return 'apollo';
+            }
 
-          // UI and utility libraries
-          ui: ['react-icons', 'web-vitals', 'html5-qrcode'],
+            // React core libs together (frequently used together)
+            if (
+              id.includes('react') ||
+              id.includes('react-dom') ||
+              id.includes('react-router-dom') ||
+              id.includes('react-helmet-async')
+            ) {
+              return 'vendor-react';
+            }
+
+            // Isolate react-icons (can be surprisingly large)
+            if (id.includes('react-icons')) {
+              return 'vendor-react-icons';
+            }
+
+            // Web vitals and QR code scanner
+            if (id.includes('web-vitals') || id.includes('html5-qrcode')) {
+              return 'vendor-utils';
+            }
+
+            // Default: create per-package vendor chunk to prevent monolithic bundles
+            const parts = id.split('node_modules/')[1].split('/');
+            const pkg = parts[0].startsWith('@')
+              ? `${parts[0]}/${parts[1]}`
+              : parts[0];
+            // Sanitize package name for valid filenames
+            return `vendor-${pkg.replace('@', '').replace('/', '-')}`;
+          }
         },
         // Performance optimization
         chunkFileNames: 'assets/[name]-[hash].js',

@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, lazy } from 'react';
 import Navbar from './components/Navbar';
 import EnhancedSuspense from './components/EnhancedSuspense';
 import HomePage from './pages/HomePage';
@@ -8,7 +8,6 @@ import RegistryStandalonePage from './pages/RegistryStandalonePage';
 import QRTokenLogin from './pages/QRTokenLogin';
 import LoginSuccess from './pages/LoginSuccess';
 import QRInfoPage from './pages/QRInfoPage';
-import AdminPage from './pages/AdminPage';
 import AuthDebug from './pages/AuthDebug';
 import InvitedRoute from './components/InvitedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -20,6 +19,9 @@ import PerformanceMonitor from './components/PerformanceMonitor';
 import { PWAInstallBanner } from './hooks/usePWAInstall';
 // import { PWAUpdateToast } from './hooks/usePWAUpdate'; // Disabled: autoUpdate configured in Vite
 import performanceMonitor from './services/performanceMonitor';
+
+// Lazy load admin page (only accessed by admins, reduces main bundle)
+const AdminPage = lazy(() => import('./pages/AdminPage'));
 
 /**
  * App - Main Application Component
