@@ -139,7 +139,10 @@ export default function RSVPForm() {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
-  const [showMealOptions, setShowMealOptions] = useState(false);
+
+  // Compute showMealOptions directly from formData.attending instead of storing in state
+  // This ensures it's always in sync and eliminates potential race conditions
+  const showMealOptions = formData.attending === 'YES';
 
   useEffect(() => {
     if (rsvp) {
@@ -172,11 +175,6 @@ export default function RSVPForm() {
       });
     }
   }, [rsvp, successMessage]); // Removed formData.attending to prevent reset loop
-
-  // Separate useEffect for meal options visibility
-  useEffect(() => {
-    setShowMealOptions(formData.attending === 'YES');
-  }, [formData.attending]);
 
   // Available meal options
   const mealOptions = [
@@ -320,9 +318,6 @@ export default function RSVPForm() {
   // Enhanced handler for mobile touch events on attendance options
   const handleAttendanceChange = (value: 'YES' | 'NO' | 'MAYBE') => {
     setFormData(prev => ({ ...prev, attending: value }));
-
-    // Update meal options visibility
-    setShowMealOptions(value === 'YES');
 
     // Clear meal preference when not attending
     if (value !== 'YES') {
