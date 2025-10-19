@@ -319,27 +319,37 @@ export default function RSVPForm() {
   const handleAttendanceChange = (value: 'YES' | 'NO' | 'MAYBE') => {
     setFormData(prev => {
       // When switching to YES, ensure guests array is properly initialized
-      if (value === 'YES' && prev.guests.length === 0) {
-        const initialGuest = {
-          fullName: prev.fullName || '',
-          mealPreference: prev.mealPreference || '',
-          allergies: prev.allergies || '',
-        };
+      if (value === 'YES') {
+        // If guests array is empty, initialize with one guest
+        if (prev.guests.length === 0) {
+          const initialGuest = {
+            fullName: prev.fullName || '',
+            mealPreference: prev.mealPreference || '',
+            allergies: prev.allergies || '',
+          };
+          return {
+            ...prev,
+            attending: value,
+            guestCount: 1,
+            guests: [initialGuest],
+          };
+        }
+        // If guests exist, create new array reference to trigger re-render
+        // This ensures guest form sections appear immediately
         return {
           ...prev,
           attending: value,
-          guestCount: 1,
-          guests: [initialGuest],
+          guests: [...prev.guests], // Create new array reference
         };
       }
 
-      return { ...prev, attending: value };
+      // When switching to NO or MAYBE, clear meal preference
+      return {
+        ...prev,
+        attending: value,
+        mealPreference: '', // Clear legacy meal preference
+      };
     });
-
-    // Clear meal preference when not attending
-    if (value !== 'YES') {
-      setFormData(prev => ({ ...prev, mealPreference: '' }));
-    }
 
     // Real-time validation
     validateField('attending', value);
@@ -361,6 +371,11 @@ export default function RSVPForm() {
     // Validate guest count
     if (formData.guestCount < 1 || formData.guestCount > 10) {
       errors.guestCount = 'Guest count must be between 1 and 10';
+    }
+
+    // Validate guest count matches guests array length
+    if (formData.guestCount !== formData.guests.length) {
+      errors.guestCount = 'Guest count mismatch. Please refresh and try again.';
     }
 
     // Validate each guest if attending
