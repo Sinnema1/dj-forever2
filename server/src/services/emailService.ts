@@ -667,7 +667,7 @@ export function getRetryDelay(attempts: number): number {
     60 * 60 * 1000, // 1 hour
   ];
 
-  return delays[Math.min(attempts, delays.length - 1)];
+  return delays[Math.min(attempts, delays.length - 1)] ?? 60 * 60 * 1000; // Default to 1 hour
 }
 
 /**
