@@ -77,10 +77,10 @@ export default function RSVPConfirmation({
                   anytime.
                 </p>
                 <div className="next-steps-links">
-                  <a href="/details" className="next-step-link">
+                  <a href="/#details" className="next-step-link">
                     View Wedding Details
                   </a>
-                  <a href="/travel" className="next-step-link">
+                  <a href="/#travel" className="next-step-link">
                     Travel Information
                   </a>
                 </div>
