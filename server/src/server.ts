@@ -62,6 +62,7 @@ import { typeDefs } from "./graphql/typeDefs.js";
 import { resolvers } from "./graphql/resolvers.js";
 import { getUserFromRequest } from "./services/authService.js";
 import { healthRouter } from "./routes/health.js";
+import { withRequestId } from "./middleware/logging.js";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -136,6 +137,9 @@ async function startServer() {
   // Middleware
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+
+  // Request ID middleware for distributed tracing
+  app.use(withRequestId);
 
   // CORS setup
   app.use(
