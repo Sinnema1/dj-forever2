@@ -32,13 +32,15 @@ set +a
 # Validate SMTP configuration
 MISSING=()
 
-if [ -z "$SMTP_HOST" ] || [ "$SMTP_HOST" = "smtp.gmail.com" ]; then
-  echo "✅ SMTP_HOST: $SMTP_HOST"
-else
+# Check SMTP_HOST
+if [ -z "$SMTP_HOST" ]; then
   echo "❌ SMTP_HOST not configured"
   MISSING+=("SMTP_HOST")
+else
+  echo "✅ SMTP_HOST: $SMTP_HOST"
 fi
 
+# Check SMTP_PORT
 if [ -z "$SMTP_PORT" ]; then
   echo "❌ SMTP_PORT not configured"
   MISSING+=("SMTP_PORT")
@@ -46,6 +48,7 @@ else
   echo "✅ SMTP_PORT: $SMTP_PORT"
 fi
 
+# Check SMTP_USER (must be set and not placeholder)
 if [ -z "$SMTP_USER" ] || [ "$SMTP_USER" = "your-email@gmail.com" ]; then
   echo "❌ SMTP_USER not configured or using placeholder"
   MISSING+=("SMTP_USER")
@@ -53,6 +56,7 @@ else
   echo "✅ SMTP_USER: $SMTP_USER"
 fi
 
+# Check SMTP_PASS (must be set and not placeholder)
 if [ -z "$SMTP_PASS" ] || [ "$SMTP_PASS" = "your-app-password" ]; then
   echo "❌ SMTP_PASS not configured or using placeholder"
   MISSING+=("SMTP_PASS")
@@ -60,11 +64,12 @@ else
   echo "✅ SMTP_PASS: [CONFIGURED - $(echo $SMTP_PASS | wc -c | tr -d ' ') characters]"
 fi
 
-if [ -z "$CONFIG__FRONTEND_URL" ]; then
-  echo "❌ CONFIG__FRONTEND_URL not configured"
-  MISSING+=("CONFIG__FRONTEND_URL")
+# Check FRONTEND_URL
+if [ -z "$FRONTEND_URL" ]; then
+  echo "❌ FRONTEND_URL not configured"
+  MISSING+=("FRONTEND_URL")
 else
-  echo "✅ CONFIG__FRONTEND_URL: $CONFIG__FRONTEND_URL"
+  echo "✅ FRONTEND_URL: $FRONTEND_URL"
 fi
 
 echo ""
@@ -79,7 +84,7 @@ if [ ${#MISSING[@]} -gt 0 ]; then
   echo "SMTP_PORT=587"
   echo "SMTP_USER=your-actual-email@gmail.com"
   echo "SMTP_PASS=your-16-character-app-password"
-  echo "CONFIG__FRONTEND_URL=https://dj-forever2.onrender.com"
+  echo "FRONTEND_URL=https://dj-forever2.onrender.com"
   echo ""
   exit 1
 fi
