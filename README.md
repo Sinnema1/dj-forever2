@@ -185,6 +185,7 @@ After running performance commands, reports are generated in:
 - [x] **CSV Export** - Complete guest list export functionality
 - [x] **Analytics Dashboard** - 7 interactive visualizations (response timeline, meal preferences, party size, day of week analysis, insights)
 - [x] **Email Reminder System** - SMTP-powered email system with bulk operations for pending RSVPs
+- [x] **Email System Testing** - Full validation of SMTP health checks, email delivery, QR login links, and template rendering
 
 #### Bug Fixes & Improvements
 
@@ -196,12 +197,14 @@ After running performance commands, reports are generated in:
 - [x] **Performance Monitoring Setup** - Comprehensive tracking with Core Web Vitals monitoring, bundle analysis, performance budgets
 - [x] **Performance Optimization** - Reduced bundle from 18MB to 9MB (50% reduction)
 - [x] **Mobile Photo Viewing UX Enhancement** - Enhanced with double-tap zoom, improved swipe navigation, responsive grid
+- [x] **Email Environment Variable Fix** - Corrected `FRONTEND_URL` configuration for proper QR login link generation
+- [x] **AdminEmailReminders Toggle** - Added show all users vs pending only toggle for easier testing
 
 ### Next Steps
 
 #### High Priority
 
-- [ ] **Test Email System** - Validate SMTP configuration with Gmail and test email delivery for reminder system
+- [ ] **Routing & Auth Improvements** - Token expiration checking, auto-logout, localStorage cleanup (see `ROUTING_AUTHENTICATION_TODO.md`)
 - [ ] **Accessibility Review** - Screen reader testing for countdown timer and focus management
 
 #### Low Priority

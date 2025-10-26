@@ -69,6 +69,7 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
   const [showPreview, setShowPreview] = useState(false);
   const [previewData, setPreviewData] = useState<EmailPreview | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [showAllUsers, setShowAllUsers] = useState(false); // Toggle for showing all users
   const [smtpHealth, setSMTPHealth] = useState<SMTPHealthStatus>({
     healthy: false,
     message: 'Checking...',
@@ -99,9 +100,21 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
   useEffect(() => {
     const checkSMTPHealth = async () => {
       try {
+        // Determine the correct base URL for API calls
+        // In development: explicit server URL (localhost:3001)
+        // In production: same origin (server serves client)
         const graphqlEndpoint =
           import.meta.env.VITE_GRAPHQL_ENDPOINT || '/graphql';
-        const baseUrl = graphqlEndpoint.replace('/graphql', '');
+
+        let baseUrl: string;
+        if (graphqlEndpoint.startsWith('http')) {
+          // Full URL provided (development)
+          baseUrl = graphqlEndpoint.replace('/graphql', '');
+        } else {
+          // Relative URL - need to use server port in dev
+          baseUrl = import.meta.env.DEV ? 'http://localhost:3001' : '';
+        }
+
         const response = await fetch(`${baseUrl}/health/smtp`);
         const data = await response.json();
 
@@ -127,12 +140,17 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Filter to show only pending RSVP guests (invited, not responded, not admin)
+  // Filter to show pending RSVP guests or all users based on toggle
   const pendingGuests = useMemo(() => {
+    if (showAllUsers) {
+      // Show all invited users (excluding admins for safety)
+      return guests.filter(guest => guest.isInvited && !guest.isAdmin);
+    }
+    // Show only pending RSVP guests (invited, not responded, not admin)
     return guests.filter(
       guest => guest.isInvited && !guest.hasRSVPed && !guest.isAdmin
     );
-  }, [guests]);
+  }, [guests, showAllUsers]);
 
   // Filter guests based on search term
   const filteredGuests = useMemo(() => {
@@ -375,6 +393,13 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
             onChange={e => setSearchTerm(e.target.value)}
             className="search-input"
           />
+          <button
+            onClick={() => setShowAllUsers(!showAllUsers)}
+            className={`toggle-button ${showAllUsers ? 'active' : ''}`}
+            title={showAllUsers ? 'Show pending RSVPs only' : 'Show all users'}
+          >
+            {showAllUsers ? '📋 All Users' : '⏳ Pending Only'}
+          </button>
         </div>
         <div className="button-group">
           <button
@@ -421,12 +446,23 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
         {filteredGuests.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">📭</div>
-            <h3>No Pending RSVPs</h3>
+            <h3>{showAllUsers ? 'No Users Found' : 'No Pending RSVPs'}</h3>
             <p>
-              {pendingGuests.length === 0
+              {pendingGuests.length === 0 && !showAllUsers
                 ? 'All invited guests have already responded!'
-                : 'No guests match your search.'}
+                : pendingGuests.length === 0 && showAllUsers
+                  ? 'No invited users found.'
+                  : 'No guests match your search.'}
             </p>
+            {!showAllUsers && pendingGuests.length === 0 && (
+              <button
+                onClick={() => setShowAllUsers(true)}
+                className="action-button info"
+                style={{ marginTop: '1rem' }}
+              >
+                📋 Show All Users (for testing)
+              </button>
+            )}
           </div>
         ) : (
           <div className="guest-list">

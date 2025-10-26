@@ -22,18 +22,18 @@ export const healthRouter = Router();
  * Used by admin UI to display email system health badge.
  *
  * @route GET /health/smtp
- * @returns {object} 200 - SMTP healthy { ok: true, provider: 'smtp', latencyMs: number }
- * @returns {object} 500 - SMTP unhealthy { ok: false, error: string, missing?: string[] }
+ * @returns {object} 200 - SMTP healthy { healthy: true, ok: true, provider: 'smtp', latencyMs: number, message: string }
+ * @returns {object} 500 - SMTP unhealthy { healthy: false, ok: false, error: string, message: string, missing?: string[] }
  *
  * @example
  * // Healthy response
  * GET /health/smtp
- * { "ok": true, "provider": "smtp", "latencyMs": 234 }
+ * { "healthy": true, "ok": true, "provider": "smtp", "latencyMs": 234, "message": "SMTP is healthy" }
  *
  * @example
  * // Missing configuration
  * GET /health/smtp
- * { "ok": false, "error": "SMTP not configured", "missing": ["SMTP_HOST", "SMTP_PASS"] }
+ * { "healthy": false, "ok": false, "error": "SMTP not configured", "message": "SMTP not configured", "missing": ["SMTP_HOST", "SMTP_PASS"] }
  */
 healthRouter.get("/smtp", async (req, res) => {
   const requestId = req.context?.requestId;
@@ -55,8 +55,10 @@ healthRouter.get("/smtp", async (req, res) => {
         service: "HealthRouter",
       });
       return res.status(500).json({
+        healthy: false,
         ok: false,
         error: "SMTP not configured",
+        message: "SMTP not configured",
         missing: [
           !host && "SMTP_HOST",
           !port && "SMTP_PORT",
@@ -82,7 +84,13 @@ healthRouter.get("/smtp", async (req, res) => {
       latencyMs,
       service: "HealthRouter",
     });
-    return res.json({ ok: true, provider: "smtp", latencyMs });
+    return res.json({
+      healthy: true,
+      ok: true,
+      provider: "smtp",
+      latencyMs,
+      message: "SMTP is healthy",
+    });
   } catch (err: any) {
     const latencyMs = Math.round(performance.now() - start);
     logger.error("SMTP health check failed", {
@@ -91,9 +99,13 @@ healthRouter.get("/smtp", async (req, res) => {
       latencyMs,
       service: "HealthRouter",
     });
-    return res
-      .status(500)
-      .json({ ok: false, error: String(err?.message || err), latencyMs });
+    return res.status(500).json({
+      healthy: false,
+      ok: false,
+      error: String(err?.message || err),
+      message: `SMTP error: ${err?.message || err}`,
+      latencyMs,
+    });
   }
 });
 
