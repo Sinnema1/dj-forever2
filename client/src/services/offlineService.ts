@@ -47,20 +47,43 @@ import { logInfo, logError } from '../utils/logger';
 import { reportError } from './errorReportingService';
 
 /**
+ * Wedding venue and event information
+ */
+export interface WeddingDetails {
+  name?: string;
+  address?: string;
+  coordinates?: { lat: number; lng: number };
+  date?: string;
+  time?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Guest information and preferences
+ */
+export interface GuestInfo {
+  id?: string;
+  fullName?: string;
+  email?: string;
+  plusOne?: boolean;
+  [key: string]: unknown;
+}
+
+/**
  * Complete offline data structure for wedding website
  * @interface OfflineData
  */
 export interface OfflineData {
   /** Wedding ceremony and reception details */
-  weddingDetails: any;
+  weddingDetails: WeddingDetails;
   /** Guest information and preferences */
-  guestInfo: any;
+  guestInfo: GuestInfo;
   /** URLs of cached images for offline viewing */
   cachedImages: string[];
   /** Draft RSVP submissions pending sync */
-  rsvpDrafts: any[];
+  rsvpDrafts: PendingRSVP[];
   /** Photo uploads queued for sync */
-  photoUploads: any[];
+  photoUploads: PendingPhotoUpload[];
   /** Timestamp of last successful sync */
   lastSync: number;
 }
@@ -147,6 +170,19 @@ class OfflineService {
   private db: IDBDatabase | null = null;
 
   /**
+   * Ensure database is initialized and return connection
+   * @private
+   * @returns Database connection
+   */
+  private async ensureDb(): Promise<IDBDatabase> {
+    if (!this.db) {
+      await this.init();
+    }
+    // After init(), this.db is guaranteed to be non-null
+    return this.db as IDBDatabase;
+  }
+
+  /**
    * Initialize IndexedDB with wedding-specific object stores
    * Creates database schema for wedding data, RSVPs, photos, and cache
    * @returns Promise that resolves when database is ready
@@ -157,7 +193,7 @@ class OfflineService {
    * console.log('Offline service ready for use');
    * ```
    */
-  async init(): Promise<void> {
+  init(): Promise<void> {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.dbVersion);
 
@@ -193,11 +229,25 @@ class OfflineService {
     });
   }
 
-  async saveWeddingData(key: string, data: any): Promise<void> {
-    if (!this.db) await this.init();
+  /**
+   * Save wedding data to IndexedDB for offline access
+   * @param key - Unique identifier for the data
+   * @param data - Wedding data to store (JSON-serializable)
+   *
+   * @example
+   * ```typescript
+   * await offlineService.saveWeddingData('venue-info', {
+   *   name: 'Grand Hotel',
+   *   address: '123 Main St',
+   *   coordinates: { lat: 40.7128, lng: -74.0060 }
+   * });
+   * ```
+   */
+  async saveWeddingData<T = unknown>(key: string, data: T): Promise<void> {
+    const db = await this.ensureDb();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['weddingData'], 'readwrite');
+      const transaction = db.transaction(['weddingData'], 'readwrite');
       const store = transaction.objectStore('weddingData');
 
       const request = store.put({
@@ -211,17 +261,30 @@ class OfflineService {
     });
   }
 
-  async getWeddingData(key: string): Promise<any> {
-    if (!this.db) await this.init();
+  /**
+   * Retrieve wedding data from IndexedDB
+   * @param key - Unique identifier for the data
+   * @returns Promise resolving to the stored data or undefined
+   *
+   * @example
+   * ```typescript
+   * const venueInfo = await offlineService.getWeddingData<WeddingDetails>('venue-info');
+   * if (venueInfo) {
+   *   console.log(`Venue: ${venueInfo.name}`);
+   * }
+   * ```
+   */
+  async getWeddingData<T = unknown>(key: string): Promise<T | undefined> {
+    const db = await this.ensureDb();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['weddingData'], 'readonly');
+      const transaction = db.transaction(['weddingData'], 'readonly');
       const store = transaction.objectStore('weddingData');
       const request = store.get(key);
 
       request.onsuccess = () => {
         const result = request.result;
-        resolve(result?.data);
+        resolve(result?.data as T | undefined);
       };
       request.onerror = () => reject(request.error);
     });
@@ -229,10 +292,10 @@ class OfflineService {
 
   // RSVP Management for Offline
   async savePendingRSVP(rsvp: PendingRSVP): Promise<void> {
-    if (!this.db) await this.init();
+    const db = await this.ensureDb();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['pendingRSVPs'], 'readwrite');
+      const transaction = db.transaction(['pendingRSVPs'], 'readwrite');
       const store = transaction.objectStore('pendingRSVPs');
 
       const request = store.put(rsvp);
@@ -248,10 +311,10 @@ class OfflineService {
   }
 
   async getPendingRSVPs(): Promise<PendingRSVP[]> {
-    if (!this.db) await this.init();
+    const db = await this.ensureDb();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['pendingRSVPs'], 'readonly');
+      const transaction = db.transaction(['pendingRSVPs'], 'readonly');
       const store = transaction.objectStore('pendingRSVPs');
       const request = store.getAll();
 
@@ -261,10 +324,10 @@ class OfflineService {
   }
 
   async deletePendingRSVP(id: string): Promise<void> {
-    if (!this.db) await this.init();
+    const db = await this.ensureDb();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['pendingRSVPs'], 'readwrite');
+      const transaction = db.transaction(['pendingRSVPs'], 'readwrite');
       const store = transaction.objectStore('pendingRSVPs');
 
       const request = store.delete(id);
@@ -275,10 +338,10 @@ class OfflineService {
 
   // Photo Upload Management for Offline
   async savePendingPhoto(photo: PendingPhotoUpload): Promise<void> {
-    if (!this.db) await this.init();
+    const db = await this.ensureDb();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['pendingPhotos'], 'readwrite');
+      const transaction = db.transaction(['pendingPhotos'], 'readwrite');
       const store = transaction.objectStore('pendingPhotos');
 
       const request = store.put(photo);
@@ -294,10 +357,10 @@ class OfflineService {
   }
 
   async getPendingPhotos(): Promise<PendingPhotoUpload[]> {
-    if (!this.db) await this.init();
+    const db = await this.ensureDb();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['pendingPhotos'], 'readonly');
+      const transaction = db.transaction(['pendingPhotos'], 'readonly');
       const store = transaction.objectStore('pendingPhotos');
       const request = store.getAll();
 
@@ -307,10 +370,10 @@ class OfflineService {
   }
 
   async deletePendingPhoto(id: string): Promise<void> {
-    if (!this.db) await this.init();
+    const db = await this.ensureDb();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['pendingPhotos'], 'readwrite');
+      const transaction = db.transaction(['pendingPhotos'], 'readwrite');
       const store = transaction.objectStore('pendingPhotos');
 
       const request = store.delete(id);
@@ -321,10 +384,10 @@ class OfflineService {
 
   // Image Caching
   async cacheImage(url: string, blob: Blob): Promise<void> {
-    if (!this.db) await this.init();
+    const db = await this.ensureDb();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['cachedImages'], 'readwrite');
+      const transaction = db.transaction(['cachedImages'], 'readwrite');
       const store = transaction.objectStore('cachedImages');
 
       const request = store.put({
@@ -339,10 +402,10 @@ class OfflineService {
   }
 
   async getCachedImage(url: string): Promise<Blob | null> {
-    if (!this.db) await this.init();
+    const db = await this.ensureDb();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['cachedImages'], 'readonly');
+      const transaction = db.transaction(['cachedImages'], 'readonly');
       const store = transaction.objectStore('cachedImages');
       const request = store.get(url);
 
@@ -356,10 +419,14 @@ class OfflineService {
 
   // Sync Functions
   async syncPendingRSVPs(): Promise<void> {
-    if (!navigator.onLine) return;
+    if (!navigator.onLine) {
+      return;
+    }
 
     const pendingRSVPs = await this.getPendingRSVPs();
 
+    // Process sequentially to handle errors for each RSVP individually
+    /* eslint-disable no-await-in-loop */
     for (const rsvp of pendingRSVPs) {
       try {
         // This would call your GraphQL mutation
@@ -378,13 +445,18 @@ class OfflineService {
         // Keep in queue for next sync attempt
       }
     }
+    /* eslint-enable no-await-in-loop */
   }
 
   async syncPendingPhotos(): Promise<void> {
-    if (!navigator.onLine) return;
+    if (!navigator.onLine) {
+      return;
+    }
 
     const pendingPhotos = await this.getPendingPhotos();
 
+    // Process sequentially to handle errors for each photo individually
+    /* eslint-disable no-await-in-loop */
     for (const photo of pendingPhotos) {
       try {
         // This would call your photo upload API
@@ -403,6 +475,7 @@ class OfflineService {
         // Keep in queue for next sync attempt
       }
     }
+    /* eslint-enable no-await-in-loop */
   }
 
   // Network Status Management

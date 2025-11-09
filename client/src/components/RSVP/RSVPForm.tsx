@@ -89,7 +89,9 @@ export default function RSVPForm() {
 
   // Helper function to normalize legacy meal preference values
   const normalizeMealPreference = (value: string): string => {
-    if (!value) return '';
+    if (!value) {
+      return '';
+    }
 
     const normalizedValue = value.toLowerCase().trim();
 
@@ -174,7 +176,7 @@ export default function RSVPForm() {
         return isDifferent ? newData : prev;
       });
     }
-  }, [rsvp, successMessage]); // Removed formData.attending to prevent reset loop
+  }, [rsvp]); // Only depend on rsvp data, not successMessage
 
   // Available meal options
   const mealOptions = [
@@ -237,7 +239,7 @@ export default function RSVPForm() {
     const errors: Record<string, string> = {};
 
     switch (name) {
-      case 'fullName':
+      case 'fullName': {
         if (guestIndex !== undefined) {
           // Validating individual guest name
           if (!value.trim()) {
@@ -256,7 +258,8 @@ export default function RSVPForm() {
           }
         }
         break;
-      case 'mealPreference':
+      }
+      case 'mealPreference': {
         if (guestIndex !== undefined) {
           // Validating individual guest meal preference
           if (formData.attending === 'YES' && !value) {
@@ -270,12 +273,14 @@ export default function RSVPForm() {
           }
         }
         break;
-      case 'guestCount':
+      }
+      case 'guestCount': {
         const count = parseInt(value);
         if (isNaN(count) || count < 1 || count > 10) {
           errors.guestCount = 'Guest count must be between 1 and 10';
         }
         break;
+      }
     }
 
     setValidationErrors(prev => {
@@ -311,8 +316,12 @@ export default function RSVPForm() {
     validateField(name, value);
 
     // Clear success/error messages when user starts typing
-    if (successMessage) setSuccessMessage('');
-    if (errorMessage) setErrorMessage('');
+    if (successMessage) {
+      setSuccessMessage('');
+    }
+    if (errorMessage) {
+      setErrorMessage('');
+    }
   };
 
   // Enhanced handler for mobile touch events on attendance options
@@ -355,11 +364,15 @@ export default function RSVPForm() {
     validateField('attending', value);
 
     // Clear success/error messages
-    if (successMessage) setSuccessMessage('');
-    if (errorMessage) setErrorMessage('');
+    if (successMessage) {
+      setSuccessMessage('');
+    }
+    if (errorMessage) {
+      setErrorMessage('');
+    }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSuccessMessage('');
     setErrorMessage('');
@@ -472,10 +485,9 @@ export default function RSVPForm() {
               guests: [{ fullName: '', mealPreference: '', allergies: '' }],
             });
           }
-        } catch (err: any) {
-          setErrorMessage(
-            err.message || 'Something went wrong. Please try again.'
-          );
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : String(err);
+          setErrorMessage(message || 'Something went wrong. Please try again.');
         }
       };
 
@@ -547,12 +559,6 @@ export default function RSVPForm() {
                 key={option.value}
                 className={`attendance-option ${formData.attending === option.value ? 'selected' : ''}`}
                 data-value={option.value}
-                onTouchStart={() => {}}
-                onClick={() => {
-                  handleAttendanceChange(
-                    option.value as 'YES' | 'NO' | 'MAYBE'
-                  );
-                }}
               >
                 {/* Hidden radio input for form functionality */}
                 <input
@@ -619,7 +625,7 @@ export default function RSVPForm() {
           {/* Individual Guest Forms */}
           {formData.guests.map((guest, index) => (
             <div
-              key={index}
+              key={`${guest.fullName || 'guest'}-${index}`}
               className="guest-form-section"
               data-guest-index={index}
             >
@@ -789,7 +795,7 @@ export default function RSVPForm() {
           >
             {loading || isPending ? (
               <>
-                <span className="loading-spinner"></span>
+                <span className="loading-spinner" />
                 <span className="loading-text">
                   {isPending
                     ? rsvp
@@ -814,7 +820,7 @@ export default function RSVPForm() {
           {(loading || isPending) && (
             <div className="submission-progress" aria-live="polite">
               <div className="progress-bar">
-                <div className="progress-fill"></div>
+                <div className="progress-fill" />
               </div>
               <small className="progress-text">
                 {isPending

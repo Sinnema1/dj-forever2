@@ -16,7 +16,7 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
   if (isLoading) {
     return (
       <div className="admin-route-loading">
-        <div className="loading-spinner"></div>
+        <div className="loading-spinner" />
         <p>Verifying admin access...</p>
       </div>
     );

@@ -10,7 +10,9 @@ const WelcomeModal: React.FC = () => {
   useEffect(() => {
     // Only show for logged-in users (but not admin users)
     // Double-check admin status to ensure robust exclusion
-    if (!isLoggedIn || !user || user.isAdmin === true) return undefined;
+    if (!isLoggedIn || !user || user.isAdmin === true) {
+      return undefined;
+    }
 
     // Check if user has seen the welcome modal before
     const hasSeenWelcome = localStorage.getItem(`welcome-seen-${user._id}`);
@@ -36,13 +38,33 @@ const WelcomeModal: React.FC = () => {
     }
   };
 
-  if (!showModal || !isLoggedIn || !user || user.isAdmin === true) return null;
+  if (!showModal || !isLoggedIn || !user || user.isAdmin === true) {
+    return null;
+  }
 
   const firstName = user.fullName.split(' ')[0];
 
   return (
-    <div className="welcome-modal-overlay" onClick={handleClose}>
-      <div className="welcome-modal" onClick={e => e.stopPropagation()}>
+    // Backdrop closes only when the user clicks the overlay (not the modal)
+    // itself. Add keyboard activation so Enter/Space also close the backdrop.
+    <div
+      className="welcome-modal-overlay"
+      onClick={e => {
+        if (e.target === e.currentTarget) {
+          handleClose();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label="Close welcome modal"
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClose();
+        }
+      }}
+    >
+      <div className="welcome-modal">
         <button
           className="welcome-modal-close"
           onClick={handleClose}
@@ -61,26 +83,26 @@ const WelcomeModal: React.FC = () => {
             <div className="welcome-couple-photo">
               <img
                 src={coverPhoto}
-                alt="Couple photo"
+                alt="Dominique and Justin"
                 className="couple-image"
               />
             </div>
 
             <div className="welcome-message">
               <p className="welcome-greeting">
-                We are absolutely thrilled that you're here and that you'll be
-                celebrating with us on our special day!
+                We are absolutely thrilled that you are here and that you will
+                be celebrating with us on our special day!
               </p>
 
               <p className="welcome-details">
                 This website contains everything you need to know about our
                 wedding - from the venue details and travel information to our
-                registry and photo gallery. We've created this special space
+                registry and photo gallery. We have created this special space
                 just for our loved ones.
               </p>
 
               <p className="welcome-personal">
-                Your presence means the world to us, and we can't wait to share
+                Your presence means the world to us, and we cannot wait to share
                 this magical moment with you. Thank you for being such an
                 important part of our journey!
               </p>

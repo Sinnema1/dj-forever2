@@ -77,10 +77,13 @@ export default function LazyImage({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(priority);
   const [hasError, setHasError] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  // Use a generic HTMLElement ref so we can assign it to either a div or button
+  const containerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (priority) return; // Priority images load immediately
+    if (priority) {
+      return;
+    } // Priority images load immediately
 
     let observer: IntersectionObserver;
     let fallbackTimer: NodeJS.Timeout;
@@ -112,21 +115,23 @@ export default function LazyImage({
     }
 
     return () => {
-      if (observer) observer.disconnect();
-      if (fallbackTimer) clearTimeout(fallbackTimer);
+      if (observer) {
+        observer.disconnect();
+      }
+      if (fallbackTimer) {
+        clearTimeout(fallbackTimer);
+      }
     };
   }, [priority, src]);
 
-  return (
-    <div
-      ref={containerRef}
-      className={`lazy-image-container ${className || ''}`}
-      onClick={onClick}
-    >
+  // Shared image content so both interactive and non-interactive containers
+  // render the same markup for the image, placeholder, and error state.
+  const imageContent = (
+    <>
       {/* Always show placeholder until image loads */}
       {!isLoaded && !hasError && (
         <div className="image-placeholder">
-          <div className="loading-shimmer"></div>
+          <div className="loading-shimmer" />
         </div>
       )}
 
@@ -149,6 +154,24 @@ export default function LazyImage({
           <p>Image unavailable</p>
         </div>
       )}
+    </>
+  );
+
+  return onClick ? (
+    <button
+      ref={el => (containerRef.current = el)}
+      type="button"
+      className={`lazy-image-container ${className || ''}`}
+      onClick={onClick}
+    >
+      {imageContent}
+    </button>
+  ) : (
+    <div
+      ref={el => (containerRef.current = el)}
+      className={`lazy-image-container ${className || ''}`}
+    >
+      {imageContent}
     </div>
   );
 }

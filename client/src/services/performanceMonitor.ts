@@ -41,14 +41,51 @@
 import { onCLS, onINP, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals';
 
 /**
+ * Properties for analytics event tracking
+ */
+export interface AnalyticsProperties {
+  [key: string]: string | number | boolean | undefined | null;
+}
+
+/**
+ * Performance metric data for analytics tracking
+ */
+export interface PerformanceMetricData {
+  metric?: string;
+  value?: number;
+  rating?: string;
+  delta?: number;
+  id?: string;
+  navigationType?: string;
+  [key: string]: string | number | boolean | undefined;
+}
+
+/**
+ * Performance summary entry for a single metric
+ */
+export interface PerformanceSummaryEntry {
+  value: number;
+  rating: 'good' | 'needs-improvement' | 'poor';
+  threshold: { good: number; needsImprovement: number } | null;
+}
+
+/**
+ * Complete performance summary with all metrics
+ */
+export interface PerformanceSummary {
+  [metricName: string]: PerformanceSummaryEntry;
+}
+
+/**
  * Debug logging utility for development environment
  * @internal
  * @param message - Log message
  * @param context - Component context for debugging
  * @param data - Optional data object to log
  */
-const logDebug = (message: string, context: string, data?: any) => {
+const logDebug = (message: string, context: string, data?: unknown) => {
   if (import.meta.env?.DEV) {
+    // eslint-disable-next-line no-console
     console.log(`[${context}] ${message}`, data || '');
   }
 };
@@ -60,7 +97,8 @@ const logDebug = (message: string, context: string, data?: any) => {
  * @param context - Component context for debugging
  * @param data - Optional data object to log
  */
-const logWarn = (message: string, context: string, data?: any) => {
+const logWarn = (message: string, context: string, data?: unknown) => {
+  // eslint-disable-next-line no-console
   console.warn(`[${context}] ${message}`, data || '');
 };
 
@@ -73,10 +111,10 @@ interface AnalyticsService {
   track: (
     event: string,
     userId?: string,
-    properties?: Record<string, any>
+    properties?: AnalyticsProperties
   ) => void;
   /** Track performance-specific metrics */
-  trackPerformance: (data: Record<string, any>) => void;
+  trackPerformance: (data: PerformanceMetricData) => void;
 }
 
 /**
@@ -84,14 +122,16 @@ interface AnalyticsService {
  * @internal
  */
 const analytics: AnalyticsService = {
-  track: (event: string, userId?: string, properties?: Record<string, any>) => {
+  track: (event: string, userId?: string, properties?: AnalyticsProperties) => {
     if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
       console.log('Analytics Event:', { event, userId, properties });
     }
     // TODO: Integrate with actual analytics service
   },
-  trackPerformance: (data: Record<string, any>) => {
+  trackPerformance: (data: PerformanceMetricData) => {
     if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
       console.log('Performance Data:', data);
     }
     // TODO: Integrate with actual analytics service
@@ -233,10 +273,16 @@ class PerformanceMonitor {
     value: number
   ): 'good' | 'needs-improvement' | 'poor' {
     const threshold = this.getThreshold(metricName);
-    if (!threshold) return 'good';
+    if (!threshold) {
+      return 'good';
+    }
 
-    if (value <= threshold.good) return 'good';
-    if (value <= threshold.needsImprovement) return 'needs-improvement';
+    if (value <= threshold.good) {
+      return 'good';
+    }
+    if (value <= threshold.needsImprovement) {
+      return 'needs-improvement';
+    }
     return 'poor';
   }
 
@@ -257,12 +303,15 @@ class PerformanceMonitor {
       );
 
       // Send performance alert to analytics
+      const conn = this.getConnectionInfo();
       analytics.track('performance_issue', undefined, {
         metric: name,
         value,
         rating,
         userAgent: navigator.userAgent,
-        connection: this.getConnectionInfo(),
+        connectionType: conn.effectiveType || 'unknown',
+        connectionDownlink: conn.downlink || 0,
+        connectionRtt: conn.rtt || 0,
       });
     }
   }
@@ -319,7 +368,9 @@ class PerformanceMonitor {
   }
 
   private trackResourceTiming() {
-    if (!('PerformanceObserver' in window)) return;
+    if (!('PerformanceObserver' in window)) {
+      return;
+    }
 
     try {
       const observer = new PerformanceObserver(list => {
@@ -395,7 +446,9 @@ class PerformanceMonitor {
       'navigation'
     )[0] as PerformanceNavigationTiming;
 
-    if (!navigation) return;
+    if (!navigation) {
+      return;
+    }
 
     const metrics = {
       dns_lookup: navigation.domainLookupEnd - navigation.domainLookupStart,
@@ -475,8 +528,8 @@ class PerformanceMonitor {
    * }
    * ```
    */
-  public getPerformanceSummary() {
-    const summary: Record<string, any> = {};
+  public getPerformanceSummary(): PerformanceSummary {
+    const summary: PerformanceSummary = {};
 
     this.metrics.forEach((metric, name) => {
       const rating = this.getRating(

@@ -39,7 +39,7 @@ const AdminDashboard: React.FC = () => {
     return (
       <div className="admin-dashboard">
         <div className="admin-loading">
-          <div className="admin-spinner"></div>
+          <div className="admin-spinner" aria-hidden />
           <p>Loading admin dashboard...</p>
         </div>
       </div>
@@ -49,7 +49,7 @@ const AdminDashboard: React.FC = () => {
   if (statsError || rsvpError) {
     return (
       <div className="admin-dashboard">
-        <div className="admin-error">
+        <div className="admin-error" role="alert">
           <h2>Admin Access Error</h2>
           <p>
             {statsError?.message ||
@@ -81,30 +81,40 @@ const AdminDashboard: React.FC = () => {
         <button
           className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
+          aria-pressed={activeTab === 'overview'}
+          aria-label="Overview tab"
         >
           Overview
         </button>
         <button
           className={`tab-button ${activeTab === 'analytics' ? 'active' : ''}`}
           onClick={() => setActiveTab('analytics')}
+          aria-pressed={activeTab === 'analytics'}
+          aria-label="Analytics tab"
         >
           Analytics
         </button>
         <button
           className={`tab-button ${activeTab === 'guests' ? 'active' : ''}`}
           onClick={() => setActiveTab('guests')}
+          aria-pressed={activeTab === 'guests'}
+          aria-label="Guest management tab"
         >
           Guest Management
         </button>
         <button
           className={`tab-button ${activeTab === 'reminders' ? 'active' : ''}`}
           onClick={() => setActiveTab('reminders')}
+          aria-pressed={activeTab === 'reminders'}
+          aria-label="Email reminders tab"
         >
           Email Reminders
         </button>
         <button
           className={`tab-button ${activeTab === 'export' ? 'active' : ''}`}
           onClick={() => setActiveTab('export')}
+          aria-pressed={activeTab === 'export'}
+          aria-label="Export data tab"
         >
           Export Data
         </button>

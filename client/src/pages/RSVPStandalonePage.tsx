@@ -1,6 +1,6 @@
-import React from "react";
-import RSVPForm from "../components/RSVP/RSVPForm";
-import { RSVPPageSEO } from "../components/SEO";
+import React from 'react';
+import RSVPForm from '../components/RSVP/RSVPForm';
+import { RSVPPageSEO } from '../components/SEO';
 
 const RSVPStandalonePage: React.FC = () => {
   return (
@@ -13,7 +13,7 @@ const RSVPStandalonePage: React.FC = () => {
               <h1 className="hero-title">Join Us in Celebration</h1>
               <p className="hero-subtitle">
                 Your presence would make our special day even more meaningful.
-                Please let us know if you'll be celebrating with us!
+                Please let us know if you&apos;ll be celebrating with us!
               </p>
               <div className="wedding-details">
                 <div className="detail-item">
