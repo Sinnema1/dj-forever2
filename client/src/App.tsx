@@ -16,6 +16,7 @@ import WelcomeModal from './components/WelcomeModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import ConnectionStatus from './components/ConnectionStatus';
 import PerformanceMonitor from './components/PerformanceMonitor';
+import { ToastProvider } from './context/ToastContext';
 import { PWAInstallBanner } from './hooks/usePWAInstall';
 // import { PWAUpdateToast } from './hooks/usePWAUpdate'; // Disabled: autoUpdate configured in Vite
 import performanceMonitor from './services/performanceMonitor';
@@ -84,119 +85,121 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      {/* Performance monitoring - tracks Core Web Vitals */}
-      <PerformanceMonitor debug={import.meta.env?.DEV || false} />
+      <ToastProvider>
+        {/* Performance monitoring - tracks Core Web Vitals */}
+        <PerformanceMonitor debug={import.meta.env?.DEV || false} />
 
-      <ConnectionStatus />
-      <PWAInstallBanner />
-      {/* <PWAUpdateToast /> - Disabled: autoUpdate configured in Vite handles updates automatically */}
-      <Navbar />
-      <PersonalizedWelcome />
-      <WelcomeModal />
-      <main>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <EnhancedSuspense
-                name="homepage"
-                loadingMessage="Loading our wedding website..."
-                enhanced
-              >
-                <HomePage />
-              </EnhancedSuspense>
-            }
-          />
-          <Route
-            path="/rsvp"
-            element={
-              <InvitedRoute>
+        <ConnectionStatus />
+        <PWAInstallBanner />
+        {/* <PWAUpdateToast /> - Disabled: autoUpdate configured in Vite handles updates automatically */}
+        <Navbar />
+        <PersonalizedWelcome />
+        <WelcomeModal />
+        <main>
+          <Routes>
+            <Route
+              path="/"
+              element={
                 <EnhancedSuspense
-                  name="rsvp-page"
-                  loadingMessage="Loading RSVP form..."
+                  name="homepage"
+                  loadingMessage="Loading our wedding website..."
                   enhanced
                 >
-                  <RSVPStandalonePage />
+                  <HomePage />
                 </EnhancedSuspense>
-              </InvitedRoute>
-            }
-          />
-          <Route
-            path="/registry"
-            element={
-              <EnhancedSuspense
-                name="registry-page"
-                loadingMessage="Loading registry information..."
-                enhanced
-              >
-                <RegistryStandalonePage />
-              </EnhancedSuspense>
-            }
-          />
-          <Route
-            path="/login/qr/:qrToken"
-            element={
-              <EnhancedSuspense
-                name="qr-login"
-                loadingMessage="Processing QR authentication..."
-                enhanced
-              >
-                <QRTokenLogin />
-              </EnhancedSuspense>
-            }
-          />
-          <Route
-            path="/login/success"
-            element={
-              <EnhancedSuspense
-                name="login-success"
-                loadingMessage="Confirming authentication..."
-                enhanced
-              >
-                <LoginSuccess />
-              </EnhancedSuspense>
-            }
-          />
-          <Route
-            path="/qr-help"
-            element={
-              <EnhancedSuspense
-                name="qr-help"
-                loadingMessage="Loading help information..."
-                enhanced
-              >
-                <QRInfoPage />
-              </EnhancedSuspense>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
+              }
+            />
+            <Route
+              path="/rsvp"
+              element={
+                <InvitedRoute>
+                  <EnhancedSuspense
+                    name="rsvp-page"
+                    loadingMessage="Loading RSVP form..."
+                    enhanced
+                  >
+                    <RSVPStandalonePage />
+                  </EnhancedSuspense>
+                </InvitedRoute>
+              }
+            />
+            <Route
+              path="/registry"
+              element={
                 <EnhancedSuspense
-                  name="admin-dashboard"
-                  loadingMessage="Loading admin dashboard..."
+                  name="registry-page"
+                  loadingMessage="Loading registry information..."
                   enhanced
                 >
-                  <AdminPage />
+                  <RegistryStandalonePage />
                 </EnhancedSuspense>
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/auth-debug"
-            element={
-              <EnhancedSuspense
-                name="auth-debug"
-                loadingMessage="Loading debug info..."
-                enhanced={false}
-              >
-                <AuthDebug />
-              </EnhancedSuspense>
-            }
-          />
-        </Routes>
-      </main>
+              }
+            />
+            <Route
+              path="/login/qr/:qrToken"
+              element={
+                <EnhancedSuspense
+                  name="qr-login"
+                  loadingMessage="Processing QR authentication..."
+                  enhanced
+                >
+                  <QRTokenLogin />
+                </EnhancedSuspense>
+              }
+            />
+            <Route
+              path="/login/success"
+              element={
+                <EnhancedSuspense
+                  name="login-success"
+                  loadingMessage="Confirming authentication..."
+                  enhanced
+                >
+                  <LoginSuccess />
+                </EnhancedSuspense>
+              }
+            />
+            <Route
+              path="/qr-help"
+              element={
+                <EnhancedSuspense
+                  name="qr-help"
+                  loadingMessage="Loading help information..."
+                  enhanced
+                >
+                  <QRInfoPage />
+                </EnhancedSuspense>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <EnhancedSuspense
+                    name="admin-dashboard"
+                    loadingMessage="Loading admin dashboard..."
+                    enhanced
+                  >
+                    <AdminPage />
+                  </EnhancedSuspense>
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/auth-debug"
+              element={
+                <EnhancedSuspense
+                  name="auth-debug"
+                  loadingMessage="Loading debug info..."
+                  enhanced={false}
+                >
+                  <AuthDebug />
+                </EnhancedSuspense>
+              }
+            />
+          </Routes>
+        </main>
+      </ToastProvider>
     </ErrorBoundary>
   );
 }
