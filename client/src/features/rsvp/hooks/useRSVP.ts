@@ -169,7 +169,14 @@ export const useRSVP = () => {
       });
       refetch();
     } catch (error) {
-      reportGraphQLError(error, 'createRSVP', formData);
+      reportGraphQLError(
+        {
+          message:
+            error instanceof Error ? error.message : 'Create RSVP failed',
+        },
+        'createRSVP',
+        formData
+      );
       throw error;
     }
   };
@@ -208,7 +215,13 @@ export const useRSVP = () => {
       });
       refetch();
     } catch (error) {
-      reportGraphQLError(error, 'editRSVP', updates);
+      reportGraphQLError(
+        {
+          message: error instanceof Error ? error.message : 'Edit RSVP failed',
+        },
+        'editRSVP',
+        updates
+      );
       throw error;
     }
   };

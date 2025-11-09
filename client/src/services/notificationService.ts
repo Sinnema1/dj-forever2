@@ -151,13 +151,20 @@ class WeddingNotificationService {
   async subscribeToPushNotifications(): Promise<boolean> {
     try {
       const hasPermission = await this.requestPermission();
-      if (!hasPermission) return false;
+      if (!hasPermission) {
+        return false;
+      }
 
       const registration = await navigator.serviceWorker.ready;
 
+      // Ensure VAPID key is configured
+      if (!this.vapidPublicKey) {
+        throw new Error('VAPID public key not configured');
+      }
+
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey!),
+        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey),
       });
 
       // Send subscription to your backend

@@ -18,6 +18,8 @@
  * - **Analytics Integration**: Tracks installation events and user choices
  * - **Fallback Support**: Graceful handling for unsupported browsers
  */
+/* eslint-disable react-refresh/only-export-components */
+// This file exports both usePWAInstall hook and PWA UI components - a cohesive PWA module
 
 import { useState, useEffect } from 'react';
 import { logInfo, logWarn, logError } from '../utils/logger';
@@ -161,7 +163,11 @@ export function usePWAInstall() {
     const isStandalone = window.matchMedia
       ? window.matchMedia('(display-mode: standalone)').matches
       : false;
-    const isInWebAppMode = (window.navigator as any).standalone === true;
+    // iOS-specific standalone mode detection
+    const navigatorWithStandalone = window.navigator as Navigator & {
+      standalone?: boolean;
+    };
+    const isInWebAppMode = navigatorWithStandalone.standalone === true;
     const isInstalled = isStandalone || isInWebAppMode;
 
     setState(prev => ({ ...prev, isInstalled }));
@@ -254,10 +260,14 @@ export function usePWAInstall() {
 
   const shouldShowPrompt = () => {
     // Don't show if already dismissed this session
-    if (sessionStorage.getItem('pwa-install-dismissed')) return false;
+    if (sessionStorage.getItem('pwa-install-dismissed')) {
+      return false;
+    }
 
     // Don't show if already installed
-    if (state.isInstalled) return false;
+    if (state.isInstalled) {
+      return false;
+    }
 
     // Only show if installable and prompt is ready
     return state.isInstallable && state.showInstallPrompt;
@@ -281,7 +291,9 @@ export function PWAInstallBanner() {
   const { shouldShowPrompt, handleInstall, dismissInstallPrompt } =
     usePWAInstall();
 
-  if (!shouldShowPrompt) return null;
+  if (!shouldShowPrompt) {
+    return null;
+  }
 
   return (
     <div className="pwa-install-banner">
@@ -319,7 +331,9 @@ export function PWAInstallBanner() {
 export function PWAInstallCard() {
   const { isInstallable, isInstalled, handleInstall } = usePWAInstall();
 
-  if (!isInstallable || isInstalled) return null;
+  if (!isInstallable || isInstalled) {
+    return null;
+  }
 
   return (
     <div className="pwa-install-card">

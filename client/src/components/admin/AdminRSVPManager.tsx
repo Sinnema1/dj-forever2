@@ -147,7 +147,9 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
   };
 
   const handleSaveRSVP = async (userId: string) => {
-    if (!editForm) return;
+    if (!editForm) {
+      return;
+    }
 
     try {
       setIsSaving(true);
@@ -177,8 +179,9 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
       !confirm(
         'Are you sure you want to delete this RSVP? This cannot be undone.'
       )
-    )
+    ) {
       return;
+    }
 
     try {
       setIsSaving(true);
@@ -196,7 +199,9 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
   };
 
   const handleAddGuest = () => {
-    if (!editForm) return;
+    if (!editForm) {
+      return;
+    }
     setEditForm({
       ...editForm,
       guests: [
@@ -208,7 +213,9 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
   };
 
   const handleRemoveGuest = (index: number) => {
-    if (!editForm || editForm.guests.length <= 1) return;
+    if (!editForm || editForm.guests.length <= 1) {
+      return;
+    }
     const newGuests = editForm.guests.filter((_, i) => i !== index);
     setEditForm({
       ...editForm,
@@ -222,7 +229,9 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
     field: keyof Guest,
     value: string
   ) => {
-    if (!editForm) return;
+    if (!editForm) {
+      return;
+    }
     const newGuests = [...editForm.guests];
     newGuests[index] = { ...newGuests[index], [field]: value } as Guest;
     setEditForm({ ...editForm, guests: newGuests });
@@ -262,8 +271,9 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
       !confirm(
         `Are you sure you want to delete ${guestName}? This will permanently remove the guest and their RSVP. This cannot be undone.`
       )
-    )
+    ) {
       return;
+    }
 
     try {
       setIsSaving(true);
@@ -329,7 +339,7 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
                     <span className="badge invited">Invited</span>
                   )}
                   {guest.hasRSVPed && (
-                    <span className="badge rsvped">RSVP'd</span>
+                    <span className="badge rsvped">RSVP&apos;d</span>
                   )}
                   {guest.rsvp?.attending && (
                     <span className="badge attending">Attending</span>
@@ -353,6 +363,7 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
                     onClick={() => handleDeleteGuest(guest._id, guest.fullName)}
                     className="delete-guest-button"
                     disabled={isSaving}
+                    aria-label={`Delete ${guest.fullName}`}
                   >
                     Delete
                   </button>
@@ -377,7 +388,10 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
                   <div className="guest-details">
                     <h4>Guest Details:</h4>
                     {guest.rsvp.guests.map((g, index) => (
-                      <div key={index} className="guest-detail">
+                      <div
+                        key={`${g.fullName || 'guest'}-${index}`}
+                        className="guest-detail"
+                      >
                         <span className="guest-name">{g.fullName}</span>
                         {g.mealPreference && (
                           <span className="meal-badge">{g.mealPreference}</span>
@@ -444,6 +458,12 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
                         </button>
                       </div>
 
+                      {/*
+                        Using index as a key here is acceptable because these
+                        are transient form fields which may be re-ordered or
+                        added/removed locally and don't have a stable id.
+                        eslint-disable-next-line react/no-array-index-key
+                      */}
                       {editForm.guests.map((guest, index) => (
                         <div key={index} className="guest-form-group">
                           <div className="guest-form-header">
@@ -586,13 +606,25 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
 
       {/* Add New Guest Modal */}
       {showAddModal && (
-        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+        <div
+          className="modal-overlay"
+          onClick={() => setShowAddModal(false)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setShowAddModal(false);
+            }
+          }}
+        >
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Add New Guest</h3>
               <button
                 className="modal-close"
                 onClick={() => setShowAddModal(false)}
+                aria-label="Close add guest modal"
               >
                 ✕
               </button>

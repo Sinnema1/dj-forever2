@@ -72,21 +72,25 @@ export default function SwipeableLightbox({
     setIsZoomed(false);
   }, []);
 
-  const prevImage = () => {
-    if (isTransitioning) return;
+  const prevImage = useCallback(() => {
+    if (isTransitioning) {
+      return;
+    }
     resetZoom();
     setIsTransitioning(true);
     setCurrent(i => (i === 0 ? images.length - 1 : i - 1));
     setTimeout(() => setIsTransitioning(false), 300);
-  };
+  }, [isTransitioning, images.length, resetZoom]);
 
-  const nextImage = () => {
-    if (isTransitioning) return;
+  const nextImage = useCallback(() => {
+    if (isTransitioning) {
+      return;
+    }
     resetZoom();
     setIsTransitioning(true);
     setCurrent(i => (i === images.length - 1 ? 0 : i + 1));
     setTimeout(() => setIsTransitioning(false), 300);
-  };
+  }, [isTransitioning, images.length, resetZoom]);
 
   // Double tap to zoom functionality
   const handleDoubleTap = useCallback(
@@ -101,7 +105,9 @@ export default function SwipeableLightbox({
           resetZoom();
         } else {
           const touch = e.touches[0];
-          if (!touch) return;
+          if (!touch) {
+            return;
+          }
 
           const rect = (e.target as HTMLElement).getBoundingClientRect();
           const x = touch.clientX - rect.left;
@@ -128,7 +134,9 @@ export default function SwipeableLightbox({
   const onTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
       const touch = e.targetTouches[0];
-      if (!touch) return;
+      if (!touch) {
+        return;
+      }
 
       setTouchEnd(null);
       setTouchStart(touch.clientX);
@@ -138,13 +146,17 @@ export default function SwipeableLightbox({
         setShowHints(true);
         setTimeout(() => setShowHints(false), 2000);
       }
+      // Also handle double-tap detection at container level
+      handleDoubleTap(e);
     }
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
       const touch = e.targetTouches[0];
-      if (!touch) return;
+      if (!touch) {
+        return;
+      }
 
       setTouchEnd(touch.clientX);
 
@@ -160,7 +172,9 @@ export default function SwipeableLightbox({
   };
 
   const onTouchEnd = () => {
-    if (!touchStart || !touchEnd || isZoomed) return;
+    if (!touchStart || !touchEnd || isZoomed) {
+      return;
+    }
 
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
@@ -177,14 +191,20 @@ export default function SwipeableLightbox({
   // Keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') prevImage();
-      if (e.key === 'ArrowRight') nextImage();
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft') {
+        prevImage();
+      }
+      if (e.key === 'ArrowRight') {
+        nextImage();
+      }
+      if (e.key === 'Escape') {
+        onClose();
+      }
     };
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, []);
+  }, [prevImage, nextImage, onClose]);
 
   // Prevent body scroll when modal is open and fix scroll position issue
   useEffect(() => {
@@ -223,8 +243,25 @@ export default function SwipeableLightbox({
 
   // Create portal element to render modal at body level
   const modalContent = (
-    <div className="lightbox-overlay" onClick={onClose}>
-      <div className="lightbox-container" onClick={e => e.stopPropagation()}>
+    <div
+      className="lightbox-overlay"
+      onClick={e => {
+        // Only close when clicking the overlay background (not children)
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+      // Make overlay keyboard-accessible so users can close with Enter/Space
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClose();
+        }
+      }}
+    >
+      <div className="lightbox-container">
         <button
           className="lightbox-close"
           onClick={onClose}
@@ -233,20 +270,29 @@ export default function SwipeableLightbox({
           ×
         </button>
 
+        {/*
+            This container intentionally handles touch gestures (onTouchStart/
+            onTouchMove/onTouchEnd) for mobile swipe and pan behavior. The
+            interactive controls (swipe hints, zoom indicator, close button)
+            provide keyboard equivalents. Disable the a11y rule for this
+            specific node because making the container focusable would be a
+            poorer UX for screen reader users.
+        */}
         <div
           ref={containerRef}
           className="lightbox-image-container"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
+          role="region"
+          aria-label="Image viewer"
         >
           <img
             ref={imageRef}
             src={images[current]}
-            alt={`Gallery image ${current + 1}`}
+            alt={`Slide ${current + 1} of ${images.length}`}
             className={`lightbox-image ${isTransitioning ? 'transitioning' : ''} ${isZoomed ? 'zoomed' : ''}`}
             loading="lazy"
-            onTouchStart={handleDoubleTap}
             style={{
               transform: `scale(${scale}) translate(${panX}px, ${panY}px)`,
               transformOrigin: 'center center',
@@ -261,12 +307,30 @@ export default function SwipeableLightbox({
               <div
                 className={`swipe-hint left ${showHints ? 'show-hint' : ''}`}
                 onClick={prevImage}
+                role="button"
+                tabIndex={0}
+                aria-label="Previous image"
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    prevImage();
+                  }
+                }}
               >
                 <span>‹</span>
               </div>
               <div
                 className={`swipe-hint right ${showHints ? 'show-hint' : ''}`}
                 onClick={nextImage}
+                role="button"
+                tabIndex={0}
+                aria-label="Next image"
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    nextImage();
+                  }
+                }}
               >
                 <span>›</span>
               </div>
@@ -275,7 +339,19 @@ export default function SwipeableLightbox({
 
           {/* Zoom indicator */}
           {isZoomed && (
-            <div className="zoom-indicator" onClick={resetZoom}>
+            <div
+              className="zoom-indicator"
+              onClick={resetZoom}
+              role="button"
+              tabIndex={0}
+              aria-label="Reset zoom"
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  resetZoom();
+                }
+              }}
+            >
               <span>Tap to reset zoom</span>
             </div>
           )}

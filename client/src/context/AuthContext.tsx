@@ -1,4 +1,6 @@
 // client/src/context/AuthContext.tsx
+/* eslint-disable react-refresh/only-export-components */
+// This file exports both AuthContext and useAuth hook - a standard React pattern
 import React, {
   createContext,
   useContext,
@@ -89,11 +91,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Safe JSON parse helper
   const safeParseUser = (raw: string | null): UserType | null => {
-    if (!raw) return null;
+    if (!raw) {
+      return null;
+    }
     try {
       const parsed = JSON.parse(raw);
       // Optional: quick shape check for expected fields
-      if (parsed && typeof parsed === 'object') return parsed as UserType;
+      if (parsed && typeof parsed === 'object') {
+        return parsed as UserType;
+      }
       return null;
     } catch {
       return null;
@@ -102,7 +108,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Initial load from storage
   useEffect(() => {
-    const initializeAuth = async () => {
+    const initializeAuth = () => {
       const storedVersion = localStorage.getItem(STORAGE_VERSION_KEY);
       const storedToken = localStorage.getItem(STORAGE_TOKEN_KEY);
       const storedUser = safeParseUser(localStorage.getItem(STORAGE_USER_KEY));
@@ -179,10 +185,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
 
         if (errors?.length) {
-          const errorMessage = errors[0]?.message || 'QR Login failed.';
-          reportGraphQLError(errors[0], 'loginWithQrToken', {
-            qrToken: '[REDACTED]',
-          });
+          const firstError = errors[0];
+          const errorMessage = firstError?.message || 'QR Login failed.';
+
+          if (firstError?.message) {
+            reportGraphQLError(
+              { message: firstError.message },
+              'loginWithQrToken',
+              {
+                qrToken: '[REDACTED]',
+              }
+            );
+          }
           throw new Error(errorMessage);
         }
 
@@ -272,6 +286,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
  */
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within an AuthProvider');
+  if (!ctx) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
   return ctx;
 };

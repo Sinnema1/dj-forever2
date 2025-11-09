@@ -20,7 +20,7 @@ export default function RSVPProgressIndicator({
       <div className="rsvp-progress-steps">
         {steps.map((step, index) => (
           <div
-            key={index}
+            key={`${step}-${index}`}
             className={`rsvp-progress-step ${
               index < currentStep
                 ? 'completed'

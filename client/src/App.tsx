@@ -101,7 +101,7 @@ export default function App() {
               <EnhancedSuspense
                 name="homepage"
                 loadingMessage="Loading our wedding website..."
-                enhanced={true}
+                enhanced
               >
                 <HomePage />
               </EnhancedSuspense>
@@ -114,7 +114,7 @@ export default function App() {
                 <EnhancedSuspense
                   name="rsvp-page"
                   loadingMessage="Loading RSVP form..."
-                  enhanced={true}
+                  enhanced
                 >
                   <RSVPStandalonePage />
                 </EnhancedSuspense>
@@ -127,7 +127,7 @@ export default function App() {
               <EnhancedSuspense
                 name="registry-page"
                 loadingMessage="Loading registry information..."
-                enhanced={true}
+                enhanced
               >
                 <RegistryStandalonePage />
               </EnhancedSuspense>
@@ -139,7 +139,7 @@ export default function App() {
               <EnhancedSuspense
                 name="qr-login"
                 loadingMessage="Processing QR authentication..."
-                enhanced={true}
+                enhanced
               >
                 <QRTokenLogin />
               </EnhancedSuspense>
@@ -151,7 +151,7 @@ export default function App() {
               <EnhancedSuspense
                 name="login-success"
                 loadingMessage="Confirming authentication..."
-                enhanced={true}
+                enhanced
               >
                 <LoginSuccess />
               </EnhancedSuspense>
@@ -163,7 +163,7 @@ export default function App() {
               <EnhancedSuspense
                 name="qr-help"
                 loadingMessage="Loading help information..."
-                enhanced={true}
+                enhanced
               >
                 <QRInfoPage />
               </EnhancedSuspense>
@@ -176,7 +176,7 @@ export default function App() {
                 <EnhancedSuspense
                   name="admin-dashboard"
                   loadingMessage="Loading admin dashboard..."
-                  enhanced={true}
+                  enhanced
                 >
                   <AdminPage />
                 </EnhancedSuspense>

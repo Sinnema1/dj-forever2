@@ -81,7 +81,7 @@ export default function HomePage() {
             Component={Gallery}
             name="gallery"
             loadingMessage="Loading our beautiful photo gallery..."
-            enhanced={true}
+            enhanced
           />
         </div>
         <SectionDivider position="bottom" color={theme.colors.cream} />
@@ -96,7 +96,7 @@ export default function HomePage() {
             Component={TravelGuide}
             name="travel-guide"
             loadingMessage="Loading travel information and accommodations..."
-            enhanced={true}
+            enhanced
           />
         </div>
         <SectionDivider position="bottom" color={theme.colors.cream} />

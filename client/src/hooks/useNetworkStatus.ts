@@ -87,8 +87,6 @@ export function useNetworkStatus(): NetworkStatus {
   });
 
   useEffect(() => {
-    let qualityTest: number;
-
     const updateNetworkStatus = (isOnline: boolean) => {
       setNetworkStatus(prev => ({
         ...prev,
@@ -137,7 +135,9 @@ export function useNetworkStatus(): NetworkStatus {
 
     // Periodic connectivity check when we think we're online
     const checkConnectivity = async () => {
-      if (!navigator.onLine) return;
+      if (!navigator.onLine) {
+        return;
+      }
 
       try {
         await fetch('/manifest.json', {
@@ -159,7 +159,7 @@ export function useNetworkStatus(): NetworkStatus {
     window.addEventListener('offline', handleOffline);
 
     // Check connectivity every 30 seconds when online
-    qualityTest = window.setInterval(checkConnectivity, 30000);
+    const qualityTest = window.setInterval(checkConnectivity, 30000);
 
     return () => {
       window.removeEventListener('online', handleOnline);

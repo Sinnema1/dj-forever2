@@ -92,9 +92,9 @@ export function LoadingSpinner({
   return (
     <div className="loading-container">
       <div className="loading-spinner">
-        <div className="spinner-ring"></div>
-        <div className="spinner-ring"></div>
-        <div className="spinner-ring"></div>
+        <div className="spinner-ring" />
+        <div className="spinner-ring" />
+        <div className="spinner-ring" />
       </div>
       <p className="loading-message">{message}</p>
     </div>
@@ -146,11 +146,11 @@ export function LazyComponent({
   ...props
 }: {
   /** React lazy component to render */
-  Component: React.LazyExoticComponent<any>;
+  Component: React.LazyExoticComponent<React.ComponentType<unknown>>;
   /** Optional custom loading message */
   loadingMessage?: string;
   /** Additional props passed through to component */
-  [key: string]: any;
+  [key: string]: unknown;
 }) {
   return (
     <Suspense
