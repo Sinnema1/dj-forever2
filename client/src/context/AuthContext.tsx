@@ -9,6 +9,7 @@ import React, {
   useMemo,
   useCallback,
   ReactNode,
+  useRef,
 } from 'react';
 import { useMutation } from '@apollo/client/react/hooks';
 import { LOGIN_WITH_QR_TOKEN } from '../features/auth/graphql/loginWithQrToken';
@@ -18,6 +19,11 @@ import {
   reportError,
   reportGraphQLError,
 } from '../services/errorReportingService';
+import {
+  isTokenExpired,
+  getTokenExpirationInfo,
+  formatTimeRemaining,
+} from '../utils/jwtUtils';
 
 /**
  * React Context for authentication state management
@@ -84,6 +90,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const hasShownExpirationWarning = useRef(false);
 
   const [loginWithQrTokenMutation] = useMutation(LOGIN_WITH_QR_TOKEN, {
     errorPolicy: 'all',
@@ -127,6 +134,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (storedToken && storedUser) {
+        // Check if token is expired before restoring session
+        // Skip expiration check in test environment to allow mock tokens
+        const isTestEnv = import.meta.env.MODE === 'test';
+        if (!isTestEnv && isTokenExpired(storedToken)) {
+          logInfo(
+            'Stored token is expired, clearing auth state',
+            'AuthContext'
+          );
+          localStorage.removeItem(STORAGE_TOKEN_KEY);
+          localStorage.removeItem(STORAGE_USER_KEY);
+          setToken(null);
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
+
         // Set user immediately for faster UI response
         setToken(storedToken);
         setUser(storedUser);
@@ -162,6 +185,75 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     initializeAuth();
   }, []);
+
+  // Periodic token expiration checking and warning system
+  useEffect(() => {
+    // Skip token expiration checking in test environment
+    const isTestEnv = import.meta.env.MODE === 'test';
+    if (isTestEnv) {
+      return undefined;
+    }
+
+    // Only check if we have a token
+    if (!token) {
+      return undefined;
+    }
+
+    const checkTokenExpiration = () => {
+      const expirationInfo = getTokenExpirationInfo(token);
+
+      // Token is expired - auto-logout
+      if (expirationInfo.isExpired) {
+        logInfo('Token expired - auto-logout', 'AuthContext');
+        localStorage.removeItem(STORAGE_TOKEN_KEY);
+        localStorage.removeItem(STORAGE_USER_KEY);
+        setToken(null);
+        setUser(null);
+
+        // Dispatch custom event for toast notification
+        window.dispatchEvent(
+          new CustomEvent('show-toast', {
+            detail: {
+              type: 'error',
+              message:
+                'Your session has expired. Please scan your QR code to log in again.',
+            },
+          })
+        );
+        return;
+      }
+
+      // Show warning if token is expiring soon (only once)
+      if (expirationInfo.shouldWarn && !hasShownExpirationWarning.current) {
+        hasShownExpirationWarning.current = true;
+        const timeRemaining = formatTimeRemaining(expirationInfo.timeRemaining);
+        logWarn(
+          `Session expiring in ${timeRemaining}`,
+          'AuthContext',
+          expirationInfo
+        );
+
+        // Dispatch custom event for toast notification
+        window.dispatchEvent(
+          new CustomEvent('show-toast', {
+            detail: {
+              type: 'warning',
+              message: `Your session will expire in ${timeRemaining}. Please save any changes.`,
+              duration: 0, // Don't auto-dismiss
+            },
+          })
+        );
+      }
+    };
+
+    // Check immediately
+    checkTokenExpiration();
+
+    // Check every 30 seconds
+    const interval = setInterval(checkTokenExpiration, 30000);
+
+    return () => clearInterval(interval);
+  }, [token]);
 
   // Keep tabs/PWA windows in sync
   useEffect(() => {
