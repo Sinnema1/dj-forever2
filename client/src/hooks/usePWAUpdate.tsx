@@ -18,6 +18,8 @@
  * - **Update Notifications**: Elegant user notifications for updates
  * - **Rollback Support**: Handles update failures gracefully
  */
+/* eslint-disable react-refresh/only-export-components */
+// This file exports both usePWAUpdate hook and PWA update UI components - a cohesive PWA module
 
 import { useState, useEffect } from 'react';
 import { logInfo, logWarn, logError } from '../utils/logger';
@@ -150,7 +152,9 @@ export function usePWAUpdate() {
       (() => void) | undefined
     > => {
       try {
-        if (!('serviceWorker' in navigator)) return undefined;
+        if (!('serviceWorker' in navigator)) {
+          return undefined;
+        }
 
         const registration = await navigator.serviceWorker.ready;
 
@@ -193,7 +197,9 @@ export function usePWAUpdate() {
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
 
-          if (!newWorker) return;
+          if (!newWorker) {
+            return;
+          }
 
           logInfo('New service worker found, installing', 'PWAUpdate');
 
@@ -311,7 +317,9 @@ export function usePWAUpdate() {
 
   const shouldShowUpdate = () => {
     // Don't show if dismissed this session
-    if (sessionStorage.getItem('pwa-update-dismissed')) return false;
+    if (sessionStorage.getItem('pwa-update-dismissed')) {
+      return false;
+    }
 
     // Only show if update is available
     return state.updateAvailable;
@@ -334,7 +342,9 @@ export function PWAUpdateBanner() {
   const { shouldShowUpdate, handleUpdate, dismissUpdate, installing } =
     usePWAUpdate();
 
-  if (!shouldShowUpdate) return null;
+  if (!shouldShowUpdate) {
+    return null;
+  }
 
   return (
     <div className="pwa-update-banner">
@@ -386,7 +396,9 @@ export function PWAUpdateToast() {
     }
   }, [shouldShowUpdate]);
 
-  if (!isVisible) return null;
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <div className="pwa-update-toast">

@@ -154,7 +154,9 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
 
   // Filter guests based on search term
   const filteredGuests = useMemo(() => {
-    if (!searchTerm) return pendingGuests;
+    if (!searchTerm) {
+      return pendingGuests;
+    }
 
     const searchLower = searchTerm.toLowerCase();
     return pendingGuests.filter(
@@ -187,14 +189,17 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
   // Send reminder to single guest
   const handleSendSingle = async (guestId: string) => {
     const guest = guests.find(g => g._id === guestId);
-    if (!guest) return;
+    if (!guest) {
+      return;
+    }
 
     if (
       !confirm(
         `Send RSVP reminder email to ${guest.fullName} (${guest.email})?`
       )
-    )
+    ) {
       return;
+    }
 
     try {
       setIsSending(true);
@@ -232,8 +237,9 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
       !confirm(
         `Send RSVP reminder emails to ${selectedGuests.size} selected guest${selectedGuests.size === 1 ? '' : 's'}?`
       )
-    )
+    ) {
       return;
+    }
 
     try {
       setIsSending(true);
@@ -271,8 +277,9 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
       !confirm(
         `Send RSVP reminder emails to ALL ${pendingGuests.length} pending guest${pendingGuests.length === 1 ? '' : 's'}?\n\nThis action cannot be undone.`
       )
-    )
+    ) {
       return;
+    }
 
     try {
       setIsSending(true);
@@ -325,7 +332,9 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
 
   // Format date for display
   const formatDate = (dateString?: string) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) {
+      return 'N/A';
+    }
     const date = new Date(dateString);
     return date.toLocaleString();
   };
@@ -397,6 +406,7 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
             onClick={() => setShowAllUsers(!showAllUsers)}
             className={`toggle-button ${showAllUsers ? 'active' : ''}`}
             title={showAllUsers ? 'Show pending RSVPs only' : 'Show all users'}
+            aria-pressed={showAllUsers}
           >
             {showAllUsers ? '📋 All Users' : '⏳ Pending Only'}
           </button>
@@ -474,6 +484,7 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
                     checked={selectedGuests.has(guest._id)}
                     onChange={() => handleToggleGuest(guest._id)}
                     disabled={isSending}
+                    aria-label={`Select ${guest.fullName}`}
                   />
                 </div>
                 <div className="guest-details">
@@ -486,6 +497,7 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
                     className="preview-button"
                     disabled={isSending || previewLoading}
                     title="Preview email"
+                    aria-label={`Preview email for ${guest.fullName}`}
                   >
                     👁️ Preview
                   </button>
@@ -493,6 +505,7 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
                     onClick={() => handleSendSingle(guest._id)}
                     className="send-single-button"
                     disabled={isSending || !smtpHealth.healthy}
+                    aria-label={`Send reminder to ${guest.fullName}`}
                   >
                     📧 Send Reminder
                   </button>
@@ -508,6 +521,14 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
         <div
           className="results-modal-overlay"
           onClick={() => setShowResults(false)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setShowResults(false);
+            }
+          }}
         >
           <div className="results-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
@@ -537,15 +558,17 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
               <div className="results-list">
                 {lastResults.map((result, index) => (
                   <div
-                    key={index}
+                    key={`${result.email || 'unknown'}-${index}`}
                     className={`result-item ${result.success ? 'success' : 'failure'}`}
                   >
-                    <span className="result-icon">
+                    <span className="result-icon" aria-hidden>
                       {result.success ? '✅' : '❌'}
                     </span>
                     <span className="result-email">{result.email}</span>
                     {result.error && (
-                      <span className="result-error">{result.error}</span>
+                      <span className="result-error" title={result.error}>
+                        {result.error}
+                      </span>
                     )}
                   </div>
                 ))}
@@ -568,6 +591,14 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
         <div
           className="results-modal-overlay"
           onClick={() => setShowPreview(false)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setShowPreview(false);
+            }
+          }}
         >
           <div className="preview-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
@@ -616,6 +647,14 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
         <div
           className="results-modal-overlay"
           onClick={() => setShowHistory(false)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setShowHistory(false);
+            }
+          }}
         >
           <div className="history-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
@@ -631,7 +670,10 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
               {historyData?.emailSendHistory &&
               historyData.emailSendHistory.length > 0 ? (
                 <div className="history-table-container">
-                  <table className="history-table">
+                  <table
+                    className="history-table"
+                    aria-label="Email send history"
+                  >
                     <thead>
                       <tr>
                         <th>Date</th>

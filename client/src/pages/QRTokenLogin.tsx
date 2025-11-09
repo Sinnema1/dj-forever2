@@ -70,7 +70,7 @@ const QRTokenLogin: React.FC = () => {
   const [isRetrying, setIsRetrying] = useState(false);
 
   useEffect(() => {
-    if (!qrToken) return;
+    if (!qrToken) {return;}
     if (isLoggedIn) {
       navigate('/', { replace: true });
       return;
@@ -153,7 +153,7 @@ const QRTokenLogin: React.FC = () => {
 
   // Retry function for network errors
   const handleRetry = async () => {
-    if (!qrToken || !isOnline) return;
+    if (!qrToken || !isOnline) {return;}
 
     setIsRetrying(true);
     setError(null);

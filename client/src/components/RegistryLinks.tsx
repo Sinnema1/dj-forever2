@@ -27,13 +27,14 @@ export default function RegistryLinks() {
       </p>
 
       <div className="registry-buttons">
-        {registries.map((registry, index) => (
+        {registries.map(registry => (
           <a
-            key={index}
+            key={registry.name}
             href={registry.url}
             className="registry-button"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`${registry.name} registry (opens in new tab)`}
           >
             {registry.logo ? (
               <div className="registry-logo-container">

@@ -22,6 +22,14 @@
 import { logDebug, logWarn } from './logger';
 
 /**
+ * Metadata for analytics events (JSON-serializable values)
+ */
+export type AnalyticsMetadata = Record<
+  string,
+  string | number | boolean | null | undefined
+>;
+
+/**
  * Analytics event structure for consistent event tracking
  *
  * @interface AnalyticsEvent
@@ -34,7 +42,7 @@ interface AnalyticsEvent {
   /** Timestamp when the event occurred */
   timestamp: Date;
   /** Additional event-specific data and context */
-  metadata?: Record<string, any>;
+  metadata?: AnalyticsMetadata;
 }
 
 /**
@@ -112,7 +120,7 @@ export class WeddingAnalytics {
    * });
    * ```
    */
-  track(event: string, guestId?: string, metadata?: Record<string, any>) {
+  track(event: string, guestId?: string, metadata?: AnalyticsMetadata) {
     const analyticsEvent: AnalyticsEvent = {
       event,
       timestamp: new Date(),
@@ -147,7 +155,7 @@ export class WeddingAnalytics {
     }
   }
 
-  private async sendToBackend(_eventData: Omit<AnalyticsEvent, 'timestamp'>) {
+  private sendToBackend(_eventData: Omit<AnalyticsEvent, 'timestamp'>) {
     try {
       // Optional: Send analytics to your GraphQL backend
       // await fetch('/graphql', {

@@ -106,7 +106,7 @@ const AuthDebug: React.FC = () => {
               </tr>
               <tr style={{ borderBottom: '1px solid #ddd' }}>
                 <td style={{ padding: '10px', fontWeight: 'bold' }}>
-                  Has RSVP'd:
+                  Has RSVP&apos;d:
                 </td>
                 <td style={{ padding: '10px' }}>
                   {user.hasRSVPed ? '✅ Yes' : '❌ No'}

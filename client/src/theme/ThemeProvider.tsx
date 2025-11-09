@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+// This file exports both ThemeProvider component and useTheme hook - a standard React pattern
 import {
   createContext,
   useContext,
@@ -17,7 +19,9 @@ const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
 
 export const useTheme = () => {
   const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error('useTheme must be used within ThemeProvider');
+  if (!ctx) {
+    throw new Error('useTheme must be used within ThemeProvider');
+  }
   return ctx;
 };
 
@@ -39,7 +43,9 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
       ) {
         initial = 'dark';
       }
-    } catch {}
+    } catch (e) {
+      // Ignore storage/matchMedia errors (safely fallback to default)
+    }
     setMode(initial);
   }, []);
 
@@ -47,7 +53,9 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, mode);
-    } catch {}
+    } catch (e) {
+      // Ignore storage write errors in private browsing
+    }
     document.documentElement.setAttribute('data-theme', mode);
   }, [mode]);
 

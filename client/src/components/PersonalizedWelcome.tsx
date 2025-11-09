@@ -52,7 +52,7 @@ const PersonalizedWelcome: React.FC = () => {
     return undefined;
   }, [isLoggedIn, user]);
 
-  if (!showWelcome || !isLoggedIn) return null;
+  if (!showWelcome || !isLoggedIn) {return null;}
 
   return (
     <div

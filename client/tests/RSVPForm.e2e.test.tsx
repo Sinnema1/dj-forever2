@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { act } from 'react';
 import userEvent from '@testing-library/user-event';
 import RSVPForm from '../src/components/RSVP/RSVPForm';
@@ -8,10 +8,31 @@ import { MockedProvider } from '@apollo/client/testing';
 import { GET_RSVP } from '../src/features/rsvp/graphql/queries';
 import { CREATE_RSVP } from '../src/features/rsvp/graphql/mutations';
 
-const initialRSVPMock = {
+/**
+ * RSVPForm E2E Test Suite
+ *
+ * Testing Patterns Used:
+ * 1. **Multiple Mock Responses**: Apollo's MockedProvider consumes one mock per query execution.
+ *    Form interactions trigger re-queries, so we provide multiple GET_RSVP mocks via createInitialRSVPMock().
+ *
+ * 2. **fireEvent vs userEvent**:
+ *    - Use fireEvent.change() for controlled text inputs (fullName, additionalNotes)
+ *    - Use userEvent for buttons and interactive elements (click, selectOptions)
+ *    - This prevents issues with onChange handlers in controlled components
+ *
+ * 3. **act() Usage**:
+ *    - Wrap component rendering in act() when using MockedProvider
+ *    - Don't wrap userEvent calls (userEvent handles this internally)
+ *
+ * 4. **Warnings**: "not wrapped in act" warnings from Apollo's async state updates are expected and harmless
+ */
+
+// Helper to create initial RSVP mock (null response for new users)
+// Multiple instances needed to handle re-queries during form interaction
+const createInitialRSVPMock = () => ({
   request: { query: GET_RSVP },
   result: { data: { getRSVP: null } },
-};
+});
 
 // Mock for attending RSVP
 const createdAttendingRSVP = {
@@ -157,7 +178,16 @@ const createMaybeRSVPMock = {
 };
 
 function renderRSVPForm(
-  mocks = [initialRSVPMock, createAttendingRSVPMock, getRSVPMockAfterCreate]
+  mocks = [
+    // Provide multiple initial GET_RSVP mocks to handle re-queries during form interaction
+    createInitialRSVPMock(),
+    createInitialRSVPMock(),
+    createInitialRSVPMock(),
+    createInitialRSVPMock(),
+    createInitialRSVPMock(),
+    createAttendingRSVPMock,
+    getRSVPMockAfterCreate,
+  ]
 ) {
   return render(
     <MockedProvider mocks={mocks} addTypename={false}>
@@ -185,11 +215,9 @@ describe('RSVPForm integration', () => {
         'YES'
       ) as HTMLInputElement;
 
-      // Fill out the form within act() to avoid warnings
-      await act(async () => {
-        await user.type(fullNameInput, 'Test User');
-        await user.click(attendingYesRadio);
-      });
+      // Fill out the form - use fireEvent for controlled inputs instead of userEvent
+      fireEvent.change(fullNameInput, { target: { value: 'Test User' } });
+      await user.click(attendingYesRadio);
 
       // Wait for conditional fields to appear
       await waitFor(() => {
@@ -200,10 +228,8 @@ describe('RSVPForm integration', () => {
         /meal preference/i
       ) as HTMLSelectElement;
 
-      // Complete form filling
-      await act(async () => {
-        await user.selectOptions(mealPrefSelect, 'vegetarian');
-      });
+      // Complete form filling - userEvent handles async, no act() needed
+      await user.selectOptions(mealPrefSelect, 'vegetarian');
 
       // Verify form state
       expect(fullNameInput.value).toBe('Test User');
@@ -211,9 +237,7 @@ describe('RSVPForm integration', () => {
       expect(mealPrefSelect.value).toBe('vegetarian');
 
       // Submit the form
-      await act(async () => {
-        await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
-      });
+      await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
 
       // Wait for the confirmation screen to appear
       await waitFor(() => {
@@ -245,10 +269,8 @@ describe('RSVPForm integration', () => {
       ) as HTMLInputElement;
 
       // Fill out form but leave meal preference empty
-      await act(async () => {
-        await user.type(fullNameInput, 'Test User');
-        await user.click(attendingYesRadio);
-      });
+      fireEvent.change(fullNameInput, { target: { value: 'Test User' } });
+      await user.click(attendingYesRadio);
 
       // Wait for conditional fields
       await waitFor(() => {
@@ -256,9 +278,7 @@ describe('RSVPForm integration', () => {
       });
 
       // Try to submit without selecting meal preference
-      await act(async () => {
-        await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
-      });
+      await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
 
       // Should show validation error
       await waitFor(() => {
@@ -274,7 +294,12 @@ describe('RSVPForm integration', () => {
       const user = userEvent.setup();
 
       await act(async () => {
-        renderRSVPForm([initialRSVPMock, createNonAttendingRSVPMock]);
+        renderRSVPForm([
+          createInitialRSVPMock(),
+          createInitialRSVPMock(),
+          createInitialRSVPMock(),
+          createNonAttendingRSVPMock,
+        ]);
       });
 
       const attendingNoRadio = screen.getByDisplayValue(
@@ -282,9 +307,7 @@ describe('RSVPForm integration', () => {
       ) as HTMLInputElement;
 
       // Fill out form for non-attending (no name required)
-      await act(async () => {
-        await user.click(attendingNoRadio);
-      });
+      await user.click(attendingNoRadio);
 
       // Verify meal preference fields are hidden
       expect(
@@ -295,14 +318,12 @@ describe('RSVPForm integration', () => {
       const notesTextarea = screen.getByLabelText(
         /additional notes/i
       ) as HTMLTextAreaElement;
-      await act(async () => {
-        await user.type(notesTextarea, "Sorry, can't make it");
+      fireEvent.change(notesTextarea, {
+        target: { value: "Sorry, can't make it" },
       });
 
       // Submit the form
-      await act(async () => {
-        await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
-      });
+      await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
 
       // Should submit successfully without errors
       await waitFor(() => {
@@ -316,7 +337,12 @@ describe('RSVPForm integration', () => {
       const user = userEvent.setup();
 
       await act(async () => {
-        renderRSVPForm([initialRSVPMock, createNonAttendingRSVPMock]);
+        renderRSVPForm([
+          createInitialRSVPMock(),
+          createInitialRSVPMock(),
+          createInitialRSVPMock(),
+          createNonAttendingRSVPMock,
+        ]);
       });
 
       const attendingNoRadio = screen.getByDisplayValue(
@@ -324,21 +350,17 @@ describe('RSVPForm integration', () => {
       ) as HTMLInputElement;
 
       // Select non-attending without filling name
-      await act(async () => {
-        await user.click(attendingNoRadio);
-      });
+      await user.click(attendingNoRadio);
 
       const notesTextarea = screen.getByLabelText(
         /additional notes/i
       ) as HTMLTextAreaElement;
-      await act(async () => {
-        await user.type(notesTextarea, "Sorry, can't make it");
+      fireEvent.change(notesTextarea, {
+        target: { value: "Sorry, can't make it" },
       });
 
       // Submit without name - should work for non-attending
-      await act(async () => {
-        await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
-      });
+      await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
 
       // Should not show name validation error for non-attending
       expect(
@@ -352,7 +374,12 @@ describe('RSVPForm integration', () => {
       const user = userEvent.setup();
 
       await act(async () => {
-        renderRSVPForm([initialRSVPMock, createMaybeRSVPMock]);
+        renderRSVPForm([
+          createInitialRSVPMock(),
+          createInitialRSVPMock(),
+          createInitialRSVPMock(),
+          createMaybeRSVPMock,
+        ]);
       });
 
       const attendingMaybeRadio = screen.getByDisplayValue(
@@ -360,9 +387,7 @@ describe('RSVPForm integration', () => {
       ) as HTMLInputElement;
 
       // Fill out form for maybe attending (no name required)
-      await act(async () => {
-        await user.click(attendingMaybeRadio);
-      });
+      await user.click(attendingMaybeRadio);
 
       // Verify meal preference fields are hidden
       expect(
@@ -373,14 +398,10 @@ describe('RSVPForm integration', () => {
       const notesTextarea = screen.getByLabelText(
         /additional notes/i
       ) as HTMLTextAreaElement;
-      await act(async () => {
-        await user.type(notesTextarea, 'Not sure yet');
-      });
+      fireEvent.change(notesTextarea, { target: { value: 'Not sure yet' } });
 
       // Submit the form
-      await act(async () => {
-        await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
-      });
+      await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
 
       // Should submit successfully
       await waitFor(() => {
@@ -417,26 +438,20 @@ describe('RSVPForm integration', () => {
       ) as HTMLInputElement;
 
       // Test mobile touch interactions - check visual state instead of hidden radio
-      await act(async () => {
-        await user.click(attendingYesRadio);
-      });
+      await user.click(attendingYesRadio);
 
       // Check that the option is visually selected (has 'selected' class)
       const yesOption = attendingYesRadio.closest('.attendance-option');
       expect(yesOption).toHaveClass('selected');
 
-      await act(async () => {
-        await user.click(attendingNoRadio);
-      });
+      await user.click(attendingNoRadio);
 
       // Check visual state
       const noOption = attendingNoRadio.closest('.attendance-option');
       expect(noOption).toHaveClass('selected');
       expect(yesOption).not.toHaveClass('selected');
 
-      await act(async () => {
-        await user.click(attendingMaybeRadio);
-      });
+      await user.click(attendingMaybeRadio);
 
       // Check visual state
       const maybeOption = attendingMaybeRadio.closest('.attendance-option');
@@ -459,11 +474,9 @@ describe('RSVPForm integration', () => {
       ) as HTMLInputElement;
 
       // Rapid clicks should still work correctly - check visual state
-      await act(async () => {
-        await user.click(attendingYesRadio);
-        await user.click(attendingNoRadio);
-        await user.click(attendingYesRadio);
-      });
+      await user.click(attendingYesRadio);
+      await user.click(attendingNoRadio);
+      await user.click(attendingYesRadio);
 
       // Check final visual state
       const yesOption = attendingYesRadio.closest('.attendance-option');
@@ -486,14 +499,10 @@ describe('RSVPForm integration', () => {
       ) as HTMLInputElement;
 
       // Select attending
-      await act(async () => {
-        await user.click(attendingYesRadio);
-      });
+      await user.click(attendingYesRadio);
 
       // Try to submit without required fields
-      await act(async () => {
-        await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
-      });
+      await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
 
       // Should show validation errors for attending guests
       await waitFor(() => {
@@ -520,11 +529,9 @@ describe('RSVPForm integration', () => {
         'NO'
       ) as HTMLInputElement;
 
-      // Fill form for attending
-      await act(async () => {
-        await user.type(fullNameInput, 'Test User');
-        await user.click(attendingYesRadio);
-      });
+      // Fill form for attending - use fireEvent for controlled input
+      fireEvent.change(fullNameInput, { target: { value: 'Test User' } });
+      await user.click(attendingYesRadio);
 
       // Wait for meal preference field
       await waitFor(() => {
@@ -532,9 +539,7 @@ describe('RSVPForm integration', () => {
       });
 
       // Change to not attending
-      await act(async () => {
-        await user.click(attendingNoRadio);
-      });
+      await user.click(attendingNoRadio);
 
       // Meal preference should be hidden
       expect(
