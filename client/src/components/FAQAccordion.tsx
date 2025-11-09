@@ -70,7 +70,7 @@ const FAQAccordion: React.FC = () => {
   return (
     <div className="faq-accordion">
       {faqs.map((faq, idx) => (
-        <div key={idx} className="faq-item">
+        <div key={faq.question} className="faq-item">
           <button
             className={`faq-question ${openIndex === idx ? 'open' : ''}`}
             onClick={() => toggle(idx)}

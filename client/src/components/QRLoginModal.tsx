@@ -116,10 +116,14 @@ export default function QRLoginModal(props: QRLoginModalProps) {
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   const handleTokenSubmit = async (token: string) => {
-    if (!token.trim() || loading) return;
+    if (!token.trim() || loading) {
+      return;
+    }
 
     setLoading(true);
     setError('');
@@ -130,10 +134,12 @@ export default function QRLoginModal(props: QRLoginModalProps) {
         onLoginSuccess();
         onClose();
       }, 800);
-    } catch (err: any) {
-      setError(
-        err.message || 'Login failed. Please check your token and try again.'
-      );
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : 'Login failed. Please check your token and try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -146,13 +152,32 @@ export default function QRLoginModal(props: QRLoginModalProps) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    // Overlay is an interactive backdrop intended to close the modal when
+    // clicked. We make it keyboard-accessible (role/button + tabIndex + onKeyDown)
+    // and provide a visible Close button for screen reader and keyboard users.
+    <div
+      className="modal-overlay"
+      onClick={e => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClose();
+        }
+      }}
+    >
       <div
         className="modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="qr-login-title"
-        onClick={e => e.stopPropagation()}
+        // Make the dialog programmatically focusable so it's treated as interactive
+        tabIndex={-1}
       >
         <button
           className="modal-close"
@@ -188,10 +213,11 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                 lineHeight: '1.5',
               }}
             >
-              <strong>Recommended:</strong> Use your phone's camera app to scan
-              the QR code on your invitation. It will automatically open this
-              website and log you in!
+              <strong>Recommended:</strong> Use your phone&apos;s camera app to
+              scan the QR code on your invitation. It will automatically open
+              this website and log you in!
             </p>
+
             <p style={{ margin: '0', fontSize: '0.9rem', color: '#555' }}>
               Or enter your QR token manually below:
             </p>
@@ -229,7 +255,6 @@ export default function QRLoginModal(props: QRLoginModalProps) {
               transition: 'border-color 0.2s',
               ...(tokenInput && { borderColor: '#4caf50' }),
             }}
-            autoFocus
           />
           <button
             onClick={() => handleTokenSubmit(tokenInput)}
@@ -275,7 +300,7 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                   borderRadius: '50%',
                   animation: 'spin 1s linear infinite',
                 }}
-              ></div>
+              />
               Verifying your token...
             </div>
           </div>
@@ -380,7 +405,8 @@ export default function QRLoginModal(props: QRLoginModalProps) {
             </li>
           </ul>
           <p style={{ fontSize: '0.9rem', color: '#666', fontStyle: 'italic' }}>
-            Need help? Contact us if you can't find your invitation or token.
+            Need help? Contact us if you can&apos;t find your invitation or
+            token.
           </p>
         </div>
       </div>

@@ -5,6 +5,22 @@
 
 import { logger, LogLevel } from '../utils/logger';
 
+// Network connection information from Navigator API
+export interface NetworkConnectionInfo {
+  effectiveType?: string;
+  downlink?: number;
+  rtt?: number;
+  saveData?: boolean;
+}
+
+// GraphQL error details
+export interface GraphQLErrorDetails {
+  message?: string;
+  locations?: Array<{ line: number; column: number }>;
+  path?: Array<string | number>;
+  extensions?: Record<string, unknown>;
+}
+
 export interface ErrorContext {
   component?: string;
   action?: string;
@@ -13,7 +29,28 @@ export interface ErrorContext {
   url?: string;
   userAgent?: string;
   timestamp?: string;
-  [key: string]: any;
+  viewport?: { width: number; height: number };
+  connection?: NetworkConnectionInfo;
+  variables?: unknown;
+  graphqlErrors?: GraphQLErrorDetails[];
+  networkError?: Error | null;
+  method?: string;
+  componentStack?: string;
+  errorBoundary?: boolean;
+  async?: boolean;
+  [key: string]: unknown;
+}
+
+// Stored error report structure (for localStorage)
+export interface StoredErrorReport {
+  error: {
+    message: string;
+    name: string;
+  };
+  context: ErrorContext;
+  level: LogLevel;
+  stack?: string;
+  fingerprint?: string;
 }
 
 export interface ErrorReport {
@@ -51,7 +88,17 @@ export class ErrorReportingService {
   }
 
   private enrichContext(context: ErrorContext): ErrorContext {
-    return {
+    // Type assertion for non-standard Navigator API
+    const navigatorWithConnection = navigator as Navigator & {
+      connection?: {
+        effectiveType?: string;
+        downlink?: number;
+        rtt?: number;
+        saveData?: boolean;
+      };
+    };
+
+    const result: ErrorContext = {
       ...context,
       sessionId: this.sessionId,
       url: window.location.href,
@@ -61,13 +108,32 @@ export class ErrorReportingService {
         width: window.innerWidth,
         height: window.innerHeight,
       },
-      connection: (navigator as any).connection
-        ? {
-            effectiveType: (navigator as any).connection.effectiveType,
-            downlink: (navigator as any).connection.downlink,
-          }
-        : undefined,
     };
+
+    // Only add connection info if available and has data
+    if (navigatorWithConnection.connection) {
+      const conn = navigatorWithConnection.connection;
+      const connInfo: NetworkConnectionInfo = {};
+
+      if (conn.effectiveType) {
+        connInfo.effectiveType = conn.effectiveType;
+      }
+      if (conn.downlink !== undefined) {
+        connInfo.downlink = conn.downlink;
+      }
+      if (conn.rtt !== undefined) {
+        connInfo.rtt = conn.rtt;
+      }
+      if (conn.saveData !== undefined) {
+        connInfo.saveData = conn.saveData;
+      }
+
+      if (Object.keys(connInfo).length > 0) {
+        result.connection = connInfo;
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -118,13 +184,23 @@ export class ErrorReportingService {
   /**
    * Report GraphQL errors with specific context
    */
-  reportGraphQLError(error: any, operation: string, variables?: any): void {
+  reportGraphQLError(
+    error: {
+      message?: string;
+      graphQLErrors?: GraphQLErrorDetails[];
+      networkError?: Error | null;
+    },
+    operation: string,
+    variables?: unknown
+  ): void {
     const context: ErrorContext = {
       component: 'GraphQL',
       action: operation,
       variables: this.isDevelopment ? variables : '[REDACTED]',
-      graphqlErrors: error.graphQLErrors,
-      networkError: error.networkError,
+      ...(error.graphQLErrors && { graphqlErrors: error.graphQLErrors }),
+      ...(error.networkError !== undefined && {
+        networkError: error.networkError,
+      }),
     };
 
     this.reportError(error.message || 'GraphQL operation failed', context);
@@ -138,7 +214,7 @@ export class ErrorReportingService {
       component: 'Network',
       action: `${method || 'REQUEST'} ${url}`,
       url,
-      method,
+      ...(method && { method }),
     };
 
     this.reportError(error, context);
@@ -155,7 +231,9 @@ export class ErrorReportingService {
     const context: ErrorContext = {
       component: componentName || 'React Component',
       action: 'render',
-      componentStack: errorInfo.componentStack,
+      ...(errorInfo.componentStack && {
+        componentStack: errorInfo.componentStack,
+      }),
       errorBoundary: true,
     };
 
@@ -193,7 +271,9 @@ export class ErrorReportingService {
       });
 
       // Keep only last 20 error reports
-      if (stored.length > 20) stored.shift();
+      if (stored.length > 20) {
+        stored.shift();
+      }
       localStorage.setItem('error_reports', JSON.stringify(stored));
     } catch (e) {
       // Silently fail if localStorage is not available
@@ -217,7 +297,7 @@ export class ErrorReportingService {
   /**
    * Get stored error reports for debugging
    */
-  getStoredReports(): any[] {
+  getStoredReports(): StoredErrorReport[] {
     try {
       return JSON.parse(localStorage.getItem('error_reports') || '[]');
     } catch (e) {
@@ -258,9 +338,13 @@ export const reportWarning = (message: string, context?: ErrorContext) =>
   errorReporting.reportWarning(message, context);
 
 export const reportGraphQLError = (
-  error: any,
+  error: {
+    message?: string;
+    graphQLErrors?: GraphQLErrorDetails[];
+    networkError?: Error | null;
+  },
   operation: string,
-  variables?: any
+  variables?: unknown
 ) => errorReporting.reportGraphQLError(error, operation, variables);
 
 export const reportNetworkError = (

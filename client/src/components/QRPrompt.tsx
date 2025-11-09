@@ -1,6 +1,6 @@
-import React from "react";
-import { useAuth } from "../context/AuthContext";
-import { Navigate, Link } from "react-router-dom";
+import React from 'react';
+import { useAuth } from '../context/AuthContext';
+import { Navigate, Link } from 'react-router-dom';
 // Styles now imported globally via main.tsx
 
 const QRPrompt: React.FC = () => {
@@ -27,23 +27,23 @@ const QRPrompt: React.FC = () => {
           </div>
           <div className="instruction-step">
             <div className="step-number">3</div>
-            <p>Use your phone's camera to scan the code</p>
+            <p>Use your phone&apos;s camera to scan the code</p>
           </div>
         </div>
         <p className="qr-help-text">
-          Need help? Contact us if you can't find your invitation.
+          Need help? Contact us if you can&apos;t find your invitation.
         </p>
         <Link
           to="/qr-help"
           style={{
-            display: "inline-block",
-            marginTop: "20px",
-            color: "#4caf50",
-            textDecoration: "none",
-            padding: "8px 15px",
-            border: "1px solid #4caf50",
-            borderRadius: "4px",
-            fontSize: "14px",
+            display: 'inline-block',
+            marginTop: '20px',
+            color: '#4caf50',
+            textDecoration: 'none',
+            padding: '8px 15px',
+            border: '1px solid #4caf50',
+            borderRadius: '4px',
+            fontSize: '14px',
           }}
         >
           How to Scan QR Codes

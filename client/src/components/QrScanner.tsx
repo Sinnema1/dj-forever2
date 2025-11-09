@@ -170,7 +170,7 @@ const QrScanner: React.FC<QrScannerProps> = ({
    * error suppression for known harmless errors during cleanup process.
    */
   const cleanup = useCallback(async () => {
-    if (!html5QrCodeRef.current || isCleaningUpRef.current) return;
+    if (!html5QrCodeRef.current || isCleaningUpRef.current) {return;}
 
     isCleaningUpRef.current = true;
 
@@ -214,7 +214,7 @@ const QrScanner: React.FC<QrScannerProps> = ({
       isInitializingRef.current ||
       !isMountedRef.current
     )
-      return;
+      {return;}
 
     // Clear any existing scanner first to prevent duplicates
     if (html5QrCodeRef.current) {

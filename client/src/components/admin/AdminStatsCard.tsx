@@ -37,44 +37,58 @@ const AdminStatsCard: React.FC<AdminStatsCardProps> = ({ stats }) => {
       <h2>Wedding Statistics</h2>
 
       <div className="stats-grid">
-        <div className="stat-item primary">
+        <div
+          className="stat-item primary"
+          role="group"
+          aria-label="Attending guests"
+        >
           <div className="stat-number">{stats.totalAttending}</div>
           <div className="stat-label">Attending Guests</div>
         </div>
 
-        <div className="stat-item">
+        <div className="stat-item" role="group" aria-label="RSVPs received">
           <div className="stat-number">{stats.totalRSVPed}</div>
           <div className="stat-label">RSVPs Received</div>
         </div>
 
-        <div className="stat-item">
+        <div className="stat-item" role="group" aria-label="Maybe responses">
           <div className="stat-number">{stats.totalMaybe}</div>
           <div className="stat-label">Maybe Responses</div>
         </div>
 
-        <div className="stat-item">
+        <div className="stat-item" role="group" aria-label="Total invited">
           <div className="stat-number">{stats.totalInvited}</div>
           <div className="stat-label">Total Invited</div>
         </div>
       </div>
 
       <div className="stats-rates">
-        <div className="rate-item">
+        <div
+          className="rate-item"
+          role="group"
+          aria-label={`RSVP rate ${rsvpRate} percent`}
+        >
           <div className="rate-bar">
             <div
               className="rate-fill rsvp"
               style={{ width: `${rsvpRate}%` }}
-            ></div>
+              aria-hidden
+            />
           </div>
           <div className="rate-label">RSVP Rate: {rsvpRate}%</div>
         </div>
 
-        <div className="rate-item">
+        <div
+          className="rate-item"
+          role="group"
+          aria-label={`Attendance rate ${attendanceRate} percent`}
+        >
           <div className="rate-bar">
             <div
               className="rate-fill attendance"
               style={{ width: `${attendanceRate}%` }}
-            ></div>
+              aria-hidden
+            />
           </div>
           <div className="rate-label">Attendance Rate: {attendanceRate}%</div>
         </div>
@@ -98,8 +112,8 @@ const AdminStatsCard: React.FC<AdminStatsCardProps> = ({ stats }) => {
         <div className="dietary-restrictions">
           <h3>Dietary Restrictions (Attending Guests Only)</h3>
           <div className="restrictions-list">
-            {stats.dietaryRestrictions.map((restriction, index) => (
-              <div key={index} className="restriction-item">
+            {stats.dietaryRestrictions.map(restriction => (
+              <div key={restriction} className="restriction-item">
                 {restriction}
               </div>
             ))}

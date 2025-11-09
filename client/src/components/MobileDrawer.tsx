@@ -82,7 +82,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
   // Body scroll lock
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {return;}
 
     // Save current scroll position
     const scrollY = window.scrollY;
@@ -116,7 +116,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
   // Keyboard event handling
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {return;}
 
     const handleKeyDown = (event: KeyboardEvent) => {
       // Close on Escape
@@ -153,7 +153,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   return createPortal(
     <div className="mobile-drawer-portal">

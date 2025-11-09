@@ -2,6 +2,8 @@
  * Performance Monitor Component
  * Integrates Core Web Vitals tracking with the React app
  */
+/* eslint-disable react-refresh/only-export-components */
+// This file exports both PerformanceMonitor component and utility functions - a cohesive performance module
 
 import { useEffect, useRef } from 'react';
 import performanceMonitor from '../services/performanceMonitor';
@@ -23,17 +25,21 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   const isInitialized = useRef(false);
 
   useEffect(() => {
-    if (isInitialized.current) return;
+    if (isInitialized.current) {
+      return;
+    }
 
     // Only initialize once
     isInitialized.current = true;
 
     if (debug && import.meta.env?.DEV) {
+      // eslint-disable-next-line no-console
       console.log('Performance monitoring initialized');
 
       // Log performance summary after a delay
       setTimeout(() => {
         const summary = performanceMonitor.getPerformanceSummary();
+        // eslint-disable-next-line no-console
         console.table(summary);
       }, 5000);
     }

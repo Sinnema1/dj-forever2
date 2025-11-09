@@ -115,7 +115,7 @@ class SuspenseErrorBoundary extends Component<
           <div className="error-content">
             <div className="error-icon">⚠️</div>
             <h3>Something went wrong</h3>
-            <p>We're having trouble loading this content.</p>
+            <p>We&apos;re having trouble loading this content.</p>
             <button
               onClick={this.handleRetry}
               className="retry-button"
@@ -171,7 +171,7 @@ function EnhancedLoadingFallback({
       </p>
       <div className="loading-progress">
         <div className="progress-bar">
-          <div className="progress-fill"></div>
+          <div className="progress-fill" />
         </div>
       </div>
     </div>
@@ -262,7 +262,7 @@ export function EnhancedLazyComponent({
   ...props
 }: {
   /** React lazy component to render */
-  Component: React.LazyExoticComponent<any>;
+  Component: React.LazyExoticComponent<React.ComponentType<any>>;
   /** Loading message to display */
   loadingMessage?: string;
   /** Component name for debugging */
@@ -270,7 +270,7 @@ export function EnhancedLazyComponent({
   /** Whether to use enhanced loading animations */
   enhanced?: boolean;
   /** Additional props passed through to component */
-  [key: string]: any;
+  [key: string]: unknown;
 }) {
   return (
     <EnhancedSuspense

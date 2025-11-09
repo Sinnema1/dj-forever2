@@ -39,6 +39,12 @@ export enum LogLevel {
 }
 
 /**
+ * Log data can be any JSON-serializable value
+ * Use unknown for type safety, requiring type narrowing before use
+ */
+export type LogData = unknown;
+
+/**
  * Structured log entry interface for consistent logging format
  *
  * @interface LogEntry
@@ -51,7 +57,7 @@ interface LogEntry {
   /** Optional context identifier (component, service, etc.) */
   context?: string;
   /** Optional additional data or error details */
-  data?: any;
+  data?: LogData;
   /** ISO timestamp when log entry was created */
   timestamp: string;
   /** Browser user agent string for debugging */
@@ -119,7 +125,7 @@ class Logger {
     level: LogLevel,
     message: string,
     context?: string,
-    data?: any
+    data?: LogData
   ): LogEntry {
     const entry: LogEntry = {
       level,
@@ -142,7 +148,12 @@ class Logger {
     return entry;
   }
 
-  private sendToConsole(level: LogLevel, message: string, data?: any): void {
+  private sendToConsole(
+    level: LogLevel,
+    message: string,
+    data?: LogData
+  ): void {
+    /* eslint-disable no-console */
     switch (level) {
       case LogLevel.ERROR:
         console.error(message, data || '');
@@ -157,13 +168,16 @@ class Logger {
         console.log(message, data || '');
         break;
     }
+    /* eslint-enable no-console */
   }
 
   /**
    * Log error messages - always visible in production
    */
-  error(message: string, context?: string, data?: any): void {
-    if (!this.shouldLog(LogLevel.ERROR)) return;
+  error(message: string, context?: string, data?: LogData): void {
+    if (!this.shouldLog(LogLevel.ERROR)) {
+      return;
+    }
 
     const formattedMessage = this.formatMessage(
       LogLevel.ERROR,
@@ -183,8 +197,10 @@ class Logger {
   /**
    * Log warning messages - visible in production for important issues
    */
-  warn(message: string, context?: string, data?: any): void {
-    if (!this.shouldLog(LogLevel.WARN)) return;
+  warn(message: string, context?: string, data?: LogData): void {
+    if (!this.shouldLog(LogLevel.WARN)) {
+      return;
+    }
 
     const formattedMessage = this.formatMessage(
       LogLevel.WARN,
@@ -197,8 +213,10 @@ class Logger {
   /**
    * Log informational messages - development and debug builds only
    */
-  info(message: string, context?: string, data?: any): void {
-    if (!this.shouldLog(LogLevel.INFO)) return;
+  info(message: string, context?: string, data?: LogData): void {
+    if (!this.shouldLog(LogLevel.INFO)) {
+      return;
+    }
 
     const formattedMessage = this.formatMessage(
       LogLevel.INFO,
@@ -211,8 +229,10 @@ class Logger {
   /**
    * Log debug messages - development only
    */
-  debug(message: string, context?: string, data?: any): void {
-    if (!this.shouldLog(LogLevel.DEBUG)) return;
+  debug(message: string, context?: string, data?: LogData): void {
+    if (!this.shouldLog(LogLevel.DEBUG)) {
+      return;
+    }
 
     const formattedMessage = this.formatMessage(
       LogLevel.DEBUG,
@@ -232,7 +252,9 @@ class Logger {
       const logs = JSON.parse(localStorage.getItem('app_error_logs') || '[]');
       logs.push(entry);
       // Keep only last 10 error logs
-      if (logs.length > 10) logs.shift();
+      if (logs.length > 10) {
+        logs.shift();
+      }
       localStorage.setItem('app_error_logs', JSON.stringify(logs));
     } catch (e) {
       // Silently fail if localStorage is not available
@@ -251,7 +273,9 @@ class Logger {
           needsReporting: true,
           reportedAt: null,
         });
-        if (pendingReports.length > 50) pendingReports.shift();
+        if (pendingReports.length > 50) {
+          pendingReports.shift();
+        }
         localStorage.setItem(
           'pending_error_reports',
           JSON.stringify(pendingReports)
@@ -289,14 +313,14 @@ class Logger {
 export const logger = new Logger();
 
 // Convenience functions for common use cases
-export const logError = (message: string, context?: string, data?: any) =>
+export const logError = (message: string, context?: string, data?: LogData) =>
   logger.error(message, context, data);
 
-export const logWarn = (message: string, context?: string, data?: any) =>
+export const logWarn = (message: string, context?: string, data?: LogData) =>
   logger.warn(message, context, data);
 
-export const logInfo = (message: string, context?: string, data?: any) =>
+export const logInfo = (message: string, context?: string, data?: LogData) =>
   logger.info(message, context, data);
 
-export const logDebug = (message: string, context?: string, data?: any) =>
+export const logDebug = (message: string, context?: string, data?: LogData) =>
   logger.debug(message, context, data);

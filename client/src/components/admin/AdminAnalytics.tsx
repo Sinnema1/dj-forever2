@@ -49,20 +49,28 @@ const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ stats, guests }) => {
   const responseTimeline = useMemo(() => {
     const rsvpedGuests = guests.filter(g => g.hasRSVPed && g.lastUpdated);
 
-    if (rsvpedGuests.length === 0) return [];
+    if (rsvpedGuests.length === 0) {
+      return [];
+    }
 
     // Group by date
     const groupedByDate = rsvpedGuests.reduce(
       (acc, guest) => {
-        if (!guest.lastUpdated) return acc;
+        if (!guest.lastUpdated) {
+          return acc;
+        }
         const date = new Date(guest.lastUpdated).toLocaleDateString();
         if (!acc[date]) {
           acc[date] = { attending: 0, notAttending: 0, maybe: 0 };
         }
 
-        if (guest.rsvp?.attending === 'YES') acc[date].attending++;
-        else if (guest.rsvp?.attending === 'NO') acc[date].notAttending++;
-        else if (guest.rsvp?.attending === 'MAYBE') acc[date].maybe++;
+        if (guest.rsvp?.attending === 'YES') {
+          acc[date].attending++;
+        } else if (guest.rsvp?.attending === 'NO') {
+          acc[date].notAttending++;
+        } else if (guest.rsvp?.attending === 'MAYBE') {
+          acc[date].maybe++;
+        }
 
         return acc;
       },
@@ -221,18 +229,24 @@ const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ stats, guests }) => {
           <button
             className={timeRange === '7d' ? 'active' : ''}
             onClick={() => setTimeRange('7d')}
+            aria-pressed={timeRange === '7d'}
+            aria-label="Show last 7 days"
           >
             Last 7 Days
           </button>
           <button
             className={timeRange === '30d' ? 'active' : ''}
             onClick={() => setTimeRange('30d')}
+            aria-pressed={timeRange === '30d'}
+            aria-label="Show last 30 days"
           >
             Last 30 Days
           </button>
           <button
             className={timeRange === 'all' ? 'active' : ''}
             onClick={() => setTimeRange('all')}
+            aria-pressed={timeRange === 'all'}
+            aria-label="Show all time"
           >
             All Time
           </button>
@@ -244,9 +258,12 @@ const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ stats, guests }) => {
         <div className="insights-section">
           <h3>Key Insights</h3>
           <div className="insights-grid">
-            {insights.map((insight, index) => (
-              <div key={index} className={`insight-card ${insight.type}`}>
-                <div className="insight-icon">
+            {insights.map(insight => (
+              <div
+                key={insight.title}
+                className={`insight-card ${insight.type}`}
+              >
+                <div className="insight-icon" aria-hidden>
                   {insight.type === 'success' && '✓'}
                   {insight.type === 'warning' && '⚠️'}
                   {insight.type === 'info' && 'ℹ️'}
@@ -272,15 +289,20 @@ const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ stats, guests }) => {
               <span>0</span>
             </div>
             <div className="chart-content">
-              {responseTimeline.map((entry, index) => (
-                <div key={index} className="timeline-bar">
-                  <div className="bar-stack">
+              {responseTimeline.map(entry => (
+                <div key={entry.date} className="timeline-bar">
+                  <div
+                    className="bar-stack"
+                    role="img"
+                    aria-label={`Cumulative responses on ${entry.date}`}
+                  >
                     <div
                       className="bar-segment attending"
                       style={{
                         height: `${(entry.cumulativeAttending / maxTimelineValue) * 100}%`,
                       }}
                       title={`Attending: ${entry.cumulativeAttending}`}
+                      aria-hidden
                     />
                     <div
                       className="bar-segment maybe"
@@ -297,20 +319,22 @@ const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ stats, guests }) => {
                       title={`Not Attending: ${entry.cumulativeNotAttending}`}
                     />
                   </div>
-                  <div className="bar-label">{entry.date}</div>
+                  <div className="bar-label" aria-hidden>
+                    {entry.date}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
           <div className="chart-legend">
             <span className="legend-item">
-              <span className="legend-color attending"></span> Attending
+              <span className="legend-color attending" /> Attending
             </span>
             <span className="legend-item">
-              <span className="legend-color maybe"></span> Maybe
+              <span className="legend-color maybe" /> Maybe
             </span>
             <span className="legend-item">
-              <span className="legend-color not-attending"></span> Not Attending
+              <span className="legend-color not-attending" /> Not Attending
             </span>
           </div>
         </div>
@@ -417,12 +441,20 @@ const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ stats, guests }) => {
       <div className="analytics-section summary-section">
         <h3>Summary Statistics</h3>
         <div className="summary-grid">
-          <div className="summary-item">
+          <div
+            className="summary-item"
+            role="group"
+            aria-label="Total attending"
+          >
             <div className="summary-value">{stats.totalAttending}</div>
             <div className="summary-label">Total Attending</div>
           </div>
           <div className="summary-item">
-            <div className="summary-value">
+            <div
+              className="summary-value"
+              role="group"
+              aria-label="Attendance rate"
+            >
               {stats.totalRSVPed > 0
                 ? ((stats.totalAttending / stats.totalRSVPed) * 100).toFixed(1)
                 : '0'}
@@ -430,7 +462,7 @@ const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ stats, guests }) => {
             </div>
             <div className="summary-label">Attendance Rate</div>
           </div>
-          <div className="summary-item">
+          <div className="summary-item" role="group" aria-label="Pending RSVPs">
             <div className="summary-value">
               {guests.filter(g => g.isInvited && !g.hasRSVPed).length}
             </div>

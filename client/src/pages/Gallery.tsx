@@ -49,7 +49,7 @@ export default function Gallery() {
       <div className="gallery-grid">
         {images.map((imageUrl, idx) => (
           <LazyImage
-            key={`gallery-${idx}`}
+            key={imageUrl}
             src={imageUrl}
             alt={`Wedding gallery photo ${idx + 1}`}
             onClick={() => openLightbox(idx)}

@@ -26,7 +26,7 @@ export const usePullToRefresh = ({
 
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
-      if (!canPull || isRefreshing || !e.touches[0]) return;
+      if (!canPull || isRefreshing || !e.touches[0]) {return;}
 
       const currentY = e.touches[0].clientY;
       const distance = Math.max(0, (currentY - startY) / resistance);
@@ -40,7 +40,7 @@ export const usePullToRefresh = ({
   );
 
   const handleTouchEnd = useCallback(async () => {
-    if (!canPull || isRefreshing) return;
+    if (!canPull || isRefreshing) {return;}
 
     if (pullDistance >= threshold) {
       setIsRefreshing(true);
@@ -57,7 +57,7 @@ export const usePullToRefresh = ({
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) {return;}
 
     const options = { passive: false };
 

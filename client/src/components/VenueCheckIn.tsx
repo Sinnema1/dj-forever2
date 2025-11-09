@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import QrScanner from '../components/QrScanner';
 import { logError } from '../utils/logger';
@@ -30,35 +30,16 @@ const VenueCheckIn: React.FC = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [pendingCheckIns, setPendingCheckIns] = useState<CheckInData[]>([]);
 
-  useEffect(() => {
-    checkStaffStatus();
-    loadPendingCheckIns();
-
-    const handleOnline = () => {
-      setIsOnline(true);
-      syncPendingCheckIns();
-    };
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, [user]);
-
-  const checkStaffStatus = async () => {
+  const checkStaffStatus = useCallback(() => {
     if (
       user?.email?.includes('staff') ||
       user?.email?.includes('coordinator')
     ) {
       setIsStaff(true);
     }
-  };
+  }, [user]);
 
-  const loadPendingCheckIns = () => {
+  const loadPendingCheckIns = useCallback(() => {
     const stored = localStorage.getItem('pendingCheckIns');
     if (stored) {
       try {
@@ -74,21 +55,42 @@ const VenueCheckIn: React.FC = () => {
         });
       }
     }
-  };
+  }, []);
 
-  const savePendingCheckIn = (checkIn: CheckInData) => {
-    const updated = [...pendingCheckIns, checkIn];
-    setPendingCheckIns(updated);
-    localStorage.setItem('pendingCheckIns', JSON.stringify(updated));
-  };
+  const submitCheckInToServer = useCallback(
+    async (checkInData: CheckInData): Promise<void> => {
+      const response = await fetch('/api/checkin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          guestId: checkInData.guestId,
+          location: checkInData.location,
+          timestamp: checkInData.checkInTime.toISOString(),
+        }),
+      });
 
-  const syncPendingCheckIns = async () => {
-    if (!isOnline || pendingCheckIns.length === 0) return;
+      if (!response.ok) {
+        throw new Error('Failed to submit check-in to server');
+      }
+    },
+    [token]
+  );
+
+  const syncPendingCheckIns = useCallback(async () => {
+    if (!isOnline || pendingCheckIns.length === 0) {
+      return;
+    }
 
     try {
+      // Process sequentially to handle errors for each check-in individually
+      /* eslint-disable no-await-in-loop */
       for (const checkIn of pendingCheckIns) {
         await submitCheckInToServer(checkIn);
       }
+      /* eslint-enable no-await-in-loop */
 
       setPendingCheckIns([]);
       localStorage.removeItem('pendingCheckIns');
@@ -109,7 +111,32 @@ const VenueCheckIn: React.FC = () => {
         pendingCount: pendingCheckIns.length,
       });
     }
+  }, [isOnline, pendingCheckIns, submitCheckInToServer]);
+
+  const savePendingCheckIn = (checkIn: CheckInData) => {
+    const updated = [...pendingCheckIns, checkIn];
+    setPendingCheckIns(updated);
+    localStorage.setItem('pendingCheckIns', JSON.stringify(updated));
   };
+
+  useEffect(() => {
+    checkStaffStatus();
+    loadPendingCheckIns();
+
+    const handleOnline = () => {
+      setIsOnline(true);
+      syncPendingCheckIns();
+    };
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [checkStaffStatus, loadPendingCheckIns, syncPendingCheckIns]);
 
   const handleQRScan = async (qrData: string) => {
     try {
@@ -217,34 +244,16 @@ const VenueCheckIn: React.FC = () => {
     return null;
   };
 
-  const submitCheckInToServer = async (
-    checkInData: CheckInData
-  ): Promise<void> => {
-    const response = await fetch('/api/checkin', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        guestId: checkInData.guestId,
-        location: checkInData.location,
-        timestamp: checkInData.checkInTime.toISOString(),
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to submit check-in to server');
-    }
-  };
-
   const addCheckInResult = (result: CheckInResult) => {
     setCheckInHistory(prev => [result, ...prev.slice(0, 9)]);
   };
 
   const manualCheckIn = async () => {
+    // eslint-disable-next-line no-alert
     const guestId = prompt('Enter guest ID or email:');
-    if (!guestId) return;
+    if (!guestId) {
+      return;
+    }
 
     await handleQRScan(guestId);
   };
@@ -275,10 +284,15 @@ const VenueCheckIn: React.FC = () => {
       </div>
 
       <div className="location-selector">
-        <label>Check-in Location:</label>
+        <label htmlFor="location-select">Check-in Location:</label>
         <select
+          id="location-select"
           value={currentLocation}
-          onChange={e => setCurrentLocation(e.target.value as any)}
+          onChange={e =>
+            setCurrentLocation(
+              e.target.value as 'ceremony' | 'reception' | 'venue'
+            )
+          }
         >
           <option value="ceremony">Ceremony</option>
           <option value="reception">Reception</option>
@@ -324,9 +338,9 @@ const VenueCheckIn: React.FC = () => {
         <div className="checkin-history">
           <h3>Recent Check-Ins</h3>
           <div className="history-list">
-            {checkInHistory.map((result, index) => (
+            {checkInHistory.map(result => (
               <div
-                key={index}
+                key={result.timestamp.toISOString()}
                 className={`history-item ${result.success ? 'success' : 'error'}`}
               >
                 <div className="history-icon">

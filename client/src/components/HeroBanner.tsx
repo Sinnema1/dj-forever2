@@ -10,7 +10,7 @@ export default function HeroBanner() {
   const defaultWelcome = (
     <>
       <CountdownTimer />
-      <h1 className="hero-title">We're Getting Married!</h1>
+      <h1 className="hero-title">We&apos;re Getting Married!</h1>
       <p className="hero-date-location">
         November 8, 2026, 4:00 PM | Venue at the Grove
       </p>
@@ -21,12 +21,12 @@ export default function HeroBanner() {
   const guestWelcome = (
     <>
       <CountdownTimer />
-      <h1 className="hero-title">We're Getting Married!</h1>
+      <h1 className="hero-title">We&apos;re Getting Married!</h1>
       <p className="hero-date-location">
         November 8, 2026, 4:00 PM | Venue at the Grove
       </p>
       <p className="hero-personal-note">
-        We're so glad you're here, {user?.fullName.split(' ')[0]}!
+        We&apos;re so glad you&apos;re here, {user?.fullName.split(' ')[0]}!
       </p>
     </>
   );

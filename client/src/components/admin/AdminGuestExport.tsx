@@ -89,10 +89,11 @@ const AdminGuestExport: React.FC = () => {
           onClick={handleExport}
           disabled={isExporting}
           className="export-button"
+          aria-label="Export guest list as CSV file"
         >
           {isExporting ? (
             <>
-              <div className="export-spinner"></div>
+              <div className="export-spinner" aria-hidden />
               Exporting...
             </>
           ) : (
@@ -101,7 +102,7 @@ const AdminGuestExport: React.FC = () => {
         </button>
 
         {exportError && (
-          <div className="export-error">
+          <div className="export-error" role="alert">
             <p>Export failed: {exportError}</p>
             <button onClick={handleExport} className="retry-button">
               Try Again
