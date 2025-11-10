@@ -202,14 +202,16 @@ export default function SwipeableLightbox({
       if (e.key === 'Escape') {
         onClose();
       }
-      
+
       // Focus trap for Tab key
       if (e.key === 'Tab' && overlayRef.current) {
         const focusableElements = overlayRef.current.querySelectorAll(
           'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'
         );
         const firstElement = focusableElements[0] as HTMLElement;
-        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+        const lastElement = focusableElements[
+          focusableElements.length - 1
+        ] as HTMLElement;
 
         if (e.shiftKey) {
           if (document.activeElement === firstElement) {
@@ -296,10 +298,6 @@ export default function SwipeableLightbox({
       onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          onClose();
-        }
-      }}
-    >
           onClose();
         }
       }}

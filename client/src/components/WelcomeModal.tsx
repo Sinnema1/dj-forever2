@@ -34,7 +34,7 @@ const WelcomeModal: React.FC = () => {
 
   // Focus management and keyboard trap
   useEffect(() => {
-    if (!showModal) return undefined;
+    if (!showModal) {return undefined;}
 
     // Store currently focused element for restoration
     previousActiveElement.current = document.activeElement;

@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { useEffect, lazy } from 'react';
+import { smoothScroll } from './utils/smoothScroll';
 import Navbar from './components/Navbar';
 import EnhancedSuspense from './components/EnhancedSuspense';
 import HomePage from './pages/HomePage';
@@ -87,10 +88,24 @@ export default function App() {
     <ErrorBoundary>
       <ToastProvider>
         {/* Skip Links for Keyboard Navigation - WCAG 2.4.1 (Bypass Blocks) */}
-        <a href="#main-content" className="skip-link">
+        <a
+          href="#main-content"
+          className="skip-link"
+          onClick={e => {
+            e.preventDefault();
+            smoothScroll('main-content', 20);
+          }}
+        >
           Skip to main content
         </a>
-        <a href="#navigation" className="skip-link">
+        <a
+          href="#navigation"
+          className="skip-link"
+          onClick={e => {
+            e.preventDefault();
+            smoothScroll('navigation', 20);
+          }}
+        >
           Skip to navigation
         </a>
 
