@@ -15,8 +15,17 @@ describe("CountdownTimer", () => {
     const testNow = new Date("2026-11-01T16:00:00-07:00").getTime();
     global.Date.now = () => testNow;
     render(<CountdownTimer />);
-    expect(screen.getByText(/days to the big day/)).toBeInTheDocument();
-    expect(screen.getByText(/7/)).toBeInTheDocument();
+    
+    // Check for visible text
+    expect(screen.getByText(/7 days to the big day/)).toBeInTheDocument();
+    
+    // Check for accessible screen reader text
+    expect(screen.getByText(/7 days remaining until the wedding/)).toBeInTheDocument();
+    
+    // Verify ARIA attributes
+    const timer = screen.getByRole('timer');
+    expect(timer).toHaveAttribute('aria-label', 'Wedding countdown');
+    expect(timer).toHaveAttribute('aria-live', 'polite');
   });
 
   it("shows the wedding day message when it is the day", () => {
@@ -24,6 +33,15 @@ describe("CountdownTimer", () => {
     const testNow = new Date("2026-11-09T16:00:00-07:00").getTime();
     global.Date.now = () => testNow;
     render(<CountdownTimer />);
+    
+    // Check for visible text
     expect(screen.getByText(/today is the day/i)).toBeInTheDocument();
+    
+    // Check for accessible screen reader text
+    expect(screen.getByText(/Today is the wedding day/)).toBeInTheDocument();
+    
+    // Verify ARIA attributes
+    const timer = screen.getByRole('timer');
+    expect(timer).toHaveAttribute('aria-label', 'Wedding countdown');
   });
 });

@@ -7,21 +7,25 @@ This guide covers testing the accessibility improvements made to the toast notif
 ## Implemented Improvements
 
 ### 1. Screen Reader Support
+
 - **ARIA live regions**: Toasts announce properly to screen readers
 - **ARIA labels**: Clear notification type identification
 - **Screen reader text**: Hidden descriptive text for context
 - **ARIA atomic**: Ensures complete message is read
 
 ### 2. Keyboard Navigation
+
 - **ESC key**: Dismisses toast notifications
 - **Focus visible**: Clear focus indicator on close button
 - **Tab navigation**: Proper tab order maintained
 
 ### 3. Reduced Motion Support
+
 - **Respects user preferences**: No animations if `prefers-reduced-motion` is set
 - **Instant transitions**: Smooth opacity changes instead of animations
 
 ### 4. WCAG Compliance
+
 - **Role="alert"**: Proper semantic HTML
 - **aria-live**: "assertive" for errors, "polite" for other types
 - **aria-atomic**: Ensures complete messages are announced
@@ -32,6 +36,7 @@ This guide covers testing the accessibility improvements made to the toast notif
 ### Test 1: Screen Reader Announcement (VoiceOver - macOS)
 
 **Steps:**
+
 1. Enable VoiceOver: `Cmd + F5`
 2. Trigger a toast notification (e.g., failed login attempt)
 3. **Expected Result**: VoiceOver announces:
@@ -39,33 +44,41 @@ This guide covers testing the accessibility improvements made to the toast notif
    - Or similar based on toast type
 
 **Testing Different Toast Types:**
+
 ```javascript
 // In browser console
-window.dispatchEvent(new CustomEvent('show-toast', {
-  detail: {
-    type: 'success',
-    message: 'Your RSVP has been saved successfully!'
-  }
-}));
+window.dispatchEvent(
+  new CustomEvent("show-toast", {
+    detail: {
+      type: "success",
+      message: "Your RSVP has been saved successfully!",
+    },
+  })
+);
 
-window.dispatchEvent(new CustomEvent('show-toast', {
-  detail: {
-    type: 'error',
-    message: 'Failed to save your RSVP. Please try again.'
-  }
-}));
+window.dispatchEvent(
+  new CustomEvent("show-toast", {
+    detail: {
+      type: "error",
+      message: "Failed to save your RSVP. Please try again.",
+    },
+  })
+);
 
-window.dispatchEvent(new CustomEvent('show-toast', {
-  detail: {
-    type: 'warning',
-    message: 'Your session will expire in 5 minutes.'
-  }
-}));
+window.dispatchEvent(
+  new CustomEvent("show-toast", {
+    detail: {
+      type: "warning",
+      message: "Your session will expire in 5 minutes.",
+    },
+  })
+);
 ```
 
 ### Test 2: Screen Reader Announcement (NVDA - Windows)
 
 **Steps:**
+
 1. Install and run NVDA
 2. Trigger toast notifications
 3. **Expected Result**: NVDA announces toast type and message clearly
@@ -73,6 +86,7 @@ window.dispatchEvent(new CustomEvent('show-toast', {
 ### Test 3: Screen Reader Announcement (TalkBack - Android)
 
 **Steps:**
+
 1. Enable TalkBack in Android Settings
 2. Access the website on mobile
 3. Trigger toast notifications
@@ -81,11 +95,13 @@ window.dispatchEvent(new CustomEvent('show-toast', {
 ### Test 4: Keyboard Navigation
 
 **Steps:**
+
 1. Trigger a toast notification
 2. Press `ESC` key
 3. **Expected Result**: Toast dismisses immediately
 
 **Test Multiple Toasts:**
+
 1. Trigger multiple toasts (3-4)
 2. Press `ESC` repeatedly
 3. **Expected Result**: Toasts dismiss one at a time
@@ -93,10 +109,11 @@ window.dispatchEvent(new CustomEvent('show-toast', {
 ### Test 5: Focus Management
 
 **Steps:**
+
 1. Trigger a toast notification
 2. Press `Tab` key to navigate
 3. Tab to the close button
-4. **Expected Result**: 
+4. **Expected Result**:
    - Blue outline appears around close button
    - 2px outline with offset
    - Clear visual indicator
@@ -104,6 +121,7 @@ window.dispatchEvent(new CustomEvent('show-toast', {
 ### Test 6: Reduced Motion Preference
 
 **macOS Steps:**
+
 1. Open System Preferences → Accessibility → Display
 2. Enable "Reduce motion"
 3. Trigger toast notifications
@@ -113,12 +131,14 @@ window.dispatchEvent(new CustomEvent('show-toast', {
    - Dismissal is instant (no exit animation)
 
 **Windows Steps:**
+
 1. Settings → Ease of Access → Display
 2. Turn on "Show animations in Windows"
 3. Trigger toast notifications
 4. **Expected Result**: No animations, instant appearance
 
 **Browser DevTools:**
+
 ```css
 /* Emulate in Chrome DevTools */
 /* 1. Open DevTools (F12) */
@@ -130,6 +150,7 @@ window.dispatchEvent(new CustomEvent('show-toast', {
 ### Test 7: Mobile Touch Navigation
 
 **Steps:**
+
 1. Test on actual mobile device or responsive mode
 2. Trigger toast notifications
 3. Verify:
@@ -141,11 +162,13 @@ window.dispatchEvent(new CustomEvent('show-toast', {
 ### Test 8: Color Contrast
 
 **Tools:**
+
 - Chrome DevTools Lighthouse
 - WAVE browser extension
 - axe DevTools
 
 **Steps:**
+
 1. Run accessibility audit
 2. Check toast contrast ratios
 3. **Expected Results**:
@@ -159,12 +182,14 @@ window.dispatchEvent(new CustomEvent('show-toast', {
 ## Browser Compatibility Testing
 
 ### Desktop
+
 - ✅ Chrome 90+ (Windows, macOS, Linux)
 - ✅ Firefox 88+ (Windows, macOS, Linux)
 - ✅ Safari 14+ (macOS)
 - ✅ Edge 90+ (Windows)
 
 ### Mobile
+
 - ✅ Safari iOS 14+
 - ✅ Chrome Android 90+
 - ✅ Samsung Internet 14+
@@ -179,10 +204,10 @@ npm install --save-dev @axe-core/react
 
 ```typescript
 // In your test file
-import { axe, toHaveNoViolations } from 'jest-axe';
+import { axe, toHaveNoViolations } from "jest-axe";
 expect.extend(toHaveNoViolations);
 
-test('Toast should have no accessibility violations', async () => {
+test("Toast should have no accessibility violations", async () => {
   const { container } = render(
     <Toast
       id="test"
@@ -191,7 +216,7 @@ test('Toast should have no accessibility violations', async () => {
       onDismiss={() => {}}
     />
   );
-  
+
   const results = await axe(container);
   expect(results).toHaveNoViolations();
 });
