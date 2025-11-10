@@ -162,7 +162,11 @@ function Navbar() {
   };
 
   return (
-    <nav className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}>
+    <nav
+      id="navigation"
+      className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}
+      aria-label="Main navigation"
+    >
       <Link to="/" className="navbar-logo" onClick={handleLogoClick}>
         Dominique &amp; Justin
       </Link>
@@ -189,8 +193,12 @@ function Navbar() {
         )}
 
         {pageLinks.map(link => {
-          if (link.requiresInvitation && !user?.isInvited) {return null;}
-          if (link.requiresAdmin && !user?.isAdmin) {return null;}
+          if (link.requiresInvitation && !user?.isInvited) {
+            return null;
+          }
+          if (link.requiresAdmin && !user?.isAdmin) {
+            return null;
+          }
           return (
             <li key={link.to}>
               <Link
@@ -283,8 +291,12 @@ function Navbar() {
           )}
 
           {pageLinks.map((link, idx) => {
-            if (link.requiresInvitation && !user?.isInvited) {return null;}
-            if (link.requiresAdmin && !user?.isAdmin) {return null;}
+            if (link.requiresInvitation && !user?.isInvited) {
+              return null;
+            }
+            if (link.requiresAdmin && !user?.isAdmin) {
+              return null;
+            }
             const itemIndex = idx + (isHomePage ? sectionLinks.length : 1);
             return (
               <li

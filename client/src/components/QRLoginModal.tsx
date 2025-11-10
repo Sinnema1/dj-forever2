@@ -96,6 +96,8 @@ export default function QRLoginModal(props: QRLoginModalProps) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [tokenInput, setTokenInput] = useState('');
+  const modalRef = React.useRef<HTMLDivElement>(null);
+  const previousActiveElement = React.useRef<Element | null>(null);
 
   // Reset state when modal opens
   React.useEffect(() => {
@@ -105,9 +107,20 @@ export default function QRLoginModal(props: QRLoginModalProps) {
       setTokenInput('');
       // Lock body scroll on mobile
       document.body.classList.add('modal-open');
+
+      // Store and restore focus
+      previousActiveElement.current = document.activeElement;
+      setTimeout(() => {
+        modalRef.current?.focus();
+      }, 100);
     } else {
       // Unlock body scroll
       document.body.classList.remove('modal-open');
+
+      // Restore focus
+      if (previousActiveElement.current instanceof HTMLElement) {
+        previousActiveElement.current.focus();
+      }
     }
 
     // Cleanup on unmount
@@ -115,6 +128,45 @@ export default function QRLoginModal(props: QRLoginModalProps) {
       document.body.classList.remove('modal-open');
     };
   }, [isOpen]);
+
+  // Focus trap implementation
+  React.useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Close on Escape
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      // Focus trap - Tab key cycling
+      if (event.key === 'Tab' && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[
+          focusableElements.length - 1
+        ] as HTMLElement;
+
+        if (event.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement?.focus();
+            event.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement?.focus();
+            event.preventDefault();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) {
     return null;
@@ -172,6 +224,7 @@ export default function QRLoginModal(props: QRLoginModalProps) {
       }}
     >
       <div
+        ref={modalRef}
         className="modal"
         role="dialog"
         aria-modal="true"
