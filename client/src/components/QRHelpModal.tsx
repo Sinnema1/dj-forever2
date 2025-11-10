@@ -118,7 +118,7 @@ const QRHelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             cursor: 'pointer',
           }}
         >
-          &times;
+          ×
         </button>
 
         <h2 id="qr-help-title">Need Help with Your QR Code?</h2>
@@ -126,8 +126,8 @@ const QRHelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         {!submitted ? (
           <>
             <p>
-              If you&apos;re having trouble with your QR code, please provide
-              your email and we&apos;ll send you a new login link.
+              If you're having trouble with your QR code, please provide your
+              email and we'll send you a new login link.
             </p>
 
             <form onSubmit={handleContactSubmit}>
@@ -230,8 +230,8 @@ const QRHelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
             <h3>Thank You!</h3>
             <p>
-              We&apos;ve received your request and will get back to you shortly
-              with assistance for logging in.
+              We've received your request and will get back to you shortly with
+              assistance for logging in.
             </p>
             <button
               onClick={onClose}

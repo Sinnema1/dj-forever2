@@ -42,7 +42,7 @@ const ErrorState: React.FC<ErrorStateProps> = ({
       case 'loading':
         return 'The content is taking longer to load than usual.';
       default:
-        return 'We&apos;re sorry, but something unexpected happened.';
+        return "We're sorry, but something unexpected happened.";
     }
   };
 
@@ -82,7 +82,7 @@ const ErrorState: React.FC<ErrorStateProps> = ({
             <ul>
               <li>Check your Wi-Fi or mobile data connection</li>
               <li>Try moving to an area with better signal</li>
-              <li>Disable VPN if you&apos;re using one</li>
+              <li>Disable VPN if you're using one</li>
             </ul>
           </div>
         )}

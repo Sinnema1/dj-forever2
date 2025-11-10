@@ -131,7 +131,7 @@ export default function QRLoginModal(props: QRLoginModalProps) {
 
   // Focus trap implementation
   React.useEffect(() => {
-    if (!isOpen) return undefined;
+    if (!isOpen) {return undefined;}
 
     const handleKeyDown = (event: KeyboardEvent) => {
       // Close on Escape
@@ -237,7 +237,7 @@ export default function QRLoginModal(props: QRLoginModalProps) {
           onClick={onClose}
           aria-label="Close QR login modal"
         >
-          &times;
+          ×
         </button>
         <h2 id="qr-login-title">Login with QR Code</h2>
 
@@ -266,9 +266,9 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                 lineHeight: '1.5',
               }}
             >
-              <strong>Recommended:</strong> Use your phone&apos;s camera app to
-              scan the QR code on your invitation. It will automatically open
-              this website and log you in!
+              <strong>Recommended:</strong> Use your phone's camera app to scan
+              the QR code on your invitation. It will automatically open this
+              website and log you in!
             </p>
 
             <p style={{ margin: '0', fontSize: '0.9rem', color: '#555' }}>
@@ -458,8 +458,7 @@ export default function QRLoginModal(props: QRLoginModalProps) {
             </li>
           </ul>
           <p style={{ fontSize: '0.9rem', color: '#666', fontStyle: 'italic' }}>
-            Need help? Contact us if you can&apos;t find your invitation or
-            token.
+            Need help? Contact us if you can't find your invitation or token.
           </p>
         </div>
       </div>
