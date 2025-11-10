@@ -21,9 +21,10 @@ This guide covers testing the accessibility improvements made to the wedding web
 ### 1. Screen Reader Support
 
 - **ARIA live regions**: Toasts announce properly to screen readers
-- **ARIA labels**: Clear notification type identification
-- **Screen reader text**: Hidden descriptive text for context
-- **ARIA atomic**: Ensures complete message is read
+- **No aria-label override**: Container does not use aria-label to ensure descendant content is announced
+- **Screen reader text**: Hidden descriptive text with notification type and full message
+- **ARIA atomic**: Ensures complete message is read as a single unit
+- **Proper role**: Uses role="alert" for immediate announcement
 
 ### 2. Keyboard Navigation
 

@@ -95,25 +95,10 @@ export const Toast: React.FC<ToastProps> = ({
     }
   };
 
-  const getAriaLabel = () => {
-    switch (type) {
-      case 'success':
-        return 'Success notification';
-      case 'error':
-        return 'Error notification';
-      case 'warning':
-        return 'Warning notification';
-      case 'info':
-        return 'Information notification';
-      default:
-        return 'Notification';
-    }
-  };
-
   // Get descriptive message for screen readers
   const getScreenReaderMessage = () => {
-    const typeText = getAriaLabel();
-    return `${typeText}: ${message}`;
+    const typePrefix = type.charAt(0).toUpperCase() + type.slice(1);
+    return `${typePrefix} notification: ${message}`;
   };
 
   return (
@@ -123,9 +108,8 @@ export const Toast: React.FC<ToastProps> = ({
       role="alert"
       aria-live={type === 'error' ? 'assertive' : 'polite'}
       aria-atomic="true"
-      aria-label={getAriaLabel()}
     >
-      {/* Screen reader only text for better context */}
+      {/* Screen reader only text for better context - this will be announced */}
       <span className="sr-only">{getScreenReaderMessage()}</span>
 
       <div className="toast-icon" aria-hidden="true">
