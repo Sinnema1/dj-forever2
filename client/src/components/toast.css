@@ -180,9 +180,39 @@
 }
 
 /* Accessibility */
+
+/* Screen reader only text - visible to screen readers but not visually */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus visible for keyboard navigation */
+.toast-close:focus-visible {
+  outline: 2px solid #2196f3;
+  outline-offset: 2px;
+}
+
+/* Reduced motion support - disable animations if user prefers */
 @media (prefers-reduced-motion: reduce) {
   .toast,
   .toast-exit {
     animation: none;
+  }
+
+  .toast-close:active {
+    transform: none;
+  }
+
+  /* Instant transitions instead of animations */
+  .toast {
+    transition: opacity 0.1s;
   }
 }
