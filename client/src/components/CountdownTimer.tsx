@@ -123,14 +123,14 @@ export default function CountdownTimer() {
 
   if (daysLeft === 0) {
     return (
-      <div 
-        className="countdown-simple" 
+      <div
+        className="countdown-simple"
         role="timer"
         aria-live="polite"
         aria-atomic="true"
         aria-label="Wedding countdown"
       >
-        <time 
+        <time
           dateTime={getWeddingDateTime()}
           aria-label={getScreenReaderText()}
         >
@@ -144,17 +144,14 @@ export default function CountdownTimer() {
   }
 
   return (
-    <div 
-      className="countdown-simple" 
+    <div
+      className="countdown-simple"
       role="timer"
       aria-live="polite"
       aria-atomic="true"
       aria-label="Wedding countdown"
     >
-      <time 
-        dateTime={getWeddingDateTime()}
-        aria-label={getScreenReaderText()}
-      >
+      <time dateTime={getWeddingDateTime()} aria-label={getScreenReaderText()}>
         <p className="countdown-text" aria-hidden="true">
           {daysLeft} {daysLeft === 1 ? 'day' : 'days'} to the big day
         </p>
