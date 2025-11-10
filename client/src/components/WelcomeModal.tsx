@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import coverPhoto from '../assets/images/cover_photo.jpeg';
 // Styles now imported globally via main.tsx
@@ -6,6 +6,8 @@ import coverPhoto from '../assets/images/cover_photo.jpeg';
 const WelcomeModal: React.FC = () => {
   const { user, isLoggedIn } = useAuth();
   const [showModal, setShowModal] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousActiveElement = useRef<Element | null>(null);
 
   useEffect(() => {
     // Only show for logged-in users (but not admin users)
@@ -29,6 +31,61 @@ const WelcomeModal: React.FC = () => {
     // No cleanup needed when modal shouldn't show
     return undefined;
   }, [isLoggedIn, user]);
+
+  // Focus management and keyboard trap
+  useEffect(() => {
+    if (!showModal) return undefined;
+
+    // Store currently focused element for restoration
+    previousActiveElement.current = document.activeElement;
+
+    // Focus the modal
+    setTimeout(() => {
+      modalRef.current?.focus();
+    }, 100);
+
+    // Keyboard event handler for ESC and focus trap
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Close on Escape
+      if (event.key === 'Escape') {
+        handleClose();
+        return;
+      }
+
+      // Focus trap - Tab key cycling
+      if (event.key === 'Tab' && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[
+          focusableElements.length - 1
+        ] as HTMLElement;
+
+        if (event.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement?.focus();
+            event.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement?.focus();
+            event.preventDefault();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+
+      // Restore focus when modal closes
+      if (previousActiveElement.current instanceof HTMLElement) {
+        previousActiveElement.current.focus();
+      }
+    };
+  }, [showModal]);
 
   const handleClose = () => {
     setShowModal(false);
@@ -64,7 +121,14 @@ const WelcomeModal: React.FC = () => {
         }
       }}
     >
-      <div className="welcome-modal">
+      <div
+        ref={modalRef}
+        className="welcome-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="welcome-modal-title"
+        tabIndex={-1}
+      >
         <button
           className="welcome-modal-close"
           onClick={handleClose}
@@ -76,7 +140,9 @@ const WelcomeModal: React.FC = () => {
         <div className="welcome-modal-content">
           <div className="welcome-modal-header">
             <div className="welcome-hearts">💕</div>
-            <h2>Welcome to Our Wedding Website, {firstName}!</h2>
+            <h2 id="welcome-modal-title">
+              Welcome to Our Wedding Website, {firstName}!
+            </h2>
           </div>
 
           <div className="welcome-modal-body">

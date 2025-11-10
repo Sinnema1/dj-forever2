@@ -1,10 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { logDebug } from '../utils/logger';
 
 const QRHelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousActiveElement = useRef<Element | null>(null);
+
+  // Focus management
+  useEffect(() => {
+    // Store current focus
+    previousActiveElement.current = document.activeElement;
+
+    // Focus modal
+    setTimeout(() => {
+      modalRef.current?.focus();
+    }, 100);
+
+    // Keyboard handler for ESC and focus trap
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      // Focus trap
+      if (event.key === 'Tab' && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[
+          focusableElements.length - 1
+        ] as HTMLElement;
+
+        if (event.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement?.focus();
+            event.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement?.focus();
+            event.preventDefault();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+
+      // Restore focus
+      if (previousActiveElement.current instanceof HTMLElement) {
+        previousActiveElement.current.focus();
+      }
+    };
+  }, [onClose]);
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +82,18 @@ const QRHelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         alignItems: 'center',
         zIndex: 1000,
       }}
+      onClick={e => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
     >
       <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="qr-help-title"
+        tabIndex={-1}
         style={{
           backgroundColor: 'white',
           padding: '30px',
@@ -38,10 +102,12 @@ const QRHelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           width: '90%',
           maxHeight: '90vh',
           overflow: 'auto',
+          position: 'relative',
         }}
       >
         <button
           onClick={onClose}
+          aria-label="Close help modal"
           style={{
             position: 'absolute',
             right: '20px',
@@ -55,7 +121,7 @@ const QRHelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           &times;
         </button>
 
-        <h2>Need Help with Your QR Code?</h2>
+        <h2 id="qr-help-title">Need Help with Your QR Code?</h2>
 
         {!submitted ? (
           <>

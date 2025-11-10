@@ -64,7 +64,7 @@
 
   /* Prevent content overflow */
   overflow: hidden;
-  outline: none;
+  outline: none; /* Remove default outline for mouse users */
 
   /* Performance optimizations */
   will-change: transform;
@@ -72,6 +72,12 @@
 
   /* Enable pointer events */
   pointer-events: all;
+}
+
+/* Enhanced keyboard focus for drawer */
+.mobile-drawer:focus-visible {
+  outline: 3px solid var(--color-accent, #b4946c);
+  outline-offset: -3px;
 }
 
 @keyframes drawer-slide-in {
@@ -249,10 +255,16 @@
   /* Remove default button styles */
   appearance: none;
   -webkit-appearance: none;
-  outline: none;
+  outline: none; /* Remove default outline for mouse users */
 
   /* Ensure visibility */
   box-shadow: 0 2px 8px rgba(110, 143, 163, 0.2);
+}
+
+/* Enhanced keyboard focus for auth buttons */
+.mobile-drawer-content .drawer-auth-button:focus-visible {
+  outline: 2px solid var(--color-accent, #b4946c);
+  outline-offset: 2px;
 }
 
 .mobile-drawer-content .drawer-auth-button:hover {
