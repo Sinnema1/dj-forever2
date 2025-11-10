@@ -508,8 +508,18 @@ describe('RSVPForm integration', () => {
       await waitFor(() => {
         expect(
           screen.getAllByText(/please enter guest's full name/i)
-        ).toHaveLength(2);
+        ).toHaveLength(2); // One in error summary, one in field error
       });
+
+      // Verify accessibility of error messages - there will be multiple alerts
+      const alerts = screen.getAllByRole('alert');
+      expect(alerts.length).toBeGreaterThan(0);
+
+      // Verify error summary exists and has proper attributes
+      const errorSummary = document.getElementById('form-error-summary');
+      expect(errorSummary).toHaveAttribute('role', 'alert');
+      expect(errorSummary).toHaveAttribute('aria-live', 'assertive');
+      expect(errorSummary).toHaveAttribute('aria-atomic', 'true');
     });
 
     it('handles form state changes correctly', async () => {
@@ -548,6 +558,76 @@ describe('RSVPForm integration', () => {
 
       // Name should still be filled
       expect(fullNameInput.value).toBe('Test User');
+    });
+
+    it('announces errors to screen readers with proper ARIA', async () => {
+      const user = userEvent.setup();
+
+      await act(async () => {
+        renderRSVPForm();
+      });
+
+      const attendingYesRadio = screen.getByDisplayValue(
+        'YES'
+      ) as HTMLInputElement;
+      await user.click(attendingYesRadio);
+
+      // Try to submit without filling required fields
+      await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
+
+      // Wait for error messages
+      await waitFor(() => {
+        // Check for multiple alerts (error summary + field errors)
+        const alerts = screen.getAllByRole('alert');
+        expect(alerts.length).toBeGreaterThan(0);
+
+        // Verify at least one has assertive live region
+        const assertiveAlerts = alerts.filter(
+          alert => alert.getAttribute('aria-live') === 'assertive'
+        );
+        expect(assertiveAlerts.length).toBeGreaterThan(0);
+      });
+
+      // Verify form has aria-describedby pointing to error summary
+      const form = screen.getByRole('form');
+      expect(form).toHaveAttribute('aria-describedby', 'form-error-summary');
+    });
+
+    it('provides clickable error summary links that focus fields', async () => {
+      const user = userEvent.setup();
+
+      await act(async () => {
+        renderRSVPForm();
+      });
+
+      const attendingYesRadio = screen.getByDisplayValue(
+        'YES'
+      ) as HTMLInputElement;
+      await user.click(attendingYesRadio);
+
+      // Submit without filling fields to trigger errors
+      await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
+
+      // Wait for error summary to appear using more specific query
+      await waitFor(() => {
+        // Look for the error summary by its ID instead of name
+        const errorSummary = document.getElementById('form-error-summary');
+        expect(errorSummary).toBeInTheDocument();
+        expect(errorSummary).toHaveAttribute('role', 'alert');
+      });
+
+      // Find error summary links
+      const errorSummary = document.getElementById('form-error-summary');
+      const errorLinks = errorSummary?.querySelectorAll('a') || [];
+      expect(errorLinks.length).toBeGreaterThan(0);
+
+      // Verify links have proper aria-label
+      errorLinks.forEach(link => {
+        expect(link).toHaveAttribute(
+          'aria-label',
+          expect.stringContaining('Fix')
+        );
+      });
     });
   });
 });

@@ -517,10 +517,22 @@ export default function RSVPForm() {
 
   return (
     <div className="rsvp-form-container">
-      <form className="rsvp-form card" onSubmit={handleSubmit} noValidate>
+      <form
+        className="rsvp-form card"
+        onSubmit={handleSubmit}
+        noValidate
+        aria-labelledby="rsvp-form-title"
+        aria-describedby={
+          Object.keys(validationErrors).length > 0
+            ? 'form-error-summary'
+            : 'rsvp-form-description'
+        }
+      >
         <div className="rsvp-header">
-          <h2 className="rsvp-title">💌 RSVP for Our Wedding</h2>
-          <p className="rsvp-subtitle">
+          <h2 id="rsvp-form-title" className="rsvp-title">
+            💌 RSVP for Our Wedding
+          </h2>
+          <p id="rsvp-form-description" className="rsvp-subtitle">
             We can't wait to celebrate with you! Please let us know if you'll be
             joining us.
           </p>
@@ -528,28 +540,73 @@ export default function RSVPForm() {
 
         {/* Global Error Summary for Mobile */}
         {Object.keys(validationErrors).length > 0 && (
-          <div className="form-error-summary" role="alert" aria-live="polite">
-            <div className="error-summary-icon">⚠️</div>
+          <div
+            id="form-error-summary"
+            className="form-error-summary"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+          >
+            <div className="error-summary-icon" aria-hidden="true">
+              ⚠️
+            </div>
             <div className="error-summary-content">
-              <strong>Please fix the following:</strong>
+              <strong>
+                Please fix the following {Object.keys(validationErrors).length}{' '}
+                error{Object.keys(validationErrors).length > 1 ? 's' : ''}:
+              </strong>
               <ul className="error-summary-list">
-                {Object.entries(validationErrors).map(([key, message]) => (
-                  <li key={key} className="error-summary-item">
-                    {message}
-                  </li>
-                ))}
+                {Object.entries(validationErrors).map(([key, message]) => {
+                  // Extract field name from error key for better context
+                  const fieldName = key.includes('guest-')
+                    ? key
+                        .split('-')
+                        .slice(2)
+                        .join(' ')
+                        .replace(/([A-Z])/g, ' $1')
+                        .toLowerCase()
+                    : key.replace(/([A-Z])/g, ' $1').toLowerCase();
+
+                  return (
+                    <li key={key} className="error-summary-item">
+                      <a
+                        href={`#${key}`}
+                        onClick={e => {
+                          e.preventDefault();
+                          const element = document.getElementById(key);
+                          if (element) {
+                            element.focus();
+                            element.scrollIntoView({
+                              behavior: 'smooth',
+                              block: 'center',
+                            });
+                          }
+                        }}
+                        aria-label={`Fix ${fieldName} error: ${message}`}
+                      >
+                        {message}
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>
         )}
 
         {/* Attendance Question */}
-        <div className="form-group">
-          <label htmlFor="attending" className="form-label">
+        <fieldset className="form-group" aria-required="true">
+          <legend className="form-label">
             Will you be attending our wedding?{' '}
-            <span className="required">*</span>
-          </label>
-          <div className="attendance-options">
+            <span className="required" aria-label="required">
+              *
+            </span>
+          </legend>
+          <div
+            className="attendance-options"
+            role="radiogroup"
+            aria-label="Attendance selection"
+          >
             {[
               { value: 'YES', label: "Yes, I'll be there!", icon: '🎉' },
               { value: 'NO', label: "Sorry, I can't make it", icon: '😢' },
@@ -572,15 +629,18 @@ export default function RSVPForm() {
                     );
                   }}
                   className="attendance-radio-safari"
+                  aria-label={option.label}
                 />
                 <div className="option-content">
-                  <span className="option-icon">{option.icon}</span>
+                  <span className="option-icon" aria-hidden="true">
+                    {option.icon}
+                  </span>
                   <span className="option-text">{option.label}</span>
                 </div>
               </label>
             ))}
           </div>
-        </div>
+        </fieldset>
 
         {/* Conditional Fields - Only show if attending */}
         <div
@@ -603,8 +663,11 @@ export default function RSVPForm() {
               }}
               required
               aria-describedby={
-                validationErrors.guestCount ? 'guestCount-error' : undefined
+                validationErrors.guestCount
+                  ? 'guestCount-error guestCount-hint'
+                  : 'guestCount-hint'
               }
+              aria-invalid={validationErrors.guestCount ? 'true' : 'false'}
             >
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(count => (
                 <option key={count} value={count}>
@@ -613,11 +676,16 @@ export default function RSVPForm() {
               ))}
             </select>
             {validationErrors.guestCount && (
-              <div id="guestCount-error" className="field-error" role="alert">
+              <div
+                id="guestCount-error"
+                className="field-error"
+                role="alert"
+                aria-live="assertive"
+              >
                 {validationErrors.guestCount}
               </div>
             )}
-            <small className="form-hint">
+            <small id="guestCount-hint" className="form-hint">
               How many people will be attending from your invitation?
             </small>
           </div>
@@ -651,7 +719,10 @@ export default function RSVPForm() {
                   htmlFor={`guest-${index}-fullName`}
                   className="form-label"
                 >
-                  Full Name <span className="required">*</span>
+                  Full Name{' '}
+                  <span className="required" aria-label="required">
+                    *
+                  </span>
                 </label>
                 <div className="form-input-container">
                   <input
@@ -671,16 +742,28 @@ export default function RSVPForm() {
                         ? `guest-${index}-fullName-error`
                         : undefined
                     }
+                    aria-invalid={
+                      validationErrors[`guest-${index}-fullName`]
+                        ? 'true'
+                        : 'false'
+                    }
                   />
-                  {guest.fullName && <div className="form-input-check">✓</div>}
+                  {guest.fullName && (
+                    <div className="form-input-check" aria-hidden="true">
+                      ✓
+                    </div>
+                  )}
                 </div>
                 {validationErrors[`guest-${index}-fullName`] && (
                   <div
                     id={`guest-${index}-fullName-error`}
                     className="field-error mobile-friendly"
                     role="alert"
+                    aria-live="assertive"
                   >
-                    <span className="error-icon">⚠️</span>
+                    <span className="error-icon" aria-hidden="true">
+                      ⚠️
+                    </span>
                     {validationErrors[`guest-${index}-fullName`]}
                   </div>
                 )}
@@ -692,7 +775,10 @@ export default function RSVPForm() {
                   htmlFor={`guest-${index}-mealPreference`}
                   className="form-label"
                 >
-                  Meal Preference <span className="required">*</span>
+                  Meal Preference{' '}
+                  <span className="required" aria-label="required">
+                    *
+                  </span>
                 </label>
                 <div className="form-select-container">
                   <select
@@ -710,6 +796,11 @@ export default function RSVPForm() {
                         ? `guest-${index}-mealPreference-error`
                         : undefined
                     }
+                    aria-invalid={
+                      validationErrors[`guest-${index}-mealPreference`]
+                        ? 'true'
+                        : 'false'
+                    }
                   >
                     {mealOptions.map(option => (
                       <option key={option.value} value={option.value}>
@@ -718,7 +809,9 @@ export default function RSVPForm() {
                     ))}
                   </select>
                   {guest.mealPreference && (
-                    <div className="form-select-check">✓</div>
+                    <div className="form-select-check" aria-hidden="true">
+                      ✓
+                    </div>
                   )}
                 </div>
                 {validationErrors[`guest-${index}-mealPreference`] && (
@@ -726,8 +819,11 @@ export default function RSVPForm() {
                     id={`guest-${index}-mealPreference-error`}
                     className="field-error mobile-friendly"
                     role="alert"
+                    aria-live="assertive"
                   >
-                    <span className="error-icon">⚠️</span>
+                    <span className="error-icon" aria-hidden="true">
+                      ⚠️
+                    </span>
                     {validationErrors[`guest-${index}-mealPreference`]}
                   </div>
                 )}
@@ -751,8 +847,12 @@ export default function RSVPForm() {
                     updateGuest(index, 'allergies', e.target.value)
                   }
                   placeholder="Please list any allergies or dietary needs"
+                  aria-describedby={`guest-${index}-allergies-hint`}
                 />
-                <small className="form-hint">
+                <small
+                  id={`guest-${index}-allergies-hint`}
+                  className="form-hint"
+                >
                   Help us ensure this guest has a safe and enjoyable dining
                   experience
                 </small>
@@ -773,8 +873,9 @@ export default function RSVPForm() {
               onChange={handleInputChange}
               rows={3}
               placeholder="Any special requests, song suggestions, or messages for us..."
+              aria-describedby="additionalNotes-hint"
             />
-            <small className="form-hint">
+            <small id="additionalNotes-hint" className="form-hint">
               Feel free to share anything else we should know or any special
               songs you'd like to hear!
             </small>
@@ -789,13 +890,15 @@ export default function RSVPForm() {
             disabled={loading || isPending}
             aria-describedby={
               Object.keys(validationErrors).length > 0
-                ? 'form-errors'
+                ? 'form-error-summary'
                 : undefined
             }
+            aria-live="polite"
+            aria-busy={loading || isPending ? 'true' : 'false'}
           >
             {loading || isPending ? (
               <>
-                <span className="loading-spinner" />
+                <span className="loading-spinner" aria-hidden="true" />
                 <span className="loading-text">
                   {isPending
                     ? rsvp
@@ -811,15 +914,25 @@ export default function RSVPForm() {
                 <span className="submit-text">
                   {rsvp ? 'Update RSVP' : 'Submit RSVP'}
                 </span>
-                <span className="submit-icon">💕</span>
+                <span className="submit-icon" aria-hidden="true">
+                  💕
+                </span>
               </>
             )}
           </button>
 
           {/* Progress indicator for mobile */}
           {(loading || isPending) && (
-            <div className="submission-progress" aria-live="polite">
-              <div className="progress-bar">
+            <div
+              className="submission-progress"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <div
+                className="progress-bar"
+                role="progressbar"
+                aria-label="RSVP submission progress"
+              >
                 <div className="progress-fill" />
               </div>
               <small className="progress-text">
@@ -837,8 +950,15 @@ export default function RSVPForm() {
 
         {/* Success/Error Messages */}
         {successMessage && (
-          <div className="form-success" role="alert">
-            <div className="success-icon">🎉</div>
+          <div
+            className="form-success"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <div className="success-icon" aria-hidden="true">
+              🎉
+            </div>
             <div className="success-content">
               <strong>Amazing!</strong>
               <p>{successMessage}</p>
@@ -847,8 +967,15 @@ export default function RSVPForm() {
         )}
 
         {errorMessage && (
-          <div className="form-error" role="alert">
-            <div className="error-icon">⚠️</div>
+          <div
+            className="form-error"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+          >
+            <div className="error-icon" aria-hidden="true">
+              ⚠️
+            </div>
             <div className="error-content">
               <strong>Oops!</strong>
               <p>{errorMessage}</p>

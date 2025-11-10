@@ -1,5 +1,5 @@
 /**
- * @fileoverview Wedding countdown timer component
+ * @fileoverview Wedding countdown timer component with accessibility support
  *
  * Displays an animated countdown to the wedding day with automatic updates
  * and special messaging for the wedding day itself. Uses timezone-aware
@@ -13,11 +13,19 @@
  * - Performance-optimized update frequency
  * - Responsive design with wedding theme styling
  * - Graceful handling of past wedding dates
+ * - Full accessibility support with ARIA live regions
+ * - Screen reader announcements for countdown changes
  *
  * @module CountdownTimer
- * @version 2.0.0
+ * @version 2.1.0
  * @author DJ Forever Wedding Team
  * @since 1.0.0
+ *
+ * @accessibility
+ * - ARIA live region for countdown updates
+ * - Descriptive labels for screen readers
+ * - Semantic time element with datetime attribute
+ * - Polite announcements to avoid interrupting users
  *
  * @example
  * ```typescript
@@ -64,6 +72,8 @@ const WEDDING_DATE = new Date('2026-11-08T16:00:00-07:00');
  * - **Special Messaging**: Wedding day celebration text
  * - **Responsive Design**: Works on mobile and desktop
  * - **Automatic Cleanup**: Proper useEffect cleanup on unmount
+ * - **Accessible**: ARIA live region announces updates to screen readers
+ * - **Semantic HTML**: Uses time element with datetime attribute
  */
 export default function CountdownTimer() {
   /** Current number of days remaining until wedding */
@@ -89,19 +99,64 @@ export default function CountdownTimer() {
     return () => clearInterval(interval);
   }, []);
 
+  /**
+   * Format the wedding date for datetime attribute
+   * Returns ISO 8601 formatted date string
+   */
+  const getWeddingDateTime = () => {
+    return WEDDING_DATE.toISOString();
+  };
+
+  /**
+   * Get descriptive text for screen readers
+   * Provides full context about the countdown
+   */
+  const getScreenReaderText = () => {
+    if (daysLeft === 0) {
+      return 'Today is the wedding day';
+    }
+    if (daysLeft === 1) {
+      return 'One day remaining until the wedding';
+    }
+    return `${daysLeft} days remaining until the wedding on November 8th, 2026`;
+  };
+
   if (daysLeft === 0) {
     return (
-      <div className="countdown-simple">
-        <p className="countdown-text">Today is the day! 💍</p>
+      <div
+        className="countdown-simple"
+        role="timer"
+        aria-live="polite"
+        aria-atomic="true"
+        aria-label="Wedding countdown"
+      >
+        <time
+          dateTime={getWeddingDateTime()}
+          aria-label={getScreenReaderText()}
+        >
+          <p className="countdown-text" aria-hidden="true">
+            Today is the day! 💍
+          </p>
+          <span className="sr-only">{getScreenReaderText()}</span>
+        </time>
       </div>
     );
   }
 
   return (
-    <div className="countdown-simple">
-      <p className="countdown-text">
-        {daysLeft} {daysLeft === 1 ? 'day' : 'days'} to the big day
-      </p>
+    <div
+      className="countdown-simple"
+      role="timer"
+      aria-live="polite"
+      aria-atomic="true"
+      aria-label="Wedding countdown"
+    >
+      <time dateTime={getWeddingDateTime()} aria-label={getScreenReaderText()}>
+        <p className="countdown-text" aria-hidden="true">
+          {daysLeft} {daysLeft === 1 ? 'day' : 'days'} to the big day
+        </p>
+        <span className="sr-only">{getScreenReaderText()}</span>
+      </time>
     </div>
   );
 }
