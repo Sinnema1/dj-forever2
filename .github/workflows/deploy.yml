@@ -13,8 +13,19 @@ jobs:
         env:
           DEPLOY_URL: ${{ secrets.RENDER_SERVER_DEPLOY_HOOK_URL }}
         run: |
+          if [ -z "$DEPLOY_URL" ]; then
+            echo "Error: RENDER_SERVER_DEPLOY_HOOK_URL secret is not set"
+            exit 1
+          fi
           echo "Triggering server deploy..."
-          curl -X POST "$DEPLOY_URL"
+          response=$(curl -s -w "\n%{http_code}" -X POST "$DEPLOY_URL")
+          http_code=$(echo "$response" | tail -n1)
+          if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+            echo "Server deploy triggered successfully (HTTP $http_code)"
+          else
+            echo "Server deploy failed (HTTP $http_code)"
+            exit 1
+          fi
 
   deploy-client:
     runs-on: ubuntu-latest
@@ -24,5 +35,16 @@ jobs:
         env:
           DEPLOY_URL: ${{ secrets.RENDER_CLIENT_DEPLOY_HOOK_URL }}
         run: |
+          if [ -z "$DEPLOY_URL" ]; then
+            echo "Error: RENDER_CLIENT_DEPLOY_HOOK_URL secret is not set"
+            exit 1
+          fi
           echo "Triggering client deploy..."
-          curl -X POST "$DEPLOY_URL"
+          response=$(curl -s -w "\n%{http_code}" -X POST "$DEPLOY_URL")
+          http_code=$(echo "$response" | tail -n1)
+          if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+            echo "Client deploy triggered successfully (HTTP $http_code)"
+          else
+            echo "Client deploy failed (HTTP $http_code)"
+            exit 1
+          fi
