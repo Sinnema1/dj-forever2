@@ -12,7 +12,7 @@
   margin: 0 !important;
   padding: 0 !important;
   border: none !important;
-  outline: none !important;
+  outline: none !important; /* Remove default outline for mouse users */
   transform: none !important;
   background: rgba(0, 0, 0, 0.95);
   z-index: 2000;
@@ -26,6 +26,12 @@
   /* Prevent iOS bounce scrolling */
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: none;
+}
+
+/* Enhanced keyboard focus for lightbox overlay */
+.lightbox-overlay:focus-visible {
+  outline: 3px solid var(--color-accent, #b4946c);
+  outline-offset: -3px;
 }
 
 .lightbox-container {

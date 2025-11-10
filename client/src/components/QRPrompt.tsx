@@ -27,11 +27,11 @@ const QRPrompt: React.FC = () => {
           </div>
           <div className="instruction-step">
             <div className="step-number">3</div>
-            <p>Use your phone&apos;s camera to scan the code</p>
+            <p>Use your phone's camera to scan the code</p>
           </div>
         </div>
         <p className="qr-help-text">
-          Need help? Contact us if you can&apos;t find your invitation.
+          Need help? Contact us if you can't find your invitation.
         </p>
         <Link
           to="/qr-help"

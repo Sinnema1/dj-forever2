@@ -115,7 +115,7 @@ class SuspenseErrorBoundary extends Component<
           <div className="error-content">
             <div className="error-icon">⚠️</div>
             <h3>Something went wrong</h3>
-            <p>We&apos;re having trouble loading this content.</p>
+            <p>We're having trouble loading this content.</p>
             <button
               onClick={this.handleRetry}
               className="retry-button"

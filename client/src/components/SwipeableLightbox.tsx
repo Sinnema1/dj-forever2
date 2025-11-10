@@ -60,6 +60,8 @@ export default function SwipeableLightbox({
   const [showHints, setShowHints] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const previousActiveElement = useRef<Element | null>(null);
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
@@ -200,6 +202,29 @@ export default function SwipeableLightbox({
       if (e.key === 'Escape') {
         onClose();
       }
+
+      // Focus trap for Tab key
+      if (e.key === 'Tab' && overlayRef.current) {
+        const focusableElements = overlayRef.current.querySelectorAll(
+          'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[
+          focusableElements.length - 1
+        ] as HTMLElement;
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement?.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement?.focus();
+            e.preventDefault();
+          }
+        }
+      }
     };
 
     document.addEventListener('keydown', handleKeyPress);
@@ -210,6 +235,14 @@ export default function SwipeableLightbox({
   useEffect(() => {
     // Save current scroll position
     const scrollY = window.scrollY;
+
+    // Store currently focused element for restoration
+    previousActiveElement.current = document.activeElement;
+
+    // Focus the overlay after render
+    setTimeout(() => {
+      overlayRef.current?.focus();
+    }, 100);
 
     // Prevent body scroll
     document.body.style.overflow = 'hidden';
@@ -232,6 +265,11 @@ export default function SwipeableLightbox({
           behavior: 'instant',
         });
       });
+
+      // Restore focus
+      if (previousActiveElement.current instanceof HTMLElement) {
+        previousActiveElement.current.focus();
+      }
     };
   }, []);
 
@@ -244,6 +282,7 @@ export default function SwipeableLightbox({
   // Create portal element to render modal at body level
   const modalContent = (
     <div
+      ref={overlayRef}
       className="lightbox-overlay"
       onClick={e => {
         // Only close when clicking the overlay background (not children)
@@ -252,7 +291,9 @@ export default function SwipeableLightbox({
         }
       }}
       // Make overlay keyboard-accessible so users can close with Enter/Space
-      role="button"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Image gallery lightbox"
       tabIndex={0}
       onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {

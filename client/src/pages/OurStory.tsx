@@ -37,7 +37,7 @@ const storyEvents: StoryEvent[] = [
   { date: '04.20.2022', text: 'We traveled to the coast', imageUrl: img2022_4 },
   { date: '05.15.2022', text: 'Summer fun and fishing', imageUrl: img2022_5 },
   { date: '06.30.2022', text: 'We moved in together', imageUrl: img2022_6 },
-  { date: '01.24.2023', text: 'We&apos;re engaged!', imageUrl: img2023_1 },
+  { date: '01.24.2023', text: "We're engaged!", imageUrl: img2023_1 },
   { date: '03.12.2023', text: 'We adopted Goosey', imageUrl: img2023_2 },
   { date: '05.05.2023', text: 'Exploring new places', imageUrl: img2023_3 },
   { date: '01.01.2024', text: 'Wedding planning begins', imageUrl: img2024_1 },

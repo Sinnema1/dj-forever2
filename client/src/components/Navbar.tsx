@@ -29,6 +29,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { smoothScroll } from '../utils/smoothScroll';
 import QRLoginModal from './QRLoginModal';
 import MobileDrawer from './MobileDrawer';
 
@@ -162,9 +163,13 @@ function Navbar() {
   };
 
   return (
-    <nav className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}>
+    <nav
+      id="navigation"
+      className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}
+      aria-label="Main navigation"
+    >
       <Link to="/" className="navbar-logo" onClick={handleLogoClick}>
-        Dominique &amp; Justin
+        Dominique & Justin
       </Link>
 
       {/* Desktop Navigation */}
@@ -175,6 +180,10 @@ function Navbar() {
               <a
                 href={`#${link.to}`}
                 className={activeSection === link.to ? 'active' : ''}
+                onClick={e => {
+                  e.preventDefault();
+                  smoothScroll(link.to);
+                }}
               >
                 {link.label}
               </a>
@@ -189,8 +198,12 @@ function Navbar() {
         )}
 
         {pageLinks.map(link => {
-          if (link.requiresInvitation && !user?.isInvited) {return null;}
-          if (link.requiresAdmin && !user?.isAdmin) {return null;}
+          if (link.requiresInvitation && !user?.isInvited) {
+            return null;
+          }
+          if (link.requiresAdmin && !user?.isAdmin) {
+            return null;
+          }
           return (
             <li key={link.to}>
               <Link
@@ -263,7 +276,11 @@ function Navbar() {
               >
                 <a
                   href={`#${link.to}`}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={e => {
+                    e.preventDefault();
+                    smoothScroll(link.to);
+                    setMobileMenuOpen(false);
+                  }}
                   className={`drawer-link ${activeSection === link.to ? 'active' : ''}`}
                 >
                   {link.label}
@@ -283,8 +300,12 @@ function Navbar() {
           )}
 
           {pageLinks.map((link, idx) => {
-            if (link.requiresInvitation && !user?.isInvited) {return null;}
-            if (link.requiresAdmin && !user?.isAdmin) {return null;}
+            if (link.requiresInvitation && !user?.isInvited) {
+              return null;
+            }
+            if (link.requiresAdmin && !user?.isAdmin) {
+              return null;
+            }
             const itemIndex = idx + (isHomePage ? sectionLinks.length : 1);
             return (
               <li

@@ -7,7 +7,7 @@ export default function Guestbook() {
         <div className="guestbook-icon">💌</div>
         <h3 className="guestbook-title">Guestbook Coming Soon</h3>
         <p className="guestbook-description">
-          We&apos;re preparing a special place for you to share your thoughts,
+          We're preparing a special place for you to share your thoughts,
           memories, and well wishes for our big day. Check back soon!
         </p>
         <div className="guestbook-features">

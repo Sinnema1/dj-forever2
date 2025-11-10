@@ -14,8 +14,8 @@ const RegistryStandalonePage: React.FC = () => {
               <h1 className="hero-title">Wedding Registry</h1>
               <p className="hero-subtitle">
                 Your presence at our wedding is the greatest gift of all. If you
-                wish to honor us with a gift, we&apos;ve registered at a few of
-                our favorite places.
+                wish to honor us with a gift, we've registered at a few of our
+                favorite places.
               </p>
               <div className="wedding-details">
                 <div className="detail-item">

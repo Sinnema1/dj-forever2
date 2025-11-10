@@ -105,9 +105,7 @@ const QRInfoPage: React.FC = () => {
             2
           </div>
           <div>
-            <h3 style={{ margin: '0 0 5px 0' }}>
-              Open Your Phone&apos;s Camera
-            </h3>
+            <h3 style={{ margin: '0 0 5px 0' }}>Open Your Phone's Camera</h3>
             <p style={{ margin: 0 }}>
               On most modern smartphones, the built-in camera app can scan QR
               codes. Simply open your camera app.
@@ -221,7 +219,7 @@ const QRInfoPage: React.FC = () => {
       >
         <h3>QR Code Not Scanning?</h3>
         <ul>
-          <li>Make sure there&apos;s good lighting</li>
+          <li>Make sure there's good lighting</li>
           <li>Hold your phone steady</li>
           <li>Make sure the entire QR code is visible</li>
           <li>Clean your camera lens</li>
@@ -243,8 +241,8 @@ const QRInfoPage: React.FC = () => {
         <h3>Still Having Trouble?</h3>
         <p>
           Contact us at{' '}
-          <a href="mailto:wedding@example.com">wedding@example.com</a> and
-          we&apos;ll help you access the website.
+          <a href="mailto:wedding@example.com">wedding@example.com</a> and we'll
+          help you access the website.
         </p>
       </div>
     </div>

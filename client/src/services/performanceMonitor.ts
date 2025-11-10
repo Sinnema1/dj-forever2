@@ -39,26 +39,7 @@
  */
 
 import { onCLS, onINP, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals';
-
-/**
- * Properties for analytics event tracking
- */
-export interface AnalyticsProperties {
-  [key: string]: string | number | boolean | undefined | null;
-}
-
-/**
- * Performance metric data for analytics tracking
- */
-export interface PerformanceMetricData {
-  metric?: string;
-  value?: number;
-  rating?: string;
-  delta?: number;
-  id?: string;
-  navigationType?: string;
-  [key: string]: string | number | boolean | undefined;
-}
+import { analytics } from './analytics';
 
 /**
  * Performance summary entry for a single metric
@@ -100,42 +81,6 @@ const logDebug = (message: string, context: string, data?: unknown) => {
 const logWarn = (message: string, context: string, data?: unknown) => {
   // eslint-disable-next-line no-console
   console.warn(`[${context}] ${message}`, data || '');
-};
-
-/**
- * Analytics service interface for performance data tracking
- * @interface AnalyticsService
- */
-interface AnalyticsService {
-  /** Track general events with optional user context */
-  track: (
-    event: string,
-    userId?: string,
-    properties?: AnalyticsProperties
-  ) => void;
-  /** Track performance-specific metrics */
-  trackPerformance: (data: PerformanceMetricData) => void;
-}
-
-/**
- * Analytics service implementation with development logging
- * @internal
- */
-const analytics: AnalyticsService = {
-  track: (event: string, userId?: string, properties?: AnalyticsProperties) => {
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log('Analytics Event:', { event, userId, properties });
-    }
-    // TODO: Integrate with actual analytics service
-  },
-  trackPerformance: (data: PerformanceMetricData) => {
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log('Performance Data:', data);
-    }
-    // TODO: Integrate with actual analytics service
-  },
 };
 
 /**

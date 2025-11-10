@@ -108,8 +108,7 @@ function DefaultErrorFallback({
       <div className="error-content">
         <h2>Oops! Something went wrong</h2>
         <p>
-          We&apos;re sorry for the inconvenience. Please try refreshing the
-          page.
+          We're sorry for the inconvenience. Please try refreshing the page.
         </p>
         {import.meta.env.DEV && error && (
           <details className="error-details">
