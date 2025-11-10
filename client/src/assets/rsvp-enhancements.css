@@ -1515,26 +1515,26 @@
 }
 
 .confirmation-actions .btn-primary {
-  background: var(--color-sage);
+  background: var(--color-sage-dark); /* WCAG AA compliant */
   color: white;
-  border-color: var(--color-sage);
+  border-color: var(--color-sage-dark);
 }
 
 .confirmation-actions .btn-primary:hover {
-  background: var(--color-sage-dark);
-  border-color: var(--color-sage-dark);
+  background: var(--color-sage); /* Lighter on hover */
+  border-color: var(--color-sage);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
 .confirmation-actions .btn-secondary {
   background: transparent;
-  color: var(--color-sage);
-  border-color: var(--color-sage);
+  color: var(--color-sage-dark); /* WCAG AA compliant */
+  border-color: var(--color-sage-dark);
 }
 
 .confirmation-actions .btn-secondary:hover {
-  background: var(--color-sage);
+  background: var(--color-sage-dark); /* Fill with dark sage */
   color: white;
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
