@@ -339,7 +339,7 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
                     <span className="badge invited">Invited</span>
                   )}
                   {guest.hasRSVPed && (
-                    <span className="badge rsvped">RSVP&apos;d</span>
+                    <span className="badge rsvped">RSVP'd</span>
                   )}
                   {guest.rsvp?.attending && (
                     <span className="badge attending">Attending</span>
