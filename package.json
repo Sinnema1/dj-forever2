@@ -17,7 +17,7 @@
     "client:build": "cd client && npm run build",
     "seed": "cd server && npm run seed",
     "install": "cd server && npm i && cd ../client && npm i",
-    "render-build": "npm install && npm run build",
+    "render-build": "npm install && npm run build && cd server && npm run migrate:user-personalization:prod",
     "lint": "npm run lint:server && npm run lint:client",
     "lint:server": "cd server && npm run lint",
     "lint:client": "cd client && npm run lint",

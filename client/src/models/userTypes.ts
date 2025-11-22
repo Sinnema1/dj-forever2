@@ -30,6 +30,19 @@
  * };
  * ```
  */
+/**
+ * Guest group classification for invitation management and personalization.
+ * Matches the GraphQL GuestGroup enum from the backend.
+ */
+export type GuestGroup =
+  | 'FAMILY'
+  | 'FRIENDS'
+  | 'WORK'
+  | 'EXTENDED_FAMILY'
+  | 'BRIDAL_PARTY'
+  | 'GROOMS_PARTY'
+  | 'OTHER';
+
 export interface User {
   /** Unique database identifier for the user (MongoDB ObjectId as string) */
   _id: string;
@@ -45,6 +58,16 @@ export interface User {
   hasRSVPed?: boolean;
   /** Reference to the user's RSVP record ID (optional, null if no RSVP exists) */
   rsvpId?: string | null;
+  /** Guest's relationship to the bride (e.g., "Sister", "College Friend") */
+  relationshipToBride?: string;
+  /** Guest's relationship to the groom (e.g., "Brother", "Coworker") */
+  relationshipToGroom?: string;
+  /** Personalized welcome message for this guest */
+  customWelcomeMessage?: string;
+  /** Guest group classification for organizing invitations */
+  guestGroup?: GuestGroup;
+  /** Whether this guest is allowed to bring a plus-one */
+  plusOneAllowed?: boolean;
 }
 
 /**
