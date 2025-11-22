@@ -12,7 +12,6 @@
     "client:start": "cd client && npm run preview",
     "client:dev": "cd client && npm run dev",
     "build": "concurrently \"npm run server:build\" \"npm run client:build\"",
-    "build:server": "cd server && npm install && npm run build",
     "build:server": "cd server && npm run build",
     "client:build": "cd client && npm run build",
     "seed": "cd server && npm run seed",
