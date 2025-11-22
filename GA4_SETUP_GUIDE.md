@@ -124,7 +124,7 @@ analytics.track("photo_uploaded", user?.id, {
 analytics.setUserProperties({
   is_invited: true,
   is_admin: false,
-  guest_group: "brides-family", // Options: grooms-family, friends, brides-family, extended-family, other
+  guest_group: "brides_family", // Options: grooms_family, friends, brides_family, extended_family, other
 });
 ```
 
