@@ -8,6 +8,7 @@
     "start": "node dist/server.js",
     "build": "tsc --project tsconfig.build.json",
     "build:strict": "tsc --noEmit && tsc --project tsconfig.build.json",
+    "render-build": "npm install && npm run build && npm run migrate:user-personalization:prod",
     "typecheck": "tsc --noEmit",
     "watch": "nodemon --watch src --ext ts,json --exec \"npm run build && npm run start\"",
     "test": "vitest run",
