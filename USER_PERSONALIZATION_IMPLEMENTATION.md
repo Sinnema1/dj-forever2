@@ -83,10 +83,10 @@ const userSchema = new Schema<IUser>({
     lowercase: true,
     enum: {
       values: [
-        "grooms-family",
+        "grooms_family",
         "friends",
-        "brides-family",
-        "extended-family",
+        "brides_family",
+        "extended_family",
         "other",
       ],
       message: "{VALUE} is not a valid guest group",
@@ -345,14 +345,14 @@ const user = await User.create({
   relationshipToGroom: "Friend from college",
   customWelcomeMessage:
     "We're so excited to celebrate with you, Jane! Your support means the world to us.",
-  guestGroup: "brides-family",
+  guestGroup: "brides_family",
   plusOneAllowed: true,
 });
 
 // Update existing user
 await User.findByIdAndUpdate(userId, {
   relationshipToGroom: "Cousin",
-  guestGroup: "grooms-family",
+  guestGroup: "grooms_family",
   plusOneAllowed: false,
 });
 ```
