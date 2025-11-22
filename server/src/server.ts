@@ -43,7 +43,7 @@
  *
  * @example
  * // Production deployment:
- * // npm run render-build - Render.com build command
+ * // Render.com build: npm install && npm run build (in server/ directory)
  * // Automatically starts server on assigned PORT
  *
  * @dependencies

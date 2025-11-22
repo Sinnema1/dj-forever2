@@ -8,7 +8,10 @@ This project is deployed on Render with separate services for frontend and backe
 
 **URL**: `https://dj-forever2-backend.onrender.com`
 
-**Build Command**: `npm run render-build`
+**Build Command**:
+
+- Backend (Web Service): `npm install && npm run build` (root directory: `server/`)
+- Frontend (Static Site): `npm install && npm run build` (root directory: `client/`)
 
 **Start Command**: `node server/dist/server.js`
 
