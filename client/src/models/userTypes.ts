@@ -33,15 +33,16 @@
 /**
  * Guest group classification for invitation management and personalization.
  * Matches the GraphQL GuestGroup enum from the backend.
+ * Values are lowercase to match MongoDB schema validation.
  */
 export type GuestGroup =
-  | 'FAMILY'
-  | 'FRIENDS'
-  | 'WORK'
-  | 'EXTENDED_FAMILY'
-  | 'BRIDAL_PARTY'
-  | 'GROOMS_PARTY'
-  | 'OTHER';
+  | 'family'
+  | 'friends'
+  | 'work'
+  | 'extended_family'
+  | 'bridal_party'
+  | 'grooms_party'
+  | 'other';
 
 export interface User {
   /** Unique database identifier for the user (MongoDB ObjectId as string) */
