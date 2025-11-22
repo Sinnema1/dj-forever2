@@ -105,6 +105,12 @@ export const seedDatabase = async (closeConnection = false) => {
       isInvited: user.isInvited,
       hasRSVPed: user.hasRSVPed,
       qrToken: user.qrToken || generateQrToken(),
+      // Personalization fields (Phase 1)
+      relationshipToBride: user.relationshipToBride,
+      relationshipToGroom: user.relationshipToGroom,
+      customWelcomeMessage: user.customWelcomeMessage,
+      guestGroup: user.guestGroup,
+      plusOneAllowed: user.plusOneAllowed ?? false,
     }));
 
     // Insert users and retrieve their new IDs

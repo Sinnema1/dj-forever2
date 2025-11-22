@@ -152,18 +152,16 @@ const WelcomeModal: React.FC = () => {
     // Group-based greetings
     if (user.guestGroup) {
       switch (user.guestGroup) {
-        case 'bridal_party':
-          return `Thank you for being part of our bridal party! Your friendship and support mean the world to us.`;
-        case 'grooms_party':
-          return `Thank you for being part of our groom's party! Your friendship and support mean the world to us.`;
-        case 'family':
-          return `Family means everything to us, and we're so happy to celebrate this special day with you!`;
-        case 'extended_family':
-          return `We're delighted to have our extended family here to share in our joy!`;
-        case 'work':
-          return `We're so glad to have our work family here to celebrate with us!`;
+        case 'grooms_family':
+          return `Family means everything to us! We're so happy to celebrate this special day with the groom's family.`;
+        case 'brides_family':
+          return `Family means everything to us! We're so happy to celebrate this special day with the bride's family.`;
         case 'friends':
           return `Your friendship has enriched our lives in countless ways. We're thrilled you're here!`;
+        case 'extended_family':
+          return `We're delighted to have our extended family here to share in our joy!`;
+        case 'other':
+          return `We're so grateful you're here to celebrate with us on our special day!`;
       }
     }
 
