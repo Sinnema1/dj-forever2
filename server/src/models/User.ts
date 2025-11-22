@@ -67,6 +67,11 @@ import mongoose, { Schema, Document } from "mongoose";
  * @property {boolean} isInvited - Invitation status flag (default: true)
  * @property {boolean} hasRSVPed - RSVP completion status (default: false, updated by RSVP service)
  * @property {string} qrToken - Unique QR token for authentication (required, unique)
+ * @property {string} relationshipToBride - Guest's relationship to bride (optional, for personalization)
+ * @property {string} relationshipToGroom - Guest's relationship to groom (optional, for personalization)
+ * @property {string} customWelcomeMessage - Personalized welcome message (optional)
+ * @property {string} guestGroup - Group classification (e.g., 'family', 'friends', 'work') (optional)
+ * @property {boolean} plusOneAllowed - Whether guest is allowed a plus-one (default: false)
  * @property {Date} createdAt - Account creation timestamp (automatic)
  * @property {Date} updatedAt - Last modification timestamp (automatic)
  */
@@ -78,6 +83,11 @@ export interface IUser extends Document {
   hasRSVPed: boolean;
   rsvpId?: mongoose.Types.ObjectId;
   qrToken: string;
+  relationshipToBride?: string;
+  relationshipToGroom?: string;
+  customWelcomeMessage?: string;
+  guestGroup?: string;
+  plusOneAllowed: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -125,6 +135,44 @@ const userSchema = new Schema<IUser>(
       required: [true, "QR token is required"],
       unique: true,
       trim: true,
+    },
+    relationshipToBride: {
+      type: String,
+      trim: true,
+      maxlength: [100, "Relationship description cannot exceed 100 characters"],
+    },
+    relationshipToGroom: {
+      type: String,
+      trim: true,
+      maxlength: [100, "Relationship description cannot exceed 100 characters"],
+    },
+    customWelcomeMessage: {
+      type: String,
+      trim: true,
+      maxlength: [500, "Welcome message cannot exceed 500 characters"],
+    },
+    guestGroup: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      enum: {
+        values: [
+          "family",
+          "friends",
+          "work",
+          "extended-family",
+          "bridal-party",
+          "grooms-party",
+          "other",
+        ],
+        message: "{VALUE} is not a valid guest group",
+      },
+      index: true,
+    },
+    plusOneAllowed: {
+      type: Boolean,
+      default: false,
+      index: true,
     },
   },
   {

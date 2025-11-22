@@ -95,9 +95,10 @@ QR codes are saved to `server/qr-codes/production/` directory.
 
 ### Database connection issues
 
-- Verify `MONGODB_URI` format: `mongodb+srv://user:pass@cluster.mongodb.net/?retryWrites=true&w=majority`
+- Verify `MONGODB_URI` format: `mongodb+srv://USERNAME:PASSWORD@cluster.mongodb.net/?retryWrites=true&w=majority`
 - Check `MONGODB_DB_NAME` is set to `djforever2` (not included in URI)
 - Ensure MongoDB Atlas allows connections from Render IP addresses
+- **Important**: Never commit actual credentials - always use environment variables
 
 ## Local Development
 
