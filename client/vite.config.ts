@@ -46,9 +46,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       // Let Workbox handle all assets automatically via globPatterns
       devOptions: {
-        enabled: false, // set to true only if you want to test SW in dev
+        enabled: false, // Disabled for faster dev - enable only for PWA testing
       },
       manifest: {
+        id: '/',
         name: "Dominique & Justin's Wedding",
         short_name: 'D&J Wedding',
         description: 'Join us for our special day - November 8, 2026',
@@ -61,9 +62,15 @@ export default defineConfig({
         categories: ['lifestyle', 'social'],
         icons: [
           {
-            src: 'favicon.svg',
-            sizes: '32x32 64x64 128x128 256x256',
-            type: 'image/svg+xml',
+            src: '/pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+          {
+            src: '/pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
             purpose: 'any maskable',
           },
         ],
