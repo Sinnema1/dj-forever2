@@ -157,12 +157,10 @@ const userSchema = new Schema<IUser>(
       lowercase: true,
       enum: {
         values: [
-          "family",
+          "grooms_family",
           "friends",
-          "work",
-          "extended-family",
-          "bridal-party",
-          "grooms-party",
+          "brides_family",
+          "extended_family",
           "other",
         ],
         message: "{VALUE} is not a valid guest group",

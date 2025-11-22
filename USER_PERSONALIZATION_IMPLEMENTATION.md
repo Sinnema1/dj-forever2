@@ -14,24 +14,22 @@ This document details the implementation of user personalization fields in the D
 
 Five new optional fields were added to the User model across all layers of the stack:
 
-| Field                  | Type        | Description                       | Validation                                                                      |
-| ---------------------- | ----------- | --------------------------------- | ------------------------------------------------------------------------------- |
-| `relationshipToBride`  | string      | Guest's relationship to bride     | Max 100 characters, trimmed                                                     |
-| `relationshipToGroom`  | string      | Guest's relationship to groom     | Max 100 characters, trimmed                                                     |
-| `customWelcomeMessage` | string      | Personalized greeting from couple | Max 500 characters, trimmed                                                     |
-| `guestGroup`           | enum/string | Guest category                    | Enum: family, friends, work, extended-family, bridal-party, grooms-party, other |
-| `plusOneAllowed`       | boolean     | Whether guest can bring a +1      | Default: false, indexed                                                         |
+| Field                  | Type        | Description                       | Validation                                                          |
+| ---------------------- | ----------- | --------------------------------- | ------------------------------------------------------------------- |
+| `relationshipToBride`  | string      | Guest's relationship to bride     | Max 100 characters, trimmed                                         |
+| `relationshipToGroom`  | string      | Guest's relationship to groom     | Max 100 characters, trimmed                                         |
+| `customWelcomeMessage` | string      | Personalized greeting from couple | Max 500 characters, trimmed                                         |
+| `guestGroup`           | enum/string | Guest category                    | Enum: grooms-family, friends, brides-family, extended-family, other |
+| `plusOneAllowed`       | boolean     | Whether guest can bring a +1      | Default: false, indexed                                             |
 
 ### Guest Group Categories
 
 The `guestGroup` field uses a predefined set of categories for consistent guest organization:
 
-- **FAMILY**: Immediate family members
+- **GROOMS_FAMILY**: Groom's family members
 - **FRIENDS**: Close friends
-- **WORK**: Work colleagues
+- **BRIDES_FAMILY**: Bride's family members
 - **EXTENDED_FAMILY**: Extended family members
-- **BRIDAL_PARTY**: Bridal party members
-- **GROOMS_PARTY**: Groom's party members
 - **OTHER**: Other guests
 
 ## Technical Changes
@@ -85,12 +83,10 @@ const userSchema = new Schema<IUser>({
     lowercase: true,
     enum: {
       values: [
-        "family",
+        "grooms_family",
         "friends",
-        "work",
-        "extended-family",
-        "bridal-party",
-        "grooms-party",
+        "brides_family",
+        "extended_family",
         "other",
       ],
       message: "{VALUE} is not a valid guest group",
@@ -124,29 +120,21 @@ Guest group classification for invitation management and personalization
 """
 enum GuestGroup {
   """
-  Immediate family members
+  Groom's family members
   """
-  FAMILY
+  GROOMS_FAMILY
   """
   Close friends
   """
   FRIENDS
   """
-  Work colleagues
+  Bride's family members
   """
-  WORK
+  BRIDES_FAMILY
   """
   Extended family members
   """
   EXTENDED_FAMILY
-  """
-  Bridal party members
-  """
-  BRIDAL_PARTY
-  """
-  Groom's party members
-  """
-  GROOMS_PARTY
   """
   Other guests
   """
@@ -193,12 +181,10 @@ type User {
  * Matches the GraphQL GuestGroup enum from the backend.
  */
 export type GuestGroup =
-  | "FAMILY"
+  | "GROOMS_FAMILY"
   | "FRIENDS"
-  | "WORK"
+  | "BRIDES_FAMILY"
   | "EXTENDED_FAMILY"
-  | "BRIDAL_PARTY"
-  | "GROOMS_PARTY"
   | "OTHER";
 ```
 
@@ -359,14 +345,14 @@ const user = await User.create({
   relationshipToGroom: "Friend from college",
   customWelcomeMessage:
     "We're so excited to celebrate with you, Jane! Your support means the world to us.",
-  guestGroup: "family",
+  guestGroup: "brides_family",
   plusOneAllowed: true,
 });
 
 // Update existing user
 await User.findByIdAndUpdate(userId, {
-  relationshipToBride: "Cousin",
-  guestGroup: "extended-family",
+  relationshipToGroom: "Cousin",
+  guestGroup: "grooms_family",
   plusOneAllowed: false,
 });
 ```
@@ -408,8 +394,8 @@ function WelcomeModal({ user }: { user: User }) {
   const canBringPlusOne = user.plusOneAllowed;
 
   // Group-specific content
-  if (user.guestGroup === "BRIDAL_PARTY") {
-    return <BridalPartyWelcome user={user} />;
+  if (user.guestGroup === "BRIDES_FAMILY") {
+    return <BridesFamilyWelcome user={user} />;
   }
 
   return (

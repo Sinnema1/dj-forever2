@@ -36,12 +36,10 @@
  * Values are lowercase to match MongoDB schema validation.
  */
 export type GuestGroup =
-  | 'family'
+  | 'grooms_family'
   | 'friends'
-  | 'work'
+  | 'brides_family'
   | 'extended_family'
-  | 'bridal_party'
-  | 'grooms_party'
   | 'other';
 
 export interface User {
