@@ -3,12 +3,16 @@ import User from "./dist/models/User.js";
 
 async function createProductionAdmin() {
   try {
-    // Use MongoDB Atlas production URI
-    const uri =
-      "mongodb+srv://sinnema1:vegetable@cluster0.uu42ab9.mongodb.net/djforever2?retryWrites=true&w=majority";
+    // Use MongoDB Atlas production URI from environment variable
+    const uri = process.env.MONGODB_URI;
+    const dbName = process.env.MONGODB_DB_NAME || "djforever2";
 
-    console.log("Connecting to MongoDB Atlas production database: djforever2");
-    await mongoose.connect(uri);
+    if (!uri) {
+      throw new Error("MONGODB_URI environment variable is required");
+    }
+
+    console.log(`Connecting to MongoDB Atlas production database: ${dbName}`);
+    await mongoose.connect(uri, { dbName });
     console.log("Connected to database");
 
     // Check if admin user already exists
