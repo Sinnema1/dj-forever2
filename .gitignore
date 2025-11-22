@@ -82,3 +82,4 @@ DJ-Forever
 # Temporary commit planning files
 *COMMIT_MESSAGE*.txt
 READY_TO_COMMIT.md
+client/dev-dist/
