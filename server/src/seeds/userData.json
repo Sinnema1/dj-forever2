@@ -5,21 +5,31 @@
       "email": "alice@example.com",
       "isInvited": true,
       "hasRSVPed": true,
-      "qrToken": "r24gpj3wntgqwqfberlas"
+      "qrToken": "r24gpj3wntgqwqfberlas",
+      "relationshipToBride": "sister",
+      "guestGroup": "brides-family",
+      "plusOneAllowed": true
     },
     {
       "fullName": "Bob Smith",
       "email": "bob@example.com",
       "isInvited": true,
       "hasRSVPed": true,
-      "qrToken": "ssq7b7bkfqqpd2724vlcol"
+      "qrToken": "ssq7b7bkfqqpd2724vlcol",
+      "relationshipToGroom": "best friend",
+      "guestGroup": "friends",
+      "plusOneAllowed": false,
+      "customWelcomeMessage": "Bob! We're so excited to have our best friend celebrating with us. Your friendship has meant the world to us over the years!"
     },
     {
       "fullName": "Charlie Williams",
       "email": "charlie@example.com",
       "isInvited": false,
       "hasRSVPed": false,
-      "qrToken": "ss0qx6mg20f2qaiyl9hnl7"
+      "qrToken": "ss0qx6mg20f2qaiyl9hnl7",
+      "relationshipToBride": "work colleague",
+      "guestGroup": "other",
+      "plusOneAllowed": true
     }
   ]
 }

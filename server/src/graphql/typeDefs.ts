@@ -65,18 +65,14 @@ export const typeDefs = `
 
   """Guest group classification for invitation management and personalization"""
   enum GuestGroup {
-    """Immediate family members"""
-    family
+    """Groom's family members"""
+    grooms_family
     """Close friends"""
     friends
-    """Work colleagues"""
-    work
+    """Bride's family members"""
+    brides_family
     """Extended family members"""
     extended_family
-    """Bridal party members"""
-    bridal_party
-    """Groom's party members"""
-    grooms_party
     """Other guests"""
     other
   }
