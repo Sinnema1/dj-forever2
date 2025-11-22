@@ -53,7 +53,8 @@ npm run test:rsvp:graphql  # GraphQL integration tests
 npm run dev  # Starts both server and client with hot reload
 
 # Production build
-npm run render-build  # Render.com deployment command
+# Backend: cd server && npm install && npm run build
+# Frontend: cd client && npm install && npm run build
 ```
 
 ## Project-Specific Patterns
@@ -210,9 +211,9 @@ This project has extensive mobile optimizations:
 
 ### Build Configuration
 
-- **Command**: `npm run render-build` (not standard build)
-- **Environment**: Monorepo structure requires specific build paths
-- **Assets**: Large bundle (18MB+) requires optimization
+- **Backend Service**: Root directory `server/`, build command `npm install && npm run build`
+- **Frontend Service**: Root directory `client/`, build command `npm install && npm run build`
+- **Monorepo**: Each Render service operates independently in its own directory
 
 ### Environment Variables
 
