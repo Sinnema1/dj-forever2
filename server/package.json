@@ -20,7 +20,10 @@
     "generate:qrcodes:dev": "MONGODB_DB_NAME=djforever2_dev FRONTEND_URL=http://192.168.1.64:3002 node dist/seeds/generateQRCodes.js",
     "generate:qrcodes:prod": "MONGODB_DB_NAME=djforever2 FRONTEND_URL=https://dj-forever2.onrender.com NODE_ENV=production node dist/seeds/generateQRCodes.js",
     "migrate:hasrsvped": "npx ts-node --esm src/scripts/updateHasRSVPed.ts",
-    "migrate:legacy-rsvps": "npm run build && MONGODB_DB_NAME=djforever2_dev node dist/scripts/migrateLegacyRSVPs.js"
+    "migrate:legacy-rsvps": "npm run build && MONGODB_DB_NAME=djforever2_dev node dist/scripts/migrateLegacyRSVPs.js",
+    "migrate:user-personalization": "npm run build && node dist/scripts/migrateUserPersonalizationFields.js",
+    "migrate:user-personalization:dev": "npm run build && MONGODB_DB_NAME=djforever2_dev node dist/scripts/migrateUserPersonalizationFields.js",
+    "migrate:user-personalization:prod": "npm run build && MONGODB_DB_NAME=djforever2 node dist/scripts/migrateUserPersonalizationFields.js"
   },
   "dependencies": {
     "@apollo/server": "^4.12.2",

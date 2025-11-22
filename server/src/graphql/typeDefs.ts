@@ -63,6 +63,24 @@ export const typeDefs = `
     MAYBE
   }
 
+  """Guest group classification for invitation management and personalization"""
+  enum GuestGroup {
+    """Immediate family members"""
+    family
+    """Close friends"""
+    friends
+    """Work colleagues"""
+    work
+    """Extended family members"""
+    extended_family
+    """Bridal party members"""
+    bridal_party
+    """Groom's party members"""
+    grooms_party
+    """Other guests"""
+    other
+  }
+
   type User {
     _id: ID!
     fullName: String!
@@ -73,6 +91,11 @@ export const typeDefs = `
     rsvp: RSVP
     isInvited: Boolean!
     qrToken: String!
+    relationshipToBride: String
+    relationshipToGroom: String
+    customWelcomeMessage: String
+    guestGroup: GuestGroup
+    plusOneAllowed: Boolean!
   }
 
   type Guest {

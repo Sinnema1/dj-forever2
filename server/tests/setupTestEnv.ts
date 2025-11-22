@@ -11,4 +11,12 @@ beforeAll(() => {
       stdio: "inherit",
     }
   );
+
+  // Run migration to add personalization fields to test users
+  execSync(
+    "MONGODB_DB_NAME=djforever2_test node dist/scripts/migrateUserPersonalizationFields.js",
+    {
+      stdio: "inherit",
+    }
+  );
 });
