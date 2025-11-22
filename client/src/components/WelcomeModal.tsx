@@ -34,7 +34,9 @@ const WelcomeModal: React.FC = () => {
 
   // Focus management and keyboard trap
   useEffect(() => {
-    if (!showModal) {return undefined;}
+    if (!showModal) {
+      return undefined;
+    }
 
     // Store currently focused element for restoration
     previousActiveElement.current = document.activeElement;
@@ -101,6 +103,74 @@ const WelcomeModal: React.FC = () => {
 
   const firstName = user.fullName.split(' ')[0];
 
+  // Generate personalized greeting based on relationship
+  const getPersonalizedGreeting = (): string => {
+    // Use custom welcome message if set
+    if (user.customWelcomeMessage) {
+      return user.customWelcomeMessage;
+    }
+
+    // Relationship-based greetings
+    if (user.relationshipToBride) {
+      const relationship = user.relationshipToBride.toLowerCase();
+      if (relationship.includes('sister')) {
+        return `We are so blessed to have you, dear sister of the bride, celebrating with us!`;
+      }
+      if (relationship.includes('brother')) {
+        return `We are so honored to have you, brother of the bride, celebrating with us!`;
+      }
+      if (relationship.includes('mother') || relationship.includes('mom')) {
+        return `Your love and support has meant everything to us. We're so grateful to share this day with you!`;
+      }
+      if (relationship.includes('father') || relationship.includes('dad')) {
+        return `Your love and support has meant everything to us. We're so grateful to share this day with you!`;
+      }
+      if (relationship.includes('friend')) {
+        return `We're thrilled to celebrate our special day with such a wonderful friend of the bride!`;
+      }
+    }
+
+    if (user.relationshipToGroom) {
+      const relationship = user.relationshipToGroom.toLowerCase();
+      if (relationship.includes('sister')) {
+        return `We are so blessed to have you, dear sister of the groom, celebrating with us!`;
+      }
+      if (relationship.includes('brother')) {
+        return `We are so honored to have you, brother of the groom, celebrating with us!`;
+      }
+      if (relationship.includes('mother') || relationship.includes('mom')) {
+        return `Your love and support has meant everything to us. We're so grateful to share this day with you!`;
+      }
+      if (relationship.includes('father') || relationship.includes('dad')) {
+        return `Your love and support has meant everything to us. We're so grateful to share this day with you!`;
+      }
+      if (relationship.includes('friend')) {
+        return `We're thrilled to celebrate our special day with such a wonderful friend of the groom!`;
+      }
+    }
+
+    // Group-based greetings
+    if (user.guestGroup) {
+      switch (user.guestGroup) {
+        case 'bridal_party':
+          return `Thank you for being part of our bridal party! Your friendship and support mean the world to us.`;
+        case 'grooms_party':
+          return `Thank you for being part of our groom's party! Your friendship and support mean the world to us.`;
+        case 'family':
+          return `Family means everything to us, and we're so happy to celebrate this special day with you!`;
+        case 'extended_family':
+          return `We're delighted to have our extended family here to share in our joy!`;
+        case 'work':
+          return `We're so glad to have our work family here to celebrate with us!`;
+        case 'friends':
+          return `Your friendship has enriched our lives in countless ways. We're thrilled you're here!`;
+      }
+    }
+
+    // Default greeting
+    return `We are absolutely thrilled that you are here and that you will be celebrating with us on our special day!`;
+  };
+
   return (
     // Backdrop closes only when the user clicks the overlay (not the modal)
     // itself. Add keyboard activation so Enter/Space also close the backdrop.
@@ -155,10 +225,7 @@ const WelcomeModal: React.FC = () => {
             </div>
 
             <div className="welcome-message">
-              <p className="welcome-greeting">
-                We are absolutely thrilled that you are here and that you will
-                be celebrating with us on our special day!
-              </p>
+              <p className="welcome-greeting">{getPersonalizedGreeting()}</p>
 
               <p className="welcome-details">
                 This website contains everything you need to know about our
@@ -166,6 +233,13 @@ const WelcomeModal: React.FC = () => {
                 registry and photo gallery. We have created this special space
                 just for our loved ones.
               </p>
+
+              {user.plusOneAllowed && (
+                <p className="welcome-plus-one">
+                  <strong>💝 Plus One Invited:</strong> We'd love for you to
+                  bring a guest! Please include their information when you RSVP.
+                </p>
+              )}
 
               <p className="welcome-personal">
                 Your presence means the world to us, and we cannot wait to share
