@@ -193,6 +193,11 @@ export async function getAllUsersWithRSVPs(): Promise<AdminUser[]> {
       rsvp: user.rsvp,
       createdAt: user.createdAt?.toISOString(),
       lastUpdated: user.updatedAt?.toISOString(),
+      relationshipToBride: user.relationshipToBride,
+      relationshipToGroom: user.relationshipToGroom,
+      customWelcomeMessage: user.customWelcomeMessage,
+      guestGroup: user.guestGroup,
+      plusOneAllowed: user.plusOneAllowed,
     }));
 
     logger.info(

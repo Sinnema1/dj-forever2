@@ -30,6 +30,11 @@ export const GET_ADMIN_RSVPS = gql`
       isAdmin
       hasRSVPed
       qrToken
+      relationshipToBride
+      relationshipToGroom
+      customWelcomeMessage
+      guestGroup
+      plusOneAllowed
       createdAt
       lastUpdated
       rsvp {
@@ -83,6 +88,25 @@ export const ADMIN_UPDATE_USER = gql`
       isInvited
       isAdmin
       hasRSVPed
+    }
+  }
+`;
+
+// Admin Update User Personalization Mutation
+export const UPDATE_USER_PERSONALIZATION = gql`
+  mutation UpdateUserPersonalization(
+    $userId: ID!
+    $input: UserPersonalizationInput!
+  ) {
+    adminUpdateUserPersonalization(userId: $userId, input: $input) {
+      _id
+      fullName
+      email
+      relationshipToBride
+      relationshipToGroom
+      customWelcomeMessage
+      guestGroup
+      plusOneAllowed
     }
   }
 `;
