@@ -112,7 +112,9 @@ const AdminGuestPersonalization: React.FC = () => {
   };
 
   const getGuestGroupLabel = (group?: GuestGroup): string => {
-    if (!group) return 'Not set';
+    if (!group) {
+      return 'Not set';
+    }
     const labels: Record<GuestGroup, string> = {
       grooms_family: "Groom's Family",
       brides_family: "Bride's Family",
