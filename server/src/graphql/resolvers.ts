@@ -366,6 +366,63 @@ export const resolvers = {
         throw new GraphQLError(error?.message || "Failed to update user");
       }
     },
+    adminUpdateUserPersonalization: async (
+      _: unknown,
+      args: {
+        userId: string;
+        input: {
+          relationshipToBride?: string;
+          relationshipToGroom?: string;
+          customWelcomeMessage?: string;
+          guestGroup?: string;
+          plusOneAllowed?: boolean;
+        };
+      },
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        // Build update object with only defined fields
+        const updateFields: Record<string, any> = {};
+        if (args.input.relationshipToBride !== undefined) {
+          updateFields.relationshipToBride = args.input.relationshipToBride;
+        }
+        if (args.input.relationshipToGroom !== undefined) {
+          updateFields.relationshipToGroom = args.input.relationshipToGroom;
+        }
+        if (args.input.customWelcomeMessage !== undefined) {
+          updateFields.customWelcomeMessage = args.input.customWelcomeMessage;
+        }
+        if (args.input.guestGroup !== undefined) {
+          updateFields.guestGroup = args.input.guestGroup;
+        }
+        if (args.input.plusOneAllowed !== undefined) {
+          updateFields.plusOneAllowed = args.input.plusOneAllowed;
+        }
+
+        const user = await (User.findByIdAndUpdate as any)(
+          args.userId,
+          { $set: updateFields },
+          { new: true, runValidators: true }
+        );
+
+        if (!user) {
+          throw new GraphQLError("User not found", {
+            extensions: { code: "NOT_FOUND" },
+          });
+        }
+
+        return user;
+      } catch (error: any) {
+        console.error(
+          "Error in adminUpdateUserPersonalization resolver:",
+          error
+        );
+        throw new GraphQLError(
+          error?.message || "Failed to update user personalization"
+        );
+      }
+    },
     adminDeleteRSVP: async (
       _: unknown,
       args: { rsvpId: string },
