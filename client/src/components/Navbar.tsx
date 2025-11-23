@@ -26,12 +26,12 @@
  * @see {@link https://www.w3.org/WAI/ARIA/apg/patterns/menubar/} ARIA Navigation Pattern
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { smoothScroll } from '../utils/smoothScroll';
 import QRLoginModal from './QRLoginModal';
-import MobileDrawer from './MobileDrawer';
+import MobileDrawer, { type MobileDrawerHandle } from './MobileDrawer';
 
 /**
  * Interface for navigation link configuration
@@ -98,6 +98,8 @@ function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   /** Mobile drawer open/closed state */
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  /** Reference to MobileDrawer for controlling skip behavior */
+  const mobileDrawerRef = useRef<MobileDrawerHandle>(null);
   /** Authentication context for user state management */
   const { user, isLoggedIn, isLoading, logout } = useAuth();
   /** Current route location for navigation state */
@@ -125,22 +127,45 @@ function Navbar() {
    */
   const [activeSection, setActiveSection] = useState('home');
   useEffect(() => {
-    if (isHomePage) {
-      const onScroll = () => {
-        const pos = window.scrollY + 100;
-        document.querySelectorAll('section[id]').forEach(sec => {
-          const el = sec as HTMLElement;
-          if (pos >= el.offsetTop && pos < el.offsetTop + el.offsetHeight) {
-            setActiveSection(el.id);
-          }
-        });
-      };
-      window.addEventListener('scroll', onScroll);
-      onScroll();
-      return () => window.removeEventListener('scroll', onScroll);
+    if (!isHomePage) {
+      return undefined;
     }
-    // No cleanup needed when not on home page
-    return undefined;
+
+    const updateActiveSection = () => {
+      // Add navbar offset to current scroll position for section detection
+      const scrollWithOffset = window.scrollY + 150;
+      
+      let foundSection = 'home';
+      document.querySelectorAll('section[id]').forEach(sec => {
+        const el = sec as HTMLElement;
+        const sectionTop = el.offsetTop;
+        const sectionBottom = sectionTop + el.offsetHeight;
+        
+        // Check if scroll position (with offset) is within this section
+        if (scrollWithOffset >= sectionTop && scrollWithOffset < sectionBottom) {
+          foundSection = el.id;
+        }
+      });
+      
+      setActiveSection(foundSection);
+    };
+
+    // Throttle scroll event for performance
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveSection();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    updateActiveSection(); // Initial call
+    
+    return () => window.removeEventListener('scroll', onScroll);
   }, [isHomePage]);
 
   /**
@@ -182,6 +207,7 @@ function Navbar() {
                 className={activeSection === link.to ? 'active' : ''}
                 onClick={e => {
                   e.preventDefault();
+                  setActiveSection(link.to);
                   smoothScroll(link.to);
                 }}
               >
@@ -191,7 +217,7 @@ function Navbar() {
           ))
         ) : (
           <li>
-            <Link to="/" className={isHomePage ? 'active' : ''}>
+            <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
               Home
             </Link>
           </li>
@@ -262,8 +288,12 @@ function Navbar() {
 
       {/* Modern Mobile Drawer */}
       <MobileDrawer
+        ref={mobileDrawerRef}
         isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
+        onClose={() => {
+          console.log('[Navbar] Drawer onClose called');
+          setMobileMenuOpen(false);
+        }}
         className="navbar-drawer"
       >
         <ul className="drawer-nav" id="mobile-navigation">
@@ -278,8 +308,19 @@ function Navbar() {
                   href={`#${link.to}`}
                   onClick={e => {
                     e.preventDefault();
-                    smoothScroll(link.to);
+                    
+                    // Immediately set active section to the clicked link
+                    setActiveSection(link.to);
+                    
+                    // Set the ref flag to skip scroll restore on drawer close
+                    if (mobileDrawerRef.current) {
+                      mobileDrawerRef.current.skipScrollRestoreRef.current = true;
+                    }
                     setMobileMenuOpen(false);
+                    
+                    // Scroll to top, then smooth scroll to section (matches desktop behavior)
+                    window.scrollTo(0, 0);
+                    smoothScroll(link.to);
                   }}
                   className={`drawer-link ${activeSection === link.to ? 'active' : ''}`}
                 >
@@ -291,7 +332,9 @@ function Navbar() {
             <li style={{ '--item-index': 0 } as React.CSSProperties}>
               <Link
                 to="/"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                }}
                 className={`drawer-link ${isHomePage ? 'active' : ''}`}
               >
                 Home
@@ -314,7 +357,9 @@ function Navbar() {
               >
                 <Link
                   to={link.to}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                  }}
                   className={`drawer-link ${location.pathname === link.to ? 'active' : ''}`}
                 >
                   {link.label}
