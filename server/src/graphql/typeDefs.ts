@@ -195,6 +195,15 @@ export const typeDefs = `
     isInvited: Boolean
   }
 
+  """Input for updating user personalization fields"""
+  input UserPersonalizationInput {
+    relationshipToBride: String
+    relationshipToGroom: String
+    customWelcomeMessage: String
+    guestGroup: GuestGroup
+    plusOneAllowed: Boolean
+  }
+
   """Input for admin RSVP updates"""
   input AdminRSVPUpdateInput {
     attending: AttendanceStatus
@@ -239,6 +248,7 @@ export const typeDefs = `
     adminCreateUser(input: AdminCreateUserInput!): AdminUser!
     adminUpdateRSVP(userId: ID!, input: AdminRSVPUpdateInput!): RSVP!
     adminUpdateUser(userId: ID!, input: AdminUserUpdateInput!): AdminUser!
+    adminUpdateUserPersonalization(userId: ID!, input: UserPersonalizationInput!): User!
     adminDeleteUser(userId: ID!): Boolean!
     adminDeleteRSVP(userId: ID!): Boolean!
     

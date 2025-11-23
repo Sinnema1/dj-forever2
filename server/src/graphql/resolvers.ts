@@ -366,6 +366,63 @@ export const resolvers = {
         throw new GraphQLError(error?.message || "Failed to update user");
       }
     },
+    adminUpdateUserPersonalization: async (
+      _: unknown,
+      args: {
+        userId: string;
+        input: {
+          relationshipToBride?: string;
+          relationshipToGroom?: string;
+          customWelcomeMessage?: string;
+          guestGroup?: string;
+          plusOneAllowed?: boolean;
+        };
+      },
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        const user = await User.findByIdAndUpdate(
+          args.userId,
+          {
+            $set: {
+              ...(args.input.relationshipToBride !== undefined && {
+                relationshipToBride: args.input.relationshipToBride,
+              }),
+              ...(args.input.relationshipToGroom !== undefined && {
+                relationshipToGroom: args.input.relationshipToGroom,
+              }),
+              ...(args.input.customWelcomeMessage !== undefined && {
+                customWelcomeMessage: args.input.customWelcomeMessage,
+              }),
+              ...(args.input.guestGroup !== undefined && {
+                guestGroup: args.input.guestGroup,
+              }),
+              ...(args.input.plusOneAllowed !== undefined && {
+                plusOneAllowed: args.input.plusOneAllowed,
+              }),
+            },
+          },
+          { new: true, runValidators: true }
+        );
+
+        if (!user) {
+          throw new GraphQLError("User not found", {
+            extensions: { code: "NOT_FOUND" },
+          });
+        }
+
+        return user;
+      } catch (error: any) {
+        console.error(
+          "Error in adminUpdateUserPersonalization resolver:",
+          error
+        );
+        throw new GraphQLError(
+          error?.message || "Failed to update user personalization"
+        );
+      }
+    },
     adminDeleteRSVP: async (
       _: unknown,
       args: { rsvpId: string },
