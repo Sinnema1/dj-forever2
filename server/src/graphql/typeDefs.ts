@@ -186,6 +186,12 @@ export const typeDefs = `
     createdAt: String
     """Date of last RSVP update"""
     lastUpdated: String
+    """Personalization fields"""
+    relationshipToBride: String
+    relationshipToGroom: String
+    customWelcomeMessage: String
+    guestGroup: GuestGroup
+    plusOneAllowed: Boolean
   }
 
   """Input for updating user details from admin interface"""
