@@ -16,7 +16,7 @@
 export function smoothScroll(targetId: string, offset: number = 100) {
   const el = document.getElementById(targetId);
   if (!el) {
-    console.warn(`Element with ID "${targetId}" not found for smooth scroll`);
+    console.warn(`[smoothScroll] Element with ID "${targetId}" not found`);
     return;
   }
 

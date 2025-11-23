@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, ReactNode } from 'react';
+import React, { useEffect, useRef, ReactNode, forwardRef, useImperativeHandle } from 'react';
 import { createPortal } from 'react-dom';
 
 /**
@@ -13,6 +13,13 @@ interface MobileDrawerProps {
   children: ReactNode;
   /** Optional CSS class name for styling customization */
   className?: string;
+}
+
+/**
+ * Ref handle for MobileDrawer
+ */
+export interface MobileDrawerHandle {
+  skipScrollRestoreRef: React.MutableRefObject<boolean>;
 }
 
 /**
@@ -52,15 +59,21 @@ interface MobileDrawerProps {
  * </MobileDrawer>
  * ```
  */
-const MobileDrawer: React.FC<MobileDrawerProps> = ({
+const MobileDrawer = forwardRef<MobileDrawerHandle, MobileDrawerProps>(({
   isOpen,
   onClose,
   children,
   className = '',
-}) => {
+}, ref) => {
   const drawerRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
   const previousActiveElementRef = useRef<Element | null>(null);
+  const skipScrollRestoreRef = useRef(false);
+
+  // Expose the ref to parent
+  useImperativeHandle(ref, () => ({
+    skipScrollRestoreRef
+  }));
 
   // Focus management
   useEffect(() => {
@@ -80,37 +93,26 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
     }
   }, [isOpen]);
 
-  // Body scroll lock
+  // Body scroll lock - use overflow:hidden to prevent scroll without visual jump
   useEffect(() => {
     if (!isOpen) {return;}
 
-    // Save current scroll position
+    // Save current scroll position and prevent body scrolling
     const scrollY = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
+    
+    // Use overflow:hidden instead of position:fixed to avoid visual jump
+    document.body.style.overflow = 'hidden';
+    document.body.style.paddingRight = '0px'; // Prevent scrollbar shift
     document.body.dataset.scrollY = scrollY.toString();
 
     return () => {
-      // Restore scroll position
-      const scrollY = parseInt(document.body.dataset.scrollY || '0');
-
-      // Remove styles first
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-
-      // Use double requestAnimationFrame to ensure scroll restoration
-      // happens after the drawer animation completes and browser repaints
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          // Use numeric overload for iOS Safari 12+ compatibility
-          // ScrollToOptions (object parameter) not supported in older Safari
-          window.scrollTo(0, scrollY);
-        });
-      });
+      // Remove overflow lock
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
 
       delete document.body.dataset.scrollY;
+      // Reset the ref for next time
+      skipScrollRestoreRef.current = false;
     };
   }, [isOpen]);
 
@@ -179,6 +181,8 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
     </div>,
     document.body
   );
-};
+});
+
+MobileDrawer.displayName = 'MobileDrawer';
 
 export default MobileDrawer;
