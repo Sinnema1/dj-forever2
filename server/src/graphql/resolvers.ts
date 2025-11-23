@@ -382,27 +382,27 @@ export const resolvers = {
     ) => {
       requireAdmin(context);
       try {
-        const user = await User.findByIdAndUpdate(
+        // Build update object with only defined fields
+        const updateFields: Record<string, any> = {};
+        if (args.input.relationshipToBride !== undefined) {
+          updateFields.relationshipToBride = args.input.relationshipToBride;
+        }
+        if (args.input.relationshipToGroom !== undefined) {
+          updateFields.relationshipToGroom = args.input.relationshipToGroom;
+        }
+        if (args.input.customWelcomeMessage !== undefined) {
+          updateFields.customWelcomeMessage = args.input.customWelcomeMessage;
+        }
+        if (args.input.guestGroup !== undefined) {
+          updateFields.guestGroup = args.input.guestGroup;
+        }
+        if (args.input.plusOneAllowed !== undefined) {
+          updateFields.plusOneAllowed = args.input.plusOneAllowed;
+        }
+
+        const user = await (User.findByIdAndUpdate as any)(
           args.userId,
-          {
-            $set: {
-              ...(args.input.relationshipToBride !== undefined && {
-                relationshipToBride: args.input.relationshipToBride,
-              }),
-              ...(args.input.relationshipToGroom !== undefined && {
-                relationshipToGroom: args.input.relationshipToGroom,
-              }),
-              ...(args.input.customWelcomeMessage !== undefined && {
-                customWelcomeMessage: args.input.customWelcomeMessage,
-              }),
-              ...(args.input.guestGroup !== undefined && {
-                guestGroup: args.input.guestGroup,
-              }),
-              ...(args.input.plusOneAllowed !== undefined && {
-                plusOneAllowed: args.input.plusOneAllowed,
-              }),
-            },
-          },
+          { $set: updateFields },
           { new: true, runValidators: true }
         );
 
