@@ -693,7 +693,7 @@ export default function RSVPForm() {
           {/* Individual Guest Forms */}
           {formData.guests.map((guest, index) => (
             <div
-              key={`${guest.fullName || 'guest'}-${index}`}
+              key={`guest-${index}`}
               className="guest-form-section"
               data-guest-index={index}
             >
