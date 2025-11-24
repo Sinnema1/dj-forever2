@@ -67,6 +67,8 @@ export interface User {
   guestGroup?: GuestGroup;
   /** Whether this guest is allowed to bring a plus-one */
   plusOneAllowed?: boolean;
+  /** Optional URL to a personal photo for this guest */
+  personalPhoto?: string;
 }
 
 /**

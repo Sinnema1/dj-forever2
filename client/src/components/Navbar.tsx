@@ -134,19 +134,22 @@ function Navbar() {
     const updateActiveSection = () => {
       // Add navbar offset to current scroll position for section detection
       const scrollWithOffset = window.scrollY + 150;
-      
+
       let foundSection = 'home';
       document.querySelectorAll('section[id]').forEach(sec => {
         const el = sec as HTMLElement;
         const sectionTop = el.offsetTop;
         const sectionBottom = sectionTop + el.offsetHeight;
-        
+
         // Check if scroll position (with offset) is within this section
-        if (scrollWithOffset >= sectionTop && scrollWithOffset < sectionBottom) {
+        if (
+          scrollWithOffset >= sectionTop &&
+          scrollWithOffset < sectionBottom
+        ) {
           foundSection = el.id;
         }
       });
-      
+
       setActiveSection(foundSection);
     };
 
@@ -164,7 +167,7 @@ function Navbar() {
 
     window.addEventListener('scroll', onScroll, { passive: true });
     updateActiveSection(); // Initial call
-    
+
     return () => window.removeEventListener('scroll', onScroll);
   }, [isHomePage]);
 
@@ -308,16 +311,17 @@ function Navbar() {
                   href={`#${link.to}`}
                   onClick={e => {
                     e.preventDefault();
-                    
+
                     // Immediately set active section to the clicked link
                     setActiveSection(link.to);
-                    
+
                     // Set the ref flag to skip scroll restore on drawer close
                     if (mobileDrawerRef.current) {
-                      mobileDrawerRef.current.skipScrollRestoreRef.current = true;
+                      mobileDrawerRef.current.skipScrollRestoreRef.current =
+                        true;
                     }
                     setMobileMenuOpen(false);
-                    
+
                     // Scroll to top, then smooth scroll to section (matches desktop behavior)
                     window.scrollTo(0, 0);
                     smoothScroll(link.to);

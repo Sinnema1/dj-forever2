@@ -12,6 +12,12 @@ export const LOGIN_WITH_QR_TOKEN = gql`
         isAdmin
         qrToken
         hasRSVPed
+        relationshipToBride
+        relationshipToGroom
+        customWelcomeMessage
+        guestGroup
+        plusOneAllowed
+        personalPhoto
       }
     }
   }
