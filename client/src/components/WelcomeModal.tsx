@@ -170,8 +170,8 @@ const WelcomeModal: React.FC = () => {
   };
 
   return (
-    // Backdrop closes only when the user clicks the overlay (not the modal)
-    // itself. Add keyboard activation so Enter/Space also close the backdrop.
+    // Backdrop closes only when the user clicks the overlay (not the modal
+    // itself). Add keyboard activation so Enter/Space also close the backdrop.
     <div
       className="welcome-modal-overlay"
       onClick={e => {
@@ -216,9 +216,16 @@ const WelcomeModal: React.FC = () => {
           <div className="welcome-modal-body">
             <div className="welcome-couple-photo">
               <img
-                src={coverPhoto}
+                src={user.personalPhoto || coverPhoto}
                 alt="Dominique and Justin"
                 className="couple-image"
+                onError={e => {
+                  // Fallback to cover photo if personal photo fails to load
+                  const target = e.target as HTMLImageElement;
+                  if (target.src !== coverPhoto) {
+                    target.src = coverPhoto;
+                  }
+                }}
               />
             </div>
 

@@ -35,6 +35,7 @@ export const GET_ADMIN_RSVPS = gql`
       customWelcomeMessage
       guestGroup
       plusOneAllowed
+      personalPhoto
       createdAt
       lastUpdated
       rsvp {
@@ -107,6 +108,7 @@ export const UPDATE_USER_PERSONALIZATION = gql`
       customWelcomeMessage
       guestGroup
       plusOneAllowed
+      personalPhoto
     }
   }
 `;

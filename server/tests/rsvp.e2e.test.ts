@@ -49,7 +49,17 @@ describe("RSVP End-to-End", () => {
           mutation {
             loginWithQrToken(qrToken: "${testQrToken}") {
               token
-              user { email isInvited qrToken }
+              user { 
+                email 
+                isInvited 
+                qrToken 
+                relationshipToBride
+                relationshipToGroom
+                customWelcomeMessage
+                guestGroup
+                plusOneAllowed
+                personalPhoto
+              }
             }
           }
         `,
