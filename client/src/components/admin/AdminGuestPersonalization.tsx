@@ -19,6 +19,7 @@ interface AdminUser extends User {
   customWelcomeMessage?: string;
   guestGroup?: GuestGroup;
   plusOneAllowed?: boolean;
+  personalPhoto?: string;
 }
 
 /**
@@ -101,6 +102,7 @@ const AdminGuestPersonalization: React.FC = () => {
       customWelcomeMessage?: string;
       guestGroup?: GuestGroup;
       plusOneAllowed?: boolean;
+      personalPhoto?: string;
     }
   ) => {
     await updatePersonalization({

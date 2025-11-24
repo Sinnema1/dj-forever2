@@ -1,18 +1,26 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import QRLoginModal from "../src/components/QRLoginModal";
-import { AuthProvider } from "../src/context/AuthContext";
-import { MockedProvider } from "@apollo/client/testing";
-import { LOGIN_WITH_QR_TOKEN } from "../src/features/auth/graphql/loginWithQrToken";
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import QRLoginModal from '../src/components/QRLoginModal';
+import { AuthProvider } from '../src/context/AuthContext';
+import { MockedProvider } from '@apollo/client/testing';
+import { LOGIN_WITH_QR_TOKEN } from '../src/features/auth/graphql/loginWithQrToken';
 
-const qrToken = "test-qr-token-123";
+const qrToken = 'test-qr-token-123';
 const user = {
-  _id: "1",
-  fullName: "Test User",
-  email: "test@example.com",
+  _id: '1',
+  fullName: 'Test User',
+  email: 'test@example.com',
   isInvited: true,
+  isAdmin: false,
   qrToken,
+  hasRSVPed: false,
+  relationshipToBride: undefined,
+  relationshipToGroom: undefined,
+  customWelcomeMessage: undefined,
+  guestGroup: undefined,
+  plusOneAllowed: false,
+  personalPhoto: undefined,
 };
 
 const loginMock = {
@@ -23,15 +31,15 @@ const loginMock = {
   result: {
     data: {
       loginWithQrToken: {
-        token: "mock-token",
+        token: 'mock-token',
         user,
       },
     },
   },
 };
 
-describe("QRLoginModal", () => {
-  it("logs in user with valid QR token", async () => {
+describe('QRLoginModal', () => {
+  it('logs in user with valid QR token', async () => {
     const onLoginSuccess = vi.fn();
     render(
       <MockedProvider mocks={[loginMock]} addTypename={false}>
