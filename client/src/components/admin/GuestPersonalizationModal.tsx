@@ -13,6 +13,7 @@ interface GuestPersonalizationModalProps {
       customWelcomeMessage?: string;
       guestGroup?: GuestGroup;
       plusOneAllowed?: boolean;
+      personalPhoto?: string;
     }
   ) => Promise<void>;
   isSaving: boolean;
@@ -33,12 +34,14 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     customWelcomeMessage: user.customWelcomeMessage || '',
     guestGroup: user.guestGroup || ('' as GuestGroup | ''),
     plusOneAllowed: user.plusOneAllowed || false,
+    personalPhoto: user.personalPhoto || '',
   });
 
   const [charCount, setCharCount] = useState({
     relationshipToBride: user.relationshipToBride?.length || 0,
     relationshipToGroom: user.relationshipToGroom?.length || 0,
     customWelcomeMessage: user.customWelcomeMessage?.length || 0,
+    personalPhoto: user.personalPhoto?.length || 0,
   });
 
   useEffect(() => {
@@ -47,6 +50,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       relationshipToBride: formData.relationshipToBride.length,
       relationshipToGroom: formData.relationshipToGroom.length,
       customWelcomeMessage: formData.customWelcomeMessage.length,
+      personalPhoto: formData.personalPhoto.length,
     });
   }, [formData]);
 
@@ -60,6 +64,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       customWelcomeMessage?: string;
       guestGroup?: GuestGroup;
       plusOneAllowed?: boolean;
+      personalPhoto?: string;
     } = {
       plusOneAllowed: formData.plusOneAllowed,
     };
@@ -75,6 +80,9 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     }
     if (formData.guestGroup) {
       personalization.guestGroup = formData.guestGroup as GuestGroup;
+    }
+    if (formData.personalPhoto) {
+      personalization.personalPhoto = formData.personalPhoto;
     }
 
     await onSave(user._id, personalization);
@@ -221,6 +229,30 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
               <small className="form-hint">
                 <strong>Priority:</strong> Custom message overrides relationship
                 and group-based greetings
+              </small>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="personalPhoto">
+                Personal Photo URL
+                <span className="char-count">
+                  {charCount.personalPhoto}/500
+                </span>
+              </label>
+              <input
+                type="url"
+                id="personalPhoto"
+                value={formData.personalPhoto}
+                onChange={e =>
+                  handleInputChange('personalPhoto', e.target.value)
+                }
+                maxLength={500}
+                placeholder="https://example.com/photo.jpg"
+                className="form-input"
+              />
+              <small className="form-hint">
+                Optional: Guest's personal photo URL to display in welcome modal
+                (defaults to couple photo if not set)
               </small>
             </div>
           </div>
