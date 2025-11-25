@@ -17,15 +17,88 @@
   z-index: 1000;
 }
 
+/* Banner type variations */
+.banner-deadline {
+  background-color: #f44336;
+  color: white;
+  border: 2px solid #d32f2f;
+}
+
+.banner-travel {
+  background-color: #2196f3;
+  color: white;
+  border-left: 4px solid #1976d2;
+}
+
+.banner-accommodation {
+  background-color: #ff9800;
+  color: white;
+  border-left: 4px solid #f57c00;
+}
+
+.banner-wedding-party {
+  background-color: #9c27b0;
+  color: white;
+  border-left: 4px solid #7b1fa2;
+}
+
+.banner-thank-you {
+  background-color: #4caf50;
+  color: white;
+  border-left: 4px solid #388e3c;
+}
+
+.banner-admin {
+  background-color: var(--color-sage);
+  color: var(--color-dark);
+}
+
+.banner-rsvp-reminder {
+  background-color: var(--color-sage);
+  color: var(--color-dark);
+}
+
 .personalized-welcome-banner p {
   margin: 0;
   font-size: 16px;
+  flex: 1;
+}
+
+.banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 15px;
+}
+
+.banner-dismiss-btn {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.banner-dismiss-btn:hover {
+  opacity: 1;
+}
+
+/* White dismiss button for colored banners */
+.banner-deadline .banner-dismiss-btn,
+.banner-travel .banner-dismiss-btn,
+.banner-accommodation .banner-dismiss-btn,
+.banner-wedding-party .banner-dismiss-btn,
+.banner-thank-you .banner-dismiss-btn {
+  color: white;
 }
 
 .btn-small {
   padding: 6px 12px;
   font-size: 14px;
-  margin-left: 15px;
   white-space: nowrap;
 }
 
@@ -45,11 +118,18 @@
     flex-direction: column;
     text-align: center;
     padding: 12px;
+    max-width: 95%;
   }
 
-  .btn-small {
+  .banner-actions {
     margin-left: 0;
-    margin-top: 8px;
+    margin-top: 10px;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .personalized-welcome-banner p {
+    font-size: 14px;
   }
 }
 

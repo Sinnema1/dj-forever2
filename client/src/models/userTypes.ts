@@ -71,6 +71,8 @@ export interface User {
   personalPhoto?: string;
   /** Special instructions for guest (travel info, accommodation, etc.) */
   specialInstructions?: string;
+  /** Dietary restrictions or preferences for this guest (e.g., "Vegetarian", "Gluten-free") */
+  dietaryRestrictions?: string;
 }
 
 /**
