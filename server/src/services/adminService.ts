@@ -556,3 +556,124 @@ export async function adminDeleteRSVP(userId: string): Promise<boolean> {
     throw new Error("Failed to delete RSVP");
   }
 }
+
+/**
+ * Bulk update user personalization from CSV import
+ *
+ * @param {Array} updates - Array of email and personalization pairs
+ * @returns {Promise<Object>} Result with success/failed counts and errors
+ */
+export async function bulkUpdatePersonalization(
+  updates: Array<{
+    email: string;
+    personalization: {
+      relationshipToBride?: string;
+      relationshipToGroom?: string;
+      customWelcomeMessage?: string;
+      guestGroup?: string;
+      plusOneAllowed?: boolean;
+      personalPhoto?: string;
+      specialInstructions?: string;
+      dietaryRestrictions?: string;
+    };
+  }>
+): Promise<{
+  success: number;
+  failed: number;
+  errors: Array<{ email: string; error: string }>;
+}> {
+  const result = {
+    success: 0,
+    failed: 0,
+    errors: [] as Array<{ email: string; error: string }>,
+  };
+
+  logger.info(
+    `Starting bulk personalization update for ${updates.length} users`,
+    {
+      service: "AdminService",
+    }
+  );
+
+  for (const update of updates) {
+    try {
+      // Find user by email
+      const user = await (User.findOne as any)({
+        email: update.email.toLowerCase(),
+      });
+
+      if (!user) {
+        result.failed++;
+        result.errors.push({
+          email: update.email,
+          error: "User not found with this email",
+        });
+        continue;
+      }
+
+      // Build update object with only defined fields
+      const updateFields: Record<string, any> = {};
+
+      if (update.personalization.relationshipToBride !== undefined) {
+        updateFields.relationshipToBride =
+          update.personalization.relationshipToBride;
+      }
+      if (update.personalization.relationshipToGroom !== undefined) {
+        updateFields.relationshipToGroom =
+          update.personalization.relationshipToGroom;
+      }
+      if (update.personalization.customWelcomeMessage !== undefined) {
+        updateFields.customWelcomeMessage =
+          update.personalization.customWelcomeMessage;
+      }
+      if (update.personalization.guestGroup !== undefined) {
+        updateFields.guestGroup = update.personalization.guestGroup;
+      }
+      if (update.personalization.plusOneAllowed !== undefined) {
+        updateFields.plusOneAllowed = update.personalization.plusOneAllowed;
+      }
+      if (update.personalization.personalPhoto !== undefined) {
+        updateFields.personalPhoto = update.personalization.personalPhoto;
+      }
+      if (update.personalization.specialInstructions !== undefined) {
+        updateFields.specialInstructions =
+          update.personalization.specialInstructions;
+      }
+      if (update.personalization.dietaryRestrictions !== undefined) {
+        updateFields.dietaryRestrictions =
+          update.personalization.dietaryRestrictions;
+      }
+
+      // Update user
+      await (User.findByIdAndUpdate as any)(
+        user._id,
+        { $set: updateFields },
+        { new: true, runValidators: true }
+      );
+
+      result.success++;
+
+      logger.debug(`Updated personalization for ${update.email}`, {
+        service: "AdminService",
+      });
+    } catch (error: any) {
+      result.failed++;
+      result.errors.push({
+        email: update.email,
+        error: error.message || "Unknown error during update",
+      });
+
+      logger.error(`Failed to update personalization for ${update.email}`, {
+        service: "AdminService",
+        error,
+      });
+    }
+  }
+
+  logger.info(
+    `Bulk personalization update complete: ${result.success} succeeded, ${result.failed} failed`,
+    { service: "AdminService" }
+  );
+
+  return result;
+}

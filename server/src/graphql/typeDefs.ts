@@ -234,6 +234,25 @@ export const typeDefs = `
     isInvited: Boolean!
   }
 
+  """Input for bulk personalization update - email is used to find the user"""
+  input BulkPersonalizationInput {
+    email: String!
+    personalization: UserPersonalizationInput!
+  }
+
+  """Result of bulk personalization update operation"""
+  type BulkPersonalizationResult {
+    success: Int!
+    failed: Int!
+    errors: [BulkPersonalizationError!]!
+  }
+
+  """Error detail for failed bulk personalization update"""
+  type BulkPersonalizationError {
+    email: String!
+    error: String!
+  }
+
   type Query {
     me: User
     getRSVP: RSVP
@@ -264,6 +283,7 @@ export const typeDefs = `
     adminUpdateRSVP(userId: ID!, input: AdminRSVPUpdateInput!): RSVP!
     adminUpdateUser(userId: ID!, input: AdminUserUpdateInput!): AdminUser!
     adminUpdateUserPersonalization(userId: ID!, input: UserPersonalizationInput!): User!
+    adminBulkUpdatePersonalization(updates: [BulkPersonalizationInput!]!): BulkPersonalizationResult!
     adminDeleteUser(userId: ID!): Boolean!
     adminDeleteRSVP(userId: ID!): Boolean!
     
