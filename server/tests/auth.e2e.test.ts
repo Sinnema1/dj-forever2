@@ -54,6 +54,7 @@ describe("Auth End-to-End", () => {
                 guestGroup
                 plusOneAllowed
                 personalPhoto
+                specialInstructions
               }
             }
           }

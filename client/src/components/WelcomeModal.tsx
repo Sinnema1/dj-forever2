@@ -246,6 +246,17 @@ const WelcomeModal: React.FC = () => {
                 </p>
               )}
 
+              {user.specialInstructions && (
+                <div className="welcome-special-instructions">
+                  <p>
+                    <strong>📋 Important Information:</strong>
+                  </p>
+                  <p className="special-instructions-text">
+                    {user.specialInstructions}
+                  </p>
+                </div>
+              )}
+
               <p className="welcome-personal">
                 Your presence means the world to us, and we cannot wait to share
                 this magical moment with you. Thank you for being such an

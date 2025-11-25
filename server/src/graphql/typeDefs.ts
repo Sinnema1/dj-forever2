@@ -93,6 +93,7 @@ export const typeDefs = `
     guestGroup: GuestGroup
     plusOneAllowed: Boolean!
     personalPhoto: String
+    specialInstructions: String
   }
 
   type Guest {
@@ -194,6 +195,7 @@ export const typeDefs = `
     guestGroup: GuestGroup
     plusOneAllowed: Boolean
     personalPhoto: String
+    specialInstructions: String
   }
 
   """Input for updating user details from admin interface"""
@@ -211,6 +213,7 @@ export const typeDefs = `
     guestGroup: GuestGroup
     plusOneAllowed: Boolean
     personalPhoto: String
+    specialInstructions: String
   }
 
   """Input for admin RSVP updates"""
