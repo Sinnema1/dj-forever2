@@ -1363,10 +1363,12 @@ section:not(:first-child)::before {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.35);
-  z-index: 1000;
+  z-index: 9999;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  overflow-y: auto;
+  padding: 2rem 1rem;
 }
 .modal {
   background: var(--color-panel-cream);
@@ -1374,8 +1376,13 @@ section:not(:first-child)::before {
   box-shadow: 0 4px 32px rgba(180, 148, 108, 0.18);
   padding: 2rem 2.5rem 1.5rem;
   min-width: 320px;
-  max-width: 90vw;
+  max-width: 500px;
+  width: 100%;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
   position: relative;
+  margin-top: auto;
+  margin-bottom: auto;
   animation: modal-fade-in 0.2s;
 }
 @keyframes modal-fade-in {

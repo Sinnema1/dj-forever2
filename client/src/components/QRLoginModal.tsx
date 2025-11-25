@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 
 /**
@@ -131,7 +132,9 @@ export default function QRLoginModal(props: QRLoginModalProps) {
 
   // Focus trap implementation
   React.useEffect(() => {
-    if (!isOpen) {return undefined;}
+    if (!isOpen) {
+      return undefined;
+    }
 
     const handleKeyDown = (event: KeyboardEvent) => {
       // Close on Escape
@@ -168,10 +171,6 @@ export default function QRLoginModal(props: QRLoginModalProps) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) {
-    return null;
-  }
-
   const handleTokenSubmit = async (token: string) => {
     if (!token.trim() || loading) {
       return;
@@ -203,7 +202,11 @@ export default function QRLoginModal(props: QRLoginModalProps) {
     }
   };
 
-  return (
+  if (!isOpen) {
+    return null;
+  }
+
+  return createPortal(
     // Overlay is an interactive backdrop intended to close the modal when
     // clicked. We make it keyboard-accessible (role/button + tabIndex + onKeyDown)
     // and provide a visible Close button for screen reader and keyboard users.
@@ -468,6 +471,7 @@ export default function QRLoginModal(props: QRLoginModalProps) {
           to { transform: rotate(360deg); }
         }
       `}</style>
-    </div>
+    </div>,
+    document.body
   );
 }
