@@ -4,103 +4,39 @@
 
 Enhance the WelcomeModal and PersonalizedWelcome components to support more dynamic, database-driven personalization beyond the current basic name extraction.
 
-## 📋 Current State
+## 📋 Current State (Updated: November 24, 2025)
 
-- ✅ Basic personalization using `user.fullName.split(" ")[0]`
-- ✅ RSVP status checking (`user.hasRSVPed`)
-- ✅ Modal persistence via localStorage
-- ❌ Static content hard-coded in components
-- ❌ No relationship-based messaging
-- ❌ No custom messages per guest
+### ✅ Phase 1 - COMPLETE
 
-## 🚀 Planned Enhancements
+- ✅ User model expanded with 7 personalization fields
+- ✅ GraphQL schema updated
+- ✅ Database migration ready
+- ✅ TypeScript interfaces updated
 
-### Phase 1: Expand User Model
+### ✅ Phase 2 - COMPLETE
 
-**File**: `/client/src/models/userTypes.ts`
+- ✅ Relationship-based welcome messages
+- ✅ Custom messages from the couple
+- ✅ Dynamic content based on guest group
+- ✅ Plus-one notifications in WelcomeModal
+- ✅ Personal photos for each guest
+- ✅ Special instructions (travel, accommodation, parking)
+- ✅ Admin interface to manage guest personalization
+- ✅ All fields tested and deployed
 
-```typescript
-export interface User {
-  _id: string;
-  fullName: string;
-  email: string;
-  isInvited: boolean;
-  isAdmin?: boolean;
-  hasRSVPed?: boolean;
-  rsvpId?: string | null;
+**Implemented Fields**:
 
-  // NEW FIELDS:
-  relationshipToBride?: "family" | "friend" | "coworker" | "college" | "other";
-  relationshipToGroom?: "family" | "friend" | "coworker" | "college" | "other";
-  customWelcomeMessage?: string; // Personalized message from couple
-  specialInstructions?: string; // Travel, accommodation notes
-  guestGroup?: string; // "Wedding Party", "Family", etc.
-  plusOneAllowed?: boolean; // For RSVP logic
-  dietaryRestrictions?: string[]; // For meal planning
-  tableAssignment?: string; // For seating chart
-  accommodationBooked?: boolean; // Track hotel bookings
-}
-```
+- `relationshipToBride` - Free text field for relationship description
+- `relationshipToGroom` - Free text field for relationship description
+- `customWelcomeMessage` - Fully custom message (500 chars)
+- `guestGroup` - Enum: grooms_family, brides_family, friends, extended_family, other
+- `plusOneAllowed` - Boolean flag
+- `personalPhoto` - URL to guest's personal photo
+- `specialInstructions` - Travel/accommodation info (1000 chars)
 
-### Phase 2: Backend Data Migration
+## 🚀 Phase 3: Advanced Personalization Features
 
-**Files**: Server-side user model and database
-
-- [ ] Update GraphQL schema with new user fields
-- [ ] Create database migration script for existing users
-- [ ] Update QR token generation to include new fields
-- [ ] Add admin interface to manage guest personalization
-
-### Phase 3: Enhanced Welcome Modal
-
-**File**: `/client/src/components/WelcomeModal.tsx`
-
-**New Features**:
-
-- [ ] Relationship-based welcome messages
-- [ ] Custom messages from the couple
-- [ ] Dynamic content based on guest group
-- [ ] Personalized RSVP prompts
-- [ ] Travel information for out-of-town guests
-
-**Implementation**:
-
-```tsx
-// Example enhanced personalization
-const getPersonalizedGreeting = () => {
-  if (user.customWelcomeMessage) {
-    return user.customWelcomeMessage;
-  }
-
-  const relationship = user.relationshipToBride || user.relationshipToGroom;
-  switch (relationship) {
-    case "family":
-      return `We're so excited to celebrate with family like you, ${firstName}!`;
-    case "college":
-      return `It means the world to have our college friends here, ${firstName}!`;
-    case "coworker":
-      return `Thank you for being such an important part of our work family, ${firstName}!`;
-    default:
-      return `We are absolutely thrilled that you're here, ${firstName}!`;
-  }
-};
-```
-
-### Phase 4: Smart RSVP Integration
-
-**Files**:
-
-- `/client/src/components/WelcomeModal.tsx`
-- `/client/src/components/RSVP/RSVPForm.tsx`
-
-**Features**:
-
-- [ ] Pre-populate RSVP with known dietary restrictions
-- [ ] Show plus-one options based on `user.plusOneAllowed`
-- [ ] Display custom RSVP deadlines per guest group
-- [ ] Integrate table assignment information
-
-### Phase 5: Enhanced Banner System
+### Enhanced Banner System
 
 **File**: `/client/src/components/PersonalizedWelcome.tsx`
 
@@ -112,20 +48,54 @@ const getPersonalizedGreeting = () => {
 - [ ] RSVP deadline warnings
 - [ ] Thank you messages for completed RSVPs
 
-### Phase 6: Admin Management Interface
+**Implementation Strategy**:
 
-**New Files**:
+- Use `specialInstructions` field to trigger banner display
+- Add banner priority system (deadline warnings > travel reminders > thank you)
+- Dismissible banners with localStorage persistence
+- Mobile-responsive banner design
 
-- `/client/src/pages/AdminGuestManagement.tsx`
-- `/client/src/components/admin/GuestPersonalization.tsx`
+### Smart RSVP Pre-population
+
+**Files**:
+
+- `/client/src/components/WelcomeModal.tsx`
+- `/client/src/components/RSVP/RSVPForm.tsx`
 
 **Features**:
 
-- [ ] Bulk upload guest personalization data
-- [ ] Edit custom messages per guest
-- [ ] Preview personalized content
-- [ ] Guest group management
-- [ ] Analytics on engagement
+- [ ] Pre-populate RSVP with known dietary restrictions
+- [ ] Auto-set guest count based on `plusOneAllowed`
+- [ ] Display custom RSVP deadlines per guest group
+- [ ] Pre-fill guest names for known plus-ones
+
+**Technical Notes**:
+
+- Requires new `dietaryRestrictions` field in User model
+- RSVP form should read user context and pre-fill
+- Maintain edit capability (don't force pre-filled values)
+
+### Admin Bulk Upload Tools
+
+**New Files**:
+
+- `/client/src/pages/admin/BulkPersonalization.tsx`
+- `/server/src/scripts/importGuestData.ts`
+
+**Features**:
+
+- [ ] CSV upload for bulk guest data import
+- [ ] Excel template download
+- [ ] Validation and preview before import
+- [ ] Rollback capability for bad imports
+- [ ] Progress tracking for large uploads
+
+**Data Format**:
+
+```csv
+fullName,email,relationshipToBride,relationshipToGroom,guestGroup,plusOneAllowed,customWelcomeMessage,specialInstructions
+"John Doe","john@example.com","College Friend","","friends","true","","Hotel block at Marriott"
+```
 
 ## 🛠️ Technical Implementation Steps
 

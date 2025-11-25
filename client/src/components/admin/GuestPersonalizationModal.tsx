@@ -15,6 +15,7 @@ interface GuestPersonalizationModalProps {
       plusOneAllowed?: boolean;
       personalPhoto?: string;
       specialInstructions?: string;
+      dietaryRestrictions?: string;
     }
   ) => Promise<void>;
   isSaving: boolean;
@@ -37,6 +38,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     plusOneAllowed: user.plusOneAllowed || false,
     personalPhoto: user.personalPhoto || '',
     specialInstructions: user.specialInstructions || '',
+    dietaryRestrictions: user.dietaryRestrictions || '',
   });
 
   const [charCount, setCharCount] = useState({
@@ -45,6 +47,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     customWelcomeMessage: user.customWelcomeMessage?.length || 0,
     personalPhoto: user.personalPhoto?.length || 0,
     specialInstructions: user.specialInstructions?.length || 0,
+    dietaryRestrictions: user.dietaryRestrictions?.length || 0,
   });
 
   useEffect(() => {
@@ -55,6 +58,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       customWelcomeMessage: formData.customWelcomeMessage.length,
       personalPhoto: formData.personalPhoto.length,
       specialInstructions: formData.specialInstructions.length,
+      dietaryRestrictions: formData.dietaryRestrictions.length,
     });
   }, [formData]);
 
@@ -70,6 +74,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       plusOneAllowed?: boolean;
       personalPhoto?: string;
       specialInstructions?: string;
+      dietaryRestrictions?: string;
     } = {
       plusOneAllowed: formData.plusOneAllowed,
     };
@@ -91,6 +96,9 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     }
     if (formData.specialInstructions) {
       personalization.specialInstructions = formData.specialInstructions;
+    }
+    if (formData.dietaryRestrictions) {
+      personalization.dietaryRestrictions = formData.dietaryRestrictions;
     }
 
     await onSave(user._id, personalization);
@@ -285,6 +293,30 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
               <small className="form-hint">
                 Travel info, accommodation details, parking, or other important
                 guest-specific information
+              </small>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="dietaryRestrictions">
+                Dietary Restrictions
+                <span className="char-count">
+                  {charCount.dietaryRestrictions}/500
+                </span>
+              </label>
+              <textarea
+                id="dietaryRestrictions"
+                value={formData.dietaryRestrictions}
+                onChange={e =>
+                  handleInputChange('dietaryRestrictions', e.target.value)
+                }
+                maxLength={500}
+                rows={3}
+                placeholder="e.g., Vegetarian, Gluten-free, Nut allergy"
+                className="form-textarea"
+              />
+              <small className="form-hint">
+                Known dietary restrictions or preferences to pre-populate in
+                RSVP form
               </small>
             </div>
           </div>
