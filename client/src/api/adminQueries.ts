@@ -147,6 +147,22 @@ export const ADMIN_DELETE_USER = gql`
   }
 `;
 
+// Admin Bulk Update Personalization Mutation
+export const ADMIN_BULK_UPDATE_PERSONALIZATION = gql`
+  mutation AdminBulkUpdatePersonalization(
+    $updates: [BulkPersonalizationInput!]!
+  ) {
+    adminBulkUpdatePersonalization(updates: $updates) {
+      success
+      failed
+      errors {
+        email
+        error
+      }
+    }
+  }
+`;
+
 // Admin Email Reminder Mutations
 export const ADMIN_SEND_REMINDER_EMAIL = gql`
   mutation AdminSendReminderEmail($userId: ID!) {
