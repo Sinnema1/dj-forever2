@@ -14,6 +14,7 @@ interface GuestPersonalizationModalProps {
       guestGroup?: GuestGroup;
       plusOneAllowed?: boolean;
       personalPhoto?: string;
+      specialInstructions?: string;
     }
   ) => Promise<void>;
   isSaving: boolean;
@@ -35,6 +36,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     guestGroup: user.guestGroup || ('' as GuestGroup | ''),
     plusOneAllowed: user.plusOneAllowed || false,
     personalPhoto: user.personalPhoto || '',
+    specialInstructions: user.specialInstructions || '',
   });
 
   const [charCount, setCharCount] = useState({
@@ -42,6 +44,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     relationshipToGroom: user.relationshipToGroom?.length || 0,
     customWelcomeMessage: user.customWelcomeMessage?.length || 0,
     personalPhoto: user.personalPhoto?.length || 0,
+    specialInstructions: user.specialInstructions?.length || 0,
   });
 
   useEffect(() => {
@@ -51,6 +54,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       relationshipToGroom: formData.relationshipToGroom.length,
       customWelcomeMessage: formData.customWelcomeMessage.length,
       personalPhoto: formData.personalPhoto.length,
+      specialInstructions: formData.specialInstructions.length,
     });
   }, [formData]);
 
@@ -65,6 +69,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       guestGroup?: GuestGroup;
       plusOneAllowed?: boolean;
       personalPhoto?: string;
+      specialInstructions?: string;
     } = {
       plusOneAllowed: formData.plusOneAllowed,
     };
@@ -83,6 +88,9 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     }
     if (formData.personalPhoto) {
       personalization.personalPhoto = formData.personalPhoto;
+    }
+    if (formData.specialInstructions) {
+      personalization.specialInstructions = formData.specialInstructions;
     }
 
     await onSave(user._id, personalization);
@@ -253,6 +261,30 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
               <small className="form-hint">
                 Optional: Guest's personal photo URL to display in welcome modal
                 (defaults to couple photo if not set)
+              </small>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="specialInstructions">
+                Special Instructions
+                <span className="char-count">
+                  {charCount.specialInstructions}/1000
+                </span>
+              </label>
+              <textarea
+                id="specialInstructions"
+                value={formData.specialInstructions}
+                onChange={e =>
+                  handleInputChange('specialInstructions', e.target.value)
+                }
+                maxLength={1000}
+                rows={4}
+                placeholder="e.g., Hotel block at Marriott downtown. Shuttle service available from hotel to venue. Check-in starts at 3pm."
+                className="form-textarea"
+              />
+              <small className="form-hint">
+                Travel info, accommodation details, parking, or other important
+                guest-specific information
               </small>
             </div>
           </div>

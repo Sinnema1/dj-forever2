@@ -69,6 +69,8 @@ export interface User {
   plusOneAllowed?: boolean;
   /** Optional URL to a personal photo for this guest */
   personalPhoto?: string;
+  /** Special instructions for guest (travel info, accommodation, etc.) */
+  specialInstructions?: string;
 }
 
 /**
