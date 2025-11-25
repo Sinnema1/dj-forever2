@@ -18,6 +18,7 @@ export const LOGIN_WITH_QR_TOKEN = gql`
         guestGroup
         plusOneAllowed
         personalPhoto
+        specialInstructions
       }
     }
   }

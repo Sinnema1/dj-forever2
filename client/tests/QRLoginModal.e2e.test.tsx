@@ -21,6 +21,7 @@ const user = {
   guestGroup: undefined,
   plusOneAllowed: false,
   personalPhoto: undefined,
+  specialInstructions: undefined,
 };
 
 const loginMock = {
