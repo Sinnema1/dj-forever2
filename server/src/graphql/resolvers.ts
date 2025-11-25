@@ -376,6 +376,9 @@ export const resolvers = {
           customWelcomeMessage?: string;
           guestGroup?: string;
           plusOneAllowed?: boolean;
+          personalPhoto?: string;
+          specialInstructions?: string;
+          dietaryRestrictions?: string;
         };
       },
       context: GraphQLContext
@@ -398,6 +401,15 @@ export const resolvers = {
         }
         if (args.input.plusOneAllowed !== undefined) {
           updateFields.plusOneAllowed = args.input.plusOneAllowed;
+        }
+        if (args.input.personalPhoto !== undefined) {
+          updateFields.personalPhoto = args.input.personalPhoto;
+        }
+        if (args.input.specialInstructions !== undefined) {
+          updateFields.specialInstructions = args.input.specialInstructions;
+        }
+        if (args.input.dietaryRestrictions !== undefined) {
+          updateFields.dietaryRestrictions = args.input.dietaryRestrictions;
         }
 
         const user = await (User.findByIdAndUpdate as any)(
