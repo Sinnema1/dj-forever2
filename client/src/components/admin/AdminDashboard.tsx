@@ -7,6 +7,7 @@ import AdminGuestExport from './AdminGuestExport';
 import AdminAnalytics from './AdminAnalytics';
 import AdminEmailReminders from './AdminEmailReminders';
 import AdminGuestPersonalization from './AdminGuestPersonalization';
+import BulkPersonalization from './BulkPersonalization';
 import './AdminDashboard.css';
 
 /**
@@ -20,6 +21,7 @@ const AdminDashboard: React.FC = () => {
     | 'analytics'
     | 'guests'
     | 'personalization'
+    | 'bulk_upload'
     | 'reminders'
     | 'export'
   >('overview');
@@ -117,6 +119,14 @@ const AdminDashboard: React.FC = () => {
           Personalization
         </button>
         <button
+          className={`tab-button ${activeTab === 'bulk_upload' ? 'active' : ''}`}
+          onClick={() => setActiveTab('bulk_upload')}
+          aria-pressed={activeTab === 'bulk_upload'}
+          aria-label="Bulk upload tab"
+        >
+          Bulk Upload
+        </button>
+        <button
           className={`tab-button ${activeTab === 'reminders' ? 'active' : ''}`}
           onClick={() => setActiveTab('reminders')}
           aria-pressed={activeTab === 'reminders'}
@@ -185,6 +195,8 @@ const AdminDashboard: React.FC = () => {
         )}
 
         {activeTab === 'personalization' && <AdminGuestPersonalization />}
+
+        {activeTab === 'bulk_upload' && <BulkPersonalization />}
 
         {activeTab === 'reminders' && <AdminEmailReminders guests={guests} />}
 

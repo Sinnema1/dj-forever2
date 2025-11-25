@@ -245,6 +245,9 @@ export interface AdminUser {
   customWelcomeMessage?: string;
   guestGroup?: GuestGroup;
   plusOneAllowed?: boolean;
+  personalPhoto?: string;
+  specialInstructions?: string;
+  dietaryRestrictions?: string;
 }
 
 /**

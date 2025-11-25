@@ -198,6 +198,9 @@ export async function getAllUsersWithRSVPs(): Promise<AdminUser[]> {
       customWelcomeMessage: user.customWelcomeMessage,
       guestGroup: user.guestGroup,
       plusOneAllowed: user.plusOneAllowed,
+      personalPhoto: user.personalPhoto,
+      specialInstructions: user.specialInstructions,
+      dietaryRestrictions: user.dietaryRestrictions,
     }));
 
     logger.info(
