@@ -59,6 +59,7 @@ describe("RSVP End-to-End", () => {
                 guestGroup
                 plusOneAllowed
                 personalPhoto
+                specialInstructions
               }
             }
           }

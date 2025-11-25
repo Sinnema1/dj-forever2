@@ -89,6 +89,7 @@ export interface IUser extends Document {
   guestGroup?: string;
   plusOneAllowed: boolean;
   personalPhoto?: string;
+  specialInstructions?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -177,6 +178,11 @@ const userSchema = new Schema<IUser>(
       type: String,
       trim: true,
       maxlength: [500, "Photo URL cannot exceed 500 characters"],
+    },
+    specialInstructions: {
+      type: String,
+      trim: true,
+      maxlength: [1000, "Special instructions cannot exceed 1000 characters"],
     },
   },
   {

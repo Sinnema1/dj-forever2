@@ -36,6 +36,7 @@ const user = {
   guestGroup: undefined,
   plusOneAllowed: false,
   personalPhoto: undefined,
+  specialInstructions: undefined,
 };
 
 describe('QRTokenLogin', () => {
