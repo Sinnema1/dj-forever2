@@ -55,6 +55,7 @@ import {
   adminDeleteRSVP,
   adminCreateUser,
   adminDeleteUser,
+  bulkUpdatePersonalization,
 } from "../services/adminService.js";
 import {
   sendRSVPReminder,
@@ -473,6 +474,38 @@ export const resolvers = {
       } catch (error: any) {
         console.error("Error in adminDeleteUser resolver:", error);
         throw new GraphQLError(error?.message || "Failed to delete user");
+      }
+    },
+    adminBulkUpdatePersonalization: async (
+      _: unknown,
+      args: {
+        updates: Array<{
+          email: string;
+          personalization: {
+            relationshipToBride?: string;
+            relationshipToGroom?: string;
+            customWelcomeMessage?: string;
+            guestGroup?: string;
+            plusOneAllowed?: boolean;
+            personalPhoto?: string;
+            specialInstructions?: string;
+            dietaryRestrictions?: string;
+          };
+        }>;
+      },
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        return await bulkUpdatePersonalization(args.updates);
+      } catch (error: any) {
+        console.error(
+          "Error in adminBulkUpdatePersonalization resolver:",
+          error
+        );
+        throw new GraphQLError(
+          error?.message || "Failed to bulk update personalization"
+        );
       }
     },
     adminSendReminderEmail: async (

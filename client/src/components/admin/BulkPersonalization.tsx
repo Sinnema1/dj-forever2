@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useMutation } from '@apollo/client';
+import { ADMIN_BULK_UPDATE_PERSONALIZATION } from '../../api/adminQueries';
 import { GuestGroup } from '../../models/userTypes';
 import './BulkPersonalization.css';
 
@@ -41,6 +43,10 @@ const BulkPersonalization: React.FC = () => {
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+
+  const [bulkUpdatePersonalization] = useMutation(
+    ADMIN_BULK_UPDATE_PERSONALIZATION
+  );
 
   // Download CSV template
   const downloadTemplate = () => {
@@ -216,12 +222,10 @@ const BulkPersonalization: React.FC = () => {
     if (csvData.length === 0) return;
 
     setIsProcessing(true);
-    const result: ImportResult = { success: 0, failed: 0, errors: [] };
 
-    for (const row of csvData) {
-      try {
-        // Note: In a real implementation, we'd need to find userId by email first
-        // For now, this is a placeholder showing the structure
+    try {
+      // Build updates array for GraphQL mutation
+      const updates = csvData.map(row => {
         const personalization: any = {};
 
         if (row.relationshipToBride)
@@ -238,23 +242,46 @@ const BulkPersonalization: React.FC = () => {
         if (row.personalPhoto)
           personalization.personalPhoto = row.personalPhoto;
 
-        personalization.plusOneAllowed =
-          row.plusOneAllowed?.toLowerCase() === 'true';
+        // Only set plusOneAllowed if explicitly provided in CSV
+        if (row.plusOneAllowed !== undefined && row.plusOneAllowed !== '') {
+          personalization.plusOneAllowed =
+            row.plusOneAllowed.toLowerCase() === 'true';
+        }
 
-        // TODO: Implement actual import via GraphQL mutation
-        // This would require a bulk import mutation or finding user by email first
-        result.success++;
-      } catch (error: any) {
-        result.failed++;
-        result.errors.push({
+        return {
           email: row.email,
-          error: error.message || 'Unknown error',
+          personalization,
+        };
+      });
+
+      // Execute bulk update mutation
+      const { data } = await bulkUpdatePersonalization({
+        variables: { updates },
+      });
+
+      // Set results from mutation response
+      if (data?.adminBulkUpdatePersonalization) {
+        setImportResult({
+          success: data.adminBulkUpdatePersonalization.success,
+          failed: data.adminBulkUpdatePersonalization.failed,
+          errors: data.adminBulkUpdatePersonalization.errors,
         });
       }
+    } catch (error: any) {
+      // Handle mutation errors
+      setImportResult({
+        success: 0,
+        failed: csvData.length,
+        errors: [
+          {
+            email: 'BATCH',
+            error: error.message || 'Failed to execute bulk update',
+          },
+        ],
+      });
+    } finally {
+      setIsProcessing(false);
     }
-
-    setImportResult(result);
-    setIsProcessing(false);
   };
 
   return (
