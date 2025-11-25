@@ -90,6 +90,7 @@ export interface IUser extends Document {
   plusOneAllowed: boolean;
   personalPhoto?: string;
   specialInstructions?: string;
+  dietaryRestrictions?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -183,6 +184,11 @@ const userSchema = new Schema<IUser>(
       type: String,
       trim: true,
       maxlength: [1000, "Special instructions cannot exceed 1000 characters"],
+    },
+    dietaryRestrictions: {
+      type: String,
+      trim: true,
+      maxlength: [500, "Dietary restrictions cannot exceed 500 characters"],
     },
   },
   {

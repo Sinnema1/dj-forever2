@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useTransition } from 'react';
 import { useRSVP } from '../../features/rsvp/hooks/useRSVP';
+import { useAuth } from '../../context/AuthContext';
 import RSVPConfirmation from './RSVPConfirmation';
 import { RSVPFormData, Guest } from '../../features/rsvp/types/rsvpTypes';
 import { logDebug } from '../../utils/logger';
@@ -52,6 +53,7 @@ import { logDebug } from '../../utils/logger';
  */
 export default function RSVPForm() {
   const { createRSVP, editRSVP, rsvp, loading } = useRSVP();
+  const { user } = useAuth();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [submittedData, setSubmittedData] = useState<RSVPFormData | null>(null);
 
@@ -121,17 +123,31 @@ export default function RSVPForm() {
       {
         fullName: rsvp?.fullName || '',
         mealPreference: normalizeMealPreference(rsvp?.mealPreference || ''),
-        allergies: rsvp?.allergies || '',
+        // Pre-populate allergies with dietaryRestrictions from user profile if no RSVP exists
+        allergies: rsvp?.allergies || user?.dietaryRestrictions || '',
       },
     ];
+
+    // Pre-populate guest count based on plusOneAllowed if no RSVP exists
+    let initialGuestCount = rsvp?.guestCount || initialGuests.length;
+    if (!rsvp && user?.plusOneAllowed && initialGuestCount === 1) {
+      // Suggest 2 guests if plus-one is allowed and no RSVP exists yet
+      initialGuestCount = 2;
+      initialGuests.push({
+        fullName: '',
+        mealPreference: '',
+        allergies: '',
+      });
+    }
 
     return {
       fullName: rsvp?.fullName || '',
       attending: rsvp?.attending || 'NO',
       mealPreference: normalizeMealPreference(rsvp?.mealPreference || ''),
-      allergies: rsvp?.allergies || '',
+      // Pre-populate with user's dietary restrictions if available
+      allergies: rsvp?.allergies || user?.dietaryRestrictions || '',
       additionalNotes: rsvp?.additionalNotes || '',
-      guestCount: rsvp?.guestCount || initialGuests.length,
+      guestCount: initialGuestCount,
       guests: initialGuests,
     };
   });
