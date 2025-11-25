@@ -242,8 +242,11 @@ const BulkPersonalization: React.FC = () => {
         if (row.personalPhoto)
           personalization.personalPhoto = row.personalPhoto;
 
-        personalization.plusOneAllowed =
-          row.plusOneAllowed?.toLowerCase() === 'true';
+        // Only set plusOneAllowed if explicitly provided in CSV
+        if (row.plusOneAllowed !== undefined && row.plusOneAllowed !== '') {
+          personalization.plusOneAllowed =
+            row.plusOneAllowed.toLowerCase() === 'true';
+        }
 
         return {
           email: row.email,
