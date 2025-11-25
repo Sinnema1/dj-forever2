@@ -257,6 +257,19 @@ const WelcomeModal: React.FC = () => {
                 </div>
               )}
 
+              {user.dietaryRestrictions && (
+                <div className="welcome-dietary-info">
+                  <p>
+                    <strong>
+                      🍽️ We have your dietary preferences on file:
+                    </strong>
+                  </p>
+                  <p className="dietary-info-text">
+                    {user.dietaryRestrictions}
+                  </p>
+                </div>
+              )}
+
               <p className="welcome-personal">
                 Your presence means the world to us, and we cannot wait to share
                 this magical moment with you. Thank you for being such an
