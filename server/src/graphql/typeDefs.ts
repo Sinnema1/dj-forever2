@@ -237,12 +237,15 @@ export const typeDefs = `
   """Input for bulk personalization update - email is used to find the user"""
   input BulkPersonalizationInput {
     email: String!
+    fullName: String
     personalization: UserPersonalizationInput!
   }
 
   """Result of bulk personalization update operation"""
   type BulkPersonalizationResult {
     success: Int!
+    created: Int!
+    updated: Int!
     failed: Int!
     errors: [BulkPersonalizationError!]!
   }

@@ -154,6 +154,8 @@ export const ADMIN_BULK_UPDATE_PERSONALIZATION = gql`
   ) {
     adminBulkUpdatePersonalization(updates: $updates) {
       success
+      created
+      updated
       failed
       errors {
         email
