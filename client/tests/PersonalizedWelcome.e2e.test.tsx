@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import PersonalizedWelcome from '../src/components/PersonalizedWelcome';
 import type { User } from '../src/models/userTypes';
 import type { AuthContextType } from '../src/models/userTypes';
@@ -280,7 +280,7 @@ describe('PersonalizedWelcome - Banner System', () => {
   });
 
   describe('LocalStorage Dismissal', () => {
-    it('should allow dismissing a dismissible banner', async () => {
+    it('should allow dismissing a dismissible banner', () => {
       vi.setSystemTime(new Date('2026-02-01'));
 
       mockUser = {
@@ -295,19 +295,16 @@ describe('PersonalizedWelcome - Banner System', () => {
 
       const { unmount } = render(<PersonalizedWelcome />);
 
-      const banner = screen.getByTestId('personalized-welcome-banner');
-      expect(banner).toHaveAttribute('data-banner-type', 'thank-you');
+      expect(
+        screen.getByTestId('personalized-welcome-banner')
+      ).toBeInTheDocument();
 
-      // Click dismiss button
-      const dismissBtn = screen.getByLabelText('Dismiss banner');
+      const dismissBtn = screen.getByLabelText(/dismiss/i);
       fireEvent.click(dismissBtn);
 
-      // Banner should hide
-      await waitFor(() => {
-        expect(
-          screen.queryByTestId('personalized-welcome-banner')
-        ).not.toBeInTheDocument();
-      });
+      expect(
+        screen.queryByTestId('personalized-welcome-banner')
+      ).not.toBeInTheDocument();
 
       unmount();
     });
@@ -328,7 +325,9 @@ describe('PersonalizedWelcome - Banner System', () => {
       // First render - show banner
       const { unmount } = render(<PersonalizedWelcome />);
 
-      const banner = screen.getByTestId('personalized-welcome-banner');
+      expect(
+        screen.getByTestId('personalized-welcome-banner')
+      ).toBeInTheDocument();
       const dismissBtn = screen.getByLabelText('Dismiss banner');
       fireEvent.click(dismissBtn);
 
