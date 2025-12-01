@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-// import helmet from 'helmet';
-// import rateLimit from 'express-rate-limit';
-import { logger } from "../utils/logger";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import { logger } from "../utils/logger.js";
 
 /**
  * @fileoverview Security Middleware Suite
@@ -77,61 +77,29 @@ export const createRateLimiter = (
   windowMs: number = 15 * 60 * 1000,
   max: number = 100
 ) => {
-  // TODO: Install express-rate-limit package and uncomment
-  // return rateLimit({
-  //   windowMs, // 15 minutes by default
-  //   max, // limit each IP to max requests per windowMs
-  //   message: {
-  //     error: 'Too many requests from this IP, please try again later.',
-  //     code: 'RATE_LIMIT_EXCEEDED'
-  //   },
-  //   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  //   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  //   handler: (req: Request, res: Response) => {
-  //     logger.warn(`Rate limit exceeded for IP: ${req.ip}`, {
-  //       ip: req.ip,
-  //       userAgent: req.get('User-Agent'),
-  //       path: req.path
-  //     });
-
-  //     res.status(429).json({
-  //       error: 'Too many requests from this IP, please try again later.',
-  //       code: 'RATE_LIMIT_EXCEEDED',
-  //       retryAfter: Math.round(windowMs / 1000)
-  //     });
-  //   }
-  // });
-
-  // Simple in-memory rate limiter as placeholder
-  const requests = new Map<string, { count: number; resetTime: number }>();
-
-  return (req: Request, res: Response, next: NextFunction) => {
-    const key = req.ip || "unknown";
-    const now = Date.now();
-    const window = requests.get(key);
-
-    if (!window || now > window.resetTime) {
-      requests.set(key, { count: 1, resetTime: now + windowMs });
-      return next();
-    }
-
-    if (window.count >= max) {
-      logger.warn(`Rate limit exceeded for IP: ${key}`, {
+  return rateLimit({
+    windowMs, // 15 minutes by default
+    max, // limit each IP to max requests per windowMs
+    message: {
+      error: "Too many requests from this IP, please try again later.",
+      code: "RATE_LIMIT_EXCEEDED",
+    },
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    handler: (req: Request, res: Response) => {
+      logger.warn(`Rate limit exceeded for IP: ${req.ip}`, {
         ip: req.ip,
         userAgent: req.get("User-Agent"),
         path: req.path,
       });
 
-      return res.status(429).json({
+      res.status(429).json({
         error: "Too many requests from this IP, please try again later.",
         code: "RATE_LIMIT_EXCEEDED",
-        retryAfter: Math.round((window.resetTime - now) / 1000),
+        retryAfter: Math.round(windowMs / 1000),
       });
-    }
-
-    window.count++;
-    next();
-  };
+    },
+  });
 };
 
 /**
@@ -171,24 +139,31 @@ export const createRateLimiter = (
  * - X-XSS-Protection included for legacy browser support (deprecated in modern browsers)
  * - Frame options set to DENY (most restrictive, consider SAMEORIGIN if needed)
  */
-export const securityHeaders = (
-  _req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  // TODO: Install helmet package and use proper helmet middleware
-  // Basic security headers as placeholder
-  res.setHeader("X-Content-Type-Options", "nosniff");
-  res.setHeader("X-Frame-Options", "DENY");
-  res.setHeader("X-XSS-Protection", "1; mode=block");
-  res.setHeader(
-    "Strict-Transport-Security",
-    "max-age=31536000; includeSubDomains"
-  );
-  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-
-  next();
-};
+export const securityHeaders = helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://www.googletagmanager.com",
+      ],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://www.google-analytics.com"],
+      fontSrc: ["'self'", "data:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  },
+  crossOriginEmbedderPolicy: false, // Allow embedding for wedding photos
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true,
+  },
+});
 
 /**
  * Comprehensive request/response logging middleware with performance tracking
