@@ -517,7 +517,12 @@ Jane Smith,notfound@example.com,Sister`;
         request: {
           query: ADMIN_BULK_UPDATE_PERSONALIZATION,
           variables: {
-            updates: expect.any(Array),
+            updates: [
+              {
+                email: 'john@example.com',
+                personalization: {},
+              },
+            ],
           },
         },
         result: {
@@ -574,7 +579,12 @@ John Doe,john@example.com`;
         request: {
           query: ADMIN_BULK_UPDATE_PERSONALIZATION,
           variables: {
-            updates: expect.any(Array),
+            updates: [
+              {
+                email: 'john@example.com',
+                personalization: {},
+              },
+            ],
           },
         },
         error: new Error('Network error'),
@@ -620,7 +630,12 @@ John Doe,john@example.com`;
         request: {
           query: ADMIN_BULK_UPDATE_PERSONALIZATION,
           variables: {
-            updates: expect.any(Array),
+            updates: [
+              {
+                email: 'john@example.com',
+                personalization: {},
+              },
+            ],
           },
         },
         result: {
