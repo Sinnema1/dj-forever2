@@ -566,6 +566,7 @@ export async function adminDeleteRSVP(userId: string): Promise<boolean> {
 export async function bulkUpdatePersonalization(
   updates: Array<{
     email: string;
+    fullName?: string;
     personalization: {
       relationshipToBride?: string;
       relationshipToGroom?: string;
@@ -579,11 +580,15 @@ export async function bulkUpdatePersonalization(
   }>
 ): Promise<{
   success: number;
+  created: number;
+  updated: number;
   failed: number;
   errors: Array<{ email: string; error: string }>;
 }> {
   const result = {
     success: 0,
+    created: 0,
+    updated: 0,
     failed: 0,
     errors: [] as Array<{ email: string; error: string }>,
   };
@@ -598,18 +603,9 @@ export async function bulkUpdatePersonalization(
   for (const update of updates) {
     try {
       // Find user by email
-      const user = await (User.findOne as any)({
+      let user = await (User.findOne as any)({
         email: update.email.toLowerCase(),
       });
-
-      if (!user) {
-        result.failed++;
-        result.errors.push({
-          email: update.email,
-          error: "User not found with this email",
-        });
-        continue;
-      }
 
       // Build update object with only defined fields
       const updateFields: Record<string, any> = {};
@@ -644,36 +640,54 @@ export async function bulkUpdatePersonalization(
           update.personalization.dietaryRestrictions;
       }
 
-      // Update user
-      await (User.findByIdAndUpdate as any)(
-        user._id,
-        { $set: updateFields },
-        { new: true, runValidators: true }
-      );
+      if (!user) {
+        // Create new user if fullName is provided
+        if (!update.fullName) {
+          result.failed++;
+          result.errors.push({
+            email: update.email,
+            error: "User not found and cannot create without Name",
+          });
+          continue;
+        }
+
+        // Generate unique QR token
+        const qrToken =
+          Math.random().toString(36).substring(2) +
+          Math.random().toString(36).substring(2) +
+          Date.now().toString(36);
+
+        user = new User({
+          fullName: update.fullName,
+          email: update.email.toLowerCase(),
+          isInvited: true,
+          isAdmin: false,
+          hasRSVPed: false,
+          qrToken,
+          ...updateFields,
+        });
+
+        await user.save();
+        result.created++;
+      } else {
+        // Update existing user
+        await (User.findByIdAndUpdate as any)(
+          user._id,
+          { $set: updateFields },
+          { new: true, runValidators: true }
+        );
+        result.updated++;
+      }
 
       result.success++;
-
-      logger.debug(`Updated personalization for ${update.email}`, {
-        service: "AdminService",
-      });
     } catch (error: any) {
       result.failed++;
       result.errors.push({
         email: update.email,
-        error: error.message || "Unknown error during update",
-      });
-
-      logger.error(`Failed to update personalization for ${update.email}`, {
-        service: "AdminService",
-        error,
+        error: error.message || "Unknown error",
       });
     }
   }
-
-  logger.info(
-    `Bulk personalization update complete: ${result.success} succeeded, ${result.failed} failed`,
-    { service: "AdminService" }
-  );
 
   return result;
 }

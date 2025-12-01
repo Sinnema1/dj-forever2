@@ -481,6 +481,7 @@ export const resolvers = {
       args: {
         updates: Array<{
           email: string;
+          fullName?: string;
           personalization: {
             relationshipToBride?: string;
             relationshipToGroom?: string;
