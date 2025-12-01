@@ -25,6 +25,8 @@ interface ValidationError {
 
 interface ImportResult {
   success: number;
+  created: number;
+  updated: number;
   failed: number;
   errors: Array<{ email: string; error: string }>;
 }
@@ -250,6 +252,7 @@ const BulkPersonalization: React.FC = () => {
 
         return {
           email: row.email,
+          fullName: row.fullName,
           personalization,
         };
       });
@@ -263,6 +266,8 @@ const BulkPersonalization: React.FC = () => {
       if (data?.adminBulkUpdatePersonalization) {
         setImportResult({
           success: data.adminBulkUpdatePersonalization.success,
+          created: data.adminBulkUpdatePersonalization.created,
+          updated: data.adminBulkUpdatePersonalization.updated,
           failed: data.adminBulkUpdatePersonalization.failed,
           errors: data.adminBulkUpdatePersonalization.errors,
         });
@@ -271,6 +276,8 @@ const BulkPersonalization: React.FC = () => {
       // Handle mutation errors
       setImportResult({
         success: 0,
+        created: 0,
+        updated: 0,
         failed: csvData.length,
         errors: [
           {
@@ -287,11 +294,8 @@ const BulkPersonalization: React.FC = () => {
   return (
     <div className="bulk-personalization">
       <div className="bulk-header">
-        <h2>Bulk Guest Personalization</h2>
-        <p>
-          Upload a CSV file to update multiple guest personalization settings at
-          once
-        </p>
+        <h2>Bulk Guest Import & Personalization</h2>
+        <p>Upload a CSV file to create new guests or update existing ones.</p>
       </div>
 
       <div className="bulk-actions">
@@ -334,8 +338,8 @@ const BulkPersonalization: React.FC = () => {
         <div className="preview-section">
           <h3>Preview ({csvData.length} records)</h3>
           <p>
-            Review the data before importing. This will update existing guest
-            records.
+            Review the data before importing. New guests will be created,
+            existing guests will be updated.
           </p>
 
           <div className="preview-table-container">
@@ -412,7 +416,15 @@ const BulkPersonalization: React.FC = () => {
           <div className="result-stats">
             <div className="stat-success">
               <span className="stat-number">{importResult.success}</span>
-              <span className="stat-label">Successful</span>
+              <span className="stat-label">Total Processed</span>
+            </div>
+            <div className="stat-created">
+              <span className="stat-number">{importResult.created}</span>
+              <span className="stat-label">Created</span>
+            </div>
+            <div className="stat-updated">
+              <span className="stat-number">{importResult.updated}</span>
+              <span className="stat-label">Updated</span>
             </div>
             <div className="stat-failed">
               <span className="stat-number">{importResult.failed}</span>
@@ -442,7 +454,7 @@ const BulkPersonalization: React.FC = () => {
           <li>Fill in guest information (fullName and email are required)</li>
           <li>Upload your completed CSV file</li>
           <li>Review the preview to ensure data is correct</li>
-          <li>Click "Import" to update guest records</li>
+          <li>Click "Import" to create or update guest records</li>
         </ol>
 
         <h4>Field Specifications:</h4>
@@ -451,7 +463,8 @@ const BulkPersonalization: React.FC = () => {
             <strong>fullName</strong>: Required. Guest's full name
           </li>
           <li>
-            <strong>email</strong>: Required. Must match existing guest email
+            <strong>email</strong>: Required. Must match existing guest email or
+            be unique for new guest
           </li>
           <li>
             <strong>relationshipToBride</strong>: Optional. Max 100 characters
