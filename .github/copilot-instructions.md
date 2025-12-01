@@ -318,3 +318,80 @@ This project has extensive mobile optimizations:
 - **Console monitoring**: Check browser console for client-side errors
 - **Network analysis**: Monitor Apollo Client network requests
 - **Mobile testing**: Test on actual devices, not just browser dev tools
+
+## Context Map & Anchor Files
+
+When reasoning about specific domains, prioritize context from these files:
+
+### 🔐 Authentication & Security
+
+- **Source of Truth**: `/server/src/services/authService.ts` (JWT generation, QR token validation)
+- **Frontend State**: `/client/src/context/AuthContext.tsx` (Login state, loginWithQrToken)
+- **Login Flow**: `/client/src/pages/QRTokenLogin.tsx` (QR redirect handler)
+- **Modal UI**: `/client/src/components/QRLoginModal.tsx` (Manual token entry, React Portal)
+- **Backend Routes**: `/server/src/server.ts` (QR redirect endpoint)
+
+### 💾 Database & Data Models
+
+- **User/Guest Model**: `/server/src/models/User.ts` (Compound indexes, static methods, personalization fields)
+- **RSVP Model**: `/server/src/models/RSVP.ts` (Legacy compatibility, guest arrays)
+- **Seeding Logic**: `/server/src/seeds/seed.ts` (Environment-aware seeding)
+- **QR Code Generation**: `/server/src/seeds/generateQRCodes.ts` (Per-environment QR generation)
+- **Connection**: `/server/src/config/database.ts` (dbName option, never URI append)
+
+### 📡 API & Data Fetching
+
+- **Schema Definitions**: `/server/src/graphql/typeDefs.ts` (Legacy field compatibility)
+- **Resolvers**: `/server/src/graphql/resolvers.ts` (JWT context, user authentication)
+- **Client Setup**: `/client/src/api/apolloClient.ts` (Error links, auth headers, InMemoryCache)
+- **Error Classes**: `/server/src/utils/errors.ts` (Custom error types)
+
+### 🧪 Testing
+
+- **E2E Test Patterns**: `/client/tests/*.e2e.test.tsx` (MockedProvider, vi.mock patterns)
+- **Backend E2E**: `/server/tests/*.e2e.test.ts` (Real database, test env)
+- **Test Suite**: `./test-rsvp-suite.sh` (Comprehensive validation)
+- **Setup**: `/client/tests/setupTests.ts`, `/server/tests/vitest.setup.ts`
+
+### 📱 UI/UX & Components
+
+- **Global Styles**: `/client/src/assets/styles.css` (CSS variables, modal styles)
+- **Mobile Enhancements**: `/client/src/assets/mobile-enhancements.css`
+- **Routing**: `/client/src/App.tsx` (React Router, protected routes)
+- **Navbar**: `/client/src/components/Navbar.tsx` (QR login trigger, mobile drawer)
+- **Welcome Modal**: `/client/src/components/WelcomeModal.tsx` (Personalized banners)
+
+### 🎨 Feature-Specific
+
+- **RSVP Form**: `/client/src/pages/RSVPPage.tsx` (Pre-population, validation)
+- **Admin Dashboard**: `/client/src/pages/AdminPage.tsx` (Guest management)
+- **Bulk Upload**: `/client/src/components/admin/BulkPersonalization.tsx` (CSV import)
+- **Photo Gallery**: `/client/src/components/PhotoGallery.tsx` (SwipeableLightbox integration)
+
+### 🔧 Configuration & Build
+
+- **Environment**: `.env.example` files in `/server` and `/client`
+- **Vite Config**: `/client/vite.config.ts` (PWA, image optimization)
+- **TypeScript**: `tsconfig.json` files (Strict mode settings)
+- **Package Scripts**: Root `/package.json` (Concurrent dev, test suites)
+
+### 📋 Documentation
+
+- **Action Plan**: `/NEXT_PRIORITIES_ACTION_PLAN.md` (Feature roadmap)
+- **Testing Guide**: `/RSVP_TEST_SUITE.md` (Test strategy documentation)
+- **Mobile Guide**: `/MOBILE_DEBUG_GUIDE.md` (Device testing procedures)
+
+### ⚠️ Common Anti-Patterns to Avoid
+
+- ❌ Never append database name to MongoDB URI (use `{ dbName }` option)
+- ❌ Don't suggest password-based authentication (QR-only)
+- ❌ Don't create separate login/registration flows
+- ❌ Avoid `any` types in TypeScript strict mode
+- ❌ Don't use `// ... existing code ...` in code suggestions (provide full implementation)
+
+### 📌 Architectural Decisions
+
+- **React Portal for Modals**: QRLoginModal, SwipeableLightbox render to document.body
+- **z-index Hierarchy**: Modals (9999) > Drawers (999999) > Content (1-100)
+- **Test Database Isolation**: Separate `djforever2_test` DB, auto-cleaned
+- **Legacy RSVP Compatibility**: Support both guest-array and single-guest formats

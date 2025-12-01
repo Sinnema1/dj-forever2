@@ -63,6 +63,11 @@ import { resolvers } from "./graphql/resolvers.js";
 import { getUserFromRequest } from "./services/authService.js";
 import { healthRouter } from "./routes/health.js";
 import { withRequestId } from "./middleware/logging.js";
+import {
+  securityHeaders,
+  createRateLimiter,
+  requestLogger,
+} from "./middleware/security.js";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -141,6 +146,12 @@ async function startServer() {
   // Request ID middleware for distributed tracing
   app.use(withRequestId);
 
+  // Request logging middleware
+  app.use(requestLogger);
+
+  // Security headers middleware (helmet)
+  app.use(securityHeaders);
+
   // CORS setup
   app.use(
     cors({
@@ -155,6 +166,9 @@ async function startServer() {
       credentials: true,
     })
   );
+
+  // Rate limiting for GraphQL endpoint
+  app.use("/graphql", createRateLimiter(15 * 60 * 1000, 100)); // 100 requests per 15 minutes
 
   // GraphQL endpoint with authentication context
   app.use(
