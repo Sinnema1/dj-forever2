@@ -258,12 +258,9 @@ export default function SwipeableLightbox({
       document.body.style.width = 'unset';
 
       // Restore scroll position immediately without animation
+      // Use numeric overload for iOS Safari 12+ compatibility
       requestAnimationFrame(() => {
-        window.scrollTo({
-          top: scrollY,
-          left: 0,
-          behavior: 'instant',
-        });
+        window.scrollTo(0, scrollY);
       });
 
       // Restore focus

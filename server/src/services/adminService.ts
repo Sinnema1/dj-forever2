@@ -566,6 +566,7 @@ export async function adminDeleteRSVP(userId: string): Promise<boolean> {
 export async function bulkUpdatePersonalization(
   updates: Array<{
     email: string;
+    fullName?: string;
     personalization: {
       relationshipToBride?: string;
       relationshipToGroom?: string;
@@ -579,11 +580,15 @@ export async function bulkUpdatePersonalization(
   }>
 ): Promise<{
   success: number;
+  created: number;
+  updated: number;
   failed: number;
   errors: Array<{ email: string; error: string }>;
 }> {
   const result = {
     success: 0,
+    created: 0,
+    updated: 0,
     failed: 0,
     errors: [] as Array<{ email: string; error: string }>,
   };
@@ -598,18 +603,9 @@ export async function bulkUpdatePersonalization(
   for (const update of updates) {
     try {
       // Find user by email
-      const user = await (User.findOne as any)({
+      let user = await (User.findOne as any)({
         email: update.email.toLowerCase(),
       });
-
-      if (!user) {
-        result.failed++;
-        result.errors.push({
-          email: update.email,
-          error: "User not found with this email",
-        });
-        continue;
-      }
 
       // Build update object with only defined fields
       const updateFields: Record<string, any> = {};
@@ -644,34 +640,110 @@ export async function bulkUpdatePersonalization(
           update.personalization.dietaryRestrictions;
       }
 
-      // Update user
-      await (User.findByIdAndUpdate as any)(
-        user._id,
-        { $set: updateFields },
-        { new: true, runValidators: true }
-      );
+      if (!user) {
+        // Create new user if fullName is provided
+        if (!update.fullName) {
+          result.failed++;
+          result.errors.push({
+            email: update.email,
+            error: "User not found and cannot create without Name",
+          });
+          logger.error(`Cannot create user without fullName: ${update.email}`, {
+            service: "AdminService",
+          });
+          continue;
+        }
+
+        // Generate cryptographically secure unique QR token with retry logic
+        let qrToken: string;
+        let attempts = 0;
+        const maxAttempts = 5;
+
+        while (attempts < maxAttempts) {
+          // Use crypto.randomBytes for secure token generation
+          const randomBytes = require("crypto").randomBytes(16).toString("hex");
+          const timestamp = Date.now().toString(36);
+          qrToken = `${randomBytes}-${timestamp}`;
+
+          // Check for uniqueness
+          const existingUser = await (User.findOne as any)({ qrToken: qrToken });
+          if (!existingUser) {
+            break;
+          }
+
+          attempts++;
+          logger.warn(
+            `QR token collision detected, retrying (attempt ${attempts}/${maxAttempts})`,
+            {
+              service: "AdminService",
+              email: update.email,
+            }
+          );
+        }
+
+        if (attempts >= maxAttempts) {
+          result.failed++;
+          result.errors.push({
+            email: update.email,
+            error: "Failed to generate unique QR token after multiple attempts",
+          });
+          logger.error(
+            `Failed to generate unique QR token for ${update.email}`,
+            {
+              service: "AdminService",
+            }
+          );
+          continue;
+        }
+
+        user = new User({
+          fullName: update.fullName,
+          email: update.email.toLowerCase(),
+          isInvited: true,
+          isAdmin: false,
+          hasRSVPed: false,
+          qrToken: qrToken!,
+          ...updateFields,
+        });
+
+        await user.save();
+        result.created++;
+
+        logger.info(`Created new user via bulk upload: ${update.email}`, {
+          service: "AdminService",
+          qrToken: qrToken!,
+        });
+      } else {
+        // Update existing user
+        await (User.findByIdAndUpdate as any)(
+          user._id,
+          { $set: updateFields },
+          { new: true, runValidators: true }
+        );
+        result.updated++;
+
+        logger.debug(`Updated personalization for ${update.email}`, {
+          service: "AdminService",
+        });
+      }
 
       result.success++;
-
-      logger.debug(`Updated personalization for ${update.email}`, {
-        service: "AdminService",
-      });
     } catch (error: any) {
       result.failed++;
       result.errors.push({
         email: update.email,
-        error: error.message || "Unknown error during update",
+        error: error.message || "Unknown error",
       });
 
       logger.error(`Failed to update personalization for ${update.email}`, {
         service: "AdminService",
-        error,
+        error: error.message,
       });
     }
   }
 
   logger.info(
-    `Bulk personalization update complete: ${result.success} succeeded, ${result.failed} failed`,
+    `Bulk personalization update complete: ${result.success} succeeded, ${result.failed} failed, ${result.created} created, ${result.updated} updated`,
     { service: "AdminService" }
   );
 
