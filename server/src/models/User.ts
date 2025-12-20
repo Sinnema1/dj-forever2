@@ -88,6 +88,7 @@ export interface IUser extends Document {
   customWelcomeMessage?: string;
   guestGroup?: string;
   plusOneAllowed: boolean;
+  plusOneName?: string;
   personalPhoto?: string;
   specialInstructions?: string;
   dietaryRestrictions?: string;
@@ -174,6 +175,11 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: false,
       index: true,
+    },
+    plusOneName: {
+      type: String,
+      trim: true,
+      maxlength: [100, "Plus-one name cannot exceed 100 characters"],
     },
     personalPhoto: {
       type: String,

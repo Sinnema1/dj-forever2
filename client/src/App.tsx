@@ -10,6 +10,7 @@ import QRTokenLogin from './pages/QRTokenLogin';
 import LoginSuccess from './pages/LoginSuccess';
 import QRInfoPage from './pages/QRInfoPage';
 import AuthDebug from './pages/AuthDebug';
+import NotFoundPage from './pages/NotFoundPage';
 import InvitedRoute from './components/InvitedRoute';
 import AdminRoute from './components/AdminRoute';
 import PersonalizedWelcome from './components/PersonalizedWelcome';
@@ -220,6 +221,8 @@ export default function App() {
                 </EnhancedSuspense>
               }
             />
+            {/* Catch-all 404 route */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
       </ToastProvider>
