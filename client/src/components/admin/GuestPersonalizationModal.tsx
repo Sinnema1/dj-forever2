@@ -75,6 +75,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       customWelcomeMessage?: string;
       guestGroup?: GuestGroup;
       plusOneAllowed?: boolean;
+      plusOneName?: string;
       personalPhoto?: string;
       specialInstructions?: string;
       dietaryRestrictions?: string;

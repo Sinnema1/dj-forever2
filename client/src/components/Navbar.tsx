@@ -29,7 +29,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { smoothScroll } from '../utils/smoothScroll';
+import { smoothScroll, scrollToTop } from '../utils/smoothScroll';
 import QRLoginModal from './QRLoginModal';
 import MobileDrawer, { type MobileDrawerHandle } from './MobileDrawer';
 
