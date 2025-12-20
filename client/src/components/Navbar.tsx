@@ -237,7 +237,7 @@ function Navbar() {
             <li key={link.to}>
               <Link
                 to={link.to}
-                className={location.pathname === link.to ? 'active' : ''}
+                className={`${location.pathname === link.to ? 'active' : ''} ${link.label === 'RSVP' ? 'nav-cta' : ''}`}
               >
                 {link.label}
               </Link>
@@ -365,7 +365,7 @@ function Navbar() {
                   onClick={() => {
                     setMobileMenuOpen(false);
                   }}
-                  className={`drawer-link ${location.pathname === link.to ? 'active' : ''}`}
+                  className={`drawer-link ${location.pathname === link.to ? 'active' : ''} ${link.label === 'RSVP' ? 'nav-cta' : ''}`}
                 >
                   {link.label}
                 </Link>
