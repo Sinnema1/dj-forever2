@@ -29,7 +29,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { smoothScroll } from '../utils/smoothScroll';
+import { smoothScroll, scrollToTop } from '../utils/smoothScroll';
 import QRLoginModal from './QRLoginModal';
 import MobileDrawer, { type MobileDrawerHandle } from './MobileDrawer';
 
@@ -185,7 +185,7 @@ function Navbar() {
   const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (isHomePage) {
       e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToTop(); // Use iOS-safe utility
     }
     // Otherwise, let React Router handle navigation to "/"
   };
@@ -322,9 +322,10 @@ function Navbar() {
                     }
                     setMobileMenuOpen(false);
 
-                    // Scroll to top, then smooth scroll to section (matches desktop behavior)
-                    window.scrollTo(0, 0);
-                    smoothScroll(link.to);
+                    // Schedule smooth scroll after drawer close animation completes
+                    setTimeout(() => {
+                      smoothScroll(link.to);
+                    }, 350); // Wait for drawer slide-out animation (300ms) + small buffer
                   }}
                   className={`drawer-link ${activeSection === link.to ? 'active' : ''}`}
                 >
@@ -373,10 +374,13 @@ function Navbar() {
           })}
 
           {/* Divider */}
-          <div
-            className="drawer-divider"
+          <li
+            role="separator"
+            aria-hidden="true"
             style={{ '--item-index': 10 } as React.CSSProperties}
-          />
+          >
+            <div className="drawer-divider" />
+          </li>
         </ul>
 
         {/* Auth Section */}

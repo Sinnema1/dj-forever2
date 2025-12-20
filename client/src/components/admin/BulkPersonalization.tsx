@@ -11,6 +11,7 @@ interface CSVRow {
   relationshipToGroom?: string;
   guestGroup?: GuestGroup | '';
   plusOneAllowed?: string;
+  plusOneName?: string;
   customWelcomeMessage?: string;
   specialInstructions?: string;
   dietaryRestrictions?: string;
@@ -25,6 +26,8 @@ interface ValidationError {
 
 interface ImportResult {
   success: number;
+  created: number;
+  updated: number;
   failed: number;
   errors: Array<{ email: string; error: string }>;
 }
@@ -43,6 +46,8 @@ const BulkPersonalization: React.FC = () => {
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [rollbackData, setRollbackData] = useState<any[] | null>(null);
+  const [canRollback, setCanRollback] = useState(false);
 
   const [bulkUpdatePersonalization] = useMutation(
     ADMIN_BULK_UPDATE_PERSONALIZATION
@@ -50,9 +55,9 @@ const BulkPersonalization: React.FC = () => {
 
   // Download CSV template
   const downloadTemplate = () => {
-    const template = `fullName,email,relationshipToBride,relationshipToGroom,guestGroup,plusOneAllowed,customWelcomeMessage,specialInstructions,dietaryRestrictions,personalPhoto
-"John Doe","john@example.com","College Friend","","friends","true","We're so excited to celebrate with you!","Hotel block at Marriott downtown","Vegetarian","https://example.com/photo.jpg"
-"Jane Smith","jane@example.com","","Sister","brides_family","false","","Shuttle service available from hotel","Gluten-free",""`;
+    const template = `fullName,email,relationshipToBride,relationshipToGroom,guestGroup,plusOneAllowed,plusOneName,customWelcomeMessage,specialInstructions,dietaryRestrictions,personalPhoto
+"John Doe","john@example.com","College Friend","","friends","true","Jane Doe","We're so excited to celebrate with you!","Hotel block at Marriott downtown","Vegetarian","https://example.com/photo.jpg"
+"Jane Smith","jane@example.com","","Sister","brides_family","false","","","Shuttle service available from hotel","Gluten-free",""`;
 
     const blob = new Blob([template], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -239,6 +244,7 @@ const BulkPersonalization: React.FC = () => {
           personalization.specialInstructions = row.specialInstructions;
         if (row.dietaryRestrictions)
           personalization.dietaryRestrictions = row.dietaryRestrictions;
+        if (row.plusOneName) personalization.plusOneName = row.plusOneName;
         if (row.personalPhoto)
           personalization.personalPhoto = row.personalPhoto;
 
@@ -250,6 +256,7 @@ const BulkPersonalization: React.FC = () => {
 
         return {
           email: row.email,
+          fullName: row.fullName,
           personalization,
         };
       });
@@ -261,16 +268,29 @@ const BulkPersonalization: React.FC = () => {
 
       // Set results from mutation response
       if (data?.adminBulkUpdatePersonalization) {
-        setImportResult({
+        const result = {
           success: data.adminBulkUpdatePersonalization.success,
+          created: data.adminBulkUpdatePersonalization.created,
+          updated: data.adminBulkUpdatePersonalization.updated,
           failed: data.adminBulkUpdatePersonalization.failed,
           errors: data.adminBulkUpdatePersonalization.errors,
-        });
+        };
+        setImportResult(result);
+
+        // Store rollback data (emails of successfully updated users)
+        if (result.updated > 0 || result.created > 0) {
+          setRollbackData(
+            csvData.map(row => ({ email: row.email, fullName: row.fullName }))
+          );
+          setCanRollback(true);
+        }
       }
     } catch (error: any) {
       // Handle mutation errors
       setImportResult({
         success: 0,
+        created: 0,
+        updated: 0,
         failed: csvData.length,
         errors: [
           {
@@ -287,11 +307,8 @@ const BulkPersonalization: React.FC = () => {
   return (
     <div className="bulk-personalization">
       <div className="bulk-header">
-        <h2>Bulk Guest Personalization</h2>
-        <p>
-          Upload a CSV file to update multiple guest personalization settings at
-          once
-        </p>
+        <h2>Bulk Guest Import & Personalization</h2>
+        <p>Upload a CSV file to create new guests or update existing ones.</p>
       </div>
 
       <div className="bulk-actions">
@@ -334,8 +351,8 @@ const BulkPersonalization: React.FC = () => {
         <div className="preview-section">
           <h3>Preview ({csvData.length} records)</h3>
           <p>
-            Review the data before importing. This will update existing guest
-            records.
+            Review the data before importing. New guests will be created,
+            existing guests will be updated.
           </p>
 
           <div className="preview-table-container">
@@ -348,6 +365,7 @@ const BulkPersonalization: React.FC = () => {
                   <th>Groom Relation</th>
                   <th>Group</th>
                   <th>Plus One</th>
+                  <th>Plus One Name</th>
                   <th>Message</th>
                   <th>Instructions</th>
                   <th>Dietary</th>
@@ -362,6 +380,7 @@ const BulkPersonalization: React.FC = () => {
                     <td>{row.relationshipToGroom || '-'}</td>
                     <td>{row.guestGroup || '-'}</td>
                     <td>{row.plusOneAllowed === 'true' ? '✅' : '❌'}</td>
+                    <td>{row.plusOneName || '-'}</td>
                     <td title={row.customWelcomeMessage}>
                       {row.customWelcomeMessage ? '📝' : '-'}
                     </td>
@@ -412,7 +431,15 @@ const BulkPersonalization: React.FC = () => {
           <div className="result-stats">
             <div className="stat-success">
               <span className="stat-number">{importResult.success}</span>
-              <span className="stat-label">Successful</span>
+              <span className="stat-label">Total Processed</span>
+            </div>
+            <div className="stat-created">
+              <span className="stat-number">{importResult.created}</span>
+              <span className="stat-label">Created</span>
+            </div>
+            <div className="stat-updated">
+              <span className="stat-number">{importResult.updated}</span>
+              <span className="stat-label">Updated</span>
             </div>
             <div className="stat-failed">
               <span className="stat-number">{importResult.failed}</span>
@@ -432,6 +459,46 @@ const BulkPersonalization: React.FC = () => {
               </ul>
             </div>
           )}
+
+          {canRollback && rollbackData && (
+            <div className="rollback-section">
+              <div className="rollback-warning">
+                <h4>⚠️ Rollback Information</h4>
+                <p>
+                  This import updated {importResult.updated} existing record(s)
+                  and created {importResult.created} new record(s).
+                </p>
+                <p>
+                  <strong>Note:</strong> To revert changes, you'll need to
+                  manually update the affected {rollbackData.length} guest(s)
+                  through the Guest Management interface or upload a corrected
+                  CSV.
+                </p>
+                <details>
+                  <summary>View affected users ({rollbackData.length})</summary>
+                  <ul className="rollback-list">
+                    {rollbackData.map((user, index) => (
+                      <li key={index}>
+                        {user.fullName} ({user.email})
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </div>
+              <button
+                onClick={() => {
+                  setCanRollback(false);
+                  setRollbackData(null);
+                  setImportResult(null);
+                  setCsvData([]);
+                  setShowPreview(false);
+                }}
+                className="reset-btn"
+              >
+                Clear Import History
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -442,7 +509,7 @@ const BulkPersonalization: React.FC = () => {
           <li>Fill in guest information (fullName and email are required)</li>
           <li>Upload your completed CSV file</li>
           <li>Review the preview to ensure data is correct</li>
-          <li>Click "Import" to update guest records</li>
+          <li>Click "Import" to create or update guest records</li>
         </ol>
 
         <h4>Field Specifications:</h4>
@@ -451,7 +518,8 @@ const BulkPersonalization: React.FC = () => {
             <strong>fullName</strong>: Required. Guest's full name
           </li>
           <li>
-            <strong>email</strong>: Required. Must match existing guest email
+            <strong>email</strong>: Required. Must match existing guest email or
+            be unique for new guest
           </li>
           <li>
             <strong>relationshipToBride</strong>: Optional. Max 100 characters
@@ -465,6 +533,10 @@ const BulkPersonalization: React.FC = () => {
           </li>
           <li>
             <strong>plusOneAllowed</strong>: Optional. 'true' or 'false'
+          </li>
+          <li>
+            <strong>plusOneName</strong>: Optional. Name of plus-one guest if
+            known in advance. Max 100 characters
           </li>
           <li>
             <strong>customWelcomeMessage</strong>: Optional. Max 500 characters

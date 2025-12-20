@@ -93,12 +93,10 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: [
-          '**/*.{js,css,html}',
-          'assets/**/*.{png,svg,jpg,jpeg,webp}', // Only assets folder for images
-          'images/**/*.{png,svg,jpg,jpeg,webp}', // Images in public/images
-          // Note: favicon.svg excluded to prevent duplicate caching with different revisions
-          'offline.html', // Offline page
-          'manifest.webmanifest', // PWA manifest
+          '**/*.{js,css,html,webmanifest}',
+          'assets/**/*.{png,svg,jpg,jpeg,webp}',
+          'images/**/*.{png,svg,jpg,jpeg,webp}',
+          // Note: offline.html is included via *.html glob pattern above
         ],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         // AUTOMATIC UPDATE CONFIGURATION
@@ -110,8 +108,9 @@ export default defineConfig({
         dontCacheBustURLsMatching: /\.\w{8}\./,
         // Explicitly exclude files to prevent double inclusion
         globIgnores: ['**/node_modules/**/*'],
-        // FIXED: Remove navigateFallback to prevent offline.html duplication
-        navigateFallback: null,
+        // Enable offline fallback for navigation requests
+        navigateFallback: '/offline.html',
+        navigateFallbackDenylist: [/^\/(graphql|api)/, /\.[^/]+$/], // Exclude API routes and direct file requests
         runtimeCaching: [
           // GraphQL API - Network first with offline fallback
           {

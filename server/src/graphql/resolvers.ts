@@ -377,6 +377,7 @@ export const resolvers = {
           customWelcomeMessage?: string;
           guestGroup?: string;
           plusOneAllowed?: boolean;
+          plusOneName?: string;
           personalPhoto?: string;
           specialInstructions?: string;
           dietaryRestrictions?: string;
@@ -402,6 +403,9 @@ export const resolvers = {
         }
         if (args.input.plusOneAllowed !== undefined) {
           updateFields.plusOneAllowed = args.input.plusOneAllowed;
+        }
+        if (args.input.plusOneName !== undefined) {
+          updateFields.plusOneName = args.input.plusOneName;
         }
         if (args.input.personalPhoto !== undefined) {
           updateFields.personalPhoto = args.input.personalPhoto;
@@ -481,12 +485,14 @@ export const resolvers = {
       args: {
         updates: Array<{
           email: string;
+          fullName?: string;
           personalization: {
             relationshipToBride?: string;
             relationshipToGroom?: string;
             customWelcomeMessage?: string;
             guestGroup?: string;
             plusOneAllowed?: boolean;
+            plusOneName?: string;
             personalPhoto?: string;
             specialInstructions?: string;
             dietaryRestrictions?: string;
