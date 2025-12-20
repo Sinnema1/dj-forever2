@@ -666,7 +666,7 @@ export async function bulkUpdatePersonalization(
           qrToken = `${randomBytes}-${timestamp}`;
 
           // Check for uniqueness
-          const existingUser = await User.findOne({ qrToken });
+          const existingUser = await (User.findOne as any)({ qrToken: qrToken });
           if (!existingUser) {
             break;
           }
@@ -715,7 +715,7 @@ export async function bulkUpdatePersonalization(
         });
       } else {
         // Update existing user
-        await User.findByIdAndUpdate(
+        await (User.findByIdAndUpdate as any)(
           user._id,
           { $set: updateFields },
           { new: true, runValidators: true }
