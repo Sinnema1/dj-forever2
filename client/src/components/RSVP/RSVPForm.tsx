@@ -134,7 +134,7 @@ export default function RSVPForm() {
       // Suggest 2 guests if plus-one is allowed and no RSVP exists yet
       initialGuestCount = 2;
       initialGuests.push({
-        fullName: '',
+        fullName: user?.plusOneName || '', // Pre-fill plus-one name if known
         mealPreference: '',
         allergies: '',
       });

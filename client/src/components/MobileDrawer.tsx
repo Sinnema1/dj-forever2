@@ -114,7 +114,14 @@ const MobileDrawer = forwardRef<MobileDrawerHandle, MobileDrawerProps>(
         document.body.style.overflow = '';
         document.body.style.paddingRight = '';
 
+        // Restore scroll position unless explicitly skipped (e.g., navigating to a section)
+        const savedScrollY = parseInt(document.body.dataset.scrollY || '0', 10);
         delete document.body.dataset.scrollY;
+
+        if (!skipScrollRestoreRef.current && savedScrollY !== window.scrollY) {
+          window.scrollTo(0, savedScrollY);
+        }
+
         // Reset the ref for next time
         skipScrollRestoreRef.current = false;
       };
@@ -138,6 +145,12 @@ const MobileDrawer = forwardRef<MobileDrawerHandle, MobileDrawerProps>(
           const focusableElements = drawerRef.current.querySelectorAll(
             'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
           );
+
+          // Safety check: only trap focus if there are focusable elements
+          if (focusableElements.length === 0) {
+            return;
+          }
+
           const firstElement = focusableElements[0] as HTMLElement;
           const lastElement = focusableElements[
             focusableElements.length - 1
@@ -175,8 +188,8 @@ const MobileDrawer = forwardRef<MobileDrawerHandle, MobileDrawerProps>(
           aria-hidden="true"
         />
 
-        {/* Drawer */}
-        <nav
+        {/* Drawer - proper dialog semantics with nested nav */}
+        <div
           ref={drawerRef}
           className={`mobile-drawer ${className}`}
           role="dialog"
@@ -184,8 +197,8 @@ const MobileDrawer = forwardRef<MobileDrawerHandle, MobileDrawerProps>(
           aria-label="Navigation menu"
           tabIndex={-1}
         >
-          <div className="mobile-drawer-content">{children}</div>
-        </nav>
+          <nav className="mobile-drawer-content">{children}</nav>
+        </div>
       </div>,
       document.body
     );

@@ -374,6 +374,7 @@ John Doe,john@example.com,Friend,Coworker,friends,true,Welcome!,Hotel info,Veget
             updates: [
               {
                 email: 'john@example.com',
+                fullName: 'John Doe',
                 personalization: {
                   relationshipToBride: 'Friend',
                   guestGroup: 'friends',
@@ -381,6 +382,7 @@ John Doe,john@example.com,Friend,Coworker,friends,true,Welcome!,Hotel info,Veget
               },
               {
                 email: 'jane@example.com',
+                fullName: 'Jane Smith',
                 personalization: {
                   relationshipToBride: 'Sister',
                   guestGroup: 'brides_family',
@@ -393,6 +395,8 @@ John Doe,john@example.com,Friend,Coworker,friends,true,Welcome!,Hotel info,Veget
           data: {
             adminBulkUpdatePersonalization: {
               success: 2,
+              created: 0,
+              updated: 2,
               failed: 0,
               errors: [],
             },
@@ -428,10 +432,11 @@ Jane Smith,jane@example.com,Sister,brides_family`;
       await user.click(importButton);
 
       await waitFor(() => {
-        expect(screen.getByText('2')).toBeInTheDocument();
-        expect(screen.getByText(/successful/i)).toBeInTheDocument();
-        expect(screen.getByText('0')).toBeInTheDocument();
-        expect(screen.getByText(/failed/i)).toBeInTheDocument();
+        expect(screen.getByText('Import Results')).toBeInTheDocument();
+        expect(screen.getByText('Total Processed')).toBeInTheDocument();
+        expect(screen.getByText('Created')).toBeInTheDocument();
+        expect(screen.getByText('Updated')).toBeInTheDocument();
+        expect(screen.getByText('Failed')).toBeInTheDocument();
       });
     });
 
@@ -445,12 +450,14 @@ Jane Smith,jane@example.com,Sister,brides_family`;
             updates: [
               {
                 email: 'john@example.com',
+                fullName: 'John Doe',
                 personalization: {
                   relationshipToBride: 'Friend',
                 },
               },
               {
                 email: 'notfound@example.com',
+                fullName: 'Jane Smith',
                 personalization: {
                   relationshipToBride: 'Sister',
                 },
@@ -462,6 +469,8 @@ Jane Smith,jane@example.com,Sister,brides_family`;
           data: {
             adminBulkUpdatePersonalization: {
               success: 1,
+              created: 0,
+              updated: 1,
               failed: 1,
               errors: [
                 {
@@ -520,6 +529,7 @@ Jane Smith,notfound@example.com,Sister`;
             updates: [
               {
                 email: 'john@example.com',
+                fullName: 'John Doe',
                 personalization: {},
               },
             ],
@@ -529,6 +539,8 @@ Jane Smith,notfound@example.com,Sister`;
           data: {
             adminBulkUpdatePersonalization: {
               success: 1,
+              created: 0,
+              updated: 1,
               failed: 0,
               errors: [],
             },
@@ -582,6 +594,7 @@ John Doe,john@example.com`;
             updates: [
               {
                 email: 'john@example.com',
+                fullName: 'John Doe',
                 personalization: {},
               },
             ],
@@ -633,6 +646,7 @@ John Doe,john@example.com`;
             updates: [
               {
                 email: 'john@example.com',
+                fullName: 'John Doe',
                 personalization: {},
               },
             ],
@@ -642,6 +656,8 @@ John Doe,john@example.com`;
           data: {
             adminBulkUpdatePersonalization: {
               success: 1,
+              created: 0,
+              updated: 1,
               failed: 0,
               errors: [],
             },
@@ -678,7 +694,7 @@ John Doe,john@example.com`;
 
       await waitFor(() => {
         expect(screen.getByText('Import Results')).toBeInTheDocument();
-        expect(screen.getByText(/successful/i)).toBeInTheDocument();
+        expect(screen.getByText('Total Processed')).toBeInTheDocument();
       });
 
       // Upload second file

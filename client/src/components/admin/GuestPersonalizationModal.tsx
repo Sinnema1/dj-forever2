@@ -36,6 +36,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     customWelcomeMessage: user.customWelcomeMessage || '',
     guestGroup: user.guestGroup || ('' as GuestGroup | ''),
     plusOneAllowed: user.plusOneAllowed || false,
+    plusOneName: user.plusOneName || '',
     personalPhoto: user.personalPhoto || '',
     specialInstructions: user.specialInstructions || '',
     dietaryRestrictions: user.dietaryRestrictions || '',
@@ -45,6 +46,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     relationshipToBride: user.relationshipToBride?.length || 0,
     relationshipToGroom: user.relationshipToGroom?.length || 0,
     customWelcomeMessage: user.customWelcomeMessage?.length || 0,
+    plusOneName: user.plusOneName?.length || 0,
     personalPhoto: user.personalPhoto?.length || 0,
     specialInstructions: user.specialInstructions?.length || 0,
     dietaryRestrictions: user.dietaryRestrictions?.length || 0,
@@ -56,6 +58,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       relationshipToBride: formData.relationshipToBride.length,
       relationshipToGroom: formData.relationshipToGroom.length,
       customWelcomeMessage: formData.customWelcomeMessage.length,
+      plusOneName: formData.plusOneName.length,
       personalPhoto: formData.personalPhoto.length,
       specialInstructions: formData.specialInstructions.length,
       dietaryRestrictions: formData.dietaryRestrictions.length,
@@ -90,6 +93,9 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     }
     if (formData.guestGroup) {
       personalization.guestGroup = formData.guestGroup as GuestGroup;
+    }
+    if (formData.plusOneName) {
+      personalization.plusOneName = formData.plusOneName;
     }
     if (formData.personalPhoto) {
       personalization.personalPhoto = formData.personalPhoto;
@@ -219,6 +225,32 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
                 Guest will see a notification they can bring a guest
               </small>
             </div>
+
+            {formData.plusOneAllowed && (
+              <div className="form-group">
+                <label htmlFor="plusOneName">
+                  Plus-One Guest Name (Optional)
+                  <span className="char-count">
+                    {charCount.plusOneName}/100
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  id="plusOneName"
+                  value={formData.plusOneName}
+                  onChange={e =>
+                    handleInputChange('plusOneName', e.target.value)
+                  }
+                  maxLength={100}
+                  placeholder="e.g., Jane Smith"
+                  className="form-input"
+                />
+                <small className="form-hint">
+                  If you know the plus-one's name in advance, it will be
+                  pre-filled in the RSVP form
+                </small>
+              </div>
+            )}
           </div>
 
           <div className="form-section">
