@@ -298,7 +298,8 @@ Start with Test 1 (Admin Login & Access Control).
 
 ```bash
 # Verify MongoDB Atlas:
-# - IP whitelist includes 0.0.0.0/0 (or Render IP ranges)
+# - IP access list is restricted to Render.com egress IP ranges (NO 0.0.0.0/0 in production)
+#   See: https://docs.render.com/static-outbound-ip-addresses
 # - Database user has correct permissions
 # - Connection string has correct password
 # - SSL/TLS enabled

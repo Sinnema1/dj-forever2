@@ -206,7 +206,8 @@ If all checklist items above are ✅, you're ready to proceed!
 
 **Fix**:
 
-1. Check MongoDB Atlas IP whitelist (should include 0.0.0.0/0)
+1. Check MongoDB Atlas IP access list (should be restricted to Render egress IPs, NOT 0.0.0.0/0)
+   - See: https://docs.render.com/static-outbound-ip-addresses
 2. Verify MONGODB_URI is correct
 3. Check MONGODB_DB_NAME is `djforever2` (not test DB)
 
