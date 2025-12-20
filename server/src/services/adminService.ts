@@ -658,35 +658,41 @@ export async function bulkUpdatePersonalization(
         let qrToken: string;
         let attempts = 0;
         const maxAttempts = 5;
-        
+
         while (attempts < maxAttempts) {
           // Use crypto.randomBytes for secure token generation
-          const randomBytes = require('crypto').randomBytes(16).toString('hex');
+          const randomBytes = require("crypto").randomBytes(16).toString("hex");
           const timestamp = Date.now().toString(36);
           qrToken = `${randomBytes}-${timestamp}`;
-          
+
           // Check for uniqueness
           const existingUser = await User.findOne({ qrToken });
           if (!existingUser) {
             break;
           }
-          
+
           attempts++;
-          logger.warn(`QR token collision detected, retrying (attempt ${attempts}/${maxAttempts})`, {
-            service: "AdminService",
-            email: update.email,
-          });
+          logger.warn(
+            `QR token collision detected, retrying (attempt ${attempts}/${maxAttempts})`,
+            {
+              service: "AdminService",
+              email: update.email,
+            }
+          );
         }
-        
+
         if (attempts >= maxAttempts) {
           result.failed++;
           result.errors.push({
             email: update.email,
             error: "Failed to generate unique QR token after multiple attempts",
           });
-          logger.error(`Failed to generate unique QR token for ${update.email}`, {
-            service: "AdminService",
-          });
+          logger.error(
+            `Failed to generate unique QR token for ${update.email}`,
+            {
+              service: "AdminService",
+            }
+          );
           continue;
         }
 
@@ -702,20 +708,20 @@ export async function bulkUpdatePersonalization(
 
         await user.save();
         result.created++;
-        
+
         logger.info(`Created new user via bulk upload: ${update.email}`, {
           service: "AdminService",
           qrToken: qrToken!,
         });
       } else {
         // Update existing user
-        await (User.findByIdAndUpdate as any)(
+        await User.findByIdAndUpdate(
           user._id,
           { $set: updateFields },
           { new: true, runValidators: true }
         );
         result.updated++;
-        
+
         logger.debug(`Updated personalization for ${update.email}`, {
           service: "AdminService",
         });
@@ -728,14 +734,14 @@ export async function bulkUpdatePersonalization(
         email: update.email,
         error: error.message || "Unknown error",
       });
-      
+
       logger.error(`Failed to update personalization for ${update.email}`, {
         service: "AdminService",
         error: error.message,
       });
     }
   }
-  
+
   logger.info(
     `Bulk personalization update complete: ${result.success} succeeded, ${result.failed} failed, ${result.created} created, ${result.updated} updated`,
     { service: "AdminService" }
