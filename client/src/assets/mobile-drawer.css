@@ -216,6 +216,24 @@
   border-radius: 2px;
 }
 
+/* Primary CTA styling in mobile drawer (RSVP) */
+.mobile-drawer-content .drawer-link.nav-cta {
+  background: rgba(110, 143, 163, 0.9);
+  border: 1px solid rgba(180, 148, 108, 0.6);
+  color: white !important;
+  border-radius: 12px;
+  font-weight: 500;
+  margin: 8px 16px;
+}
+.mobile-drawer-content .drawer-link.nav-cta:hover,
+.mobile-drawer-content .drawer-link.nav-cta:active {
+  background: rgba(110, 143, 163, 1);
+  box-shadow: 0 4px 12px rgba(110, 143, 163, 0.3);
+}
+.mobile-drawer-content .drawer-link.nav-cta.active::before {
+  display: none; /* Hide active indicator for CTA button */
+}
+
 /* Dividers between sections - wrapped in li with role=separator */
 .mobile-drawer-content li[role="separator"] {
   list-style: none;
