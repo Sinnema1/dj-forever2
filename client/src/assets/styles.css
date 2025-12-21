@@ -399,6 +399,9 @@ small {
   font-weight: 500;
   transition: all 0.3s ease;
 }
+.navbar-links a.nav-cta::after {
+  display: none; /* Disable underline for CTA buttons */
+}
 .navbar-links a.nav-cta:hover {
   transform: translateY(-1px);
   background: rgba(110, 143, 163, 1);
