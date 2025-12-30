@@ -186,7 +186,7 @@ async function startServer() {
   );
 
   // Root endpoint for health checks (Render infrastructure)
-  app.get("/", (req, res) => {
+  app.get("/", (_req, res) => {
     res.status(200).json({
       status: "ok",
       service: "dj-forever2-backend",
