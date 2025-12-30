@@ -185,6 +185,20 @@ async function startServer() {
     })
   );
 
+  // Root endpoint for health checks (Render infrastructure)
+  app.get("/", (req, res) => {
+    res.status(200).json({
+      status: "ok",
+      service: "dj-forever2-backend",
+      version: "1.0.0",
+      endpoints: {
+        graphql: "/graphql",
+        health: "/health",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  });
+
   // Health check endpoints
   app.use("/health", healthRouter);
 
