@@ -81,6 +81,11 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Cache package version at startup for health checks
+const packageJsonPath = path.join(__dirname, "../package.json");
+const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+const SERVER_VERSION = packageJson.version;
+
 /**
  * Main server startup function - initializes MongoDB connection, Apollo GraphQL server,
  * Express middleware, and starts HTTP server on configured port.
@@ -194,14 +199,10 @@ async function startServer() {
 
   // Root endpoint for health checks (Render infrastructure)
   app.get("/", (_req, res) => {
-    // Read version from package.json
-    const packageJsonPath = path.join(__dirname, "../package.json");
-    const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
-
     res.status(200).json({
       status: "ok",
       service: "dj-forever2-backend",
-      version: packageJson.version,
+      version: SERVER_VERSION,
       endpoints: {
         graphql: "/graphql",
         health: "/health",
