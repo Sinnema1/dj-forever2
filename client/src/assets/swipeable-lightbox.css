@@ -133,7 +133,7 @@
   justify-content: center;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   background: transparent;
 }
 
@@ -206,7 +206,7 @@
   background: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 12px;
   font-size: 14px;
   z-index: 15;
   cursor: pointer;

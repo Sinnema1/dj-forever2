@@ -71,8 +71,20 @@ import {
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { readFileSync } from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
+
+// ESM module compatibility: Define __dirname for path resolution
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Cache package version at startup for health checks
+const packageJsonPath = path.join(__dirname, "../package.json");
+const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+const SERVER_VERSION = packageJson.version;
 
 /**
  * Main server startup function - initializes MongoDB connection, Apollo GraphQL server,
@@ -190,7 +202,7 @@ async function startServer() {
     res.status(200).json({
       status: "ok",
       service: "dj-forever2-backend",
-      version: "1.0.0",
+      version: SERVER_VERSION,
       endpoints: {
         graphql: "/graphql",
         health: "/health",
