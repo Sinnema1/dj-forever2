@@ -21,19 +21,6 @@ section:nth-child(odd) {
   background-color: #fff;
 }
 
-section:not(:first-child)::before {
-  content: "";
-  position: absolute;
-  top: -50px;
-  left: 0;
-  right: 0;
-  height: 100px;
-  background: inherit;
-  transform: skewY(-1.5deg);
-  transform-origin: 100%;
-  z-index: 1;
-}
-
 .section-title {
   font-family: "Playfair Display", serif;
   font-size: var(--font-xl);
