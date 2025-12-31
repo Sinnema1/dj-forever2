@@ -18,6 +18,21 @@
   width: 2px;
   background: rgba(180, 148, 108, 0.35); /* gold accent */
   border-radius: 2px;
+  mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+}
+
+/* Timeline ending text */
+.story-timeline::after {
+  content: "The Story Continues...";
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  font-family: var(--font-script); /* Great Vibes */
+  font-size: 24px;
+  color: var(--color-gold-accent);
+  transform: translateX(-50%) rotate(-5deg);
+  white-space: nowrap;
 }
 
 .story-event {
@@ -36,7 +51,7 @@
 .story-event::before {
   content: "";
   position: absolute;
-  top: 26px;
+  top: 0;
   left: 17px;
   width: 14px;
   height: 14px;
@@ -44,6 +59,7 @@
   background: var(--color-cream);
   border: 2px solid var(--color-gold-accent);
   transform: translateX(-50%);
+  z-index: 10;
 }
 
 .story-event:hover {
@@ -109,7 +125,7 @@
 
   /* Center marker on desktop */
   .story-event::before {
-    left: calc(50% - 7px);
+    left: 50%;
   }
 
   .story-event-image {

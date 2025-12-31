@@ -263,7 +263,21 @@ function Navbar() {
             </button>
           ) : (
             <div className="desktop-user-info">
-              <span className="user-greeting">
+              <span
+                className="user-greeting"
+                onClick={() =>
+                  window.dispatchEvent(new Event('openWelcomeModal'))
+                }
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    window.dispatchEvent(new Event('openWelcomeModal'));
+                  }
+                }}
+                title="View your personalized welcome message"
+              >
                 Hello,{' '}
                 {user && user.fullName ? user.fullName.split(' ')[0] : 'Guest'}!
                 {user?.isAdmin && <span className="admin-badge">ADMIN</span>}
@@ -403,7 +417,22 @@ function Navbar() {
             </button>
           ) : (
             <>
-              <div className="drawer-user-greeting">
+              <div
+                className="drawer-user-greeting"
+                onClick={() => {
+                  window.dispatchEvent(new Event('openWelcomeModal'));
+                  setMobileMenuOpen(false);
+                }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    window.dispatchEvent(new Event('openWelcomeModal'));
+                    setMobileMenuOpen(false);
+                  }
+                }}
+              >
                 Hello,{' '}
                 {user && user.fullName ? user.fullName.split(' ')[0] : 'Guest'}!
                 {user?.isAdmin && <span className="admin-badge">ADMIN</span>}

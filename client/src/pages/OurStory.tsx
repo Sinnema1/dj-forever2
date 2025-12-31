@@ -52,6 +52,13 @@ const OurStory: React.FC = () => {
   // Extract just the image URLs for the lightbox
   const imageUrls = storyEvents.map(evt => evt.imageUrl);
 
+  const handleImageKeyDown = (e: React.KeyboardEvent, idx: number) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openLightbox(idx);
+    }
+  };
+
   return (
     <>
       <div className="story-timeline">
@@ -63,7 +70,10 @@ const OurStory: React.FC = () => {
               className="story-event-image"
               loading="lazy"
               onClick={() => openLightbox(idx)}
-              style={{ cursor: 'pointer' }}
+              onKeyDown={(e) => handleImageKeyDown(e, idx)}
+              tabIndex={0}
+              role="button"
+              aria-label={`View full-size image: ${evt.text}`}
             />
             <div className="story-event-content">
               <span className="story-event-date">{evt.date}</span>
