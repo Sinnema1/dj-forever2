@@ -32,6 +32,20 @@ const WelcomeModal: React.FC = () => {
     return undefined;
   }, [isLoggedIn, user]);
 
+  // Listen for custom event to reopen modal
+  useEffect(() => {
+    const handleReopenModal = () => {
+      if (isLoggedIn && user && !user.isAdmin) {
+        setShowModal(true);
+      }
+    };
+
+    window.addEventListener('openWelcomeModal', handleReopenModal);
+    return () => {
+      window.removeEventListener('openWelcomeModal', handleReopenModal);
+    };
+  }, [isLoggedIn, user]);
+
   // Focus management and keyboard trap
   useEffect(() => {
     if (!showModal) {

@@ -261,7 +261,6 @@
 
 .rsvp-submit-btn.has-errors {
   background: linear-gradient(135deg, #ef5350, #f44336);
-  animation: buttonShake 0.5s ease;
 }
 
 .rsvp-submit-btn:disabled {
@@ -277,19 +276,6 @@
     var(--color-sage),
     var(--color-dusty-blue)
   );
-}
-
-@keyframes buttonShake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-4px);
-  }
-  75% {
-    transform: translateX(4px);
-  }
 }
 
 .submit-text,
@@ -420,7 +406,9 @@
   );
 }
 
-.hero-content {
+/* Hero content for RSVP standalone page only - not the main hero */
+.rsvp-standalone .hero-content,
+section:not(#home) .hero-content {
   max-width: 800px;
   /* Center horizontally and remove additional horizontal padding so
      the hero lines up with other centered content inside `.container`.
