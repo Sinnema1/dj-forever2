@@ -135,7 +135,9 @@ export default function RSVPForm() {
         if (user?.householdMembers && user.householdMembers.length > 0) {
           user.householdMembers.forEach(member => {
             guests.push({
-              fullName: `${member.firstName} ${member.lastName}`.trim(),
+              fullName: [member.firstName, member.lastName]
+                .filter(Boolean)
+                .join(' '),
               mealPreference: '',
               allergies: '',
             });
