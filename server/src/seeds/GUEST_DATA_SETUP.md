@@ -34,14 +34,14 @@ I've created a template with your current guest list. You need to fill in:
 
 - **relationship_to_bride** - e.g., "sister", "friend", "cousin"
 - **relationship_to_groom** - e.g., "brother", "best friend", "coworker"
-- **guest_group** - Options: `family`, `friends`, `work`, `other`
+- **guest_group** - Options: `grooms_family`, `brides_family`, `extended_family`, `friends`, `other`
 - **plus_one_allowed** - `TRUE` or `FALSE`
 - **custom_welcome_message** - Personalized greeting (use quotes if it contains commas)
 
 ### Example Row (properly filled):
 
 ```csv
-1,Justin,Manning,justin.manning@gmail.com,Emma,Smith,emma.smith@gmail.com,,,,,,,brother,brother-in-law,family,FALSE,"Justin and Emma! We're thrilled to celebrate with you both!"
+1,Justin,Manning,justin.manning@gmail.com,brother,brother-in-law,Emma,Smith,emma.smith@gmail.com,,,,,,,,,,,,,grooms_family,FALSE,"Justin and Emma! We're thrilled to celebrate with you both!"
 ```
 
 ---
@@ -71,7 +71,7 @@ This will:
 ✅ Emma Smith                emma.smith@gmail.com           b2c5d8f1g4h7j0k3m6n9
 ...
 
-🎉 Successfully converted 26 guests!
+🎉 Successfully converted 27 households (56 total guests)!
 📄 Output written to: userData-generated.json
 ```
 
@@ -237,18 +237,19 @@ The CSV uses `household_id` to group guests who share an invitation:
 
 - **household_id**: Groups guests getting the same physical invitation
 - **Up to 4 guests per household** (expandable if needed)
-- Each guest still gets their own QR token and database record
+- **One QR code per household** - all members share authentication
+- Primary guest (guest_1) gets the User record; others stored in `householdMembers` array
 
 ### Example Household:
 
 ```csv
 household_id: 1
-guest_1: Justin Manning (justin@...)
-guest_2: Emma Smith (emma@...)
-guest_3: Anna Manning (anna@...)
+guest_1: Justin Manning (justin@...) - Primary user with QR token
+guest_2: Emma Smith (emma@...) - Household member
+guest_3: Anna Manning (anna@...) - Household member
 ```
 
-All three can RSVP independently via their unique QR codes.
+All three access the site via the same QR code and RSVP together.
 
 ---
 

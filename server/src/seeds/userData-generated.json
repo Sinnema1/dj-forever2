@@ -5,7 +5,7 @@
       "email": "dad@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "1myk0tgdl0ulkzyoy4iw",
+      "qrToken": "3gyq3u56koujhfydmipw",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -23,14 +23,14 @@
       ],
       "relationshipToBride": "father",
       "relationshipToGroom": "father-in-law",
-      "guestGroup": "family"
+      "guestGroup": "grooms_family"
     },
     {
       "fullName": "Brett TBD",
       "email": "brett@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "yvz4qq8xy9xscdv2oz5z",
+      "qrToken": "gfjniobx6ylz0jn0qkt0",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -40,14 +40,14 @@
       ],
       "relationshipToBride": "brother",
       "relationshipToGroom": "brother-in-law",
-      "guestGroup": "family"
+      "guestGroup": "grooms_family"
     },
     {
       "fullName": "Chris TBD",
       "email": "chris@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "8tjzcpana9wb59l8ml6t",
+      "qrToken": "wjbwo47f5oculuz2l0mo",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -67,14 +67,14 @@
         }
       ],
       "relationshipToBride": "uncle",
-      "guestGroup": "family"
+      "guestGroup": "grooms_family"
     },
     {
       "fullName": "Brian TBD",
       "email": "brian@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "1u1t7hsjka1fwdvzkvqy",
+      "qrToken": "tit7c16gxg5iihlkue1w",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -101,7 +101,7 @@
       "email": "deb@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "ouzqt192bp104fo1gl1x",
+      "qrToken": "pz0eyzkdoe2pj8u9roey",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -111,14 +111,14 @@
         }
       ],
       "relationshipToBride": "grandmother",
-      "guestGroup": "family"
+      "guestGroup": "grooms_family"
     },
     {
       "fullName": "Jeff TBD",
       "email": "jeff@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "hb9anmhzuesiavwa0ndj",
+      "qrToken": "shhtrvu4aeoaqecqe5zu",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -128,14 +128,14 @@
         }
       ],
       "relationshipToBride": "grandfather",
-      "guestGroup": "family"
+      "guestGroup": "grooms_family"
     },
     {
       "fullName": "Raven TBD",
       "email": "raven@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "px9lox9nk6diaeeb1bvm",
+      "qrToken": "95oszprpj4a3aulkrpsk",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -154,7 +154,7 @@
       "email": "emerald@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "qdij30q1pssuknm1c7q2",
+      "qrToken": "i2hotexno0bxr35ghfli",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -173,7 +173,7 @@
       "email": "bailey@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "vcukmmeulju7jyhu8qzu",
+      "qrToken": "vd98fwwtqvgfkql0hbz4",
       "plusOneAllowed": true,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -185,7 +185,7 @@
       "email": "abby@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "i1ltzijgdlmsp1nvgadh",
+      "qrToken": "lbg0lr592kjwy1cgkc1v",
       "plusOneAllowed": true,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -197,7 +197,7 @@
       "email": "brooke@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "qpkld3uxa85aitnpsv0t",
+      "qrToken": "m8tcp2r5sa0keef21bv7",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -216,7 +216,7 @@
       "email": "dianne@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "cpghhe2nr3dmljulrqvp",
+      "qrToken": "gt4mfevjltr0j51phgtw",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -235,7 +235,7 @@
       "email": "mia@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "y6asefi53uzcfz7772hl",
+      "qrToken": "r2szzre8gm3zb3yxzgzn",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -259,14 +259,14 @@
       ],
       "relationshipToBride": "sister-in-law",
       "relationshipToGroom": "sister-in-law",
-      "guestGroup": "family"
+      "guestGroup": "grooms_family"
     },
     {
       "fullName": "Brittany Manning",
       "email": "britt@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "heftcn8fbgu06oicl8kt",
+      "qrToken": "kx7khleg8tk2c2tnyy1y",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -290,14 +290,14 @@
       ],
       "relationshipToBride": "sister-in-law",
       "relationshipToGroom": "sister",
-      "guestGroup": "family"
+      "guestGroup": "grooms_family"
     },
     {
       "fullName": "Jon Manning",
       "email": "jon@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "c3i2tmpqej0ichyo61lp",
+      "qrToken": "xhzq7333mzdd9ingxmee",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -316,7 +316,7 @@
       "email": "barry@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "zop9os1rwszpydqn3064",
+      "qrToken": "c4ckkpg7l11q4flmvsoe",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -335,7 +335,7 @@
       "email": "mike@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "plx83fpz2o6157npt4ch",
+      "qrToken": "e08kbqcay224v4mb1lyu",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -354,7 +354,7 @@
       "email": "jesus@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "0pqgkgvi0n0o0sziajkg",
+      "qrToken": "4guuzvijnbp7zvufamg9",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -373,7 +373,7 @@
       "email": "lance@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "l0ibmffvimwvepqib0c5",
+      "qrToken": "xfmutxj6jsl4aadssrih",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -388,11 +388,11 @@
       "customWelcomeMessage": "FALSE"
     },
     {
-      "fullName": "Joe Mirande?",
+      "fullName": "Joe Mirande",
       "email": "joe@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "rjfdj4vvwfmhdmbssfst",
+      "qrToken": "yjgs0olflonpoqpxmira",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -411,7 +411,7 @@
       "email": "kara@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "hxgy5lykryczp3yy70bh",
+      "qrToken": "nn0ue8qccj0llegz49vq",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -430,7 +430,7 @@
       "email": "makayla@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "snxljdfwp6vfabh01hnj",
+      "qrToken": "xf2qval0lxxmv4nexzjx",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -449,7 +449,7 @@
       "email": "erica@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "slta67bset4b07oxqeaw",
+      "qrToken": "whlb4z8xgl88jibyuipb",
       "plusOneAllowed": true,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -461,7 +461,7 @@
       "email": "shae@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "huubn8o5kzk0jqo2gfsu",
+      "qrToken": "3zmbsl61y7ilpqqts6bs",
       "plusOneAllowed": true,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -473,7 +473,7 @@
       "email": "morgan@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "a1k065oxhemjl4ucbtcg",
+      "qrToken": "o9y29snz8voprgjkj10t",
       "plusOneAllowed": true,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -485,7 +485,7 @@
       "email": "chloe@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "k08arvonpyxzn3wwmtfp",
+      "qrToken": "7pcvbpc5xpqcldk15mfh",
       "plusOneAllowed": true,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -497,7 +497,7 @@
       "email": "nicole@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "e2gmctaacqknpspk89bn",
+      "qrToken": "iwph2vfuvqkazcjzfbxa",
       "plusOneAllowed": true,
       "householdMembers": [],
       "relationshipToBride": "friend",

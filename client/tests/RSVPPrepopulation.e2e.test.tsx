@@ -220,9 +220,20 @@ describe('Phase 3: RSVP Pre-population', () => {
       ).toBeInTheDocument();
     });
 
-    // Verified by code review: initialGuests pre-populated with household members
-    // Primary guest + 2 household members = 3 total guests pre-filled
-    // Each guest gets: fullName from user.fullName or member.firstName + lastName
+    // Verify household members are pre-populated
+    await waitFor(() => {
+      // Primary guest
+      const primaryInput = screen.getByDisplayValue('John Budach');
+      expect(primaryInput).toBeInTheDocument();
+
+      // Household member 1
+      const kate = screen.getByDisplayValue('Kate Budach');
+      expect(kate).toBeInTheDocument();
+
+      // Household member 2
+      const anna = screen.getByDisplayValue('Anna Budach');
+      expect(anna).toBeInTheDocument();
+    });
   });
 });
 

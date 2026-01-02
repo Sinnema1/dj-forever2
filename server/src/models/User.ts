@@ -170,7 +170,7 @@ const userSchema = new Schema<IUser>(
         },
         lastName: {
           type: String,
-          required: true,
+          required: false,
           trim: true,
           maxlength: [50, "Last name cannot exceed 50 characters"],
         },
