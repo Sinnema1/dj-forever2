@@ -20,6 +20,12 @@ export const LOGIN_WITH_QR_TOKEN = gql`
         personalPhoto
         specialInstructions
         dietaryRestrictions
+        householdMembers {
+          firstName
+          lastName
+          relationshipToBride
+          relationshipToGroom
+        }
       }
     }
   }

@@ -67,14 +67,23 @@ import mongoose, { Schema, Document } from "mongoose";
  * @property {boolean} isInvited - Invitation status flag (default: true)
  * @property {boolean} hasRSVPed - RSVP completion status (default: false, updated by RSVP service)
  * @property {string} qrToken - Unique QR token for authentication (required, unique)
- * @property {string} relationshipToBride - Guest's relationship to bride (optional, for personalization)
- * @property {string} relationshipToGroom - Guest's relationship to groom (optional, for personalization)
- * @property {string} customWelcomeMessage - Personalized welcome message (optional)
+ * @property {string} relationshipToBride - Primary guest's relationship to bride (optional, for personalization)
+ * @property {string} relationshipToGroom - Primary guest's relationship to groom (optional, for personalization)
+ * @property {Array} householdMembers - Additional guests in the household (optional)
+ * @property {string} customWelcomeMessage - Personalized welcome message for entire household (optional)
  * @property {string} guestGroup - Group classification (e.g., 'family', 'friends', 'work') (optional)
- * @property {boolean} plusOneAllowed - Whether guest is allowed a plus-one (default: false)
+ * @property {boolean} plusOneAllowed - Whether household is allowed a plus-one (default: false)
  * @property {Date} createdAt - Account creation timestamp (automatic)
  * @property {Date} updatedAt - Last modification timestamp (automatic)
  */
+
+export interface IHouseholdMember {
+  firstName: string;
+  lastName: string;
+  relationshipToBride?: string;
+  relationshipToGroom?: string;
+}
+
 export interface IUser extends Document {
   fullName: string;
   email: string;
@@ -85,6 +94,7 @@ export interface IUser extends Document {
   qrToken: string;
   relationshipToBride?: string;
   relationshipToGroom?: string;
+  householdMembers?: IHouseholdMember[];
   customWelcomeMessage?: string;
   guestGroup?: string;
   plusOneAllowed: boolean;
@@ -150,6 +160,38 @@ const userSchema = new Schema<IUser>(
       trim: true,
       maxlength: [100, "Relationship description cannot exceed 100 characters"],
     },
+    householdMembers: [
+      {
+        firstName: {
+          type: String,
+          required: true,
+          trim: true,
+          maxlength: [50, "First name cannot exceed 50 characters"],
+        },
+        lastName: {
+          type: String,
+          required: false,
+          trim: true,
+          maxlength: [50, "Last name cannot exceed 50 characters"],
+        },
+        relationshipToBride: {
+          type: String,
+          trim: true,
+          maxlength: [
+            100,
+            "Relationship description cannot exceed 100 characters",
+          ],
+        },
+        relationshipToGroom: {
+          type: String,
+          trim: true,
+          maxlength: [
+            100,
+            "Relationship description cannot exceed 100 characters",
+          ],
+        },
+      },
+    ],
     customWelcomeMessage: {
       type: String,
       trim: true,

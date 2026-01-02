@@ -38,6 +38,12 @@ export const GET_ADMIN_RSVPS = gql`
       personalPhoto
       specialInstructions
       dietaryRestrictions
+      householdMembers {
+        firstName
+        lastName
+        relationshipToBride
+        relationshipToGroom
+      }
       createdAt
       lastUpdated
       rsvp {
@@ -113,6 +119,12 @@ export const UPDATE_USER_PERSONALIZATION = gql`
       personalPhoto
       specialInstructions
       dietaryRestrictions
+      householdMembers {
+        firstName
+        lastName
+        relationshipToBride
+        relationshipToGroom
+      }
     }
   }
 `;
