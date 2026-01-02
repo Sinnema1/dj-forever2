@@ -86,6 +86,18 @@ function convertGuestList() {
     const values = parseCSVLine(lines[i]);
     const row = {};
 
+    // Validate row has correct number of columns
+    if (values.length !== headers.length) {
+      console.error(
+        `❌ ERROR: Row ${i + 1} (household ${values[0] || "unknown"}) has ${
+          values.length
+        } columns, expected ${headers.length}`
+      );
+      console.error(`   This usually means missing or extra commas in the CSV`);
+      console.error(`   Row data: ${lines[i].substring(0, 100)}...`);
+      process.exit(1);
+    }
+
     // Map CSV columns to object
     headers.forEach((header, index) => {
       row[header] = values[index] || "";
