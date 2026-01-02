@@ -1,35 +1,544 @@
 {
   "users": [
     {
-      "fullName": "Alice Johnson",
-      "email": "alice@example.com",
+      "fullName": "Justin Manning",
+      "email": "sinnema1.jm@gmail.com",
+      "isAdmin": true,
       "isInvited": true,
-      "hasRSVPed": true,
-      "qrToken": "r24gpj3wntgqwqfberlas",
-      "relationshipToBride": "sister",
-      "guestGroup": "brides_family",
-      "plusOneAllowed": true
-    },
-    {
-      "fullName": "Bob Smith",
-      "email": "bob@example.com",
-      "isInvited": true,
-      "hasRSVPed": true,
-      "qrToken": "ssq7b7bkfqqpd2724vlcol",
-      "relationshipToGroom": "best friend",
-      "guestGroup": "friends",
-      "plusOneAllowed": false,
-      "customWelcomeMessage": "Bob! We're so excited to have our best friend celebrating with us. Your friendship has meant the world to us over the years!"
-    },
-    {
-      "fullName": "Charlie Williams",
-      "email": "charlie@example.com",
-      "isInvited": false,
       "hasRSVPed": false,
-      "qrToken": "ss0qx6mg20f2qaiyl9hnl7",
-      "relationshipToBride": "work colleague",
-      "guestGroup": "other",
-      "plusOneAllowed": true
+      "qrToken": "adminqrtoken2026justin",
+      "plusOneAllowed": false,
+      "householdMembers": [],
+      "relationshipToBride": "groom",
+      "relationshipToGroom": "groom"
+    },
+    {
+      "fullName": "John Budach",
+      "email": "jpbudach@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "3rz4heotj11wbkhdjoiv",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Kate",
+          "lastName": "Budach",
+          "relationshipToBride": "step-mother",
+          "relationshipToGroom": "mother-in-law"
+        },
+        {
+          "firstName": "Anna",
+          "lastName": "Budach",
+          "relationshipToBride": "sister",
+          "relationshipToGroom": "sister-in-law"
+        }
+      ],
+      "relationshipToBride": "father",
+      "relationshipToGroom": "father-in-law",
+      "guestGroup": "brides_family"
+    },
+    {
+      "fullName": "Brett Budach",
+      "email": "winterwalleye@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "zofkagycljqyexmqrgr5",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Greg",
+          "lastName": "TBD"
+        }
+      ],
+      "relationshipToBride": "brother",
+      "relationshipToGroom": "brother-in-law",
+      "guestGroup": "brides_family"
+    },
+    {
+      "fullName": "Chris Budach",
+      "email": "chris@example.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "jec6ntcfoqks9zfqub6d",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Christine",
+          "lastName": "Budach",
+          "relationshipToBride": "aunt"
+        },
+        {
+          "firstName": "Bryce",
+          "lastName": "Budach",
+          "relationshipToBride": "cousin"
+        },
+        {
+          "firstName": "Jersey",
+          "lastName": "Budach",
+          "relationshipToBride": "cousin"
+        }
+      ],
+      "relationshipToBride": "uncle",
+      "guestGroup": "extended_family"
+    },
+    {
+      "fullName": "Brian Budach",
+      "email": "brian@example.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "z2rx7tj50rephevd0syx",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Jill",
+          "lastName": "Budach",
+          "relationshipToBride": "aunt"
+        },
+        {
+          "firstName": "Makenzie",
+          "lastName": "Budach",
+          "relationshipToBride": "cousin"
+        },
+        {
+          "firstName": "Kalli",
+          "lastName": "Budach",
+          "relationshipToBride": "cousin"
+        }
+      ],
+      "relationshipToBride": "uncle",
+      "guestGroup": "extended_family"
+    },
+    {
+      "fullName": "Deb Budach",
+      "email": "debragieskingbudach@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "th1wxklyurmtlfruftd9",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Ken",
+          "lastName": "Budach",
+          "relationshipToBride": "grandfather"
+        }
+      ],
+      "relationshipToBride": "grandmother",
+      "guestGroup": "extended_family"
+    },
+    {
+      "fullName": "Jeff Sheimo",
+      "email": "jeff@example.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "zk6r1fz1220eubzswzy1",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Cheryl",
+          "lastName": "Sheimo",
+          "relationshipToBride": "grandmother"
+        }
+      ],
+      "relationshipToBride": "grandfather",
+      "guestGroup": "extended_family"
+    },
+    {
+      "fullName": "Raven Budach",
+      "email": "ravenbudach17@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "gf1ujoukln2mlo0idntv",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Victor",
+          "lastName": "TBD",
+          "relationshipToBride": "brother-in-law",
+          "relationshipToGroom": "brother-in-law"
+        }
+      ],
+      "relationshipToBride": "sister",
+      "relationshipToGroom": "sister-in-law",
+      "guestGroup": "brides_family"
+    },
+    {
+      "fullName": "Emerald Canny",
+      "email": "emeraldgau@yahoo.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "7i0jdkdeb0lqqbvxqp0u",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Thomas",
+          "lastName": "Canny",
+          "relationshipToBride": "friend",
+          "relationshipToGroom": "friend"
+        }
+      ],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Bailey Bowers",
+      "email": "baileybowers1@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "r3xtuukklkqecgpvqvmd",
+      "plusOneAllowed": true,
+      "householdMembers": [],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Abby Chose",
+      "email": "abbygrace124@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "rgjah8zpjalodpdesb5b",
+      "plusOneAllowed": true,
+      "householdMembers": [],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Brooke Schau",
+      "email": "brooke.schau@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "jlhhklbmxup16x5z5mr2",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Colten",
+          "lastName": "Schau",
+          "relationshipToBride": "friend",
+          "relationshipToGroom": "friend"
+        }
+      ],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Dianne Manning",
+      "email": "diannelmanning@earthlink.net",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "lvzvs0sqsu8k2on2vk90",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Tim",
+          "lastName": "Manning",
+          "relationshipToBride": "father-in-law",
+          "relationshipToGroom": "father"
+        }
+      ],
+      "relationshipToBride": "mother-in-law",
+      "relationshipToGroom": "mother",
+      "guestGroup": "grooms_family"
+    },
+    {
+      "fullName": "Mia Manning",
+      "email": "morandemia@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "kdxubnp9cpioeamhb3ls",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Josh",
+          "lastName": "Manning",
+          "relationshipToBride": "brother-in-law",
+          "relationshipToGroom": "brother"
+        },
+        {
+          "firstName": "Luke",
+          "lastName": "Manning",
+          "relationshipToBride": "nephew",
+          "relationshipToGroom": "nephew"
+        },
+        {
+          "firstName": "Lennon",
+          "lastName": "Manning",
+          "relationshipToBride": "niece",
+          "relationshipToGroom": "niece"
+        }
+      ],
+      "relationshipToBride": "sister-in-law",
+      "relationshipToGroom": "sister-in-law",
+      "guestGroup": "grooms_family"
+    },
+    {
+      "fullName": "Brittany Manning",
+      "email": "brittanylee4345@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "e6uu3pf4gfjkko1jkxxj",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Nate",
+          "lastName": "Bridges",
+          "relationshipToBride": "brother-in-law",
+          "relationshipToGroom": "brother-in-law"
+        },
+        {
+          "firstName": "Josie",
+          "lastName": "",
+          "relationshipToBride": "niece",
+          "relationshipToGroom": "niece"
+        },
+        {
+          "firstName": "Jake",
+          "lastName": "",
+          "relationshipToBride": "nephew",
+          "relationshipToGroom": "nephew"
+        }
+      ],
+      "relationshipToBride": "sister-in-law",
+      "relationshipToGroom": "sister",
+      "guestGroup": "grooms_family"
+    },
+    {
+      "fullName": "Jon Manning",
+      "email": "jonathanrm327@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "vwrtub5jmmbp5dn5bnml",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Jacob",
+          "lastName": "Lauer",
+          "relationshipToBride": "brother-in-law",
+          "relationshipToGroom": "brother-in-law"
+        }
+      ],
+      "relationshipToBride": "brother-in-law",
+      "relationshipToGroom": "brother",
+      "guestGroup": "grooms_family"
+    },
+    {
+      "fullName": "Barry Nadeau",
+      "email": "Barrycnadeau@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "5ibbj1g5vkdt4plw0axt",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Meghan",
+          "lastName": "Nadeau",
+          "relationshipToBride": "friend",
+          "relationshipToGroom": "friend"
+        }
+      ],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Michael Askenazi",
+      "email": "mike_a10@icloud.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "96w9c4fb1ows1ogayrdg",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Megan",
+          "lastName": "Askenazi",
+          "relationshipToBride": "friend",
+          "relationshipToGroom": "friend"
+        }
+      ],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Jesus Sanchez",
+      "email": "sanchez.j87@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "ozb9tutjijas9j6fku9u",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Hector",
+          "lastName": "TBD",
+          "relationshipToBride": "friend",
+          "relationshipToGroom": "friend"
+        }
+      ],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Lance Snider",
+      "email": "lance@example.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "ypzgpqzkxrtbxqgdpsbo",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Kate",
+          "lastName": "Snider",
+          "relationshipToBride": "friend",
+          "relationshipToGroom": "friend"
+        }
+      ],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Joe Mirande",
+      "email": "joe@example.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "tdaf0myvnqr3ljcm9gce",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Karen",
+          "lastName": "Mirande",
+          "relationshipToBride": "friend",
+          "relationshipToGroom": "friend"
+        }
+      ],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "other"
+    },
+    {
+      "fullName": "Kara Dallas",
+      "email": "kara@example.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "5lossys17umipkmiviwj",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Allen",
+          "lastName": "Dallas",
+          "relationshipToBride": "friend",
+          "relationshipToGroom": "friend"
+        }
+      ],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "other"
+    },
+    {
+      "fullName": "Makayla Lich",
+      "email": "makaylawomack@hotmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "d2xcwfvbb9liwbfh1zaf",
+      "plusOneAllowed": false,
+      "householdMembers": [
+        {
+          "firstName": "Austin",
+          "lastName": "Lich",
+          "relationshipToBride": "friend",
+          "relationshipToGroom": "friend"
+        }
+      ],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Erica Blythe",
+      "email": "erica@example.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "j9fdzt6cb8ckejldm0hy",
+      "plusOneAllowed": false,
+      "householdMembers": [],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Shae Johnson",
+      "email": "shaequit@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "kc5ylobvs86ef0kl80ip",
+      "plusOneAllowed": false,
+      "householdMembers": [],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Morgan Kincaid",
+      "email": "morganak0927@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "ju9p1itwj7abosepjw6l",
+      "plusOneAllowed": false,
+      "householdMembers": [],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Chloe Church",
+      "email": "chloemperry23@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "y4hq20szwn1mcyoffjza",
+      "plusOneAllowed": false,
+      "householdMembers": [],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Nicole Dinovo",
+      "email": "ndinovo10@gmail.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "mq1fuokfsztfzucoexyp",
+      "plusOneAllowed": false,
+      "householdMembers": [],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "friends"
+    },
+    {
+      "fullName": "Jon McDonald",
+      "email": "jon@example.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "xg01mn6z9pk6t7wseucs",
+      "plusOneAllowed": false,
+      "householdMembers": [],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "other"
+    },
+    {
+      "fullName": "Adi Askenazi",
+      "email": "adi@example.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "akq70mkawspwnzumf0wc",
+      "plusOneAllowed": false,
+      "householdMembers": [],
+      "relationshipToBride": "friend",
+      "relationshipToGroom": "friend",
+      "guestGroup": "other"
     }
   ]
 }
