@@ -77,6 +77,18 @@ export const typeDefs = `
     other
   }
 
+  """Household member for multi-person household authentication"""
+  type HouseholdMember {
+    """First name of the household member"""
+    firstName: String!
+    """Last name of the household member"""
+    lastName: String!
+    """Relationship to the bride (optional)"""
+    relationshipToBride: String
+    """Relationship to the groom (optional)"""
+    relationshipToGroom: String
+  }
+
   type User {
     _id: ID!
     fullName: String!
@@ -96,6 +108,8 @@ export const typeDefs = `
     personalPhoto: String
     specialInstructions: String
     dietaryRestrictions: String
+    """Additional household members who share this QR code"""
+    householdMembers: [HouseholdMember!]
   }
 
   type Guest {

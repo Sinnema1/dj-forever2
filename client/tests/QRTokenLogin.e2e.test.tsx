@@ -37,6 +37,7 @@ const user = {
   plusOneAllowed: false,
   personalPhoto: undefined,
   specialInstructions: undefined,
+  householdMembers: [],
 };
 
 describe('QRTokenLogin', () => {

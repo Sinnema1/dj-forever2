@@ -115,24 +115,45 @@ export default function RSVPForm() {
 
   const [formData, setFormData] = useState<RSVPFormData>(() => {
     // Initialize with proper guest structure, handling legacy data
-    const initialGuests = rsvp?.guests?.map(guest => ({
-      fullName: guest.fullName || '',
-      mealPreference: normalizeMealPreference(guest.mealPreference || ''),
-      allergies: guest.allergies || '',
-    })) || [
-      {
-        fullName: rsvp?.fullName || '',
-        mealPreference: normalizeMealPreference(rsvp?.mealPreference || ''),
-        // Pre-populate allergies with dietaryRestrictions from user profile if no RSVP exists
-        allergies: rsvp?.allergies || user?.dietaryRestrictions || '',
-      },
-    ];
+    const initialGuests =
+      rsvp?.guests?.map(guest => ({
+        fullName: guest.fullName || '',
+        mealPreference: normalizeMealPreference(guest.mealPreference || ''),
+        allergies: guest.allergies || '',
+      })) ||
+      (() => {
+        // If no existing RSVP, pre-populate with household members
+        const guests: Guest[] = [
+          {
+            fullName: user?.fullName || '',
+            mealPreference: '',
+            allergies: user?.dietaryRestrictions || '',
+          },
+        ];
 
-    // Pre-populate guest count based on plusOneAllowed if no RSVP exists
+        // Add household members if they exist
+        if (user?.householdMembers && user.householdMembers.length > 0) {
+          user.householdMembers.forEach(member => {
+            guests.push({
+              fullName: `${member.firstName} ${member.lastName}`.trim(),
+              mealPreference: '',
+              allergies: '',
+            });
+          });
+        }
+
+        return guests;
+      })();
+
+    // Pre-populate guest count based on household size or plusOneAllowed
     let initialGuestCount = rsvp?.guestCount || initialGuests.length;
-    if (!rsvp && user?.plusOneAllowed && initialGuestCount === 1) {
-      // Suggest 2 guests if plus-one is allowed and no RSVP exists yet
-      initialGuestCount = 2;
+    if (
+      !rsvp &&
+      user?.plusOneAllowed &&
+      initialGuestCount === (user?.householdMembers?.length || 0) + 1
+    ) {
+      // Suggest adding one more guest if plus-one is allowed
+      initialGuestCount++;
       initialGuests.push({
         fullName: user?.plusOneName || '', // Pre-fill plus-one name if known
         mealPreference: '',
