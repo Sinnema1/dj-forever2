@@ -16,6 +16,7 @@
     "seed-test": "MONGODB_DB_NAME=djforever2_test node dist/seeds/index.js",
     "seed-prod": "MONGODB_DB_NAME=djforever2 node dist/seeds/index.js",
     "clean:db": "node dist/seeds/cleanDB.js",
+    "convert:guests": "node src/seeds/convertGuestList.js",
     "generate:qrcodes": "node dist/seeds/generateQRCodes.js",
     "generate:qrcodes:dev": "MONGODB_DB_NAME=djforever2_dev FRONTEND_URL=http://192.168.1.64:3002 node dist/seeds/generateQRCodes.js",
     "generate:qrcodes:prod": "MONGODB_DB_NAME=djforever2 FRONTEND_URL=https://dj-forever2.onrender.com NODE_ENV=production node dist/seeds/generateQRCodes.js",

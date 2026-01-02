@@ -42,6 +42,21 @@ export type GuestGroup =
   | 'extended_family'
   | 'other';
 
+/**
+ * Household member interface for multi-person household authentication.
+ * Represents additional guests who share a QR code with the primary user.
+ */
+export interface HouseholdMember {
+  /** First name of the household member */
+  firstName: string;
+  /** Last name of the household member */
+  lastName: string;
+  /** Relationship to the bride (optional) */
+  relationshipToBride?: string;
+  /** Relationship to the groom (optional) */
+  relationshipToGroom?: string;
+}
+
 export interface User {
   /** Unique database identifier for the user (MongoDB ObjectId as string) */
   _id: string;
@@ -75,6 +90,8 @@ export interface User {
   specialInstructions?: string;
   /** Dietary restrictions or preferences for this guest (e.g., "Vegetarian", "Gluten-free") */
   dietaryRestrictions?: string;
+  /** Additional household members who share this QR code (optional) */
+  householdMembers?: HouseholdMember[];
 }
 
 /**
