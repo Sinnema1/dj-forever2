@@ -115,7 +115,29 @@ const WelcomeModal: React.FC = () => {
     return null;
   }
 
-  const firstName = user.fullName.split(' ')[0];
+  // Generate greeting with household member names
+  const getHouseholdGreeting = (): string => {
+    const names: string[] = [user.fullName?.split(' ')[0] || 'Guest'];
+
+    // Add household member first names
+    if (user.householdMembers && user.householdMembers.length > 0) {
+      user.householdMembers.forEach(member => {
+        names.push(member.firstName);
+      });
+    }
+
+    // Format names with proper grammar
+    if (names.length === 1) {
+      return names[0] || 'Guest';
+    } else if (names.length === 2) {
+      return `${names[0]} and ${names[1]}`;
+    } else {
+      const lastName = names.pop();
+      return `${names.join(', ')}, and ${lastName}`;
+    }
+  };
+
+  const householdGreeting = getHouseholdGreeting();
 
   // Generate personalized greeting based on relationship
   const getPersonalizedGreeting = (): string => {
@@ -223,7 +245,7 @@ const WelcomeModal: React.FC = () => {
           <div className="welcome-modal-header">
             <div className="welcome-hearts">💕</div>
             <h2 id="welcome-modal-title">
-              Welcome to Our Wedding Website, {firstName}!
+              Welcome to Our Wedding Website, {householdGreeting}!
             </h2>
           </div>
 

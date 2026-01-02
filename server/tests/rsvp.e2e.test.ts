@@ -60,6 +60,12 @@ describe("RSVP End-to-End", () => {
                 plusOneAllowed
                 personalPhoto
                 specialInstructions
+                householdMembers {
+                  firstName
+                  lastName
+                  relationshipToBride
+                  relationshipToGroom
+                }
               }
             }
           }
