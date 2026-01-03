@@ -112,15 +112,15 @@ export interface RSVP {
  *   attending: 'YES',
  *   guestCount: 1,
  *   guests: [{
- *     fullName: 'Alice Johnson',
+ *     fullName: 'John Budach',
  *     mealPreference: 'fish',
- *     allergies: 'Shellfish allergy'
+ *     allergies: 'None'
  *   }],
  *   additionalNotes: 'Excited to celebrate with you!',
  *   // Legacy fields (should match guests[0])
- *   fullName: 'Alice Johnson',
+ *   fullName: 'John Budach',
  *   mealPreference: 'fish',
- *   allergies: 'Shellfish allergy'
+ *   allergies: 'None'
  * };
  * ```
  */

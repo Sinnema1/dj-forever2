@@ -10,8 +10,9 @@
 const fetch = require("node-fetch");
 
 const GRAPHQL_ENDPOINT = "http://localhost:3001/graphql";
-const CHARLIE_USER_ID = "688ea0db64389185e3317afc";
-const CHARLIE_QR_TOKEN = "ss0qx6mg20f2qaiyl9hnl7";
+// Note: Update these values with actual user ID after seeding database
+const TEST_USER_ID = "USER_ID_HERE"; // John Budach's ID from database
+const TEST_QR_TOKEN = "3rz4heotj11wbkhdjoiv"; // John Budach's QR token
 
 // Colors for console output
 const colors = {
@@ -61,8 +62,8 @@ async function graphqlQuery(query, variables = {}, authToken = null) {
   }
 }
 
-async function authenticateAsCharlie() {
-  log("\n🔐 Authenticating as Charlie Williams...", colors.blue);
+async function authenticateAsTestUser() {
+  log("\n🔐 Authenticating as test user (John Budach)...", colors.blue);
 
   const mutation = `
     mutation QRLogin($token: String!) {
@@ -78,7 +79,7 @@ async function authenticateAsCharlie() {
     }
   `;
 
-  const authResult = await graphqlQuery(mutation, { token: CHARLIE_QR_TOKEN });
+  const authResult = await graphqlQuery(mutation, { token: TEST_QR_TOKEN });
 
   if (authResult.success && authResult.data.loginWithQrToken) {
     log(`✅ Authenticated successfully!`, colors.green);
@@ -188,7 +189,7 @@ async function deleteExistingRSVP() {
     }
   `;
 
-  const result = await graphqlQuery(query, { userId: CHARLIE_USER_ID });
+  const result = await graphqlQuery(query, { userId: TEST_USER_ID });
 
   if (result.success) {
     log(`✅ RSVP deleted successfully`, colors.green);
@@ -237,7 +238,7 @@ async function testCreateNonAttendingRSVP(authToken) {
         },
       ],
       additionalNotes: "",
-      fullName: "Charlie Williams",
+      fullName: "John Budach",
       mealPreference: "",
       allergies: "",
     },
@@ -298,13 +299,13 @@ async function testEditRSVP(authToken) {
       guestCount: 1,
       guests: [
         {
-          fullName: "Charlie Williams",
+          fullName: "John Budach",
           mealPreference: "",
           allergies: "",
         },
       ],
       additionalNotes: "Updated via debug script - changed to non-attending",
-      fullName: "Charlie Williams",
+      fullName: "John Budach",
       mealPreference: "",
       allergies: "",
     },
@@ -359,7 +360,7 @@ async function testCreateMaybeRSVP() {
 
   const variables = {
     input: {
-      userId: CHARLIE_USER_ID,
+      userId: TEST_USER_ID,
       attending: "MAYBE",
       guestCount: 1,
       guests: [
@@ -370,7 +371,7 @@ async function testCreateMaybeRSVP() {
         },
       ],
       additionalNotes: "Not sure about travel plans yet",
-      fullName: "Charlie Williams",
+      fullName: "John Budach",
       mealPreference: "",
       allergies: "",
     },
@@ -414,18 +415,18 @@ async function testCreateAttendingRSVP() {
 
   const variables = {
     input: {
-      userId: CHARLIE_USER_ID,
+      userId: TEST_USER_ID,
       attending: "YES",
       guestCount: 1,
       guests: [
         {
-          fullName: "Charlie Williams",
+          fullName: "John Budach",
           mealPreference: "chicken",
           allergies: "None",
         },
       ],
       additionalNotes: "Looking forward to it!",
-      fullName: "Charlie Williams",
+      fullName: "John Budach",
       mealPreference: "chicken",
       allergies: "None",
     },
@@ -500,8 +501,8 @@ async function runAllTests() {
   );
 
   try {
-    // Step 1: Authenticate as Charlie
-    const authToken = await authenticateAsCharlie();
+    // Step 1: Authenticate as test user
+    const authToken = await authenticateAsTestUser();
     if (!authToken) {
       log(`❌ Cannot continue without authentication`, colors.red);
       return;
