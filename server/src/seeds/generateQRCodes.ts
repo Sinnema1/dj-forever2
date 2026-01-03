@@ -11,16 +11,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const dbName = process.env.MONGODB_DB_NAME || "djforever2";
-let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017";
-
-// Check if URI already has a database name after the port
-// Pattern: mongodb://host:port/dbname or mongodb://host/dbname
-const hasDbName = /mongodb:\/\/[^\/]+(?::\d+)?\/\w+/.test(MONGODB_URI);
-
-if (!hasDbName) {
-  // Remove trailing slash if present, then append database name
-  MONGODB_URI = MONGODB_URI.replace(/\/$/, "") + `/${dbName}`;
-}
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017";
 
 // Determine environment and frontend URL
 const isProduction =
@@ -34,6 +25,27 @@ const FRONTEND_URL =
 const environment = isProduction ? "production" : "development";
 console.log(`[generateQRCodes] Environment: ${environment}`);
 console.log(`[generateQRCodes] Frontend URL: ${FRONTEND_URL}`);
+
+// Extract database name from URI if present (for validation/warning)
+const uriMatch = MONGODB_URI.match(/\/([^/?]+)(\?|$)/);
+const uriDbName = uriMatch ? uriMatch[1] : null;
+
+// Warn if URI contains a different database name than MONGODB_DB_NAME
+if (uriDbName && uriDbName !== dbName) {
+  console.warn(
+    `⚠️ WARNING: URI contains database name "${uriDbName}" but MONGODB_DB_NAME is "${dbName}"`
+  );
+  console.warn(
+    `⚠️ The { dbName } option will override the URI. Connecting to: ${dbName}`
+  );
+  console.warn(
+    `⚠️ To avoid confusion, use URI without database name: ${MONGODB_URI.replace(
+      `/${uriDbName}`,
+      ""
+    )}`
+  );
+}
+
 console.log(
   `[generateQRCodes] Connecting to MongoDB URI: ${MONGODB_URI}, DB Name: ${dbName}`
 );
@@ -41,8 +53,11 @@ console.log(
 const OUTPUT_DIR = path.resolve(`./qr-codes/${environment}`);
 
 async function main() {
-  await mongoose.connect(MONGODB_URI);
+  // Project pattern: Always use { dbName } option, never append to URI
+  // This ensures consistent database targeting across dev/test/production
+  await mongoose.connect(MONGODB_URI, { dbName });
   const users = await (User.find as any)({}, "_id fullName email qrToken");
+  console.log(`Found ${users.length} users in database`);
   if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR);
 
   for (const user of users) {

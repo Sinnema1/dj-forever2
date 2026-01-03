@@ -1,20 +1,3 @@
 {
-  "rsvps": [
-    {
-      "userEmail": "alice@example.com",
-      "fullName": "Alice Johnson",
-      "attending": "YES",
-      "mealPreference": "Vegetarian",
-      "allergies": "None",
-      "additionalNotes": "Excited for the event!"
-    },
-    {
-      "userEmail": "bob@example.com",
-      "fullName": "Bob Smith",
-      "attending": "YES",
-      "mealPreference": "Chicken",
-      "allergies": "Peanuts",
-      "additionalNotes": "Would love a seat near friends."
-    }
-  ]
+  "rsvps": []
 }
