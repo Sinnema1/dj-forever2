@@ -172,6 +172,8 @@ This project has extensive mobile optimizations:
 - **Environment Issues**: Different database names for dev/test/prod environments
 - **Index Warnings**: Avoid duplicate schema indexes (both `index: true` and `schema.index()`)
 - **Connection Format**: `mongoose.connect(uri, { dbName })` not `mongoose.connect(uri/dbname)`
+- **Safety Warning**: If URI contains a database name (e.g., `mongodb://localhost:27017/mydb`), the `{ dbName }` option will override it. Scripts include validation warnings to catch this mismatch and prevent connecting to wrong database.
+- **Best Practice**: Use URIs without database names (e.g., `mongodb://localhost:27017`) and rely on `MONGODB_DB_NAME` environment variable for database selection.
 
 ## Mobile Optimization Strategies
 
