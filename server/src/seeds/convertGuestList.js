@@ -258,33 +258,25 @@ function convertGuestList() {
     `\n🎉 Successfully converted ${users.length} households (${totalGuests} total guests)!`
   );
   console.log(`📄 Output written to: userData-generated.json`);
-  console.log(`\n� Important notes:`);
+  console.log(`\n💡 Important notes:`);
   console.log(`   • Only guest_1_email is required (primary contact)`);
   console.log(
     `   • Guest 2-4 emails are optional (@example.com placeholders are fine)`
   );
   console.log(
     `   • Party size enforced: household members + plus-one (Bailey & Abby only)`
+  );
+  console.log(
+    `   • One QR code per household - all members share authentication`
   );
   console.log(
     `   • Address fields (street_address, city, state, zip_code) are optional but recommended for invitations`
   );
-  console.log(`\n�📋 Next steps:`);
+  console.log(`\n📋 Next steps:`);
   console.log(`   1. Review userData-generated.json for accuracy`);
   console.log(`   2. Rename to userData.json (or merge with existing)`);
   console.log(`   3. Run: npm run seed-prod`);
   console.log(`   4. Generate QR codes: npm run generate:qrcodes:prod`);
-  console.log(`\n💡 Notes:`);
-  console.log(
-    `   • One QR code per household - all members share authentication`
-  );
-  console.log(`   • Only guest_1_email is required (primary contact)`);
-  console.log(
-    `   • Guest 2-4 emails are optional (@example.com placeholders are fine)`
-  );
-  console.log(
-    `   • Party size enforced: household members + plus-one (Bailey & Abby only)`
-  );
 }
 
 // Run the conversion
