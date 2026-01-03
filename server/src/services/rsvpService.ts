@@ -125,6 +125,29 @@ export interface UpdateRSVPInput {
 }
 
 /**
+ * Validates party size against household member limits and plus-one allowance.
+ * Ensures guests cannot exceed their allocated party size based on household
+ * composition and plus-one permissions.
+ *
+ * @param {number} guestCount - Number of guests in the party
+ * @param {IUser} user - User record with household members and plus-one status
+ * @throws {ValidationError} If party size exceeds maximum allowed guests
+ */
+function validatePartySize(guestCount: number, user: IUser): void {
+  const namedGuestCount = 1 + (user.householdMembers?.length || 0);
+  const maxAllowed = namedGuestCount + (user.plusOneAllowed ? 1 : 0);
+
+  if (guestCount > maxAllowed) {
+    throw new ValidationError(
+      `Party size ${guestCount} exceeds maximum allowed ${maxAllowed} guests. ` +
+        `(${namedGuestCount} household member${namedGuestCount > 1 ? "s" : ""}${
+          user.plusOneAllowed ? " + 1 plus-one" : ""
+        })`
+    );
+  }
+}
+
+/**
  * Get RSVP for a specific user
  */
 export async function getRSVP(userId: string): Promise<any> {
@@ -227,18 +250,7 @@ export async function createRSVP(input: CreateRSVPInput): Promise<any> {
     const validatedGuestCount = guestCount ? validateGuestCount(guestCount) : 1;
 
     // Validate party size against household limits
-    // Max allowed = named household members (1 primary + household array) + plus-one if allowed
-    const namedGuestCount = 1 + (user.householdMembers?.length || 0);
-    const maxAllowed = namedGuestCount + (user.plusOneAllowed ? 1 : 0);
-
-    if (validatedGuestCount > maxAllowed) {
-      throw new ValidationError(
-        `Party size ${validatedGuestCount} exceeds maximum allowed ${maxAllowed} guests. ` +
-          `(${namedGuestCount} household member${
-            namedGuestCount > 1 ? "s" : ""
-          }${user.plusOneAllowed ? " + 1 plus-one" : ""})`
-      );
-    }
+    validatePartySize(validatedGuestCount, user);
 
     // Validate guests array
     let validatedGuests: IGuest[] = [];
@@ -335,17 +347,7 @@ export async function updateRSVP(
       validatedUpdates.guestCount = validateGuestCount(updates.guestCount);
 
       // Validate party size against household limits
-      const namedGuestCount = 1 + (user.householdMembers?.length || 0);
-      const maxAllowed = namedGuestCount + (user.plusOneAllowed ? 1 : 0);
-
-      if (validatedUpdates.guestCount > maxAllowed) {
-        throw new ValidationError(
-          `Party size ${validatedUpdates.guestCount} exceeds maximum allowed ${maxAllowed} guests. ` +
-            `(${namedGuestCount} household member${
-              namedGuestCount > 1 ? "s" : ""
-            }${user.plusOneAllowed ? " + 1 plus-one" : ""})`
-        );
-      }
+      validatePartySize(validatedUpdates.guestCount, user);
     }
 
     if (updates.guests !== undefined) {

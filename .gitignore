@@ -108,3 +108,6 @@ docs/DOCUMENTATION_REORGANIZATION.md
 docs/development/WEBSITE_PROJECT_TEMPLATE.md
 docs/development/WEDDING_WEBSITE_STRUCTURE_AND_BOILERPLATE.md
 docs/development/EXAMPLE_PROJECT_STRUCTURE_AND_SNIPPETS.md
+
+# Generated seed data files
+server/src/seeds/userData-generated.json
