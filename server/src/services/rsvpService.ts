@@ -59,8 +59,8 @@
  */
 
 import RSVP, { IRSVP, IGuest } from "../models/RSVP.js";
-import User from "../models/User.js";
-import { Document } from "mongoose";
+import User, { IUser } from "../models/User.js";
+import mongoose, { Document } from "mongoose";
 import { ValidationError } from "../utils/errors.js";
 import {
   validateName,
@@ -214,7 +214,8 @@ export async function createRSVP(input: CreateRSVPInput): Promise<any> {
     }
 
     // Fetch user to validate party size limits
-    const user = await User.findById(userId);
+    const UserModel = mongoose.model<IUser>("User");
+    const user = await UserModel.findOne({ _id: userId });
     if (!user) {
       throw new ValidationError("User not found");
     }
@@ -317,7 +318,8 @@ export async function updateRSVP(
     }
 
     // Fetch user to validate party size limits
-    const user = await User.findById(userId);
+    const UserModel = mongoose.model<IUser>("User");
+    const user = await UserModel.findOne({ _id: userId });
     if (!user) {
       throw new ValidationError("User not found");
     }
