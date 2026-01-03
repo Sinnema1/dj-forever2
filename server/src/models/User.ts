@@ -102,6 +102,13 @@ export interface IUser extends Document {
   personalPhoto?: string;
   specialInstructions?: string;
   dietaryRestrictions?: string;
+  // Mailing address fields (for invitation sending)
+  streetAddress?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -222,6 +229,38 @@ const userSchema = new Schema<IUser>(
       type: String,
       trim: true,
       maxlength: [100, "Plus-one name cannot exceed 100 characters"],
+    },
+    // Mailing address fields for invitation sending
+    streetAddress: {
+      type: String,
+      trim: true,
+      maxlength: [200, "Street address cannot exceed 200 characters"],
+    },
+    addressLine2: {
+      type: String,
+      trim: true,
+      maxlength: [100, "Address line 2 cannot exceed 100 characters"],
+    },
+    city: {
+      type: String,
+      trim: true,
+      maxlength: [100, "City cannot exceed 100 characters"],
+    },
+    state: {
+      type: String,
+      trim: true,
+      maxlength: [50, "State cannot exceed 50 characters"],
+    },
+    zipCode: {
+      type: String,
+      trim: true,
+      maxlength: [20, "ZIP code cannot exceed 20 characters"],
+    },
+    country: {
+      type: String,
+      trim: true,
+      default: "USA",
+      maxlength: [100, "Country cannot exceed 100 characters"],
     },
     personalPhoto: {
       type: String,
