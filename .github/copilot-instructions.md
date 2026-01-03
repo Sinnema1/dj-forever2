@@ -72,6 +72,10 @@ npm run dev  # Starts both server and client with hot reload
 - **Legacy compatibility**: RSVP mutations support both new guest-array format AND legacy single-guest fields
 - **User model**: `hasRSVPed` boolean tracks RSVP completion status
 - **Authentication**: All resolvers receive `user` from JWT context in `src/graphql/resolvers.ts`
+- **Party size validation**: RSVP service enforces maximum party size limits
+  - Formula: `maxAllowed = 1 + (householdMembers?.length || 0) + (plusOneAllowed ? 1 : 0)`
+  - Validation in both `createRSVP` and `updateRSVP` functions
+  - Descriptive error messages include party size breakdown
 
 ### Database Patterns
 
@@ -80,6 +84,10 @@ npm run dev  # Starts both server and client with hot reload
 // - Compound indexes: { isInvited: 1, hasRSVPed: 1 }
 // - Static methods: findByEmail(), findByQRToken()
 // - Always use { dbName } option in mongoose.connect(), never append to URI
+// - Email requirements: Only primary contact (guest_1) email required
+//   - Household members (guest_2-4) emails are optional
+//   - All household members share primary guest's QR code for authentication
+//   - @example.com placeholders acceptable for household members
 ```
 
 ### Error Handling

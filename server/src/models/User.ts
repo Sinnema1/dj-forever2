@@ -102,6 +102,13 @@ export interface IUser extends Document {
   personalPhoto?: string;
   specialInstructions?: string;
   dietaryRestrictions?: string;
+  // Mailing address fields (for invitation sending)
+  streetAddress?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
   createdAt: Date;
   updatedAt: Date;
 }
