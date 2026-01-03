@@ -38,6 +38,57 @@ import type { Transporter } from "nodemailer";
 import EmailJob from "../models/EmailJob.js";
 import User from "../models/User.js";
 
+/**
+ * ⚠️ PRODUCTION EMAIL SAFETY GUARD ⚠️
+ *
+ * To prevent accidentally sending emails to real wedding guests during testing,
+ * only Justin Manning's email is whitelisted for actual email delivery.
+ *
+ * All other emails will be logged to console only, even if SMTP is configured.
+ *
+ * To enable production email sending:
+ * 1. Set ENABLE_PRODUCTION_EMAILS=true in .env
+ * 2. Ensure you're deploying to production environment
+ * 3. Double-check guest list accuracy before enabling
+ */
+const ALLOWED_TEST_EMAILS = [
+  "sinnema1.jm@gmail.com", // Justin Manning (admin)
+];
+
+/**
+ * Check if email should be sent via SMTP or just logged
+ * @param {string} email - Recipient email address
+ * @returns {boolean} True if email should be sent, false if should be logged only
+ */
+function isEmailAllowedForSending(email: string): boolean {
+  // In production with flag enabled, allow all emails
+  if (
+    process.env.ENABLE_PRODUCTION_EMAILS === "true" &&
+    process.env.NODE_ENV === "production"
+  ) {
+    logger.warn(
+      "🚨 PRODUCTION EMAIL MODE ENABLED - Sending to all recipients",
+      {
+        service: "EmailService",
+      }
+    );
+    return true;
+  }
+
+  // Otherwise, only allow whitelisted test emails
+  const isAllowed = ALLOWED_TEST_EMAILS.includes(email.toLowerCase());
+
+  if (!isAllowed) {
+    logger.info(`🛡️ EMAIL BLOCKED (Safety Guard) - Would send to: ${email}`, {
+      service: "EmailService",
+      reason:
+        "Not in test whitelist. Set ENABLE_PRODUCTION_EMAILS=true to allow all recipients.",
+    });
+  }
+
+  return isAllowed;
+}
+
 // Type definitions for email operations
 interface EmailRecipient {
   _id: string;
@@ -287,6 +338,8 @@ You're receiving this because you were invited to our wedding.
  * Send email using SMTP or console logging
  * Automatically detects if SMTP is configured and uses appropriate method
  *
+ * ⚠️ SAFETY GUARD: Only sends to whitelisted emails unless ENABLE_PRODUCTION_EMAILS=true
+ *
  * @param {string} to - Recipient email address
  * @param {string} subject - Email subject
  * @param {string} html - HTML content
@@ -300,8 +353,11 @@ async function sendEmail(
 ): Promise<void> {
   const smtp = getTransporter();
 
-  if (smtp) {
-    // SMTP mode - actually send the email
+  // Check safety guard - only send to whitelisted emails during testing
+  const canSendEmail = isEmailAllowedForSending(to);
+
+  if (smtp && canSendEmail) {
+    // SMTP mode - actually send the email (only if whitelisted or production mode enabled)
     try {
       const info = await smtp.sendMail({
         from: process.env.SMTP_USER || "noreply@djforever2.com",
@@ -325,8 +381,14 @@ async function sendEmail(
       throw error;
     }
   } else {
-    // Console mode - log the email
-    logger.info(`📧 EMAIL (Console Mode) - Would send email to: ${to}`, {
+    // Console mode - log the email (either no SMTP config or safety guard blocking)
+    const reason = !smtp
+      ? "SMTP not configured"
+      : `Safety guard: Email not whitelisted (Only ${ALLOWED_TEST_EMAILS.join(
+          ", "
+        )} allowed)`;
+
+    logger.info(`📧 EMAIL (Console Mode - ${reason}) - Would send to: ${to}`, {
       service: "EmailService",
     });
     logger.info(`   Subject: ${subject}`, { service: "EmailService" });
@@ -336,6 +398,15 @@ async function sendEmail(
     logger.info(`   Preview: ${text.substring(0, 100)}...`, {
       service: "EmailService",
     });
+
+    if (!canSendEmail) {
+      logger.warn(
+        `   ⚠️ To enable production emails: Set ENABLE_PRODUCTION_EMAILS=true in .env`,
+        {
+          service: "EmailService",
+        }
+      );
+    }
   }
 }
 
