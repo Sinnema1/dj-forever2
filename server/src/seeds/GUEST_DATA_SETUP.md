@@ -38,10 +38,20 @@ I've created a template with your current guest list. You need to fill in:
 - **plus_one_allowed** - `TRUE` or `FALSE`
 - **custom_welcome_message** - Personalized greeting (use quotes if it contains commas)
 
-### Example Row (properly filled):
+### Admin User (household_id 0):
+
+The first row should be the admin user:
 
 ```csv
-1,Justin,Manning,justin.manning@gmail.com,brother,brother-in-law,Emma,Smith,emma.smith@gmail.com,,,,,,,,,,,,,grooms_family,FALSE,"Justin and Emma! We're thrilled to celebrate with you both!"
+0,Justin,Manning,sinnema1.jm@gmail.com,groom,groom,,,,,,,,,,,,,,,,,,,"Welcome to the admin dashboard!"
+```
+
+**Note**: Admin user is identified by `isAdmin: true` in `userData.json`, not by `guestGroup`
+
+### Example Guest Row (properly filled):
+
+```csv
+1,John,Budach,jpbudach@gmail.com,uncle,uncle,Kate,Budach,kate@example.com,Anna,Budach,,,,,,,,,,,brides_family,FALSE,"John, Kate, and Anna! We're thrilled to celebrate with you!"
 ```
 
 ---

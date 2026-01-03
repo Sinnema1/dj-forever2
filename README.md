@@ -100,12 +100,19 @@ All authentication is handled by scanning your invitation QR code:
 
 ### Admin Dashboard
 
-- **Guest Management**: Create/delete guests with automatic QR code generation
+- **Guest Management**: Create/delete guests with automatic QR code generation (30 real guests)
 - **RSVP Editing**: Comprehensive forms to edit existing RSVPs and guest information
 - **Analytics Dashboard**: 7 interactive visualizations including response timeline, meal preferences, party size distribution, and automated insights
-- **Email Reminders**: SMTP-powered email system with bulk operations for pending RSVPs
+- **Email Reminders**: SMTP-powered email system with bulk operations and production safety guard
 - **CSV Export**: Complete guest list export for external processing
 - **Real-time Statistics**: Live wedding stats including RSVP rates, attendance counts, and meal orders
+
+### 🛡️ Production Safety Features
+
+- **Email Safety Guard**: Prevents accidental emails to real guests during testing (whitelist-based)
+- **Test Data Isolation**: Separate databases for dev/test/production
+- **QR Token Validation**: Alphanumeric-only tokens (10-40 characters)
+- **Real Guest Data**: 30 households with production email addresses
 
 📖 **Complete Documentation**: See [`/docs`](./docs/README.md) for comprehensive documentation including:
 

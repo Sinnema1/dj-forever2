@@ -6,17 +6,17 @@
 **Frontend**: `http://localhost:4173` (Vite preview)
 **Backend**: `http://localhost:3001/graphql`
 
-### Development QR Tokens:
+### Development QR Tokens (Real Guests):
 
-- **Alice Johnson** (alice@example.com): `r24gpj3wntgqwqfberlas`
-- **Bob Smith** (bob@example.com): `ssq7b7bkfqqpd2724vlcol`
-- **Charlie Williams** (charlie@example.com): `ss0qx6mg20f2qaiyl9hnl7`
+- **John Budach** (jpbudach@gmail.com): `3rz4heotj11wbkhdjoiv`
+- **Brett Budach** (winterwalleye@gmail.com): `zofkagycljqyexmqrgr5`
+- **Justin Manning (Admin)** (sinnema1.jm@gmail.com): `adminqrtoken2026justin`
 
 ### Development QR Codes:
 
-- `qr-codes/development/Alice_Johnson_alice_example_com.png`
-- `qr-codes/development/Bob_Smith_bob_example_com.png`
-- `qr-codes/development/Charlie_Williams_charlie_example_com.png`
+- `qr-codes/production/John_Budach_jpbudach_gmail_com_*.png`
+- `qr-codes/production/Brett_Budach_winterwalleye_gmail_com_*.png`
+- `qr-codes/production/Justin_Manning_sinnema1_jm_gmail_com_*.png`
 
 ---
 
@@ -26,17 +26,19 @@
 **Frontend**: `https://dj-forever2.onrender.com`
 **Backend**: `https://dj-forever2-backend.onrender.com/graphql`
 
-### Production QR Tokens:
+### Production Guest Data:
 
-- **Alice Johnson** (alice@example.com): `zolnlel3tpp4me90r10b5p`
-- **Bob Smith** (bob@example.com): `6mbqwyfi5tjgiyxzsn1h5r`
-- **Charlie Williams** (charlie@example.com): `m4t39u2ieg5jcn5qme05b`
+**⚠️ Real wedding guests (30 households)**
+
+- John Budach, Brett Budach, Raven Budach (Bride's family)
+- Emerald Canny, Bailey Bowers, Abby Chose, etc. (Friends)
+- See `server/src/seeds/userData.json` for complete list
 
 ### Production QR Codes:
 
-- `qr-codes/production/Alice_Johnson_alice_example_com_6885a53d88bfbecaced1d567.png`
-- `qr-codes/production/Bob_Smith_bob_example_com_6885a53d88bfbecaced1d568.png`
-- `qr-codes/production/Charlie_Williams_charlie_example_com_6885a53d88bfbecaced1d569.png`
+- `qr-codes/production/` contains 30 QR codes for real guests
+- Each QR code is named: `[FullName]_[email_sanitized]_[mongoId].png`
+- **DO NOT** share QR codes publicly or commit to Git
 
 ---
 
