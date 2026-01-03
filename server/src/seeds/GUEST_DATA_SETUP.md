@@ -23,7 +23,10 @@ I've created a template with your current guest list. You need to fill in:
 ### Required Fields:
 
 - **Last names** - For all guests (currently blank for most)
-- **Email addresses** - Unique for each guest (currently using placeholders like `dad@example.com`)
+- **Primary email address** - Only `guest_1_email` is required (primary contact for each household)
+  - Guest 2-4 emails are **optional** (household members share the primary guest's QR code)
+  - Placeholder emails like `@example.com` are acceptable for household members
+  - Only the primary contact email needs to be unique and valid
 
 ### Real Names Needed:
 
@@ -34,8 +37,18 @@ I've created a template with your current guest list. You need to fill in:
 
 - **relationship_to_bride** - e.g., "sister", "friend", "cousin"
 - **relationship_to_groom** - e.g., "brother", "best friend", "coworker"
+- **street_address** - Mailing address for invitations (e.g., "123 Main St")
+- **address_line_2** - Apartment/unit number (optional)
+- **city** - City name
+- **state** - State abbreviation (e.g., "MI", "CA")
+- **zip_code** - ZIP code
+- **country** - Country name (defaults to "USA" if omitted)
 - **guest_group** - Options: `grooms_family`, `brides_family`, `extended_family`, `friends`, `other`
 - **plus_one_allowed** - `TRUE` or `FALSE`
+  - **Important**: RSVP validation enforces party size limits
+  - Maximum guests = household members (1 primary + additional household members) + (plus-one if allowed)
+  - Example: Bailey Bowers with `plus_one_allowed: true` can bring max 2 guests (1 primary + 1 plus-one)
+  - Example: John Budach household (John, Kate, Anna) can bring max 3 guests (no plus-one allowed)
 - **custom_welcome_message** - Personalized greeting (use quotes if it contains commas)
 
 ### Admin User (household_id 0):
@@ -221,23 +234,30 @@ This creates PNG files in `server/qr-codes/production/` or `server/qr-codes/deve
 Since guests authenticate via QR codes only, emails are primarily for:
 
 - **Admin communication** (sending reminders, updates)
-- **Database uniqueness** (each guest needs a unique email)
+- **Database uniqueness** (only primary contact email must be unique)
 - **RSVP notifications** (optional feature)
+
+### Email Requirements:
+
+- **guest_1_email**: **REQUIRED** - Primary contact for household authentication
+- **guest_2_email, guest_3_email, guest_4_email**: **OPTIONAL** - Household members share primary guest's QR code
 
 ### If Guests Don't Have Emails:
 
-You can use placeholder emails following a pattern:
+You can use placeholder emails for household members (guest_2-4):
 
 ```
-justin.manning.guest@djforever2.wedding
-emma.smith.guest@djforever2.wedding
+anna@example.com
+greg@example.com
+chris@example.com
 ```
 
 **Important**:
 
-- These won't be used for login (QR-only authentication)
-- Make sure they're unique
-- Consider using a domain you control if you plan to send emails later
+- Only the primary contact (guest_1) email needs to be valid and unique
+- Placeholder emails like `@example.com` are acceptable for household members
+- All household members share the same QR code (primary guest's authentication)
+- Validation only checks uniqueness of guest_1_email
 
 ---
 
@@ -248,6 +268,10 @@ The CSV uses `household_id` to group guests who share an invitation:
 - **household_id**: Groups guests getting the same physical invitation
 - **Up to 4 guests per household** (expandable if needed)
 - **One QR code per household** - all members share authentication
+- **Party size validation**: RSVP system enforces maximum party size
+  - Formula: `maxGuests = 1 (primary) + householdMembers.length + (plusOneAllowed ? 1 : 0)`
+  - Prevents guests from RSVPing for more people than invited
+  - Applies to both creating and updating RSVPs
 - Primary guest (guest_1) gets the User record; others stored in `householdMembers` array
 
 ### Example Household:

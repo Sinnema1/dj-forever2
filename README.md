@@ -93,6 +93,9 @@ All authentication is handled by scanning your invitation QR code:
 
 - **QR Code Authentication**: Unique QR codes for each guest, enabling secure, password-free access.
 - **RSVP Management**: Guests can RSVP, select meal preferences, indicate dietary restrictions, and request songs.
+  - **Party Size Validation**: Enforces maximum party size based on household members and plus-one allowance
+  - **Per-Person Toggles**: Each household member (including kids) can individually confirm attendance
+  - **Plus-One Support**: Bailey Bowers and Abby Chose can bring a plus-one with free-text name entry
 - **Countdown Timer**: Real-time countdown to the wedding day.
 - **Photo Gallery**: Swipeable lightbox with double-tap zoom functionality.
 - **Registry Links**: Quick links to wedding registries.

@@ -213,11 +213,31 @@ export async function createRSVP(input: CreateRSVPInput): Promise<any> {
       throw new ValidationError("RSVP already exists for this user");
     }
 
+    // Fetch user to validate party size limits
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ValidationError("User not found");
+    }
+
     // Validate attendance
     const validatedAttending = validateAttendance(attending);
 
     // Validate guest count
     const validatedGuestCount = guestCount ? validateGuestCount(guestCount) : 1;
+
+    // Validate party size against household limits
+    // Max allowed = named household members (1 primary + household array) + plus-one if allowed
+    const namedGuestCount = 1 + (user.householdMembers?.length || 0);
+    const maxAllowed = namedGuestCount + (user.plusOneAllowed ? 1 : 0);
+
+    if (validatedGuestCount > maxAllowed) {
+      throw new ValidationError(
+        `Party size ${validatedGuestCount} exceeds maximum allowed ${maxAllowed} guests. ` +
+          `(${namedGuestCount} household member${
+            namedGuestCount > 1 ? "s" : ""
+          }${user.plusOneAllowed ? " + 1 plus-one" : ""})`
+      );
+    }
 
     // Validate guests array
     let validatedGuests: IGuest[] = [];
@@ -296,6 +316,12 @@ export async function updateRSVP(
       throw new ValidationError("User ID is required");
     }
 
+    // Fetch user to validate party size limits
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ValidationError("User not found");
+    }
+
     // Validate updates
     const validatedUpdates: any = {};
 
@@ -305,6 +331,19 @@ export async function updateRSVP(
 
     if (updates.guestCount !== undefined) {
       validatedUpdates.guestCount = validateGuestCount(updates.guestCount);
+
+      // Validate party size against household limits
+      const namedGuestCount = 1 + (user.householdMembers?.length || 0);
+      const maxAllowed = namedGuestCount + (user.plusOneAllowed ? 1 : 0);
+
+      if (validatedUpdates.guestCount > maxAllowed) {
+        throw new ValidationError(
+          `Party size ${validatedUpdates.guestCount} exceeds maximum allowed ${maxAllowed} guests. ` +
+            `(${namedGuestCount} household member${
+              namedGuestCount > 1 ? "s" : ""
+            }${user.plusOneAllowed ? " + 1 plus-one" : ""})`
+        );
+      }
     }
 
     if (updates.guests !== undefined) {
