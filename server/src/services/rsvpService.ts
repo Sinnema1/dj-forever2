@@ -59,8 +59,8 @@
  */
 
 import RSVP, { IRSVP, IGuest } from "../models/RSVP.js";
-import User from "../models/User.js";
-import { Document } from "mongoose";
+import User, { IUser } from "../models/User.js";
+import mongoose, { Document } from "mongoose";
 import { ValidationError } from "../utils/errors.js";
 import {
   validateName,
@@ -122,6 +122,29 @@ export interface UpdateRSVPInput {
     mealPreference: string;
     allergies?: string;
   }>;
+}
+
+/**
+ * Validates party size against household member limits and plus-one allowance.
+ * Ensures guests cannot exceed their allocated party size based on household
+ * composition and plus-one permissions.
+ *
+ * @param {number} guestCount - Number of guests in the party
+ * @param {IUser} user - User record with household members and plus-one status
+ * @throws {ValidationError} If party size exceeds maximum allowed guests
+ */
+function validatePartySize(guestCount: number, user: IUser): void {
+  const namedGuestCount = 1 + (user.householdMembers?.length || 0);
+  const maxAllowed = namedGuestCount + (user.plusOneAllowed ? 1 : 0);
+
+  if (guestCount > maxAllowed) {
+    throw new ValidationError(
+      `Party size ${guestCount} exceeds maximum allowed ${maxAllowed} guests. ` +
+        `(${namedGuestCount} household member${namedGuestCount > 1 ? "s" : ""}${
+          user.plusOneAllowed ? " + 1 plus-one" : ""
+        })`
+    );
+  }
 }
 
 /**
@@ -213,11 +236,21 @@ export async function createRSVP(input: CreateRSVPInput): Promise<any> {
       throw new ValidationError("RSVP already exists for this user");
     }
 
+    // Fetch user to validate party size limits
+    const UserModel = mongoose.model<IUser>("User");
+    const user = await UserModel.findOne({ _id: userId });
+    if (!user) {
+      throw new ValidationError("User not found");
+    }
+
     // Validate attendance
     const validatedAttending = validateAttendance(attending);
 
     // Validate guest count
     const validatedGuestCount = guestCount ? validateGuestCount(guestCount) : 1;
+
+    // Validate party size against household limits
+    validatePartySize(validatedGuestCount, user);
 
     // Validate guests array
     let validatedGuests: IGuest[] = [];
@@ -296,6 +329,13 @@ export async function updateRSVP(
       throw new ValidationError("User ID is required");
     }
 
+    // Fetch user to validate party size limits
+    const UserModel = mongoose.model<IUser>("User");
+    const user = await UserModel.findOne({ _id: userId });
+    if (!user) {
+      throw new ValidationError("User not found");
+    }
+
     // Validate updates
     const validatedUpdates: any = {};
 
@@ -305,6 +345,9 @@ export async function updateRSVP(
 
     if (updates.guestCount !== undefined) {
       validatedUpdates.guestCount = validateGuestCount(updates.guestCount);
+
+      // Validate party size against household limits
+      validatePartySize(validatedUpdates.guestCount, user);
     }
 
     if (updates.guests !== undefined) {
