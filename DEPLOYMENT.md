@@ -27,7 +27,26 @@ SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=<your-gmail-address>
 SMTP_PASS=<your-gmail-app-password>
+
+# ⚠️ EMAIL SAFETY GUARD (IMPORTANT!)
+# By default, emails only send to sinnema1.jm@gmail.com
+# Set this to 'true' ONLY when ready to send to ALL guests
+ENABLE_PRODUCTION_EMAILS=false
 ```
+
+### 🛡️ Email Safety Guard
+
+The project includes a safety mechanism to prevent accidentally sending emails to real guests during testing:
+
+- **Default**: Emails only sent to `sinnema1.jm@gmail.com` (admin)
+- **All other emails**: Logged to console only
+- **To enable production emails**: Set `ENABLE_PRODUCTION_EMAILS=true`
+
+⚠️ **Only enable production emails after**:
+
+1. Verifying guest list accuracy in `userData.json`
+2. Testing with your own email first
+3. Confirming all email templates are correct
 
 ### Frontend Service (Static Site)
 
