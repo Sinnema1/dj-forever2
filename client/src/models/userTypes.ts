@@ -22,8 +22,8 @@
  * ```typescript
  * const guest: User = {
  *   _id: '507f1f77bcf86cd799439011',
- *   fullName: 'Alice Johnson',
- *   email: 'alice@example.com',
+ *   fullName: 'John Budach',
+ *   email: 'jpbudach@gmail.com',
  *   isInvited: true,
  *   hasRSVPed: true,
  *   rsvpId: '507f1f77bcf86cd799439012'

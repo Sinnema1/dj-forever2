@@ -102,12 +102,14 @@ export const seedDatabase = async (closeConnection = false) => {
     const usersWithQrTokens = userData.users.map((user: any) => ({
       fullName: user.fullName,
       email: user.email,
+      isAdmin: user.isAdmin ?? false,
       isInvited: user.isInvited,
       hasRSVPed: user.hasRSVPed,
       qrToken: user.qrToken || generateQrToken(),
       // Personalization fields (Phase 1)
       relationshipToBride: user.relationshipToBride,
       relationshipToGroom: user.relationshipToGroom,
+      householdMembers: user.householdMembers || [],
       customWelcomeMessage: user.customWelcomeMessage,
       guestGroup: user.guestGroup,
       plusOneAllowed: user.plusOneAllowed ?? false,

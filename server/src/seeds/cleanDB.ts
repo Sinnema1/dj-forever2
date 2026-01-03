@@ -13,6 +13,27 @@ const RSVP = RSVPModel as Model<any>;
 
 const dbName = process.env.MONGODB_DB_NAME || "djforever2";
 const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
+
+// Extract database name from URI if present (for validation/warning)
+const uriMatch = uri.match(/\/([^/?]+)(\?|$)/);
+const uriDbName = uriMatch ? uriMatch[1] : null;
+
+// Warn if URI contains a different database name than MONGODB_DB_NAME
+if (uriDbName && uriDbName !== dbName) {
+  console.warn(
+    `⚠️ WARNING: URI contains database name "${uriDbName}" but MONGODB_DB_NAME is "${dbName}"`
+  );
+  console.warn(
+    `⚠️ The { dbName } option will override the URI. Connecting to: ${dbName}`
+  );
+  console.warn(
+    `⚠️ To avoid confusion, use URI without database name: ${uri.replace(
+      `/${uriDbName}`,
+      ""
+    )}`
+  );
+}
+
 // Do NOT append dbName to URI; always use { dbName } option
 console.log(`[cleanDB] Connecting to MongoDB URI: ${uri}, DB Name: ${dbName}`);
 

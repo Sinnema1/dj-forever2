@@ -214,6 +214,8 @@ export const typeDefs = `
     personalPhoto: String
     specialInstructions: String
     dietaryRestrictions: String
+    """Additional household members who share this QR code"""
+    householdMembers: [HouseholdMember!]
   }
 
   """Input for updating user details from admin interface"""
