@@ -380,7 +380,7 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                 Quick test tokens (🔧 = Admin):
               </p>
               <button
-                onClick={() => handleTokenSubmit('r24gpj3wntgqwqfberlas')}
+                onClick={() => handleTokenSubmit('3rz4heotj11wbkhdjoiv')}
                 disabled={loading}
                 style={{
                   margin: '2px',
@@ -391,12 +391,12 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                   borderRadius: '3px',
                   cursor: loading ? 'not-allowed' : 'pointer',
                 }}
-                title="Alice Johnson"
+                title="John Budach"
               >
-                Alice
+                John
               </button>
               <button
-                onClick={() => handleTokenSubmit('ssq7b7bkfqqpd2724vlcol')}
+                onClick={() => handleTokenSubmit('zofkagycljqyexmqrgr5')}
                 disabled={loading}
                 style={{
                   margin: '2px',
@@ -407,12 +407,12 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                   borderRadius: '3px',
                   cursor: loading ? 'not-allowed' : 'pointer',
                 }}
-                title="Bob Smith"
+                title="Brett Budach"
               >
-                Bob
+                Brett
               </button>
               <button
-                onClick={() => handleTokenSubmit('ss0qx6mg20f2qaiyl9hnl7')}
+                onClick={() => handleTokenSubmit('adminqrtoken2026justin')}
                 disabled={loading}
                 style={{
                   margin: '2px',
@@ -423,9 +423,9 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                   borderRadius: '3px',
                   cursor: loading ? 'not-allowed' : 'pointer',
                 }}
-                title="Charlie Williams"
+                title="Justin Manning (Admin)"
               >
-                Charlie
+                Admin
               </button>
               <button
                 onClick={() => handleTokenSubmit('obnzixyen8f6fzr5xwznda')}
