@@ -111,3 +111,6 @@ docs/development/EXAMPLE_PROJECT_STRUCTURE_AND_SNIPPETS.md
 
 # Generated seed data files
 server/src/seeds/userData-generated.json
+
+# Wedding documents (contracts, vendor info, sensitive planning materials)
+docs/wedding/
