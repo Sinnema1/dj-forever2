@@ -418,22 +418,6 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                   margin: '2px',
                   padding: '4px 8px',
                   fontSize: '0.8rem',
-                  backgroundColor: loading ? '#f0f0f0' : '#e0e0e0',
-                  border: '1px solid #ccc',
-                  borderRadius: '3px',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                }}
-                title="Justin Manning (Admin)"
-              >
-                Admin
-              </button>
-              <button
-                onClick={() => handleTokenSubmit('obnzixyen8f6fzr5xwznda')}
-                disabled={loading}
-                style={{
-                  margin: '2px',
-                  padding: '4px 8px',
-                  fontSize: '0.8rem',
                   backgroundColor: loading ? '#f0f0f0' : '#d4edda',
                   border: '1px solid #28a745',
                   borderRadius: '3px',
