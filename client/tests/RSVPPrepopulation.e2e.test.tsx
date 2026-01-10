@@ -65,7 +65,7 @@ describe('Phase 3: RSVP Pre-population', () => {
     // Wait for component to load by checking for the form title
     await waitFor(() => {
       expect(
-        screen.getByRole('heading', { name: /rsvp for our wedding/i })
+        screen.getByRole('heading', { name: /your response/i })
       ).toBeInTheDocument();
     });
 
@@ -91,7 +91,7 @@ describe('Phase 3: RSVP Pre-population', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole('heading', { name: /rsvp for our wedding/i })
+        screen.getByRole('heading', { name: /your response/i })
       ).toBeInTheDocument();
     });
 
@@ -116,7 +116,7 @@ describe('Phase 3: RSVP Pre-population', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole('heading', { name: /rsvp for our wedding/i })
+        screen.getByRole('heading', { name: /your response/i })
       ).toBeInTheDocument();
     });
 
@@ -172,7 +172,7 @@ describe('Phase 3: RSVP Pre-population', () => {
     // Wait for form to load with existing RSVP data
     await waitFor(() => {
       expect(
-        screen.getByRole('heading', { name: /rsvp for our wedding/i })
+        screen.getByRole('heading', { name: /your response/i })
       ).toBeInTheDocument();
     });
 
@@ -216,7 +216,7 @@ describe('Phase 3: RSVP Pre-population', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole('heading', { name: /rsvp for our wedding/i })
+        screen.getByRole('heading', { name: /your response/i })
       ).toBeInTheDocument();
     });
 
