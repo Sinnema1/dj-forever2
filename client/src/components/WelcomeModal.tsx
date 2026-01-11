@@ -269,10 +269,10 @@ const WelcomeModal: React.FC = () => {
               <p className="welcome-greeting">{getPersonalizedGreeting()}</p>
 
               <p className="welcome-details">
-                This website contains everything you need to know about our
-                wedding - from the venue details and travel information to our
-                registry and photo gallery. We have created this special space
-                just for our loved ones.
+                We are absolutely thrilled that you are here and will be
+                celebrating with us on our special day! This site has venue
+                details, travel info, our registry, and the event schedule —
+                everything you need for the weekend.
               </p>
 
               {user.plusOneAllowed && (

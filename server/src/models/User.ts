@@ -85,12 +85,14 @@ export interface IHouseholdMember {
 }
 
 export interface IUser extends Document {
+  _id: mongoose.Types.ObjectId;
   fullName: string;
   email: string;
   isAdmin: boolean;
   isInvited: boolean;
   hasRSVPed: boolean;
   rsvpId?: mongoose.Types.ObjectId;
+  rsvp?: any; // Virtual field populated from RSVP collection
   qrToken: string;
   relationshipToBride?: string;
   relationshipToGroom?: string;

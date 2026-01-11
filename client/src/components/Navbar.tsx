@@ -190,10 +190,15 @@ function Navbar() {
     // Otherwise, let React Router handle navigation to "/"
   };
 
+  const standalonePaths = ['/rsvp', '/registry', '/admin'];
+  const isStandalone = standalonePaths.some(
+    p => location.pathname === p || location.pathname.startsWith(p + '/')
+  );
+
   return (
     <nav
       id="navigation"
-      className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}
+      className={`navbar ${scrolled ? 'navbar-scrolled' : ''} ${isStandalone ? 'navbar-standalone' : ''}`}
       aria-label="Main navigation"
     >
       <Link to="/" className="navbar-logo" onClick={handleLogoClick}>
