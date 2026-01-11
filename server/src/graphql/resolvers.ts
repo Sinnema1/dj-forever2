@@ -357,12 +357,12 @@ export const resolvers = {
     },
     adminUpdateUser: async (
       _: unknown,
-      args: { userId: string; updates: AdminUserUpdateInput },
+      args: { userId: string; input: AdminUserUpdateInput },
       context: GraphQLContext
     ) => {
       requireAdmin(context);
       try {
-        return await adminUpdateUser(args.userId, args.updates);
+        return await adminUpdateUser(args.userId, args.input);
       } catch (error: any) {
         console.error("Error in adminUpdateUser resolver:", error);
         throw new GraphQLError(error?.message || "Failed to update user");

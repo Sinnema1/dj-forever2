@@ -38,7 +38,7 @@
  * - ../utils/errors: Custom error classes for proper error handling
  */
 
-import User from "../models/User.js";
+import UserModel, { IUser } from "../models/User.js";
 import RSVP from "../models/RSVP.js";
 import { ValidationError } from "../utils/errors.js";
 import { logger } from "../utils/logger.js";
@@ -46,6 +46,10 @@ import {
   generateQRCodeForUser,
   generateQRCodesForUsers,
 } from "../utils/qrCodeGenerator.js";
+import type { Model } from "mongoose";
+
+// Type assertion to resolve union type from mongoose.models pattern
+const User = UserModel as Model<IUser>;
 
 import type {
   AdminStats,
@@ -205,6 +209,12 @@ export async function getAllUsersWithRSVPs(): Promise<AdminUser[]> {
       personalPhoto: user.personalPhoto,
       specialInstructions: user.specialInstructions,
       dietaryRestrictions: user.dietaryRestrictions,
+      streetAddress: user.streetAddress,
+      addressLine2: user.addressLine2,
+      city: user.city,
+      state: user.state,
+      zipCode: user.zipCode,
+      country: user.country,
     }));
 
     logger.info(
@@ -388,7 +398,7 @@ export async function adminUpdateUser(
   try {
     logger.info(`Admin updating user ${userId}`, { service: "AdminService" });
 
-    const user = await (User.findById as any)(userId).populate("rsvp");
+    const user = await User.findById(userId).populate("rsvp");
     if (!user) {
       throw new ValidationError("User not found");
     }
@@ -419,6 +429,16 @@ export async function adminUpdateUser(
       rsvp: user.rsvp,
       createdAt: user.createdAt?.toISOString(),
       lastUpdated: user.updatedAt?.toISOString(),
+      ...(user.streetAddress !== undefined && {
+        streetAddress: user.streetAddress,
+      }),
+      ...(user.addressLine2 !== undefined && {
+        addressLine2: user.addressLine2,
+      }),
+      ...(user.city !== undefined && { city: user.city }),
+      ...(user.state !== undefined && { state: user.state }),
+      ...(user.zipCode !== undefined && { zipCode: user.zipCode }),
+      ...(user.country !== undefined && { country: user.country }),
     };
 
     logger.info(`Admin successfully updated user ${userId}`, {
@@ -428,7 +448,14 @@ export async function adminUpdateUser(
   } catch (error) {
     logger.error(`Failed to update user ${userId}`, {
       service: "AdminService",
-      error,
+      error:
+        error instanceof Error
+          ? {
+              message: error.message,
+              stack: error.stack,
+              name: error.name,
+            }
+          : error,
     });
     if (error instanceof ValidationError) throw error;
     throw new Error("Failed to update user");
@@ -524,15 +551,30 @@ export async function adminCreateUser(input: {
       rsvp: undefined,
       createdAt: user.createdAt?.toISOString(),
       lastUpdated: user.updatedAt?.toISOString(),
+      ...(user.streetAddress !== undefined && {
+        streetAddress: user.streetAddress,
+      }),
+      ...(user.addressLine2 !== undefined && {
+        addressLine2: user.addressLine2,
+      }),
+      ...(user.city !== undefined && { city: user.city }),
+      ...(user.state !== undefined && { state: user.state }),
+      ...(user.zipCode !== undefined && { zipCode: user.zipCode }),
+      ...(user.country !== undefined && { country: user.country }),
     };
 
     logger.info(`Admin successfully created user ${user._id}`, {
       service: "AdminService",
     });
     return adminUser;
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to create user", { service: "AdminService", error });
     if (error instanceof ValidationError) throw error;
+    // Handle Mongoose validation errors
+    if (error.name === "ValidationError" && error.errors) {
+      const firstError = Object.values(error.errors)[0] as any;
+      throw new ValidationError(firstError.message);
+    }
     throw new Error("Failed to create user");
   }
 }
