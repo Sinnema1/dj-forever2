@@ -110,6 +110,13 @@ export const typeDefs = `
     dietaryRestrictions: String
     """Additional household members who share this QR code"""
     householdMembers: [HouseholdMember!]
+    """Mailing address fields for invitation management"""
+    streetAddress: String
+    addressLine2: String
+    city: String
+    state: String
+    zipCode: String
+    country: String
   }
 
   type Guest {
@@ -216,6 +223,13 @@ export const typeDefs = `
     dietaryRestrictions: String
     """Additional household members who share this QR code"""
     householdMembers: [HouseholdMember!]
+    """Mailing address fields for invitation management"""
+    streetAddress: String
+    addressLine2: String
+    city: String
+    state: String
+    zipCode: String
+    country: String
   }
 
   """Input for updating user details from admin interface"""
@@ -223,6 +237,12 @@ export const typeDefs = `
     fullName: String
     email: String
     isInvited: Boolean
+    streetAddress: String
+    addressLine2: String
+    city: String
+    state: String
+    zipCode: String
+    country: String
   }
 
   """Input for updating user personalization fields"""
@@ -236,6 +256,12 @@ export const typeDefs = `
     personalPhoto: String
     specialInstructions: String
     dietaryRestrictions: String
+    streetAddress: String
+    addressLine2: String
+    city: String
+    state: String
+    zipCode: String
+    country: String
   }
 
   """Input for admin RSVP updates"""
@@ -251,6 +277,12 @@ export const typeDefs = `
     fullName: String!
     email: String!
     isInvited: Boolean!
+    streetAddress: String
+    addressLine2: String
+    city: String
+    state: String
+    zipCode: String
+    country: String
   }
 
   """Input for bulk personalization update - email is used to find the user"""

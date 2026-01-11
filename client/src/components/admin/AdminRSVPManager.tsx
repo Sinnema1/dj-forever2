@@ -68,6 +68,12 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
     fullName: '',
     email: '',
     isInvited: true,
+    streetAddress: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: '',
   });
 
   const [updateRSVP] = useMutation(ADMIN_UPDATE_RSVP);
@@ -315,12 +321,32 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
             fullName: newGuestForm.fullName,
             email: newGuestForm.email,
             isInvited: newGuestForm.isInvited,
+            ...(newGuestForm.streetAddress && {
+              streetAddress: newGuestForm.streetAddress,
+            }),
+            ...(newGuestForm.addressLine2 && {
+              addressLine2: newGuestForm.addressLine2,
+            }),
+            ...(newGuestForm.city && { city: newGuestForm.city }),
+            ...(newGuestForm.state && { state: newGuestForm.state }),
+            ...(newGuestForm.zipCode && { zipCode: newGuestForm.zipCode }),
+            ...(newGuestForm.country && { country: newGuestForm.country }),
           },
         },
       });
       await onUpdate();
       setShowAddModal(false);
-      setNewGuestForm({ fullName: '', email: '', isInvited: true });
+      setNewGuestForm({
+        fullName: '',
+        email: '',
+        isInvited: true,
+        streetAddress: '',
+        addressLine2: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        country: '',
+      });
       alert('Guest added successfully!');
     } catch (error: any) {
       console.error('Failed to add guest:', error);
@@ -834,6 +860,136 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
                   />
                   <span>Invited to Wedding</span>
                 </label>
+              </div>
+
+              <div
+                className="form-section-header"
+                style={{
+                  marginTop: '1.5rem',
+                  marginBottom: '0.75rem',
+                  fontWeight: '600',
+                  fontSize: '0.95rem',
+                }}
+              >
+                Mailing Address (Optional)
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="new-guest-street">Street Address</label>
+                <input
+                  id="new-guest-street"
+                  type="text"
+                  value={newGuestForm.streetAddress}
+                  onChange={e =>
+                    setNewGuestForm({
+                      ...newGuestForm,
+                      streetAddress: e.target.value,
+                    })
+                  }
+                  placeholder="123 Main St"
+                  className="form-input"
+                  disabled={isSaving}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="new-guest-address2">Address Line 2</label>
+                <input
+                  id="new-guest-address2"
+                  type="text"
+                  value={newGuestForm.addressLine2}
+                  onChange={e =>
+                    setNewGuestForm({
+                      ...newGuestForm,
+                      addressLine2: e.target.value,
+                    })
+                  }
+                  placeholder="Apt, Suite, Unit (optional)"
+                  className="form-input"
+                  disabled={isSaving}
+                />
+              </div>
+              <div
+                className="form-row"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '1rem',
+                }}
+              >
+                <div className="form-group">
+                  <label htmlFor="new-guest-city">City</label>
+                  <input
+                    id="new-guest-city"
+                    type="text"
+                    value={newGuestForm.city}
+                    onChange={e =>
+                      setNewGuestForm({ ...newGuestForm, city: e.target.value })
+                    }
+                    placeholder="City"
+                    className="form-input"
+                    disabled={isSaving}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="new-guest-state">State/Province</label>
+                  <input
+                    id="new-guest-state"
+                    type="text"
+                    value={newGuestForm.state}
+                    onChange={e =>
+                      setNewGuestForm({
+                        ...newGuestForm,
+                        state: e.target.value,
+                      })
+                    }
+                    placeholder="State/Province"
+                    className="form-input"
+                    disabled={isSaving}
+                  />
+                </div>
+              </div>
+              <div
+                className="form-row"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '1rem',
+                }}
+              >
+                <div className="form-group">
+                  <label htmlFor="new-guest-zip">Zip/Postal Code</label>
+                  <input
+                    id="new-guest-zip"
+                    type="text"
+                    value={newGuestForm.zipCode}
+                    onChange={e =>
+                      setNewGuestForm({
+                        ...newGuestForm,
+                        zipCode: e.target.value,
+                      })
+                    }
+                    placeholder="Zip Code"
+                    className="form-input"
+                    disabled={isSaving}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="new-guest-country">Country</label>
+                  <input
+                    id="new-guest-country"
+                    type="text"
+                    value={newGuestForm.country}
+                    onChange={e =>
+                      setNewGuestForm({
+                        ...newGuestForm,
+                        country: e.target.value,
+                      })
+                    }
+                    placeholder="Country"
+                    className="form-input"
+                    disabled={isSaving}
+                  />
+                </div>
               </div>
             </div>
             <div className="modal-footer">

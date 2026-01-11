@@ -242,6 +242,12 @@ export async function exportGuestListCSV(): Promise<string> {
       "Meal Preferences",
       "Dietary Restrictions",
       "Additional Notes",
+      "Street Address",
+      "Address Line 2",
+      "City",
+      "State",
+      "Zip Code",
+      "Country",
       "QR Token",
       "Invited Date",
     ].join(",");
@@ -277,6 +283,12 @@ export async function exportGuestListCSV(): Promise<string> {
         `"${mealPrefs}"`,
         `"${dietaryRestrictions}"`,
         `"${rsvp?.additionalNotes || ""}"`,
+        `"${user.streetAddress || ""}"`,
+        `"${user.addressLine2 || ""}"`,
+        `"${user.city || ""}"`,
+        `"${user.state || ""}"`,
+        `"${user.zipCode || ""}"`,
+        `"${user.country || ""}"`,
         user.qrToken,
         user.createdAt || "",
       ].join(",");
@@ -384,6 +396,15 @@ export async function adminUpdateUser(
     if (input.fullName !== undefined) user.fullName = input.fullName;
     if (input.email !== undefined) user.email = input.email;
     if (input.isInvited !== undefined) user.isInvited = input.isInvited;
+    // Address fields
+    if (input.streetAddress !== undefined)
+      user.streetAddress = input.streetAddress;
+    if (input.addressLine2 !== undefined)
+      user.addressLine2 = input.addressLine2;
+    if (input.city !== undefined) user.city = input.city;
+    if (input.state !== undefined) user.state = input.state;
+    if (input.zipCode !== undefined) user.zipCode = input.zipCode;
+    if (input.country !== undefined) user.country = input.country;
 
     await user.save();
 
@@ -425,6 +446,12 @@ export async function adminCreateUser(input: {
   fullName: string;
   email: string;
   isInvited: boolean;
+  streetAddress?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
 }): Promise<AdminUser> {
   try {
     logger.info(`Admin creating new user: ${input.email}`, {
@@ -451,6 +478,12 @@ export async function adminCreateUser(input: {
       isAdmin: false,
       hasRSVPed: false,
       qrToken,
+      ...(input.streetAddress && { streetAddress: input.streetAddress }),
+      ...(input.addressLine2 && { addressLine2: input.addressLine2 }),
+      ...(input.city && { city: input.city }),
+      ...(input.state && { state: input.state }),
+      ...(input.zipCode && { zipCode: input.zipCode }),
+      ...(input.country && { country: input.country }),
     });
 
     await user.save();
@@ -601,6 +634,12 @@ export async function bulkUpdatePersonalization(
       personalPhoto?: string;
       specialInstructions?: string;
       dietaryRestrictions?: string;
+      streetAddress?: string;
+      addressLine2?: string;
+      city?: string;
+      state?: string;
+      zipCode?: string;
+      country?: string;
     };
   }>
 ): Promise<{
@@ -663,6 +702,25 @@ export async function bulkUpdatePersonalization(
       if (update.personalization.dietaryRestrictions !== undefined) {
         updateFields.dietaryRestrictions =
           update.personalization.dietaryRestrictions;
+      }
+      // Address fields
+      if (update.personalization.streetAddress !== undefined) {
+        updateFields.streetAddress = update.personalization.streetAddress;
+      }
+      if (update.personalization.addressLine2 !== undefined) {
+        updateFields.addressLine2 = update.personalization.addressLine2;
+      }
+      if (update.personalization.city !== undefined) {
+        updateFields.city = update.personalization.city;
+      }
+      if (update.personalization.state !== undefined) {
+        updateFields.state = update.personalization.state;
+      }
+      if (update.personalization.zipCode !== undefined) {
+        updateFields.zipCode = update.personalization.zipCode;
+      }
+      if (update.personalization.country !== undefined) {
+        updateFields.country = update.personalization.country;
       }
 
       if (!user) {
