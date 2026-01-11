@@ -25,7 +25,7 @@ const path = require("node:path");
 // Configuration
 const KB = 1024;
 const MAIN_BUDGET = 120 * KB; // 120kb gzipped
-const TOTAL_BUDGET = 240 * KB; // 240kb gzipped (increased for admin personalization features)
+const TOTAL_BUDGET = 242 * KB; // 242kb gzipped (increased for admin address management features)
 
 // Paths (assumes invocation from client/ working directory)
 const dist = path.join(process.cwd(), "dist");
