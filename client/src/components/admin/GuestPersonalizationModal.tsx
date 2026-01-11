@@ -8,6 +8,7 @@ interface GuestPersonalizationModalProps {
   onSave: (
     userId: string,
     personalization: {
+      email?: string;
       relationshipToBride?: string;
       relationshipToGroom?: string;
       customWelcomeMessage?: string;
@@ -16,6 +17,12 @@ interface GuestPersonalizationModalProps {
       personalPhoto?: string;
       specialInstructions?: string;
       dietaryRestrictions?: string;
+      streetAddress?: string;
+      addressLine2?: string;
+      city?: string;
+      state?: string;
+      zipCode?: string;
+      country?: string;
     }
   ) => Promise<void>;
   isSaving: boolean;
@@ -31,6 +38,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
   isSaving,
 }) => {
   const [formData, setFormData] = useState({
+    email: user.email || '',
     relationshipToBride: user.relationshipToBride || '',
     relationshipToGroom: user.relationshipToGroom || '',
     customWelcomeMessage: user.customWelcomeMessage || '',
@@ -40,9 +48,16 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     personalPhoto: user.personalPhoto || '',
     specialInstructions: user.specialInstructions || '',
     dietaryRestrictions: user.dietaryRestrictions || '',
+    streetAddress: (user as any).streetAddress || '',
+    addressLine2: (user as any).addressLine2 || '',
+    city: (user as any).city || '',
+    state: (user as any).state || '',
+    zipCode: (user as any).zipCode || '',
+    country: (user as any).country || '',
   });
 
   const [charCount, setCharCount] = useState({
+    email: user.email?.length || 0,
     relationshipToBride: user.relationshipToBride?.length || 0,
     relationshipToGroom: user.relationshipToGroom?.length || 0,
     customWelcomeMessage: user.customWelcomeMessage?.length || 0,
@@ -50,11 +65,18 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     personalPhoto: user.personalPhoto?.length || 0,
     specialInstructions: user.specialInstructions?.length || 0,
     dietaryRestrictions: user.dietaryRestrictions?.length || 0,
+    streetAddress: (user as any).streetAddress?.length || 0,
+    addressLine2: (user as any).addressLine2?.length || 0,
+    city: (user as any).city?.length || 0,
+    state: (user as any).state?.length || 0,
+    zipCode: (user as any).zipCode?.length || 0,
+    country: (user as any).country?.length || 0,
   });
 
   useEffect(() => {
     // Update character counts
     setCharCount({
+      email: formData.email.length,
       relationshipToBride: formData.relationshipToBride.length,
       relationshipToGroom: formData.relationshipToGroom.length,
       customWelcomeMessage: formData.customWelcomeMessage.length,
@@ -62,6 +84,12 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       personalPhoto: formData.personalPhoto.length,
       specialInstructions: formData.specialInstructions.length,
       dietaryRestrictions: formData.dietaryRestrictions.length,
+      streetAddress: formData.streetAddress.length,
+      addressLine2: formData.addressLine2.length,
+      city: formData.city.length,
+      state: formData.state.length,
+      zipCode: formData.zipCode.length,
+      country: formData.country.length,
     });
   }, [formData]);
 
@@ -70,6 +98,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
 
     // Build personalization object with only defined values
     const personalization: {
+      email?: string;
       relationshipToBride?: string;
       relationshipToGroom?: string;
       customWelcomeMessage?: string;
@@ -79,10 +108,19 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       personalPhoto?: string;
       specialInstructions?: string;
       dietaryRestrictions?: string;
+      streetAddress?: string;
+      addressLine2?: string;
+      city?: string;
+      state?: string;
+      zipCode?: string;
+      country?: string;
     } = {
       plusOneAllowed: formData.plusOneAllowed,
     };
 
+    if (formData.email) {
+      personalization.email = formData.email;
+    }
     if (formData.relationshipToBride) {
       personalization.relationshipToBride = formData.relationshipToBride;
     }
@@ -106,6 +144,24 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     }
     if (formData.dietaryRestrictions) {
       personalization.dietaryRestrictions = formData.dietaryRestrictions;
+    }
+    if (formData.streetAddress) {
+      personalization.streetAddress = formData.streetAddress;
+    }
+    if (formData.addressLine2) {
+      personalization.addressLine2 = formData.addressLine2;
+    }
+    if (formData.city) {
+      personalization.city = formData.city;
+    }
+    if (formData.state) {
+      personalization.state = formData.state;
+    }
+    if (formData.zipCode) {
+      personalization.zipCode = formData.zipCode;
+    }
+    if (formData.country) {
+      personalization.country = formData.country;
     }
 
     await onSave(user._id, personalization);
@@ -165,6 +221,157 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="personalization-form">
+          <div className="form-section">
+            <h3>Contact Information</h3>
+
+            <div className="form-group">
+              <label htmlFor="email">
+                Email Address
+                <span className="char-count">{charCount.email}/200</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={formData.email}
+                onChange={e => handleInputChange('email', e.target.value)}
+                maxLength={200}
+                placeholder="guest@example.com"
+                className="form-input"
+                required
+              />
+              <small className="form-hint">
+                Primary email address for QR code login and notifications
+              </small>
+            </div>
+          </div>
+
+          <div className="form-section">
+            <h3>Mailing Address</h3>
+
+            <div className="form-group">
+              <label htmlFor="streetAddress">
+                Street Address
+                <span className="char-count">
+                  {charCount.streetAddress}/200
+                </span>
+              </label>
+              <input
+                type="text"
+                id="streetAddress"
+                value={formData.streetAddress}
+                onChange={e =>
+                  handleInputChange('streetAddress', e.target.value)
+                }
+                maxLength={200}
+                placeholder="123 Main St"
+                className="form-input"
+              />
+              <small className="form-hint">
+                Physical mailing address for sending invitations
+              </small>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="addressLine2">
+                Address Line 2 (Optional)
+                <span className="char-count">{charCount.addressLine2}/100</span>
+              </label>
+              <input
+                type="text"
+                id="addressLine2"
+                value={formData.addressLine2}
+                onChange={e =>
+                  handleInputChange('addressLine2', e.target.value)
+                }
+                maxLength={100}
+                placeholder="Apt, Suite, Unit"
+                className="form-input"
+              />
+            </div>
+
+            <div
+              className="form-row"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '2fr 1fr',
+                gap: '1rem',
+              }}
+            >
+              <div className="form-group">
+                <label htmlFor="city">
+                  City
+                  <span className="char-count">{charCount.city}/100</span>
+                </label>
+                <input
+                  type="text"
+                  id="city"
+                  value={formData.city}
+                  onChange={e => handleInputChange('city', e.target.value)}
+                  maxLength={100}
+                  placeholder="City"
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="state">
+                  State/Province
+                  <span className="char-count">{charCount.state}/50</span>
+                </label>
+                <input
+                  type="text"
+                  id="state"
+                  value={formData.state}
+                  onChange={e => handleInputChange('state', e.target.value)}
+                  maxLength={50}
+                  placeholder="State"
+                  className="form-input"
+                />
+              </div>
+            </div>
+
+            <div
+              className="form-row"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '1rem',
+              }}
+            >
+              <div className="form-group">
+                <label htmlFor="zipCode">
+                  Zip/Postal Code
+                  <span className="char-count">{charCount.zipCode}/20</span>
+                </label>
+                <input
+                  type="text"
+                  id="zipCode"
+                  value={formData.zipCode}
+                  onChange={e => handleInputChange('zipCode', e.target.value)}
+                  maxLength={20}
+                  placeholder="Zip Code"
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="country">
+                  Country
+                  <span className="char-count">{charCount.country}/100</span>
+                </label>
+                <input
+                  type="text"
+                  id="country"
+                  value={formData.country}
+                  onChange={e => handleInputChange('country', e.target.value)}
+                  maxLength={100}
+                  placeholder="Country"
+                  className="form-input"
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="form-section">
             <h3>Relationships</h3>
 
