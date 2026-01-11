@@ -106,9 +106,15 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
 
   const handleDownloadQR = async (qrToken: string, guestName: string) => {
     try {
-      // Construct API endpoint URL - use window.location for the base
-      const baseUrl = window.location.origin;
-      const qrUrl = `${baseUrl}/api/qr-code/${qrToken}`;
+      // Construct API endpoint URL
+      // In production, derive base URL from VITE_GRAPHQL_ENDPOINT
+      // In development, use relative URL (Vite proxy handles it)
+      const graphqlEndpoint =
+        import.meta.env.VITE_GRAPHQL_ENDPOINT || '/graphql';
+      const apiBaseUrl = graphqlEndpoint.startsWith('http')
+        ? graphqlEndpoint.replace(/\/graphql$/, '')
+        : window.location.origin;
+      const qrUrl = `${apiBaseUrl}/api/qr-code/${qrToken}`;
 
       console.log('[QR Download] Fetching from:', qrUrl);
 
@@ -754,6 +760,8 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
 
       {/* Add New Guest Modal */}
       {showAddModal && (
+        // Modal overlay: intentionally not focusable (no role/tabIndex)
+        // Keyboard users can close via Escape key; modal content has proper focus management
         <div
           className="modal-overlay"
           onClick={() => setShowAddModal(false)}

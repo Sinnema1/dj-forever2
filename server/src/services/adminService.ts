@@ -42,7 +42,10 @@ import User from "../models/User.js";
 import RSVP from "../models/RSVP.js";
 import { ValidationError } from "../utils/errors.js";
 import { logger } from "../utils/logger.js";
-import { generateQRCodeForUser } from "../utils/qrCodeGenerator.js";
+import {
+  generateQRCodeForUser,
+  generateQRCodesForUsers,
+} from "../utils/qrCodeGenerator.js";
 
 import type {
   AdminStats,
@@ -791,7 +794,7 @@ export async function adminRegenerateQRCodes(): Promise<{
 
     const environment = isProduction ? "PRODUCTION" : "DEVELOPMENT";
     const frontendUrl =
-      process.env.FRONTEND_URL ||
+      process.env.CONFIG__FRONTEND_URL ||
       (isProduction
         ? "https://dj-forever2.onrender.com"
         : "http://localhost:3002");
@@ -802,11 +805,6 @@ export async function adminRegenerateQRCodes(): Promise<{
       frontendUrl,
       timestamp: new Date().toISOString(),
     });
-
-    // Import the bulk generation function
-    const { generateQRCodesForUsers } = await import(
-      "../utils/qrCodeGenerator.js"
-    );
 
     // Fetch all users with QR tokens
     const users = await (User.find as any)(
