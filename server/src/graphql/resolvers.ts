@@ -56,6 +56,7 @@ import {
   adminCreateUser,
   adminDeleteUser,
   bulkUpdatePersonalization,
+  adminRegenerateQRCodes,
 } from "../services/adminService.js";
 import {
   sendRSVPReminder,
@@ -514,6 +515,23 @@ export const resolvers = {
         );
       }
     },
+
+    adminRegenerateQRCodes: async (
+      _: unknown,
+      __: unknown,
+      context: GraphQLContext
+    ) => {
+      requireAdmin(context);
+      try {
+        return await adminRegenerateQRCodes();
+      } catch (error: any) {
+        console.error("Error in adminRegenerateQRCodes resolver:", error);
+        throw new GraphQLError(
+          error?.message || "Failed to regenerate QR codes"
+        );
+      }
+    },
+
     adminSendReminderEmail: async (
       _: unknown,
       args: { userId: string },

@@ -121,6 +121,34 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     }));
   };
 
+  // Handle keyboard events at document level to prevent space bar from closing modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Close on Escape key
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      // Prevent space bar from closing modal when typing in input/textarea
+      const target = e.target as HTMLElement;
+      const isInputElement =
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable;
+
+      if (e.key === ' ' && !isInputElement) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>

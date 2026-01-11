@@ -521,16 +521,18 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
         <div
           className="results-modal-overlay"
           onClick={() => setShowResults(false)}
-          role="button"
-          tabIndex={0}
           onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === 'Escape') {
               e.preventDefault();
               setShowResults(false);
             }
           }}
         >
-          <div className="results-modal" onClick={e => e.stopPropagation()}>
+          <div
+            className="results-modal"
+            onClick={e => e.stopPropagation()}
+            onKeyDown={e => e.stopPropagation()}
+          >
             <div className="modal-header">
               <h3>Email Send Results</h3>
               <button
@@ -591,16 +593,18 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
         <div
           className="results-modal-overlay"
           onClick={() => setShowPreview(false)}
-          role="button"
-          tabIndex={0}
           onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === 'Escape') {
               e.preventDefault();
               setShowPreview(false);
             }
           }}
         >
-          <div className="preview-modal" onClick={e => e.stopPropagation()}>
+          <div
+            className="preview-modal"
+            onClick={e => e.stopPropagation()}
+            onKeyDown={e => e.stopPropagation()}
+          >
             <div className="modal-header">
               <h3>Email Preview</h3>
               <button
@@ -647,16 +651,18 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
         <div
           className="results-modal-overlay"
           onClick={() => setShowHistory(false)}
-          role="button"
-          tabIndex={0}
           onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === 'Escape') {
               e.preventDefault();
               setShowHistory(false);
             }
           }}
         >
-          <div className="history-modal" onClick={e => e.stopPropagation()}>
+          <div
+            className="history-modal"
+            onClick={e => e.stopPropagation()}
+            onKeyDown={e => e.stopPropagation()}
+          >
             <div className="modal-header">
               <h3>Email Send History</h3>
               <button
