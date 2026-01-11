@@ -16,6 +16,12 @@ interface CSVRow {
   specialInstructions?: string;
   dietaryRestrictions?: string;
   personalPhoto?: string;
+  streetAddress?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
 }
 
 interface ValidationError {
@@ -55,9 +61,9 @@ const BulkPersonalization: React.FC = () => {
 
   // Download CSV template
   const downloadTemplate = () => {
-    const template = `fullName,email,relationshipToBride,relationshipToGroom,guestGroup,plusOneAllowed,plusOneName,customWelcomeMessage,specialInstructions,dietaryRestrictions,personalPhoto
-"John Doe","john@example.com","College Friend","","friends","true","Jane Doe","We're so excited to celebrate with you!","Hotel block at Marriott downtown","Vegetarian","https://example.com/photo.jpg"
-"Jane Smith","jane@example.com","","Sister","brides_family","false","","","Shuttle service available from hotel","Gluten-free",""`;
+    const template = `fullName,email,relationshipToBride,relationshipToGroom,guestGroup,plusOneAllowed,plusOneName,customWelcomeMessage,specialInstructions,dietaryRestrictions,personalPhoto,streetAddress,addressLine2,city,state,zipCode,country
+"John Doe","john@example.com","College Friend","","friends","true","Jane Doe","We're so excited to celebrate with you!","Hotel block at Marriott downtown","Vegetarian","https://example.com/photo.jpg","123 Main St","Apt 4B","New York","NY","10001","USA"
+"Jane Smith","jane@example.com","","Sister","brides_family","false","","","Shuttle service available from hotel","Gluten-free","","456 Oak Ave","","Los Angeles","CA","90001","USA"`;
 
     const blob = new Blob([template], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -190,6 +196,12 @@ const BulkPersonalization: React.FC = () => {
         specialInstructions: row.specialInstructions || undefined,
         dietaryRestrictions: row.dietaryRestrictions || undefined,
         personalPhoto: row.personalPhoto || undefined,
+        streetAddress: row.streetAddress || undefined,
+        addressLine2: row.addressLine2 || undefined,
+        city: row.city || undefined,
+        state: row.state || undefined,
+        zipCode: row.zipCode || undefined,
+        country: row.country || undefined,
       });
     }
 
@@ -247,6 +259,14 @@ const BulkPersonalization: React.FC = () => {
         if (row.plusOneName) personalization.plusOneName = row.plusOneName;
         if (row.personalPhoto)
           personalization.personalPhoto = row.personalPhoto;
+        // Address fields
+        if (row.streetAddress)
+          personalization.streetAddress = row.streetAddress;
+        if (row.addressLine2) personalization.addressLine2 = row.addressLine2;
+        if (row.city) personalization.city = row.city;
+        if (row.state) personalization.state = row.state;
+        if (row.zipCode) personalization.zipCode = row.zipCode;
+        if (row.country) personalization.country = row.country;
 
         // Only set plusOneAllowed if explicitly provided in CSV
         if (row.plusOneAllowed !== undefined && row.plusOneAllowed !== '') {

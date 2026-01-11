@@ -204,7 +204,9 @@ small {
   box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.07);
 }
 
-/* Non-hero pages: force readable navbar styling immediately */
+/* Standalone pages (Registry, RSVP, Admin): ensure readable navbar styling
+   immediately on load without waiting for scroll events. These rules provide
+   high contrast dark text against the white navbar background. */
 .standalone-page .navbar {
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(15px);
@@ -212,14 +214,11 @@ small {
   box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.07);
 }
 
+.standalone-page .navbar-logo,
 .standalone-page .navbar a {
-  color: var(--color-dusty-blue-dark);
-  text-shadow: none;
-}
-
-.standalone-page .navbar-logo {
-  color: var(--color-text);
-  text-shadow: none;
+  color: var(--color-text) !important;
+  text-shadow: none !important;
+  font-weight: 600 !important;
 }
 
 .navbar-logo {
@@ -298,8 +297,39 @@ small {
   transition: width 0.3s ease;
 }
 .navbar-scrolled a {
-  color: var(--color-dusty-blue-dark); /* WCAG AA compliant */
+  color: var(--color-text);
   text-shadow: none;
+  font-weight: 600;
+}
+
+/* Support explicit navbar-standalone class for top-level nav element (set by Navbar component) */
+.navbar.navbar-standalone .navbar-logo,
+.navbar.navbar-standalone a {
+  color: var(--color-text) !important;
+}
+
+/* Target RSVP nav-cta, user greeting and auth buttons specifically on standalone pages */
+.navbar.navbar-standalone a.nav-cta,
+.navbar.navbar-standalone a.active.nav-cta,
+.navbar.navbar-standalone .desktop-user-info,
+.navbar.navbar-standalone .desktop-user-info .user-greeting,
+.navbar.navbar-standalone .desktop-user-info .admin-badge,
+.navbar.navbar-standalone .btn,
+.navbar.navbar-standalone .btn-outline {
+  color: var(--color-text) !important;
+}
+
+/* Ensure buttons remain visually distinct while keeping accessible text color */
+.navbar.navbar-standalone .btn-outline {
+  border-color: rgba(0, 0, 0, 0.08);
+  background: transparent !important;
+}
+
+/* If RSVP uses a highlighted background (nav-cta), keep background but ensure text contrast */
+.navbar.navbar-standalone a.nav-cta {
+  background: rgba(180, 148, 108, 0.06); /* subtle gold tint */
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: 6px;
 }
 .navbar a.active,
 .navbar a:hover,

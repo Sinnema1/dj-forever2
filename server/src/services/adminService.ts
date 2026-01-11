@@ -38,7 +38,7 @@
  * - ../utils/errors: Custom error classes for proper error handling
  */
 
-import User from "../models/User.js";
+import UserModel, { IUser } from "../models/User.js";
 import RSVP from "../models/RSVP.js";
 import { ValidationError } from "../utils/errors.js";
 import { logger } from "../utils/logger.js";
@@ -46,6 +46,10 @@ import {
   generateQRCodeForUser,
   generateQRCodesForUsers,
 } from "../utils/qrCodeGenerator.js";
+import type { Model } from "mongoose";
+
+// Type assertion to resolve union type from mongoose.models pattern
+const User = UserModel as Model<IUser>;
 
 import type {
   AdminStats,
@@ -205,6 +209,12 @@ export async function getAllUsersWithRSVPs(): Promise<AdminUser[]> {
       personalPhoto: user.personalPhoto,
       specialInstructions: user.specialInstructions,
       dietaryRestrictions: user.dietaryRestrictions,
+      streetAddress: user.streetAddress,
+      addressLine2: user.addressLine2,
+      city: user.city,
+      state: user.state,
+      zipCode: user.zipCode,
+      country: user.country,
     }));
 
     logger.info(
@@ -242,6 +252,12 @@ export async function exportGuestListCSV(): Promise<string> {
       "Meal Preferences",
       "Dietary Restrictions",
       "Additional Notes",
+      "Street Address",
+      "Address Line 2",
+      "City",
+      "State",
+      "Zip Code",
+      "Country",
       "QR Token",
       "Invited Date",
     ].join(",");
@@ -277,6 +293,12 @@ export async function exportGuestListCSV(): Promise<string> {
         `"${mealPrefs}"`,
         `"${dietaryRestrictions}"`,
         `"${rsvp?.additionalNotes || ""}"`,
+        `"${user.streetAddress || ""}"`,
+        `"${user.addressLine2 || ""}"`,
+        `"${user.city || ""}"`,
+        `"${user.state || ""}"`,
+        `"${user.zipCode || ""}"`,
+        `"${user.country || ""}"`,
         user.qrToken,
         user.createdAt || "",
       ].join(",");
@@ -376,7 +398,7 @@ export async function adminUpdateUser(
   try {
     logger.info(`Admin updating user ${userId}`, { service: "AdminService" });
 
-    const user = await (User.findById as any)(userId).populate("rsvp");
+    const user = await User.findById(userId).populate("rsvp");
     if (!user) {
       throw new ValidationError("User not found");
     }
@@ -384,6 +406,15 @@ export async function adminUpdateUser(
     if (input.fullName !== undefined) user.fullName = input.fullName;
     if (input.email !== undefined) user.email = input.email;
     if (input.isInvited !== undefined) user.isInvited = input.isInvited;
+    // Address fields
+    if (input.streetAddress !== undefined)
+      user.streetAddress = input.streetAddress;
+    if (input.addressLine2 !== undefined)
+      user.addressLine2 = input.addressLine2;
+    if (input.city !== undefined) user.city = input.city;
+    if (input.state !== undefined) user.state = input.state;
+    if (input.zipCode !== undefined) user.zipCode = input.zipCode;
+    if (input.country !== undefined) user.country = input.country;
 
     await user.save();
 
@@ -398,6 +429,16 @@ export async function adminUpdateUser(
       rsvp: user.rsvp,
       createdAt: user.createdAt?.toISOString(),
       lastUpdated: user.updatedAt?.toISOString(),
+      ...(user.streetAddress !== undefined && {
+        streetAddress: user.streetAddress,
+      }),
+      ...(user.addressLine2 !== undefined && {
+        addressLine2: user.addressLine2,
+      }),
+      ...(user.city !== undefined && { city: user.city }),
+      ...(user.state !== undefined && { state: user.state }),
+      ...(user.zipCode !== undefined && { zipCode: user.zipCode }),
+      ...(user.country !== undefined && { country: user.country }),
     };
 
     logger.info(`Admin successfully updated user ${userId}`, {
@@ -407,7 +448,14 @@ export async function adminUpdateUser(
   } catch (error) {
     logger.error(`Failed to update user ${userId}`, {
       service: "AdminService",
-      error,
+      error:
+        error instanceof Error
+          ? {
+              message: error.message,
+              stack: error.stack,
+              name: error.name,
+            }
+          : error,
     });
     if (error instanceof ValidationError) throw error;
     throw new Error("Failed to update user");
@@ -425,6 +473,12 @@ export async function adminCreateUser(input: {
   fullName: string;
   email: string;
   isInvited: boolean;
+  streetAddress?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
 }): Promise<AdminUser> {
   try {
     logger.info(`Admin creating new user: ${input.email}`, {
@@ -451,6 +505,16 @@ export async function adminCreateUser(input: {
       isAdmin: false,
       hasRSVPed: false,
       qrToken,
+      ...(input.streetAddress !== undefined && {
+        streetAddress: input.streetAddress,
+      }),
+      ...(input.addressLine2 !== undefined && {
+        addressLine2: input.addressLine2,
+      }),
+      ...(input.city !== undefined && { city: input.city }),
+      ...(input.state !== undefined && { state: input.state }),
+      ...(input.zipCode !== undefined && { zipCode: input.zipCode }),
+      ...(input.country !== undefined && { country: input.country }),
     });
 
     await user.save();
@@ -487,15 +551,30 @@ export async function adminCreateUser(input: {
       rsvp: undefined,
       createdAt: user.createdAt?.toISOString(),
       lastUpdated: user.updatedAt?.toISOString(),
+      ...(user.streetAddress !== undefined && {
+        streetAddress: user.streetAddress,
+      }),
+      ...(user.addressLine2 !== undefined && {
+        addressLine2: user.addressLine2,
+      }),
+      ...(user.city !== undefined && { city: user.city }),
+      ...(user.state !== undefined && { state: user.state }),
+      ...(user.zipCode !== undefined && { zipCode: user.zipCode }),
+      ...(user.country !== undefined && { country: user.country }),
     };
 
     logger.info(`Admin successfully created user ${user._id}`, {
       service: "AdminService",
     });
     return adminUser;
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to create user", { service: "AdminService", error });
     if (error instanceof ValidationError) throw error;
+    // Handle Mongoose validation errors
+    if (error.name === "ValidationError" && error.errors) {
+      const firstError = Object.values(error.errors)[0] as any;
+      throw new ValidationError(firstError.message);
+    }
     throw new Error("Failed to create user");
   }
 }
@@ -601,6 +680,12 @@ export async function bulkUpdatePersonalization(
       personalPhoto?: string;
       specialInstructions?: string;
       dietaryRestrictions?: string;
+      streetAddress?: string;
+      addressLine2?: string;
+      city?: string;
+      state?: string;
+      zipCode?: string;
+      country?: string;
     };
   }>
 ): Promise<{
@@ -663,6 +748,25 @@ export async function bulkUpdatePersonalization(
       if (update.personalization.dietaryRestrictions !== undefined) {
         updateFields.dietaryRestrictions =
           update.personalization.dietaryRestrictions;
+      }
+      // Address fields
+      if (update.personalization.streetAddress !== undefined) {
+        updateFields.streetAddress = update.personalization.streetAddress;
+      }
+      if (update.personalization.addressLine2 !== undefined) {
+        updateFields.addressLine2 = update.personalization.addressLine2;
+      }
+      if (update.personalization.city !== undefined) {
+        updateFields.city = update.personalization.city;
+      }
+      if (update.personalization.state !== undefined) {
+        updateFields.state = update.personalization.state;
+      }
+      if (update.personalization.zipCode !== undefined) {
+        updateFields.zipCode = update.personalization.zipCode;
+      }
+      if (update.personalization.country !== undefined) {
+        updateFields.country = update.personalization.country;
       }
 
       if (!user) {

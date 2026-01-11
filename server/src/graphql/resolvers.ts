@@ -357,12 +357,12 @@ export const resolvers = {
     },
     adminUpdateUser: async (
       _: unknown,
-      args: { userId: string; updates: AdminUserUpdateInput },
+      args: { userId: string; input: AdminUserUpdateInput },
       context: GraphQLContext
     ) => {
       requireAdmin(context);
       try {
-        return await adminUpdateUser(args.userId, args.updates);
+        return await adminUpdateUser(args.userId, args.input);
       } catch (error: any) {
         console.error("Error in adminUpdateUser resolver:", error);
         throw new GraphQLError(error?.message || "Failed to update user");
@@ -382,6 +382,12 @@ export const resolvers = {
           personalPhoto?: string;
           specialInstructions?: string;
           dietaryRestrictions?: string;
+          streetAddress?: string;
+          addressLine2?: string;
+          city?: string;
+          state?: string;
+          zipCode?: string;
+          country?: string;
         };
       },
       context: GraphQLContext
@@ -416,6 +422,25 @@ export const resolvers = {
         }
         if (args.input.dietaryRestrictions !== undefined) {
           updateFields.dietaryRestrictions = args.input.dietaryRestrictions;
+        }
+        // Address fields
+        if (args.input.streetAddress !== undefined) {
+          updateFields.streetAddress = args.input.streetAddress;
+        }
+        if (args.input.addressLine2 !== undefined) {
+          updateFields.addressLine2 = args.input.addressLine2;
+        }
+        if (args.input.city !== undefined) {
+          updateFields.city = args.input.city;
+        }
+        if (args.input.state !== undefined) {
+          updateFields.state = args.input.state;
+        }
+        if (args.input.zipCode !== undefined) {
+          updateFields.zipCode = args.input.zipCode;
+        }
+        if (args.input.country !== undefined) {
+          updateFields.country = args.input.country;
         }
 
         const user = await (User.findByIdAndUpdate as any)(

@@ -248,6 +248,12 @@ export interface AdminUser {
   personalPhoto?: string;
   specialInstructions?: string;
   dietaryRestrictions?: string;
+  streetAddress?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
 }
 
 /**
@@ -275,4 +281,10 @@ export interface AdminUserUpdateInput {
   fullName?: string;
   email?: string;
   isInvited?: boolean;
+  streetAddress?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
 }
