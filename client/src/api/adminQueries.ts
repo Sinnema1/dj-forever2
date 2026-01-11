@@ -97,6 +97,12 @@ export const ADMIN_UPDATE_USER = gql`
       isInvited
       isAdmin
       hasRSVPed
+      streetAddress
+      addressLine2
+      city
+      state
+      zipCode
+      country
     }
   }
 `;
@@ -119,6 +125,12 @@ export const UPDATE_USER_PERSONALIZATION = gql`
       personalPhoto
       specialInstructions
       dietaryRestrictions
+      streetAddress
+      addressLine2
+      city
+      state
+      zipCode
+      country
       householdMembers {
         firstName
         lastName
@@ -148,6 +160,12 @@ export const ADMIN_CREATE_USER = gql`
       hasRSVPed
       qrToken
       createdAt
+      streetAddress
+      addressLine2
+      city
+      state
+      zipCode
+      country
     }
   }
 `;
