@@ -6,6 +6,7 @@ import {
   ADMIN_DELETE_RSVP,
   ADMIN_CREATE_USER,
   ADMIN_DELETE_USER,
+  ADMIN_REGENERATE_QR_CODES,
 } from '../../api/adminQueries';
 import './AdminRSVPManager.css';
 
@@ -74,6 +75,7 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
   const [deleteRSVP] = useMutation(ADMIN_DELETE_RSVP);
   const [createUser] = useMutation(ADMIN_CREATE_USER);
   const [deleteUser] = useMutation(ADMIN_DELETE_USER);
+  const [regenerateQRCodes] = useMutation(ADMIN_REGENERATE_QR_CODES);
 
   const filteredGuests = guests.filter(guest => {
     // Search filter
@@ -101,6 +103,62 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
         return true;
     }
   });
+
+  const handleDownloadQR = async (qrToken: string, guestName: string) => {
+    try {
+      // Construct API endpoint URL - use window.location for the base
+      const baseUrl = window.location.origin;
+      const qrUrl = `${baseUrl}/api/qr-code/${qrToken}`;
+
+      console.log('[QR Download] Fetching from:', qrUrl);
+
+      // Fetch the QR code with credentials
+      const response = await fetch(qrUrl, {
+        credentials: 'include',
+      });
+
+      console.log('[QR Download] Response status:', response.status);
+      console.log(
+        '[QR Download] Content-Type:',
+        response.headers.get('Content-Type')
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[QR Download] Error response:', errorText);
+        throw new Error(`Failed to download QR code: ${response.statusText}`);
+      }
+
+      // Verify we got an image
+      const contentType = response.headers.get('Content-Type');
+      if (!contentType?.includes('image')) {
+        const text = await response.text();
+        console.error('[QR Download] Not an image, got:', text);
+        throw new Error('Server did not return an image file');
+      }
+
+      // Get the blob and create download
+      const blob = await response.blob();
+      console.log('[QR Download] Blob size:', blob.size, 'bytes');
+      console.log('[QR Download] Blob type:', blob.type);
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${guestName.replace(/\s+/g, '_')}_QR.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      console.log('[QR Download] Download triggered successfully');
+    } catch (error: any) {
+      console.error('Failed to download QR code:', error);
+      alert(
+        `Failed to download QR code: ${error.message || 'Please try again.'}`
+      );
+    }
+  };
 
   const handleEditGuest = (guest: AdminUser) => {
     setEditingGuest(guest._id);
@@ -290,6 +348,77 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
     }
   };
 
+  const handleRegenerateQRCodes = async () => {
+    // Detect production environment
+    const isProduction =
+      window.location.hostname.includes('render.com') ||
+      window.location.hostname.includes('dj-forever2');
+
+    // Production warning - extra cautious
+    if (isProduction) {
+      if (
+        !confirm(
+          '⚠️ PRODUCTION ENVIRONMENT WARNING ⚠️\n\n' +
+            'You are about to regenerate ALL QR codes in PRODUCTION.\n\n' +
+            '🚨 CRITICAL: If guests have already received save-the-dates with QR codes, ' +
+            'regenerating will BREAK their ability to log in until they receive new QR codes.\n\n' +
+            'Only proceed if:\n' +
+            '✓ You need to update the production URL\n' +
+            '✓ Guests have NOT received their save-the-dates yet\n' +
+            '✓ You are prepared to send new QR codes to all guests\n\n' +
+            'Are you ABSOLUTELY SURE you want to continue?'
+        )
+      ) {
+        return;
+      }
+
+      // Double confirmation for production
+      if (
+        !confirm(
+          '⚠️ FINAL CONFIRMATION ⚠️\n\n' +
+            'This is your last chance to cancel.\n\n' +
+            'Regenerating QR codes in production will update all QR code files.\n\n' +
+            'Click OK to proceed or Cancel to abort.'
+        )
+      ) {
+        return;
+      }
+    } else {
+      // Development warning - less severe
+      if (
+        !confirm(
+          'Regenerate QR codes for all guests?\n\n' +
+            'This will update all QR code PNG files with the current FRONTEND_URL.\n\n' +
+            'Note: QR tokens remain unchanged, only the PNG files are regenerated.'
+        )
+      ) {
+        return;
+      }
+    }
+
+    try {
+      setIsSaving(true);
+      const result = await regenerateQRCodes();
+      const data = result.data?.adminRegenerateQRCodes;
+
+      if (data) {
+        const message = `QR Code Regeneration Complete:\n✅ Success: ${data.success}\n❌ Failed: ${data.failed}${
+          data.errors.length > 0 ? '\n\nErrors:\n' + data.errors.join('\n') : ''
+        }`;
+        alert(message);
+      } else {
+        alert('QR codes regenerated successfully!');
+      }
+    } catch (error: any) {
+      console.error('Failed to regenerate QR codes:', error);
+      alert(
+        `Failed to regenerate QR codes: ${error.message || 'Please try again.'}`
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="admin-rsvp-manager">
       <div className="manager-header">
@@ -301,6 +430,14 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
             disabled={isSaving}
           >
             + Add New Guest
+          </button>
+          <button
+            onClick={handleRegenerateQRCodes}
+            className="regenerate-qr-button"
+            disabled={isSaving}
+            title="Regenerate all QR code PNG files"
+          >
+            🔄 Regenerate QR Codes
           </button>
           <input
             type="text"
@@ -347,6 +484,17 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
                 </div>
               </div>
               <div className="guest-actions">
+                <button
+                  onClick={() =>
+                    handleDownloadQR(guest.qrToken, guest.fullName)
+                  }
+                  className="download-qr-button"
+                  disabled={isSaving || !guest.qrToken}
+                  title="Download QR Code"
+                  aria-label={`Download QR code for ${guest.fullName}`}
+                >
+                  📥 QR Code
+                </button>
                 <button
                   onClick={() =>
                     editingGuest === guest._id
@@ -609,16 +757,18 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
         <div
           className="modal-overlay"
           onClick={() => setShowAddModal(false)}
-          role="button"
-          tabIndex={0}
           onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === 'Escape') {
               e.preventDefault();
               setShowAddModal(false);
             }
           }}
         >
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div
+            className="modal-content"
+            onClick={e => e.stopPropagation()}
+            onKeyDown={e => e.stopPropagation()}
+          >
             <div className="modal-header">
               <h3>Add New Guest</h3>
               <button

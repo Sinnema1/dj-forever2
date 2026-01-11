@@ -20,18 +20,44 @@ This is a **QR-code-only authentication** wedding website with a client-server m
 
 ### Database Management
 
-```bash
-# Seed production data
-cd server && npm run seed-prod
+⚠️ **CRITICAL: Production Database Safety**
 
-# Seed test data
+**NEVER modify production database (`djforever2`) from local development environment.**
+
+Production database operations require explicit approval and safety controls:
+
+- ✅ **Allowed**: Read-only queries for debugging/verification
+- ❌ **Prohibited**: Seeding, cleaning, bulk updates, deletions without explicit controls
+- 🔒 **Required**: Backup verification + rollback plan before any prod changes
+- 📋 **Process**: All prod database changes must be documented and reviewed
+
+**Safe Development Practices:**
+
+```bash
+# ✅ SAFE: Development database (local changes only)
+MONGODB_DB_NAME=djforever2_dev npm run seed
+
+# ✅ SAFE: Test database (automated testing)
 cd server && npm run seed-test
 
-# Clean database
-cd server && npm run clean:db
+# ❌ DANGEROUS: Production seeding (requires explicit approval)
+cd server && npm run seed-prod  # DO NOT RUN without backup + approval
 
-# Generate QR codes after seeding
+# ✅ SAFE: Clean development database
+MONGODB_DB_NAME=djforever2_dev npm run clean:db
+
+# ❌ DANGEROUS: Clean production (data loss risk)
+MONGODB_DB_NAME=djforever2 npm run clean:db  # NEVER RUN
+
+# ✅ SAFE: Generate QR codes for development
 npm run generate:qrcodes
+```
+
+**Environment Variable Checks:**
+Always verify `MONGODB_DB_NAME` before running database operations:
+
+```bash
+echo $MONGODB_DB_NAME  # Should be djforever2_dev for local work
 ```
 
 ### Testing Strategy

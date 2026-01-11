@@ -42,6 +42,7 @@ import User from "../models/User.js";
 import RSVP from "../models/RSVP.js";
 import { ValidationError } from "../utils/errors.js";
 import { logger } from "../utils/logger.js";
+import { generateQRCodeForUser } from "../utils/qrCodeGenerator.js";
 
 import type {
   AdminStats,
@@ -451,6 +452,27 @@ export async function adminCreateUser(input: {
 
     await user.save();
 
+    // Auto-generate QR code PNG file for the new user
+    try {
+      await generateQRCodeForUser(
+        user._id.toString(),
+        user.fullName,
+        user.email,
+        user.qrToken
+      );
+      logger.info(`QR code auto-generated for new user ${user._id}`, {
+        service: "AdminService",
+      });
+    } catch (qrError) {
+      // Log error but don't fail the user creation
+      logger.error(
+        `Failed to generate QR code for new user ${user._id}: ${
+          qrError instanceof Error ? qrError.message : "Unknown error"
+        }`,
+        { service: "AdminService" }
+      );
+    }
+
     const adminUser: AdminUser = {
       _id: user._id.toString(),
       fullName: user.fullName,
@@ -750,4 +772,73 @@ export async function bulkUpdatePersonalization(
   );
 
   return result;
+}
+
+/**
+ * Regenerate QR codes for all users
+ * ⚠️ CAUTION: In production, only use when FRONTEND_URL changes
+ * This does NOT change QR tokens, only regenerates PNG files
+ */
+export async function adminRegenerateQRCodes(): Promise<{
+  success: number;
+  failed: number;
+  errors: string[];
+}> {
+  try {
+    const isProduction =
+      process.env.NODE_ENV === "production" ||
+      process.env.MONGODB_URI?.includes("mongodb+srv");
+
+    const environment = isProduction ? "PRODUCTION" : "DEVELOPMENT";
+    const frontendUrl =
+      process.env.FRONTEND_URL ||
+      (isProduction
+        ? "https://dj-forever2.onrender.com"
+        : "http://localhost:3002");
+
+    logger.warn(`🔄 Admin regenerating ALL QR codes in ${environment}`, {
+      service: "AdminService",
+      environment,
+      frontendUrl,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Import the bulk generation function
+    const { generateQRCodesForUsers } = await import(
+      "../utils/qrCodeGenerator.js"
+    );
+
+    // Fetch all users with QR tokens
+    const users = await (User.find as any)(
+      {},
+      "_id fullName email qrToken"
+    ).lean();
+
+    logger.info(`Found ${users.length} users for QR code regeneration`, {
+      service: "AdminService",
+    });
+
+    // Generate QR codes
+    const result = await generateQRCodesForUsers(users);
+
+    logger.warn(
+      `✅ QR code regeneration complete in ${environment}: ${result.success} success, ${result.failed} failed`,
+      {
+        service: "AdminService",
+        environment,
+        success: result.success,
+        failed: result.failed,
+      }
+    );
+
+    return result;
+  } catch (error) {
+    logger.error(
+      `Failed to regenerate QR codes: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
+      { service: "AdminService" }
+    );
+    throw new ValidationError("Failed to regenerate QR codes");
+  }
 }

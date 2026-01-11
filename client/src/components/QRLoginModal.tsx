@@ -208,8 +208,8 @@ export default function QRLoginModal(props: QRLoginModalProps) {
 
   return createPortal(
     // Overlay is an interactive backdrop intended to close the modal when
-    // clicked. We make it keyboard-accessible (role/button + tabIndex + onKeyDown)
-    // and provide a visible Close button for screen reader and keyboard users.
+    // clicked. Only close on Escape key to prevent space bar from closing
+    // while typing in input fields.
     <div
       className="modal-overlay"
       onClick={e => {
@@ -217,10 +217,8 @@ export default function QRLoginModal(props: QRLoginModalProps) {
           onClose();
         }
       }}
-      role="button"
-      tabIndex={0}
       onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === 'Escape') {
           e.preventDefault();
           onClose();
         }
