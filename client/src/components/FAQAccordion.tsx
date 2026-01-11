@@ -17,51 +17,61 @@ export interface FAQ {
 const faqs: FAQ[] = [
   {
     question: 'What is the dress code?',
-    answer: 'Semi-formal attire is recommended.',
+    answer:
+      'Semi-formal attire is recommended. The ceremony and reception are outdoors, so consider bringing a light jacket for the evening.',
   },
   {
-    question: 'Can I bring a plus one?',
-    answer: 'Please refer to your invitation for details about guests.',
+    question: 'Where is the venue?',
+    answer: (
+      <>
+        Venue at the Grove
+        <br />
+        7010 S. 27th Ave
+        <br />
+        Phoenix, AZ 85041
+        <br />
+        <a
+          href="https://www.venueatthegrove.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Visit venue website
+        </a>
+      </>
+    ),
+  },
+  {
+    question: 'Is the ceremony indoors or outdoors?',
+    answer:
+      'The ceremony and reception will be held outdoors at Venue at the Grove. An indoor space is available as a backup in case of weather.',
   },
   {
     question: 'Is there parking at the venue?',
     answer: 'Yes, free parking is available on site.',
   },
   {
+    question: 'Will there be a bar?',
+    answer: 'Yes! An open bar will be provided throughout the evening.',
+  },
+  {
+    question: 'Can I bring a plus one?',
+    answer:
+      'Please check your RSVP page for details about your party size, or feel free to reach out to Dominique or Justin directly with any questions.',
+  },
+  {
     question: 'Are children welcome?',
-    answer: 'Children are welcome unless otherwise noted on your invitation.',
+    answer:
+      'Please check your RSVP page for details about your party, or reach out to Dominique or Justin if you have questions.',
+  },
+  {
+    question: 'When is the RSVP deadline?',
+    answer: 'Please RSVP by September 8, 2026.',
   },
 ];
 
 /**
- * FAQAccordion - Collapsible Frequently Asked Questions Component
- *
- * An accessible accordion component that displays wedding-related FAQs.
- * Each question can be clicked to expand and reveal the answer. Only one
- * section can be open at a time for a clean, organized presentation.
- *
- * @features
- * - **Accessibility**: Proper ARIA attributes and keyboard navigation
- * - **Single Panel**: Only one FAQ open at a time for clarity
- * - **Smooth Animation**: CSS transitions for expand/collapse
- * - **Flexible Content**: Supports rich content in answers (React elements)
- * - **Responsive Design**: Mobile-friendly touch targets
- * - **Semantic HTML**: Uses proper button and heading structure
- *
- * @example
- * ```tsx
- * // Basic usage
- * <FAQAccordion />
- *
- * // The component renders all predefined FAQs
- * // Users can click questions to toggle answers
- * ```
- *
- * @accessibility
- * - Uses `button` elements for proper keyboard navigation
- * - Implements `aria-expanded` for screen readers
- * - Provides clear focus indicators
- * - Supports Enter and Space key activation
+ * Accordion component for wedding FAQs with keyboard navigation and ARIA support.
+ * Only one panel can be open at a time.
  */
 const FAQAccordion: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);

@@ -568,10 +568,10 @@ export default function RSVPForm() {
         }
       >
         <div className="rsvp-header">
-          <h2 id="rsvp-form-title" className="rsvp-title">
-            💌 RSVP for Our Wedding
+          <h2 id="rsvp-form-title" className="rsvp-form-title">
+            Your Response
           </h2>
-          <p id="rsvp-form-description" className="rsvp-subtitle">
+          <p id="rsvp-form-description" className="rsvp-form-subtitle">
             We can't wait to celebrate with you! Please let us know if you'll be
             joining us.
           </p>

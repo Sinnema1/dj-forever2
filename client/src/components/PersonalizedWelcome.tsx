@@ -51,9 +51,10 @@ const PersonalizedWelcome: React.FC = () => {
 
     const banners: Banner[] = [];
     const firstName = user.fullName.split(' ')[0];
+    const isHomePage = window.location.pathname === '/';
 
-    // Admin banner (highest priority)
-    if (user.isAdmin) {
+    // Admin banner (highest priority) - only show on homepage
+    if (user.isAdmin && isHomePage) {
       const bannerId = 'admin-access';
       if (!isBannerDismissed(bannerId)) {
         banners.push({
@@ -69,8 +70,9 @@ const PersonalizedWelcome: React.FC = () => {
     }
 
     // RSVP deadline warning (high priority)
-    // Check if RSVP deadline is within 7 days (example: January 1, 2026)
-    const rsvpDeadline = new Date('2026-01-01');
+    // Check if RSVP deadline is within 7 days
+    // Note: This date must match the deadline in FAQAccordion.tsx
+    const rsvpDeadline = new Date('2026-09-08');
     const today = new Date();
     const daysUntilDeadline = Math.ceil(
       (rsvpDeadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
