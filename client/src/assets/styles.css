@@ -213,8 +213,9 @@ small {
 }
 
 .standalone-page .navbar a {
-  color: var(--color-dusty-blue-dark);
+  color: var(--color-text); /* Dark gray for better contrast */
   text-shadow: none;
+  font-weight: 600; /* Slightly bolder for better readability */
 }
 
 .standalone-page .navbar-logo {
@@ -298,8 +299,9 @@ small {
   transition: width 0.3s ease;
 }
 .navbar-scrolled a {
-  color: var(--color-dusty-blue-dark); /* WCAG AA compliant */
+  color: var(--color-text); /* Dark gray for better contrast */
   text-shadow: none;
+  font-weight: 600; /* Slightly bolder for better readability */
 }
 .navbar a.active,
 .navbar a:hover,
