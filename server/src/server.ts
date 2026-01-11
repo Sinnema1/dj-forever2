@@ -270,7 +270,7 @@ async function startServer() {
         console.error(`[QR Download] File not found: ${filePath}`);
         return res.status(404).json({
           error: "QR code file not found",
-          message: `QR code file for ${user.fullName} does not exist. Run 'npm run generate:qrcodes' to create it.`,
+          message: `QR code file for ${user.fullName} does not exist. Use the 'Regenerate QR Codes' button in the admin dashboard to generate it.`,
         });
       }
 
