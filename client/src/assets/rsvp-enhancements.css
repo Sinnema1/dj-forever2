@@ -274,7 +274,7 @@
   background: linear-gradient(
     135deg,
     var(--color-dusty-blue-dark),
-    var(--color-dusty-blue) var(--color-dusty-blue)
+    var(--color-dusty-blue)
   );
 }
 
