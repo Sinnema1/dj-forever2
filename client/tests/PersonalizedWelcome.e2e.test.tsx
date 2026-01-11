@@ -67,7 +67,7 @@ describe('PersonalizedWelcome - Banner System', () => {
 
     it('should show RSVP deadline warning (priority 90) over accommodation banner', () => {
       // Set date to 5 days before deadline (Jan 1, 2026)
-      vi.setSystemTime(new Date('2025-12-27'));
+      vi.setSystemTime(new Date('2026-09-03')); // 5 days before Sep 8, 2026
 
       mockUser = {
         _id: 'user-1',
@@ -196,7 +196,7 @@ describe('PersonalizedWelcome - Banner System', () => {
 
   describe('RSVP Deadline Warnings', () => {
     it('should show deadline warning within 7 days of RSVP deadline', () => {
-      vi.setSystemTime(new Date('2025-12-28')); // 4 days before Jan 1, 2026
+      vi.setSystemTime(new Date('2026-09-04')); // 4 days before Sep 8, 2026
 
       mockUser = {
         _id: 'user-7',
@@ -217,7 +217,7 @@ describe('PersonalizedWelcome - Banner System', () => {
     });
 
     it('should show "1 day" (singular) when deadline is tomorrow', () => {
-      vi.setSystemTime(new Date('2025-12-31')); // 1 day before Jan 1, 2026
+      vi.setSystemTime(new Date('2026-09-07')); // 1 day before Sep 8, 2026
 
       mockUser = {
         _id: 'user-8',
@@ -344,7 +344,7 @@ describe('PersonalizedWelcome - Banner System', () => {
     });
 
     it('should not show dismiss button for non-dismissible deadline banner', () => {
-      vi.setSystemTime(new Date('2025-12-29'));
+      vi.setSystemTime(new Date('2026-09-04')); // 4 days before Sep 8, 2026
 
       mockUser = {
         _id: 'user-13',

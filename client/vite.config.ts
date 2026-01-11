@@ -110,7 +110,11 @@ export default defineConfig({
         globIgnores: ['**/node_modules/**/*'],
         // Enable offline fallback for navigation requests
         navigateFallback: '/offline.html',
-        navigateFallbackDenylist: [/^\/(graphql|api)/, /\.[^/]+$/], // Exclude API routes and direct file requests
+        navigateFallbackDenylist: [
+          /^\/(graphql|api)/, // Exclude API routes
+          /\.[^/]+$/, // Exclude direct file requests
+          /^\/(admin|rsvp|login|registry|qr-help|auth-debug)/, // Exclude all SPA routes (React Router handles these)
+        ],
         runtimeCaching: [
           // GraphQL API - Network first with offline fallback
           {
