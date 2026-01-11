@@ -26,6 +26,47 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.add-guest-button,
+.regenerate-qr-button {
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.add-guest-button {
+  background: var(--primary-color, #2c3e50);
+  color: white;
+}
+
+.add-guest-button:hover:not(:disabled) {
+  background: #1a252f;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.3);
+}
+
+.regenerate-qr-button {
+  background: var(--color-gold-accent, rgba(180, 148, 108, 1));
+  color: white;
+}
+
+.regenerate-qr-button:hover:not(:disabled) {
+  background: rgba(160, 128, 88, 1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(180, 148, 108, 0.3);
+}
+
+.add-guest-button:disabled,
+.regenerate-qr-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .search-input,
@@ -148,6 +189,28 @@
 .edit-button:hover {
   background: var(--primary-color, #2c3e50);
   color: white;
+}
+
+.download-qr-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-gold-accent, rgba(180, 148, 108, 1));
+  background: transparent;
+  color: var(--color-gold-accent, rgba(180, 148, 108, 1));
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.download-qr-button:hover:not(:disabled) {
+  background: var(--color-gold-accent, rgba(180, 148, 108, 1));
+  color: white;
+}
+
+.download-qr-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* RSVP Details */

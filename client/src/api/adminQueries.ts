@@ -159,6 +159,17 @@ export const ADMIN_DELETE_USER = gql`
   }
 `;
 
+// Admin Regenerate QR Codes Mutation
+export const ADMIN_REGENERATE_QR_CODES = gql`
+  mutation AdminRegenerateQRCodes {
+    adminRegenerateQRCodes {
+      success
+      failed
+      errors
+    }
+  }
+`;
+
 // Admin Bulk Update Personalization Mutation
 export const ADMIN_BULK_UPDATE_PERSONALIZATION = gql`
   mutation AdminBulkUpdatePersonalization(

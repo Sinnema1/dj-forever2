@@ -275,6 +275,13 @@ export const typeDefs = `
     error: String!
   }
 
+  """Result of QR code regeneration operation"""
+  type QRCodeRegenerationResult {
+    success: Int!
+    failed: Int!
+    errors: [String!]!
+  }
+
   type Query {
     me: User
     getRSVP: RSVP
@@ -306,6 +313,7 @@ export const typeDefs = `
     adminUpdateUser(userId: ID!, input: AdminUserUpdateInput!): AdminUser!
     adminUpdateUserPersonalization(userId: ID!, input: UserPersonalizationInput!): User!
     adminBulkUpdatePersonalization(updates: [BulkPersonalizationInput!]!): BulkPersonalizationResult!
+    adminRegenerateQRCodes: QRCodeRegenerationResult!
     adminDeleteUser(userId: ID!): Boolean!
     adminDeleteRSVP(userId: ID!): Boolean!
     
