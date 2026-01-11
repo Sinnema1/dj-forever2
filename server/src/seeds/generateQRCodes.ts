@@ -18,9 +18,7 @@ const isProduction =
   process.env.NODE_ENV === "production" || MONGODB_URI.includes("mongodb+srv");
 const FRONTEND_URL =
   process.env.FRONTEND_URL ||
-  (isProduction
-    ? "https://dj-forever2.onrender.com"
-    : "http://192.168.1.64:3002");
+  (isProduction ? "https://dj-forever2.onrender.com" : "http://localhost:3002");
 
 const environment = isProduction ? "production" : "development";
 console.log(`[generateQRCodes] Environment: ${environment}`);

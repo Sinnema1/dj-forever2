@@ -72,8 +72,10 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { readFileSync } from "fs";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import User from "./models/User.js";
 
 dotenv.config();
 
@@ -220,6 +222,92 @@ async function startServer() {
     const frontendUrl =
       process.env.CONFIG__FRONTEND_URL || "https://dj-forever2.onrender.com";
     res.redirect(`${frontendUrl}/login/qr/${req.params.qrToken}`);
+  });
+
+  // Serve QR code images for admin download
+  app.get("/api/qr-code/:qrToken", async (req, res) => {
+    try {
+      const { qrToken } = req.params;
+
+      // Find the user by QR token to get their ID and name
+      const user = await (User.findOne as any)({ qrToken });
+
+      if (!user) {
+        console.error(`[QR Download] User not found for token: ${qrToken}`);
+        return res.status(404).json({
+          error: "User not found",
+          message: `No user found with QR token ${qrToken}`,
+        });
+      }
+
+      // Determine environment
+      const isProduction =
+        process.env.NODE_ENV === "production" ||
+        process.env.MONGODB_URI?.includes("mongodb+srv");
+      const environment = isProduction ? "production" : "development";
+
+      // Construct filename matching generateQRCodes.ts format:
+      // {name}_{email}_{_id}.png
+      const fileName = `${user.fullName.replace(
+        /[^a-z0-9]/gi,
+        "_"
+      )}_${user.email.replace(/[^a-z0-9]/gi, "_")}_${user._id}.png`;
+
+      // Construct absolute file path
+      const serverRoot = path.resolve(__dirname, "..");
+      const filePath = path.resolve(
+        serverRoot,
+        "qr-codes",
+        environment,
+        fileName
+      );
+
+      console.log(`[QR Download] User: ${user.fullName} (${user.email})`);
+      console.log(`[QR Download] Looking for file: ${filePath}`);
+
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        console.error(`[QR Download] File not found: ${filePath}`);
+        return res.status(404).json({
+          error: "QR code file not found",
+          message: `QR code file for ${user.fullName} does not exist. Run 'npm run generate:qrcodes' to create it.`,
+        });
+      }
+
+      // Prepare download filename
+      const downloadFilename = `${user.fullName.replace(/\s+/g, "_")}_QR.png`;
+
+      console.log(`[QR Download] Serving file as: ${downloadFilename}`);
+
+      // Serve the file with download headers
+      res.setHeader("Content-Type", "image/png");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${downloadFilename}"`
+      );
+
+      // Send the file - sendFile requires absolute path
+      return res.sendFile(filePath, (err) => {
+        if (err) {
+          console.error(`[QR Download] Error sending file:`, err);
+          if (!res.headersSent) {
+            res.status(500).json({
+              error: "Failed to send QR code file",
+              message: err.message,
+            });
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Error serving QR code:", error);
+      if (!res.headersSent) {
+        res.status(500).json({
+          error: "Failed to retrieve QR code",
+          message: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+      return;
+    }
   });
 
   // Static file serving removed for Render backend-only deployment
