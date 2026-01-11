@@ -203,16 +203,10 @@ small {
   -webkit-backdrop-filter: blur(15px);
   box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.07);
 }
-/* Ensure standalone pages (Registry, RSVP, Admin) show readable navbar
-   styling even before any scroll events. This selector is deliberately
-   placed after the base `.navbar a` rules to guarantee precedence. */
-.standalone-page .navbar a {
-  color: var(--color-text) !important;
-  text-shadow: none;
-  font-weight: 600;
-}
 
-/* Non-hero pages: force readable navbar styling immediately */
+/* Standalone pages (Registry, RSVP, Admin): ensure readable navbar styling
+   immediately on load without waiting for scroll events. These rules provide
+   high contrast dark text against the white navbar background. */
 .standalone-page .navbar {
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(15px);
@@ -220,15 +214,11 @@ small {
   box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.07);
 }
 
+.standalone-page .navbar-logo,
 .standalone-page .navbar a {
-  color: var(--color-text) !important; /* Dark gray for better contrast */
+  color: var(--color-text) !important;
   text-shadow: none !important;
-  font-weight: 600 !important; /* Slightly bolder for better readability */
-}
-
-.standalone-page .navbar-logo {
-  color: var(--color-text);
-  text-shadow: none;
+  font-weight: 600 !important;
 }
 
 .navbar-logo {
@@ -312,13 +302,7 @@ small {
   font-weight: 600;
 }
 
-/* Ensure standalone pages keep dark navbar text even before scrolling */
-.standalone-page .navbar .navbar-logo,
-.standalone-page .navbar a {
-  color: var(--color-text) !important;
-}
-
-/* Also support explicit navbar standalone class for top-level nav (Navbar component) */
+/* Support explicit navbar-standalone class for top-level nav element (set by Navbar component) */
 .navbar.navbar-standalone .navbar-logo,
 .navbar.navbar-standalone a {
   color: var(--color-text) !important;

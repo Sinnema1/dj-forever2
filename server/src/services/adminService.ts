@@ -478,12 +478,16 @@ export async function adminCreateUser(input: {
       isAdmin: false,
       hasRSVPed: false,
       qrToken,
-      ...(input.streetAddress && { streetAddress: input.streetAddress }),
-      ...(input.addressLine2 && { addressLine2: input.addressLine2 }),
-      ...(input.city && { city: input.city }),
-      ...(input.state && { state: input.state }),
-      ...(input.zipCode && { zipCode: input.zipCode }),
-      ...(input.country && { country: input.country }),
+      ...(input.streetAddress !== undefined && {
+        streetAddress: input.streetAddress,
+      }),
+      ...(input.addressLine2 !== undefined && {
+        addressLine2: input.addressLine2,
+      }),
+      ...(input.city !== undefined && { city: input.city }),
+      ...(input.state !== undefined && { state: input.state }),
+      ...(input.zipCode !== undefined && { zipCode: input.zipCode }),
+      ...(input.country !== undefined && { country: input.country }),
     });
 
     await user.save();
