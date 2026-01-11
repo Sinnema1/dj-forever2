@@ -71,7 +71,8 @@ const PersonalizedWelcome: React.FC = () => {
 
     // RSVP deadline warning (high priority)
     // Check if RSVP deadline is within 7 days
-    const rsvpDeadline = new Date('2026-10-08');
+    // Note: This date must match the deadline in FAQAccordion.tsx
+    const rsvpDeadline = new Date('2026-09-08');
     const today = new Date();
     const daysUntilDeadline = Math.ceil(
       (rsvpDeadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)

@@ -18,16 +18,18 @@ const registries: RegistryLink[] = [
   },
   {
     name: 'Costco Registry',
-    // TODO: Replace with your exact MyRegistry direct registry URL when ready.
-    // Tip: Use the canonical public registry link (not an edit/admin link).
+    // ⚠️ IMPORTANT: Replace with actual registry URL before deployment
+    // Example: 'https://www.myregistry.com/wedding-registry/[your-registry-name]'
+    // Current URL is a placeholder and will not direct guests to your registry
     url: 'https://www.myregistry.com/',
     description: 'Costco favorites & group gifting options',
     note: 'via MyRegistry',
   },
   {
     name: 'Honeymoon Fund',
-    // TODO: Replace with your specific honeymoon fund URL.
-    // Options: MyRegistry cash fund, Honeyfund, Zola cash fund, etc.
+    // ⚠️ IMPORTANT: Replace with actual fund URL before deployment
+    // Options: MyRegistry cash fund, Honeyfund.com, Zola cash fund
+    // Current URL is a placeholder and will not direct guests to your fund
     url: 'https://www.myregistry.com/',
     description: 'Experiences, dinners, and adventures together',
   },
