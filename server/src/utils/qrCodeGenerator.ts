@@ -35,6 +35,7 @@ export function getQRCodesDirectory(): string {
 
 /**
  * Get the frontend URL for QR code generation
+ * Uses CONFIG__FRONTEND_URL for consistency with server.ts
  */
 export function getFrontendURL(): string {
   const isProduction =
@@ -42,7 +43,7 @@ export function getFrontendURL(): string {
     process.env.MONGODB_URI?.includes("mongodb+srv");
 
   return (
-    process.env.FRONTEND_URL ||
+    process.env.CONFIG__FRONTEND_URL ||
     (isProduction
       ? "https://dj-forever2.onrender.com"
       : "http://localhost:3002")
