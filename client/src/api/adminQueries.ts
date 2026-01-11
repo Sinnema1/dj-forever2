@@ -38,6 +38,12 @@ export const GET_ADMIN_RSVPS = gql`
       personalPhoto
       specialInstructions
       dietaryRestrictions
+      streetAddress
+      addressLine2
+      city
+      state
+      zipCode
+      country
       householdMembers {
         firstName
         lastName

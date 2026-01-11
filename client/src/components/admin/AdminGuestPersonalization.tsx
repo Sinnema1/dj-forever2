@@ -21,6 +21,12 @@ interface AdminUser extends User {
   plusOneAllowed?: boolean;
   personalPhoto?: string;
   specialInstructions?: string;
+  streetAddress?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
 }
 
 /**
@@ -98,6 +104,7 @@ const AdminGuestPersonalization: React.FC = () => {
   const handleSavePersonalization = async (
     userId: string,
     personalization: {
+      email?: string;
       relationshipToBride?: string;
       relationshipToGroom?: string;
       customWelcomeMessage?: string;
@@ -105,6 +112,12 @@ const AdminGuestPersonalization: React.FC = () => {
       plusOneAllowed?: boolean;
       personalPhoto?: string;
       specialInstructions?: string;
+      streetAddress?: string;
+      addressLine2?: string;
+      city?: string;
+      state?: string;
+      zipCode?: string;
+      country?: string;
     }
   ) => {
     await updatePersonalization({

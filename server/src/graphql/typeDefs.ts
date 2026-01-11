@@ -247,6 +247,7 @@ export const typeDefs = `
 
   """Input for updating user personalization fields"""
   input UserPersonalizationInput {
+    email: String
     relationshipToBride: String
     relationshipToGroom: String
     customWelcomeMessage: String

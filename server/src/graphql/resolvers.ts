@@ -373,6 +373,7 @@ export const resolvers = {
       args: {
         userId: string;
         input: {
+          email?: string;
           relationshipToBride?: string;
           relationshipToGroom?: string;
           customWelcomeMessage?: string;
@@ -396,6 +397,9 @@ export const resolvers = {
       try {
         // Build update object with only defined fields
         const updateFields: Record<string, any> = {};
+        if (args.input.email !== undefined) {
+          updateFields.email = args.input.email;
+        }
         if (args.input.relationshipToBride !== undefined) {
           updateFields.relationshipToBride = args.input.relationshipToBride;
         }
