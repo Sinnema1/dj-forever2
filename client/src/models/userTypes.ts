@@ -92,6 +92,18 @@ export interface User {
   dietaryRestrictions?: string;
   /** Additional household members who share this QR code (optional) */
   householdMembers?: HouseholdMember[];
+  /** Street address for mailing invitations (optional) */
+  streetAddress?: string;
+  /** Address line 2 - Apt, Suite, Unit (optional) */
+  addressLine2?: string;
+  /** City for mailing address (optional) */
+  city?: string;
+  /** State or province for mailing address (optional) */
+  state?: string;
+  /** Zip or postal code for mailing address (optional) */
+  zipCode?: string;
+  /** Country for mailing address (optional) */
+  country?: string;
 }
 
 /**

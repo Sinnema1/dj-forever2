@@ -269,16 +269,17 @@ const WelcomeModal: React.FC = () => {
               <p className="welcome-greeting">{getPersonalizedGreeting()}</p>
 
               <p className="welcome-details">
-                We are absolutely thrilled that you are here and will be
-                celebrating with us on our special day! This site has venue
-                details, travel info, our registry, and the event schedule —
-                everything you need for the weekend.
+                This website has everything you need for our wedding weekend:
+                venue details, travel information, our registry, and the event
+                schedule.
               </p>
 
               {user.plusOneAllowed && (
                 <p className="welcome-plus-one">
-                  <strong>💝 Plus One Invited:</strong> We'd love for you to
-                  bring a guest! Please include their information when you RSVP.
+                  <strong>💝 Plus One Invited</strong>
+                  <br />
+                  You're welcome to bring a guest to celebrate with us. Please
+                  include their information when you RSVP.
                 </p>
               )}
 
@@ -296,9 +297,7 @@ const WelcomeModal: React.FC = () => {
               {user.dietaryRestrictions && (
                 <div className="welcome-dietary-info">
                   <p>
-                    <strong>
-                      🍽️ We have your dietary preferences on file:
-                    </strong>
+                    <strong>🍽️ Dietary Preferences on File</strong>
                   </p>
                   <p className="dietary-info-text">
                     {user.dietaryRestrictions}
@@ -307,9 +306,7 @@ const WelcomeModal: React.FC = () => {
               )}
 
               <p className="welcome-personal">
-                Your presence means the world to us, and we cannot wait to share
-                this magical moment with you. Thank you for being such an
-                important part of our journey!
+                We look forward to celebrating together!
               </p>
 
               <div className="welcome-signature">
