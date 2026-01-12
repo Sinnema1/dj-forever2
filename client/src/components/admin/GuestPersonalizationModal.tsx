@@ -48,12 +48,12 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     personalPhoto: user.personalPhoto || '',
     specialInstructions: user.specialInstructions || '',
     dietaryRestrictions: user.dietaryRestrictions || '',
-    streetAddress: (user as any).streetAddress || '',
-    addressLine2: (user as any).addressLine2 || '',
-    city: (user as any).city || '',
-    state: (user as any).state || '',
-    zipCode: (user as any).zipCode || '',
-    country: (user as any).country || '',
+    streetAddress: user.streetAddress || '',
+    addressLine2: user.addressLine2 || '',
+    city: user.city || '',
+    state: user.state || '',
+    zipCode: user.zipCode || '',
+    country: user.country || '',
   });
 
   const [charCount, setCharCount] = useState({
@@ -65,12 +65,12 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     personalPhoto: user.personalPhoto?.length || 0,
     specialInstructions: user.specialInstructions?.length || 0,
     dietaryRestrictions: user.dietaryRestrictions?.length || 0,
-    streetAddress: (user as any).streetAddress?.length || 0,
-    addressLine2: (user as any).addressLine2?.length || 0,
-    city: (user as any).city?.length || 0,
-    state: (user as any).state?.length || 0,
-    zipCode: (user as any).zipCode?.length || 0,
-    country: (user as any).country?.length || 0,
+    streetAddress: user.streetAddress?.length || 0,
+    addressLine2: user.addressLine2?.length || 0,
+    city: user.city?.length || 0,
+    state: user.state?.length || 0,
+    zipCode: user.zipCode?.length || 0,
+    country: user.country?.length || 0,
   });
 
   useEffect(() => {
@@ -142,25 +142,26 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     if (formData.specialInstructions) {
       personalization.specialInstructions = formData.specialInstructions;
     }
-    if (formData.dietaryRestrictions) {
+    if (formData.dietaryRestrictions !== undefined) {
       personalization.dietaryRestrictions = formData.dietaryRestrictions;
     }
-    if (formData.streetAddress) {
+    // Address fields - use !== undefined to allow clearing
+    if (formData.streetAddress !== undefined) {
       personalization.streetAddress = formData.streetAddress;
     }
-    if (formData.addressLine2) {
+    if (formData.addressLine2 !== undefined) {
       personalization.addressLine2 = formData.addressLine2;
     }
-    if (formData.city) {
+    if (formData.city !== undefined) {
       personalization.city = formData.city;
     }
-    if (formData.state) {
+    if (formData.state !== undefined) {
       personalization.state = formData.state;
     }
-    if (formData.zipCode) {
+    if (formData.zipCode !== undefined) {
       personalization.zipCode = formData.zipCode;
     }
-    if (formData.country) {
+    if (formData.country !== undefined) {
       personalization.country = formData.country;
     }
 
@@ -237,7 +238,6 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
                 maxLength={200}
                 placeholder="guest@example.com"
                 className="form-input"
-                required
               />
               <small className="form-hint">
                 Primary email address for QR code login and notifications
