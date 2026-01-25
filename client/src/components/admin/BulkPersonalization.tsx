@@ -176,11 +176,11 @@ const BulkPersonalization: React.FC = () => {
         continue;
       }
 
-      if (row.customWelcomeMessage && row.customWelcomeMessage.length > 500) {
+      if (row.customWelcomeMessage && row.customWelcomeMessage.length > 1000) {
         errors.push({
           row: i + 1,
           field: 'customWelcomeMessage',
-          message: `Row ${i + 1}: customWelcomeMessage exceeds 500 characters`,
+          message: `Row ${i + 1}: customWelcomeMessage exceeds 1000 characters`,
         });
         continue;
       }
