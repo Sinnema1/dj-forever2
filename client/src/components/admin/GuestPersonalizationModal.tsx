@@ -496,7 +496,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
               <label htmlFor="customWelcomeMessage">
                 Personalized Message
                 <span className="char-count">
-                  {charCount.customWelcomeMessage}/1000
+                  {charCount.customWelcomeMessage}/500
                 </span>
               </label>
               <textarea
@@ -505,7 +505,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
                 onChange={e =>
                   handleInputChange('customWelcomeMessage', e.target.value)
                 }
-                maxLength={1000}
+                maxLength={500}
                 rows={4}
                 placeholder="e.g., We're so excited to have you celebrate with us! Your friendship has meant the world to us over the years."
                 className="form-textarea"
