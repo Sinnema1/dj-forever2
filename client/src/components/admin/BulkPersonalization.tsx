@@ -559,10 +559,10 @@ const BulkPersonalization: React.FC = () => {
             known in advance. Max 100 characters
           </li>
           <li>
-            <strong>customWelcomeMessage</strong>: Optional. Max 500 characters
+            <strong>customWelcomeMessage</strong>: Optional. Max 1000 characters
           </li>
           <li>
-            <strong>specialInstructions</strong>: Optional. Max 1000 characters
+            <strong>specialInstructions</strong>: Optional. Max 500 characters
           </li>
           <li>
             <strong>dietaryRestrictions</strong>: Optional. Max 500 characters

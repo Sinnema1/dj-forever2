@@ -127,7 +127,7 @@ export interface UserStats {
  */
 export async function getUserById(
   userId: string,
-  includeRSVP = false
+  includeRSVP = false,
 ): Promise<IUser> {
   try {
     logger.debug(`Fetching user ${userId}`, { service: "UserService" });
@@ -159,7 +159,7 @@ export async function getUserById(
  */
 export async function getUserByEmail(
   email: string,
-  includeRSVP = false
+  includeRSVP = false,
 ): Promise<IUser | null> {
   try {
     logger.debug(`Fetching user by email: ${email}`, {
@@ -207,7 +207,7 @@ export async function getUserByQRToken(qrToken: string): Promise<IUser | null> {
  * @returns Array of matching users
  */
 export async function searchUsers(
-  options: UserSearchOptions = {}
+  options: UserSearchOptions = {},
 ): Promise<IUser[]> {
   try {
     logger.info("Searching users", { service: "UserService", options });
@@ -298,7 +298,7 @@ export async function searchUsers(
  */
 export async function getAllUsers(
   filter: any = {},
-  includeRSVP = false
+  includeRSVP = false,
 ): Promise<IUser[]> {
   try {
     logger.debug("Fetching all users", {
@@ -330,7 +330,7 @@ export async function getAllUsers(
  */
 export async function updateUser(
   userId: string,
-  updates: UserUpdateInput
+  updates: UserUpdateInput,
 ): Promise<IUser> {
   try {
     logger.info(`Updating user ${userId}`, { service: "UserService" });
@@ -361,14 +361,14 @@ export async function updateUser(
     if (updates.customWelcomeMessage) {
       updates.customWelcomeMessage = sanitizeText(
         updates.customWelcomeMessage,
-        500
+        1000,
       );
     }
 
     if (updates.specialInstructions) {
       updates.specialInstructions = sanitizeText(
         updates.specialInstructions,
-        500
+        500,
       );
     }
 
@@ -376,7 +376,7 @@ export async function updateUser(
     const user = await (User.findByIdAndUpdate as any)(
       userId,
       { $set: updates },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!user) {
@@ -467,7 +467,7 @@ export async function regenerateQRToken(userId: string): Promise<IUser> {
     const user = await (User.findByIdAndUpdate as any)(
       userId,
       { $set: { qrToken } },
-      { new: true }
+      { new: true },
     );
 
     if (!user) {
@@ -499,7 +499,7 @@ export async function getUserStats(): Promise<UserStats> {
     logger.info("Calculating user statistics", { service: "UserService" });
 
     const users = await (User.find as any)({ isInvited: true }).populate(
-      "rsvp"
+      "rsvp",
     );
 
     const stats: UserStats = {
@@ -588,7 +588,7 @@ export async function getUserStats(): Promise<UserStats> {
  * @returns Result with success/failed counts
  */
 export async function bulkUpdateUsers(
-  updates: Array<{ userId: string; updates: UserUpdateInput }>
+  updates: Array<{ userId: string; updates: UserUpdateInput }>,
 ): Promise<{
   success: number;
   failed: number;
@@ -623,7 +623,7 @@ export async function bulkUpdateUsers(
 
   logger.info(
     `Bulk update complete: ${result.success} succeeded, ${result.failed} failed`,
-    { service: "UserService" }
+    { service: "UserService" },
   );
 
   return result;
@@ -638,7 +638,7 @@ export async function bulkUpdateUsers(
  */
 export async function getUsersByGuestGroup(
   guestGroup: string,
-  includeRSVP = false
+  includeRSVP = false,
 ): Promise<IUser[]> {
   try {
     logger.debug(`Fetching users in guest group: ${guestGroup}`, {
