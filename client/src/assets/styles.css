@@ -308,28 +308,90 @@ small {
   color: var(--color-text) !important;
 }
 
-/* Target RSVP nav-cta, user greeting and auth buttons specifically on standalone pages */
+/* RSVP button (nav-cta): Gold/tan colors matching scrolled state */
 .navbar.navbar-standalone a.nav-cta,
-.navbar.navbar-standalone a.active.nav-cta,
-.navbar.navbar-standalone .desktop-user-info,
-.navbar.navbar-standalone .desktop-user-info .user-greeting,
-.navbar.navbar-standalone .desktop-user-info .admin-badge,
-.navbar.navbar-standalone .btn,
-.navbar.navbar-standalone .btn-outline {
-  color: var(--color-text) !important;
+.navbar.navbar-standalone a.active.nav-cta {
+  background: rgba(180, 148, 108, 0.1);
+  border: 1px solid var(--color-gold-accent);
+  color: var(--color-gold-dark) !important;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.navbar.navbar-standalone a.nav-cta::after {
+  display: none; /* Disable underline for CTA buttons */
+}
+.navbar.navbar-standalone a.nav-cta:hover {
+  background: rgba(180, 148, 108, 0.2);
+  border-color: var(--color-gold-dark);
+  transform: translateY(-1px);
 }
 
-/* Ensure buttons remain visually distinct while keeping accessible text color */
-.navbar.navbar-standalone .btn-outline {
-  border-color: rgba(0, 0, 0, 0.08);
-  background: transparent !important;
+/* User greeting button: Dusty blue colors matching scrolled state */
+.navbar.navbar-standalone .desktop-user-info {
+  color: var(--color-text);
+}
+.navbar.navbar-standalone .desktop-user-info .user-greeting {
+  background: rgba(110, 143, 163, 0.1);
+  border: 1px solid rgba(110, 143, 163, 0.3);
+  color: var(--color-dusty-blue-dark) !important;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  user-select: none;
+}
+.navbar.navbar-standalone .desktop-user-info .user-greeting:hover {
+  background-color: rgba(110, 143, 163, 0.2);
+  border-color: rgba(110, 143, 163, 0.4);
+  transform: translateY(-1px);
 }
 
-/* If RSVP uses a highlighted background (nav-cta), keep background but ensure text contrast */
-.navbar.navbar-standalone a.nav-cta {
-  background: rgba(180, 148, 108, 0.06); /* subtle gold tint */
-  padding: var(--spacing-1) var(--spacing-2);
-  border-radius: 6px;
+/* Admin badge */
+.navbar.navbar-standalone .desktop-user-info .admin-badge {
+  color: white;
+}
+
+/* Login/Logout button: Gray/secondary colors matching scrolled state */
+.navbar.navbar-standalone .btn-login-prompt {
+  background: transparent;
+  color: var(--color-secondary) !important;
+  border: 1px solid var(--color-secondary-30);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+.navbar.navbar-standalone .btn-login-prompt:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: var(--color-secondary);
+  transform: translateY(-1px);
+}
+
+/* Standalone navbar logout button (.btn-outline) styling to match scrolled state */
+.navbar.navbar-standalone .btn-outline {
+  background: rgba(159, 181, 161, 0.1);
+  border-color: var(--color-sage);
+  color: var(--color-sage-dark);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: 12px;
+  font-size: var(--font-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+.navbar.navbar-standalone .btn-outline:hover {
+  background: rgba(159, 181, 161, 0.2);
+  border-color: var(--color-sage-dark);
+  transform: translateY(-1px);
 }
 .navbar a.active,
 .navbar a:hover,
