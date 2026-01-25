@@ -374,6 +374,25 @@ small {
   border-color: var(--color-secondary);
   transform: translateY(-1px);
 }
+
+/* Standalone navbar logout button (.btn-outline) styling to match scrolled state */
+.navbar.navbar-standalone .btn-outline {
+  background: rgba(159, 181, 161, 0.1);
+  border-color: var(--color-sage);
+  color: var(--color-sage-dark);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: 12px;
+  font-size: var(--font-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+.navbar.navbar-standalone .btn-outline:hover {
+  background: rgba(159, 181, 161, 0.2);
+  border-color: var(--color-sage-dark);
+  transform: translateY(-1px);
+}
 .navbar a.active,
 .navbar a:hover,
 .navbar a:focus {
