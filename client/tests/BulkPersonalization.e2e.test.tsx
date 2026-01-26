@@ -271,7 +271,7 @@ John Doe,john@example.com,maybe`;
         </MockedProvider>
       );
 
-      const longString = 'a'.repeat(600);
+      const longString = 'a'.repeat(1100);
       const exceedsLimitCSV = `fullName,email,customWelcomeMessage
 John Doe,john@example.com,${longString}`;
 
@@ -286,7 +286,7 @@ John Doe,john@example.com,${longString}`;
 
       await waitFor(() => {
         expect(
-          screen.getByText(/customWelcomeMessage exceeds 500 characters/i)
+          screen.getByText(/customWelcomeMessage exceeds 1000 characters/i)
         ).toBeInTheDocument();
       });
     });
