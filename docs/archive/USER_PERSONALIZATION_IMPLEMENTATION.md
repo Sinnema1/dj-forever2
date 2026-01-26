@@ -75,7 +75,7 @@ const userSchema = new Schema<IUser>({
   customWelcomeMessage: {
     type: String,
     trim: true,
-    maxlength: [500, "Welcome message cannot exceed 500 characters"],
+    maxlength: [1000, "Welcome message cannot exceed 1000 characters"],
   },
   guestGroup: {
     type: String,
