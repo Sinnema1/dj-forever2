@@ -43,6 +43,23 @@ export type GuestGroup =
   | 'other';
 
 /**
+ * Attendance status for RSVP responses.
+ * Matches the GraphQL AttendanceStatus enum from the backend.
+ */
+export type AttendanceStatus = 'YES' | 'NO' | 'MAYBE';
+
+/**
+ * RSVP data interface representing a guest's response to the wedding invitation.
+ * Minimal structure to support banner and modal personalization.
+ */
+export interface RSVP {
+  /** Unique database identifier for the RSVP record */
+  _id: string;
+  /** Whether the guest is attending the wedding */
+  attending: AttendanceStatus;
+}
+
+/**
  * Household member interface for multi-person household authentication.
  * Represents additional guests who share a QR code with the primary user.
  */
@@ -72,6 +89,8 @@ export interface User {
   hasRSVPed?: boolean;
   /** Reference to the user's RSVP record ID (optional, null if no RSVP exists) */
   rsvpId?: string | null;
+  /** RSVP details including attendance status */
+  rsvp?: RSVP | null;
   /** Guest's relationship to the bride (e.g., "Sister", "College Friend") */
   relationshipToBride?: string;
   /** Guest's relationship to the groom (e.g., "Brother", "Coworker") */
