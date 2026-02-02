@@ -9,6 +9,7 @@
     "build": "tsc --project tsconfig.build.json",
     "build:strict": "tsc --noEmit && tsc --project tsconfig.build.json",
     "typecheck": "tsc --noEmit",
+    "lint": "npm run typecheck",
     "watch": "nodemon --watch src --ext ts,json --exec \"npm run build && npm run start\"",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -24,7 +25,10 @@
     "migrate:legacy-rsvps": "npm run build && MONGODB_DB_NAME=djforever2_dev node dist/scripts/migrateLegacyRSVPs.js",
     "migrate:user-personalization": "npm run build && node dist/scripts/migrateUserPersonalizationFields.js",
     "migrate:user-personalization:dev": "npm run build && MONGODB_DB_NAME=djforever2_dev node dist/scripts/migrateUserPersonalizationFields.js",
-    "migrate:user-personalization:prod": "npm run build && MONGODB_DB_NAME=djforever2 node dist/scripts/migrateUserPersonalizationFields.js"
+    "migrate:user-personalization:prod": "npm run build && MONGODB_DB_NAME=djforever2 node dist/scripts/migrateUserPersonalizationFields.js",
+    "add:qr-aliases": "npm run build && node dist/scripts/addQRAliases.js",
+    "add:qr-aliases:dev": "npm run build && MONGODB_DB_NAME=djforever2_dev node dist/scripts/addQRAliases.js",
+    "add:qr-aliases:prod": "npm run build && MONGODB_DB_NAME=djforever2 node dist/scripts/addQRAliases.js"
   },
   "dependencies": {
     "@apollo/server": "^4.12.2",
