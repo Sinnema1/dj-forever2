@@ -85,7 +85,7 @@ describe('PersonalizedWelcome - Banner System', () => {
       const banner = screen.getByTestId('personalized-welcome-banner');
       expect(banner).toHaveAttribute('data-banner-type', 'deadline');
       expect(banner).toHaveTextContent(
-        /please submit your RSVP by September 7/i
+        /please submit your RSVP by September 8/i
       );
     });
 
@@ -215,7 +215,7 @@ describe('PersonalizedWelcome - Banner System', () => {
       const banner = screen.getByTestId('personalized-welcome-banner');
       expect(banner).toHaveAttribute('data-banner-type', 'deadline');
       expect(banner).toHaveTextContent(
-        /please submit your RSVP by September 7/i
+        /please submit your RSVP by September 8/i
       );
       expect(screen.getByText('RSVP')).toHaveAttribute('href', '/rsvp');
     });
@@ -237,7 +237,7 @@ describe('PersonalizedWelcome - Banner System', () => {
 
       const banner = screen.getByTestId('personalized-welcome-banner');
       expect(banner).toHaveTextContent(
-        /please submit your RSVP by September 7/i
+        /please submit your RSVP by September 8/i
       );
     });
 
