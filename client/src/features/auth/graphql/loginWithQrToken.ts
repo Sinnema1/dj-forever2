@@ -12,6 +12,10 @@ export const LOGIN_WITH_QR_TOKEN = gql`
         isAdmin
         qrToken
         hasRSVPed
+        rsvp {
+          _id
+          attending
+        }
         relationshipToBride
         relationshipToGroom
         customWelcomeMessage

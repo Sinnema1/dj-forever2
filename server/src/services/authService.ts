@@ -161,7 +161,8 @@ export async function registerUser({
 }
 
 /**
- * Login user with QR token
+ * Login user with QR token or alias
+ * Supports both original QR tokens and human-readable aliases
  */
 export async function loginWithQrToken({
   qrToken,
@@ -169,9 +170,10 @@ export async function loginWithQrToken({
   try {
     const validatedToken = validateQRToken(qrToken);
 
-    const user = (await (User.findOne as any)({
-      qrToken: validatedToken,
-    })) as (Document<unknown, {}, IUser> & IUser) | null;
+    // Try to find user by QR token OR alias
+    const user = (await (User as any).findByQRTokenOrAlias(validatedToken)) as
+      | (Document<unknown, {}, IUser> & IUser)
+      | null;
 
     if (!user) {
       throw new AuthenticationError("Invalid or expired QR token");
