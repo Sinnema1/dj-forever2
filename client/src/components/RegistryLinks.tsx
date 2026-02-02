@@ -46,7 +46,6 @@ export default function RegistryLinks() {
           target="_blank"
           rel="noopener noreferrer external"
           aria-label={`Visit our ${registry.name} registry (opens in new tab)`}
-          role="listitem"
         >
           <div className="registry-card-content">
             <div className="registry-card-header">
