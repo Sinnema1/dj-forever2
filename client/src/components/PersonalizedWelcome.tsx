@@ -163,8 +163,13 @@ const PersonalizedWelcome: React.FC = () => {
     // Note: This date must match the deadline in FAQAccordion.tsx
     const rsvpDeadline = new Date('2026-09-08');
     const today = new Date();
+
+    // Normalize dates to midnight UTC to avoid timezone issues
+    const toMidnightUTC = (date: Date) =>
+      Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
     const daysUntilDeadline = Math.ceil(
-      (rsvpDeadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      (toMidnightUTC(rsvpDeadline) - toMidnightUTC(today)) /
+        (1000 * 60 * 60 * 24)
     );
 
     if (
@@ -176,6 +181,7 @@ const PersonalizedWelcome: React.FC = () => {
       const id = 'rsvp-deadline-warning';
       if (!isBannerDismissed(user._id, id) && !isBannerSnoozed(user._id, id)) {
         const formattedDeadline = rsvpDeadline.toLocaleDateString('en-US', {
+          timeZone: 'UTC',
           month: 'long',
           day: 'numeric',
         });
