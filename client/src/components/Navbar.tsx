@@ -117,7 +117,9 @@ function Navbar() {
    */
   useEffect(() => {
     const el = navRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
 
     const setNavHeight = () => {
       const h = Math.ceil(el.getBoundingClientRect().height);

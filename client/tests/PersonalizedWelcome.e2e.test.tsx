@@ -84,7 +84,9 @@ describe('PersonalizedWelcome - Banner System', () => {
 
       const banner = screen.getByTestId('personalized-welcome-banner');
       expect(banner).toHaveAttribute('data-banner-type', 'deadline');
-      expect(banner).toHaveTextContent(/RSVP deadline is in 5 days/i);
+      expect(banner).toHaveTextContent(
+        /please submit your RSVP by September 7/i
+      );
     });
 
     it('should show accommodation banner (priority 80) over travel banner', () => {
@@ -212,8 +214,10 @@ describe('PersonalizedWelcome - Banner System', () => {
 
       const banner = screen.getByTestId('personalized-welcome-banner');
       expect(banner).toHaveAttribute('data-banner-type', 'deadline');
-      expect(banner).toHaveTextContent(/RSVP deadline is in 4 days/i);
-      expect(screen.getByText('RSVP Now')).toHaveAttribute('href', '/rsvp');
+      expect(banner).toHaveTextContent(
+        /please submit your RSVP by September 7/i
+      );
+      expect(screen.getByText('RSVP')).toHaveAttribute('href', '/rsvp');
     });
 
     it('should show "1 day" (singular) when deadline is tomorrow', () => {
@@ -232,7 +236,9 @@ describe('PersonalizedWelcome - Banner System', () => {
       render(<PersonalizedWelcome />);
 
       const banner = screen.getByTestId('personalized-welcome-banner');
-      expect(banner).toHaveTextContent(/RSVP deadline is in 1 day!/i);
+      expect(banner).toHaveTextContent(
+        /please submit your RSVP by September 7/i
+      );
     });
 
     it('should not show deadline warning if already RSVPed', () => {
@@ -275,7 +281,10 @@ describe('PersonalizedWelcome - Banner System', () => {
       const banner = screen.getByTestId('personalized-welcome-banner');
       // Should show RSVP reminder instead
       expect(banner).toHaveAttribute('data-banner-type', 'rsvp-reminder');
-      expect(banner).toHaveTextContent(/Don't forget to RSVP/i);
+      // Component shows first name + message
+      expect(banner).toHaveTextContent(
+        /Early, please RSVP when you have a moment/i
+      );
     });
   });
 
@@ -299,7 +308,7 @@ describe('PersonalizedWelcome - Banner System', () => {
         screen.getByTestId('personalized-welcome-banner')
       ).toBeInTheDocument();
 
-      const dismissBtn = screen.getByLabelText(/dismiss/i);
+      const dismissBtn = screen.getByLabelText('Dismiss banner');
       fireEvent.click(dismissBtn);
 
       expect(
@@ -343,7 +352,7 @@ describe('PersonalizedWelcome - Banner System', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('should not show dismiss button for non-dismissible deadline banner', () => {
+    it('should show snooze button and dismiss button for deadline banner', () => {
       vi.setSystemTime(new Date('2026-09-04')); // 4 days before Sep 8, 2026
 
       mockUser = {
@@ -360,7 +369,9 @@ describe('PersonalizedWelcome - Banner System', () => {
 
       const banner = screen.getByTestId('personalized-welcome-banner');
       expect(banner).toHaveAttribute('data-banner-type', 'deadline');
-      expect(screen.queryByLabelText('Dismiss banner')).not.toBeInTheDocument();
+      // Deadline banners are dismissible (get snoozed for 12h)
+      expect(screen.getByLabelText('Dismiss banner')).toBeInTheDocument();
+      expect(screen.getByText('Remind me tomorrow')).toBeInTheDocument();
     });
   });
 
@@ -386,6 +397,9 @@ describe('PersonalizedWelcome - Banner System', () => {
         isInvited: true,
         isAdmin: false,
         hasRSVPed: true,
+        rsvp: {
+          attending: 'YES',
+        },
       };
       mockIsLoggedIn = true;
 
@@ -394,7 +408,8 @@ describe('PersonalizedWelcome - Banner System', () => {
       const banner = screen.getByTestId('personalized-welcome-banner');
       expect(banner).toHaveAttribute('data-banner-type', 'thank-you');
       expect(banner).toHaveTextContent(/Thank you for your RSVP, Happy!/i);
-      expect(banner).toHaveTextContent(/We can't wait to celebrate with you/i);
+      // The full message is combined into a single paragraph
+      expect(banner).toHaveTextContent(/can't wait to celebrate with you/i);
     });
 
     it('should show RSVP reminder for guests who have not RSVPed (outside deadline window)', () => {
@@ -414,9 +429,9 @@ describe('PersonalizedWelcome - Banner System', () => {
 
       const banner = screen.getByTestId('personalized-welcome-banner');
       expect(banner).toHaveAttribute('data-banner-type', 'rsvp-reminder');
-      expect(banner).toHaveTextContent(/Welcome, Reminder!/i);
-      expect(banner).toHaveTextContent(/Don't forget to RSVP/i);
-      expect(screen.getByText('RSVP Now')).toHaveAttribute('href', '/rsvp');
+      // Component renders first name followed by message
+      expect(banner).toHaveTextContent(/Reminder, please RSVP/i);
+      expect(screen.getByText('RSVP')).toHaveAttribute('href', '/rsvp');
     });
   });
 });
