@@ -36,7 +36,14 @@
   overflow-y: auto;
   position: relative;
   animation: welcomeModalSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 1px solid rgba(159, 181, 161, 0.2);
+  /* Softer, less prominent border */
+  border: 1px solid rgba(159, 181, 161, 0.12);
+  /* Ensure no blue focus outline */
+  outline: none;
+}
+
+.welcome-modal:focus {
+  outline: none;
 }
 
 @keyframes welcomeModalSlideIn {
@@ -56,8 +63,8 @@
   right: 20px;
   background: none;
   border: none;
-  font-size: 28px;
-  color: var(--color-sage);
+  font-size: 30px; /* Increased from 28px for better visibility */
+  color: rgba(159, 181, 161, 0.55); /* Darker for better contrast */
   cursor: pointer;
   width: 40px;
   height: 40px;
@@ -71,7 +78,14 @@
 
 .welcome-modal-close:hover {
   background: rgba(159, 181, 161, 0.1);
+  color: var(--color-sage);
   transform: rotate(90deg);
+}
+
+.welcome-modal-close:focus-visible {
+  outline: 2px solid var(--color-sage);
+  outline-offset: 2px;
+  background: rgba(159, 181, 161, 0.1);
 }
 
 .welcome-modal-content {
@@ -80,23 +94,7 @@
 
 .welcome-modal-header {
   text-align: center;
-  margin-bottom: 30px;
-}
-
-.welcome-hearts {
-  font-size: 2.5rem;
-  margin-bottom: 15px;
-  animation: heartPulse 2s ease-in-out infinite;
-}
-
-@keyframes heartPulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
+  margin-bottom: 20px; /* Reduced spacing */
 }
 
 .welcome-modal-header h2 {
@@ -120,167 +118,100 @@
 }
 
 .couple-image {
-  width: 180px;
-  height: 180px;
+  width: 160px; /* Reduced from 180px */
+  height: 160px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid var(--color-sage);
-  box-shadow: 0 8px 24px rgba(159, 181, 161, 0.3);
+  border: 3px solid rgba(159, 181, 161, 0.3); /* Softer border */
+  box-shadow: 0 6px 18px rgba(159, 181, 161, 0.2); /* Reduced shadow */
   transition: transform 0.3s ease;
 }
 
 .couple-image:hover {
-  transform: scale(1.05);
+  transform: scale(1.03); /* Reduced from 1.05 */
 }
 
 .welcome-message {
-  line-height: 1.6;
-}
-
-.welcome-greeting {
-  font-size: 1.1rem;
-  color: var(--color-charcoal);
-  margin-bottom: 20px;
-  font-weight: 500;
-}
-
-.welcome-details {
-  color: var(--color-charcoal);
-  margin-bottom: 20px;
-}
-
-.welcome-plus-one {
-  background: linear-gradient(
-    135deg,
-    rgba(159, 181, 161, 0.06),
-    rgba(180, 148, 108, 0.06)
-  );
-  border-left: 3px solid var(--color-gold-accent);
-  padding: 16px 18px;
-  border-radius: 8px;
-  margin: 20px 0;
-  color: var(--color-charcoal);
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
-.welcome-plus-one strong {
-  color: var(--color-sage);
-  font-size: 0.9rem;
-  letter-spacing: 0.3px;
-  font-weight: 600;
-}
-
-.welcome-special-instructions {
-  background: linear-gradient(
-    135deg,
-    rgba(180, 148, 108, 0.05),
-    rgba(159, 181, 161, 0.05)
-  );
-  border-left: 3px solid var(--color-sage);
-  padding: 16px 18px;
-  border-radius: 8px;
-  margin: 20px 0;
-  color: var(--color-charcoal);
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
-.welcome-special-instructions strong {
-  color: var(--color-sage);
-  display: block;
-  margin-bottom: 8px;
-  font-size: 0.9rem;
-  letter-spacing: 0.3px;
-  font-weight: 600;
-}
-
-.special-instructions-text {
-  margin: 0;
-  white-space: pre-line;
-}
-
-.welcome-dietary-info {
-  background: linear-gradient(
-    135deg,
-    rgba(76, 175, 80, 0.05),
-    rgba(159, 181, 161, 0.05)
-  );
-  border-left: 3px solid #5fa463;
-  padding: 16px 18px;
-  border-radius: 8px;
-  margin: 20px 0;
-  color: var(--color-charcoal);
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
-.welcome-dietary-info strong {
-  color: #5fa463;
-  display: block;
-  margin-bottom: 8px;
-  font-size: 0.9rem;
-  letter-spacing: 0.3px;
-  font-weight: 600;
-}
-
-.dietary-info-text {
-  margin: 0;
-  white-space: pre-line;
-}
-
-.welcome-personal {
-  color: var(--color-charcoal);
-  margin: 25px 0;
-  font-style: italic;
+  line-height: 1.7; /* Increased from 1.6 */
   text-align: center;
-  font-size: 1.05rem;
+}
+
+.personal-message {
+  font-size: 1rem; /* Slightly smaller body copy */
+  color: var(--color-charcoal);
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.utility-line {
+  color: rgba(0, 0, 0, 0.65); /* Slightly reduced contrast vs body copy */
+  font-size: 0.9rem;
+  margin: 0 0 20px 0;
+  padding: 0;
+  font-weight: 400; /* Regular weight, not bold */
+  letter-spacing: 0.3px;
+  line-height: 1.5;
+  text-align: center;
+  /* No hover effects - clearly non-interactive */
 }
 
 .welcome-signature {
   text-align: center;
   margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(159, 181, 161, 0.2);
-}
-
-.welcome-signature p {
-  margin: 5px 0;
-  color: var(--color-sage);
+  padding-top: 0; /* Remove extra divider */
+  border-top: none;
 }
 
 .welcome-signature .names {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--color-gold-accent);
+  font-size: 0.85rem; /* Very small signature */
+  font-weight: 400;
+  color: var(--color-sage);
   font-family: var(--font-elegant);
+  opacity: 0.7; /* Subtle */
+  margin: 0;
 }
 
 .welcome-modal-footer {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 0; /* Remove gap since we don't have checkbox anymore */
   margin-top: 30px;
   padding-top: 25px;
-  border-top: 1px solid rgba(159, 181, 161, 0.2);
+  border-top: 1px solid rgba(159, 181, 161, 0.12); /* Single divider above footer */
+}
+
+.helper-text {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.4); /* Very subtle */
+  margin: 0 0 20px 0;
+  font-style: italic;
+  text-align: center;
+}
+
+.welcome-footer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Reduced spacing */
+  align-items: center; /* Center buttons */
 }
 
 .welcome-rsvp-btn {
   background: linear-gradient(135deg, var(--color-sage) 0%, #9bb59d 100%);
   color: white;
   text-decoration: none;
-  padding: 15px 30px;
+  padding: 14px 32px; /* Slightly adjusted padding */
   border-radius: 50px;
   font-weight: 600;
   text-align: center;
   transition: all 0.3s ease;
   box-shadow: 0 3px 12px rgba(159, 181, 161, 0.3);
-  font-size: 1.05rem;
-  display: flex;
+  font-size: 1rem;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
 }
 
 .welcome-rsvp-btn:hover {
@@ -289,36 +220,64 @@
   background: linear-gradient(135deg, #9bb59d 0%, var(--color-sage) 100%);
 }
 
+.welcome-rsvp-btn:focus-visible {
+  outline: 3px solid var(--color-sage);
+  outline-offset: 3px;
+}
+
+/* Secondary CTA - less prominent text link */
+.welcome-text-link {
+  background: none;
+  border: none;
+  color: var(--color-sage);
+  font-size: 0.9rem;
+  font-weight: 400;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  transition: all 0.2s ease;
+  padding: 8px 16px;
+}
+
+.welcome-text-link:hover {
+  color: var(--color-charcoal);
+  text-decoration-style: solid;
+}
+
+.welcome-text-link:focus-visible {
+  outline: 2px solid var(--color-sage);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 .welcome-explore-btn {
-  background: linear-gradient(
-    135deg,
-    var(--color-gold-accent) 0%,
-    #c9ad6d 100%
-  );
+  background: linear-gradient(135deg, var(--color-sage) 0%, #9bb59d 100%);
   color: white;
   border: none;
-  padding: 12px 25px;
+  padding: 14px 32px;
   border-radius: 50px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 3px 12px rgba(180, 148, 108, 0.25);
-  font-size: 0.95rem;
-  display: flex;
+  box-shadow: 0 3px 12px rgba(159, 181, 161, 0.3);
+  font-size: 0.9rem;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .welcome-explore-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 18px rgba(180, 148, 108, 0.35);
-  background: linear-gradient(
-    135deg,
-    #c9ad6d 0%,
-    var(--color-gold-accent) 100%
-  );
+  box-shadow: 0 5px 18px rgba(159, 181, 161, 0.4);
+  background: linear-gradient(135deg, #9bb59d 0%, var(--color-sage) 100%);
+}
+
+.welcome-explore-btn:focus-visible {
+  outline: 3px solid var(--color-sage);
+  outline-offset: 3px;
 }
 
 /* Mobile Styles */
