@@ -117,12 +117,30 @@ All authentication is handled by scanning your invitation QR code:
 - **QR Token Validation**: Alphanumeric-only tokens (10-40 characters)
 - **Real Guest Data**: 30 households with production email addresses
 
-📖 **Complete Documentation**: See [`/docs`](./docs/README.md) for comprehensive documentation including:
+## 📚 Documentation
 
-- [Admin Dashboard Guide](./docs/admin/ADMIN_DASHBOARD_SUMMARY.md) - Complete admin features overview
-- [Bug Fixes](./docs/bug-fixes/) - All documented bug fixes
-- [User Guides](./docs/guides/) - Setup and testing guides
-- [Development Docs](./docs/development/) - Technical documentation
+Complete project documentation organized in [`/docs`](./docs/):
+
+### Quick Links
+
+- **[Admin Features](/docs/admin/)** - Dashboard, guest management, analytics, email system
+- **[Deployment Guides](/docs/deployment/)** - Production deployment, Render.com configuration, testing procedures
+- **[Development](/docs/development/)** - Architecture, testing, TypeScript enhancements, code quality
+- **[Mobile Features](/docs/development/mobile/)** - Mobile optimizations, QR scanning, touch interactions
+- **[User Guides](/docs/guides/)** - QR testing, debugging, quick start implementation
+- **[Bug Fixes](/docs/bug-fixes/)** - Historical issue resolutions and fixes
+
+### Key Documentation
+
+| Document                                                               | Description                                   |
+| ---------------------------------------------------------------------- | --------------------------------------------- |
+| [Admin Dashboard Summary](/docs/admin/ADMIN_DASHBOARD_SUMMARY.md)      | Complete admin features overview (500+ lines) |
+| [Admin Production Testing](/docs/admin/ADMIN_PRODUCTION_TESTING.md)    | Comprehensive production testing procedures   |
+| [Deployment Guide](/docs/deployment/DEPLOYMENT.md)                     | Complete Render.com deployment instructions   |
+| [Mobile Features](/docs/development/mobile/MOBILE_FEATURES_SUMMARY.md) | Mobile optimization details                   |
+| [RSVP Test Suite](/docs/development/RSVP_TEST_SUITE.md)                | Testing strategy and procedures               |
+
+📖 **Full Documentation Index**: See [`/docs/README.md`](./docs/README.md)
 
 ## Customization
 
@@ -225,9 +243,11 @@ After running performance commands, reports are generated in:
 
 ### Documentation
 
-📖 **Admin Features**: See [`/docs/admin`](./docs/admin/ADMIN_DASHBOARD_SUMMARY.md) for complete admin dashboard documentation  
-📧 **Email Setup**: See [`/docs/admin/EMAIL_SYSTEM_GUIDE.md`](./docs/admin/EMAIL_SYSTEM_GUIDE.md) for SMTP configuration guide  
-🐛 **Bug Fixes**: All fixes documented in [`/docs/bug-fixes`](./docs/bug-fixes/)
+📖 **See [PRODUCTION_TESTING_PLAN.md](./PRODUCTION_TESTING_PLAN.md)** for comprehensive testing procedures  
+📊 **See [/docs/admin/ADMIN_DASHBOARD_SUMMARY.md](/docs/admin/ADMIN_DASHBOARD_SUMMARY.md)** for complete admin features  
+📧 **See [/docs/admin/EMAIL_SYSTEM_GUIDE.md](/docs/admin/EMAIL_SYSTEM_GUIDE.md)** for SMTP configuration  
+🐛 **See [/docs/bug-fixes](/docs/bug-fixes/)** for all documented fixes  
+🚀 **See [/docs/deployment](/docs/deployment/)** for production deployment guides
 
 ---
 
