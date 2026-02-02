@@ -20,6 +20,11 @@
 
 /* =================== Design Tokens =================== */
 :root {
+  /* Dynamic navbar height (measured at runtime, fallback until JS runs) */
+  --nav-h: 72px;
+  --banner-gap: 10px;
+  --hero-safe-gap: 18px; /* breathing room between navbar and hero content */
+
   /* Palette & tokens */
   --color-primary: var(--color-dusty-blue);
   --color-secondary: var(--color-sage);
@@ -185,53 +190,79 @@ small {
 /* =================== Navbar =================== */
 .navbar {
   min-height: 72px;
+
+  /* Remove background + blur from text layer */
   background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+
+  /* Create stacking context so ::before stays behind content */
+  isolation: isolate;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: var(--spacing-3) var(--spacing-8);
   position: fixed;
-  top: var(--spacing-3);
+  top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-.navbar-scrolled {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.07);
+  z-index: 1000;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-/* Standalone pages (Registry, RSVP, Admin): ensure readable navbar styling
-   immediately on load without waiting for scroll events. These rules provide
-   high contrast dark text against the white navbar background. */
-.standalone-page .navbar {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.07);
+/* Paper layer with blur - behind text for crisp antialiasing */
+.navbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  /* Top-of-hero: dark transparent background for light text */
+  background: rgba(0, 0, 0, 0.12);
+
+  /* Blur ONLY behind */
+  -webkit-backdrop-filter: blur(10px) saturate(1.05);
+  backdrop-filter: blur(10px) saturate(1.05);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+
+  z-index: -1;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* Scrolled state: linen paper background for dark text */
+.navbar-scrolled::before {
+  background: rgba(var(--linen), 0.98);
+  border-bottom: 1px solid rgba(var(--sage-rgb), 0.28);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14);
+  -webkit-backdrop-filter: blur(6px) saturate(1.05);
+  backdrop-filter: blur(6px) saturate(1.05);
+}
+
+/* Standalone pages (Registry, RSVP, Admin): use scrolled state styling */
+.standalone-page .navbar::before {
+  background: rgba(var(--linen), 0.98);
+  border-bottom: 1px solid rgba(var(--sage-rgb), 0.28);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14);
 }
 
 .standalone-page .navbar-logo,
 .standalone-page .navbar a {
-  color: var(--color-text) !important;
+  color: rgba(var(--ink), 0.96) !important;
   text-shadow: none !important;
   font-weight: 600 !important;
 }
 
 .navbar-logo {
   font-family: "Playfair Display", serif;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.92); /* light on hero */
   font-size: var(--font-md);
   letter-spacing: 1.5px;
   z-index: 101;
   transition: color 0.3s ease;
   font-weight: 500;
-  text-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.5),
-    0 1px 2px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35); /* subtle contrast */
   text-decoration: none;
   cursor: pointer;
   display: flex;
@@ -242,13 +273,14 @@ small {
   justify-content: center;
   flex-direction: column;
 }
+
 .navbar-scrolled .navbar-logo {
-  color: var(--color-text);
+  color: rgb(var(--ink)); /* dark ink on linen paper */
   text-shadow: none;
 }
-.navbar-logo:hover,
-.navbar-scrolled .navbar-logo:hover {
-  color: var(--color-accent);
+
+.navbar-logo:hover {
+  color: var(--color-sage-darker);
 }
 
 .navbar-links {
@@ -272,34 +304,56 @@ small {
 .navbar a {
   text-transform: uppercase;
   font-size: var(--font-xs);
-  font-weight: 500;
-  letter-spacing: 1.5px;
-  color: #fff;
+  font-weight: 600; /* increased from 500 for crisp all-caps */
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.92); /* light on hero */
   text-decoration: none;
   padding: var(--spacing-1) var(--spacing-2);
   position: relative;
   transition: all 0.3s ease;
-  text-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.5),
-    0 2px 6px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35); /* subtle contrast for hero */
   display: flex;
   align-items: center;
   height: 100%;
 }
-.navbar a::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--color-accent);
-  transition: width 0.3s ease;
+
+.navbar a:hover {
+  color: rgba(255, 255, 255, 1); /* brighter on hover */
 }
+
+.navbar a:focus-visible {
+  outline: 2px solid rgba(var(--sage-rgb), 0.55);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* Active page: refined letterpress underline */
+.navbar a[aria-current="page"]::after,
+.navbar a.active::after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: -8px; /* refined positioning */
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.75); /* light on hero */
+  border-radius: 2px;
+}
+
+.navbar-scrolled a[aria-current="page"]::after,
+.navbar-scrolled a.active::after {
+  background: rgba(var(--sage-rgb), 0.75); /* sage on linen */
+}
+
 .navbar-scrolled a {
-  color: var(--color-text);
-  text-shadow: none;
+  color: rgba(var(--ink), 0.96); /* dark ink on linen paper */
   font-weight: 600;
+  text-shadow: none;
+}
+
+.navbar-scrolled a:hover {
+  color: rgba(var(--ink), 1);
 }
 
 /* Support explicit navbar-standalone class for top-level nav element (set by Navbar component) */
@@ -597,8 +651,11 @@ small {
 
 /* =================== Hero =================== */
 .hero {
-  height: 100vh;
+  min-height: 100vh; /* allow natural expansion with padding */
   width: 100%;
+  /* Pull background up under navbar, but pad content down for readability */
+  margin-top: calc(-1 * var(--nav-h));
+  padding-top: var(--nav-h);
   background-image:
     linear-gradient(
       to bottom,
@@ -628,6 +685,9 @@ small {
   text-align: center;
   max-width: 900px;
   padding: 48px 28px;
+  padding-top: calc(
+    var(--nav-h) + var(--hero-safe-gap)
+  ); /* push content below navbar */
   margin-top: 40px;
   margin-left: auto;
   margin-right: auto;
@@ -753,6 +813,7 @@ small {
   .hero-content {
     padding: var(--spacing-5) var(--spacing-4);
     margin-top: 90px;
+    padding-top: calc(var(--nav-h) + env(safe-area-inset-top) + 14px);
   }
   .hero .hero-title {
     font-size: clamp(2.5rem, 10vw, 4.5rem) !important;
