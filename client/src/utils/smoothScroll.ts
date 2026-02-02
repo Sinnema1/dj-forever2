@@ -31,7 +31,9 @@ function scrollToY(y: number, smooth: boolean) {
       const t = Math.min(1, elapsed / durationMs);
       const eased = easeInOutCubic(t);
       window.scrollTo(0, startY + delta * eased); // numeric overload (universal)
-      if (t < 1) requestAnimationFrame(step);
+      if (t < 1) {
+        requestAnimationFrame(step);
+      }
     };
 
     requestAnimationFrame(step);

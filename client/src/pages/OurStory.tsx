@@ -24,7 +24,11 @@ interface StoryEvent {
 
 const storyEvents: StoryEvent[] = [
   { date: '01.16.2022', text: 'We met & fell in love', imageUrl: img2022_1 },
-  { date: '10.29.2022', text: 'Our first Halloween together', imageUrl: img2022_2},
+  {
+    date: '10.29.2022',
+    text: 'Our first Halloween together',
+    imageUrl: img2022_2,
+  },
   { date: '11.06.2022', text: 'Our first trip!', imageUrl: img2022_3 },
   { date: '04.26.2023', text: 'We love a beach', imageUrl: img2023_1 },
   { date: '09.29.2023', text: 'Spoiled in Colorado', imageUrl: img2023_2 },
@@ -64,17 +68,20 @@ const OurStory: React.FC = () => {
       <div className="story-timeline">
         {storyEvents.map((evt, idx) => (
           <div key={evt.date} className="story-event">
-            <img
-              src={evt.imageUrl}
-              alt={evt.text}
-              className="story-event-image"
-              loading="lazy"
+            <button
+              className="story-event-image-wrapper"
               onClick={() => openLightbox(idx)}
-              onKeyDown={(e) => handleImageKeyDown(e, idx)}
-              tabIndex={0}
-              role="button"
+              onKeyDown={e => handleImageKeyDown(e, idx)}
+              type="button"
               aria-label={`View full-size image: ${evt.text}`}
-            />
+            >
+              <img
+                src={evt.imageUrl}
+                alt={evt.text}
+                className="story-event-image"
+                loading="lazy"
+              />
+            </button>
             <div className="story-event-content">
               <span className="story-event-date">{evt.date}</span>
               <p className="story-event-text">{evt.text}</p>
