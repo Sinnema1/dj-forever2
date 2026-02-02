@@ -100,6 +100,8 @@ function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   /** Reference to MobileDrawer for controlling skip behavior */
   const mobileDrawerRef = useRef<MobileDrawerHandle>(null);
+  /** Reference to navbar element for height measurement */
+  const navRef = useRef<HTMLElement | null>(null);
   /** Authentication context for user state management */
   const { user, isLoggedIn, isLoading, logout } = useAuth();
   /** Current route location for navigation state */
@@ -110,14 +112,36 @@ function Navbar() {
   const isHomePage = location.pathname === '/';
 
   /**
+   * Measure actual navbar height and set CSS variable
+   * Eliminates hardcoded height assumptions and prevents banner overlap
+   */
+  useEffect(() => {
+    const el = navRef.current;
+    if (!el) return;
+
+    const setNavHeight = () => {
+      const h = Math.ceil(el.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--nav-h', `${h}px`);
+    };
+
+    setNavHeight();
+
+    const ro = new ResizeObserver(() => setNavHeight());
+    ro.observe(el);
+
+    return () => ro.disconnect();
+  }, []);
+
+  /**
    * Scroll listener for navbar background transparency effect
    * Updates navbar styling based on scroll position for visual hierarchy
    */
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 100);
+      setScrolled(window.scrollY > 12);
     };
-    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial call
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -197,6 +221,7 @@ function Navbar() {
 
   return (
     <nav
+      ref={navRef}
       id="navigation"
       className={`navbar ${scrolled ? 'navbar-scrolled' : ''} ${isStandalone ? 'navbar-standalone' : ''}`}
       aria-label="Main navigation"

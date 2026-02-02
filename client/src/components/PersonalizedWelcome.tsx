@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 // Styles now imported globally via main.tsx
 
@@ -12,37 +12,125 @@ type BannerType =
   | 'rsvp-reminder';
 
 interface Banner {
+  id: string; // Stable banner ID (no user suffix - already scoped via lsKey)
   type: BannerType;
   message: string;
   actionLabel?: string | undefined;
   actionLink?: string | undefined;
+  snoozeLabel?: string | undefined;
   priority: number; // Higher = more important
   dismissible: boolean;
 }
+
+// Storage helper functions for consistent key naming
+const LS_NS = 'djforever';
+
+const lsKey = (userId: string, ...parts: string[]) =>
+  [LS_NS, userId, ...parts].join(':');
+
+const getJson = <T,>(key: string, fallback: T): T => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const setJson = (key: string, value: unknown) => {
+  localStorage.setItem(key, JSON.stringify(value));
+};
+
+const getNumber = (key: string, fallback = 0) => {
+  const raw = localStorage.getItem(key);
+  const n = raw ? Number(raw) : NaN;
+  return Number.isFinite(n) ? n : fallback;
+};
+
+// Simple hash function for content versioning
+const hash = (s: string): string => {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 31 + s.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h).toString(36);
+};
 
 const PersonalizedWelcome: React.FC = () => {
   const { user, isLoggedIn } = useAuth();
   const [currentBanner, setCurrentBanner] = useState<Banner | null>(null);
   const [showBanner, setShowBanner] = useState<boolean>(false);
+  const bannerRef = useRef<HTMLDivElement | null>(null);
 
-  // Get dismissed banners from localStorage
-  const getDismissedBanners = (): string[] => {
-    const dismissed = localStorage.getItem('dismissedBanners');
-    return dismissed ? JSON.parse(dismissed) : [];
+  // User-scoped dismissed banners (Patch 1)
+  const getDismissedBanners = (userId: string): string[] => {
+    return getJson<string[]>(lsKey(userId, 'banners', 'dismissed'), []);
   };
 
-  // Dismiss banner and save to localStorage
-  const dismissBanner = (bannerId: string) => {
-    const dismissed = getDismissedBanners();
-    dismissed.push(bannerId);
-    localStorage.setItem('dismissedBanners', JSON.stringify(dismissed));
+  const isBannerDismissed = useCallback(
+    (userId: string, bannerId: string): boolean => {
+      return getDismissedBanners(userId).includes(bannerId);
+    },
+    []
+  );
+
+  const dismissBanner = (userId: string, bannerId: string) => {
+    const dismissed = new Set(getDismissedBanners(userId));
+    dismissed.add(bannerId);
+    setJson(lsKey(userId, 'banners', 'dismissed'), Array.from(dismissed));
     setShowBanner(false);
   };
 
-  // Check if banner has been dismissed
-  const isBannerDismissed = (bannerId: string): boolean => {
-    return getDismissedBanners().includes(bannerId);
+  // User-scoped snooze (Patch 2)
+  const isBannerSnoozed = useCallback(
+    (userId: string, bannerId: string): boolean => {
+      const key = lsKey(userId, 'banners', 'snoozeUntil', bannerId);
+      const snoozedUntil = getNumber(key, 0);
+
+      if (!snoozedUntil) {
+        return false;
+      }
+
+      if (Date.now() > snoozedUntil) {
+        localStorage.removeItem(key);
+        return false;
+      }
+
+      return true;
+    },
+    []
+  );
+
+  const snoozeBanner = (userId: string, bannerId: string, hours: number) => {
+    const key = lsKey(userId, 'banners', 'snoozeUntil', bannerId);
+    const snoozeUntil = Date.now() + hours * 60 * 60 * 1000;
+    localStorage.setItem(key, String(snoozeUntil));
+    setShowBanner(false);
   };
+
+  // Selective RSVP suppression (Patch 3) - only suppresses RSVP nudges
+  const shouldSuppressRsvpBanners = useCallback((): boolean => {
+    if (!user?._id) {
+      return false;
+    }
+
+    const now = Date.now();
+    const lastClosedAt = getNumber(
+      lsKey(user._id, 'welcome', 'lastClosedAt'),
+      0
+    );
+    if (!lastClosedAt) {
+      return false;
+    }
+
+    // Ignore future timestamps (clock jump protection)
+    if (lastClosedAt > now) {
+      return false;
+    }
+
+    const fiveMinutesAgo = now - 5 * 60 * 1000;
+    return lastClosedAt > fiveMinutesAgo;
+  }, [user]);
 
   useEffect(() => {
     if (!isLoggedIn || !user?.fullName) {
@@ -55,9 +143,10 @@ const PersonalizedWelcome: React.FC = () => {
 
     // Admin banner (highest priority) - only show on homepage
     if (user.isAdmin && isHomePage) {
-      const bannerId = 'admin-access';
-      if (!isBannerDismissed(bannerId)) {
+      const id = 'admin-access';
+      if (!isBannerDismissed(user._id, id)) {
         banners.push({
+          id,
           type: 'admin',
           message:
             'Welcome, Admin! Access your dashboard to manage wedding details.',
@@ -78,24 +167,36 @@ const PersonalizedWelcome: React.FC = () => {
       (rsvpDeadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
     );
 
-    if (!user.hasRSVPed && daysUntilDeadline <= 7 && daysUntilDeadline > 0) {
-      const bannerId = 'rsvp-deadline-warning';
-      if (!isBannerDismissed(bannerId)) {
+    if (
+      !user.hasRSVPed &&
+      daysUntilDeadline <= 7 &&
+      daysUntilDeadline > 0 &&
+      !shouldSuppressRsvpBanners()
+    ) {
+      const id = 'rsvp-deadline-warning';
+      if (!isBannerDismissed(user._id, id) && !isBannerSnoozed(user._id, id)) {
+        const formattedDeadline = rsvpDeadline.toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+        });
         banners.push({
+          id,
           type: 'deadline',
-          message: `⏰ RSVP deadline is in ${daysUntilDeadline} day${daysUntilDeadline === 1 ? '' : 's'}! Please respond soon.`,
-          actionLabel: 'RSVP Now',
+          message: `${firstName}, please submit your RSVP by ${formattedDeadline} to help us finalize our plans.`,
+          actionLabel: 'RSVP',
           actionLink: '/rsvp',
+          snoozeLabel: 'Remind me tomorrow',
           priority: 90,
-          dismissible: false, // Don't allow dismissing urgent deadline
+          dismissible: true,
         });
       }
     }
 
     // Special instructions banner (travel, accommodation, etc.)
     if (user.specialInstructions && !user.isAdmin) {
-      const bannerId = `special-instructions-${user._id}`;
-      if (!isBannerDismissed(bannerId)) {
+      // Version ID by content hash so new instructions break through dismissal
+      const id = `special-instructions:${hash(user.specialInstructions.trim().toLowerCase())}`;
+      if (!isBannerDismissed(user._id, id)) {
         // Determine banner type based on keywords
         const instructions = user.specialInstructions.toLowerCase();
         let bannerType: BannerType = 'travel';
@@ -118,6 +219,7 @@ const PersonalizedWelcome: React.FC = () => {
         }
 
         banners.push({
+          id,
           type: bannerType,
           message: `📋 Important: ${user.specialInstructions}`,
           priority,
@@ -126,13 +228,28 @@ const PersonalizedWelcome: React.FC = () => {
       }
     }
 
-    // Thank you banner for completed RSVPs
+    // Thank you banner for completed RSVPs - context-aware based on attendance status
     if (user.hasRSVPed && !user.isAdmin) {
-      const bannerId = 'thank-you-rsvp';
-      if (!isBannerDismissed(bannerId)) {
+      const id = 'thank-you-rsvp';
+      if (!isBannerDismissed(user._id, id)) {
+        let message: string;
+        const attendanceStatus = user.rsvp?.attending;
+
+        if (attendanceStatus === 'YES') {
+          message = `Thank you for your RSVP, ${firstName}! We can't wait to celebrate with you! 🎉`;
+        } else if (attendanceStatus === 'NO') {
+          message = `Thank you for letting us know, ${firstName}. You'll be missed, but we understand.`;
+        } else if (attendanceStatus === 'MAYBE') {
+          message = `Thank you for your response, ${firstName}. We hope you can join us—please update us when you decide.`;
+        } else {
+          // Fallback for legacy RSVPs without attending status
+          message = `Thank you for your RSVP, ${firstName}!`;
+        }
+
         banners.push({
+          id,
           type: 'thank-you',
-          message: `Thank you for your RSVP, ${firstName}! We can't wait to celebrate with you! 🎉`,
+          message,
           priority: 60,
           dismissible: true,
         });
@@ -140,13 +257,19 @@ const PersonalizedWelcome: React.FC = () => {
     }
 
     // Regular RSVP reminder (lowest priority)
-    if (!user.hasRSVPed && !user.isAdmin && daysUntilDeadline > 7) {
-      const bannerId = 'rsvp-reminder';
-      if (!isBannerDismissed(bannerId)) {
+    if (
+      !user.hasRSVPed &&
+      !user.isAdmin &&
+      daysUntilDeadline > 7 &&
+      !shouldSuppressRsvpBanners()
+    ) {
+      const id = 'rsvp-reminder';
+      if (!isBannerDismissed(user._id, id)) {
         banners.push({
+          id,
           type: 'rsvp-reminder',
-          message: `Welcome, ${firstName}! Don't forget to RSVP for our big day.`,
-          actionLabel: 'RSVP Now',
+          message: `${firstName}, please RSVP when you have a moment so we can finalize our plans.`,
+          actionLabel: 'RSVP',
           actionLink: '/rsvp',
           priority: 50,
           dismissible: true,
@@ -162,9 +285,17 @@ const PersonalizedWelcome: React.FC = () => {
         setCurrentBanner(topBanner);
         setShowBanner(true);
 
-        // Auto-hide dismissible banners after delay
+        // Auto-hide dismissible banners after delay (longer on mobile)
         if (topBanner.dismissible) {
-          const delay = topBanner.type === 'admin' ? 10000 : 7000;
+          const isMobile = window.matchMedia('(max-width: 768px)').matches;
+          let delay: number;
+
+          if (topBanner.type === 'admin') {
+            delay = isMobile ? 12000 : 10000; // 12s mobile, 10s desktop
+          } else {
+            delay = isMobile ? 10000 : 7000; // 10s mobile, 7s desktop
+          }
+
           const timer = setTimeout(() => {
             setShowBanner(false);
           }, delay);
@@ -175,26 +306,33 @@ const PersonalizedWelcome: React.FC = () => {
     }
 
     return undefined;
-  }, [isLoggedIn, user]);
+  }, [
+    isLoggedIn,
+    user,
+    shouldSuppressRsvpBanners,
+    isBannerDismissed,
+    isBannerSnoozed,
+  ]);
 
   if (!showBanner || !currentBanner || !isLoggedIn) {
     return null;
   }
 
-  // Generate unique banner ID for dismissal
-  const bannerId =
-    currentBanner.type === 'admin'
-      ? 'admin-access'
-      : currentBanner.type === 'deadline'
-        ? 'rsvp-deadline-warning'
-        : currentBanner.type === 'thank-you'
-          ? 'thank-you-rsvp'
-          : currentBanner.type === 'rsvp-reminder'
-            ? 'rsvp-reminder'
-            : `special-instructions-${user?._id}`;
+  // Handle dismiss: deadline banner gets 12h snooze, others get permanent dismiss
+  const handleDismiss = () => {
+    if (!user) {
+      return;
+    }
+    if (currentBanner.type === 'deadline') {
+      snoozeBanner(user._id, currentBanner.id, 12); // Short snooze maintains urgency
+    } else {
+      dismissBanner(user._id, currentBanner.id);
+    }
+  };
 
   return (
     <div
+      ref={bannerRef}
       className={`personalized-welcome-banner banner-${currentBanner.type}`}
       data-testid="personalized-welcome-banner"
       data-banner-type={currentBanner.type}
@@ -204,15 +342,25 @@ const PersonalizedWelcome: React.FC = () => {
         {currentBanner.actionLabel && currentBanner.actionLink && (
           <a
             href={currentBanner.actionLink}
-            className={`btn btn-small ${currentBanner.type === 'admin' ? 'admin-dashboard-btn' : ''}`}
+            className={`banner-cta ${currentBanner.type === 'admin' ? 'banner-cta-admin' : ''}`}
           >
             {currentBanner.actionLabel}
           </a>
         )}
+        {currentBanner.snoozeLabel && (
+          <button
+            className="banner-snooze-btn"
+            onClick={() => user && snoozeBanner(user._id, currentBanner.id, 24)}
+            aria-label="Snooze banner for 24 hours"
+            title="Snooze for 24 hours"
+          >
+            {currentBanner.snoozeLabel}
+          </button>
+        )}
         {currentBanner.dismissible && (
           <button
             className="banner-dismiss-btn"
-            onClick={() => dismissBanner(bannerId)}
+            onClick={handleDismiss}
             aria-label="Dismiss banner"
           >
             ✕
