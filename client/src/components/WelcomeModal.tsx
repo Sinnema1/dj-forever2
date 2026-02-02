@@ -1,13 +1,71 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import coverPhoto from '../assets/images/cover_photo.jpeg';
 // Styles now imported globally via main.tsx
+
+/** Storage helper for consistent key naming (matches PersonalizedWelcome) */
+const LS_NS = 'djforever';
+const lsKey = (userId: string, ...parts: string[]) =>
+  [LS_NS, userId, ...parts].join(':');
+
+/** Current modal version - increment to re-show modal after redesign */
+const MODAL_VERSION = 'v2';
+
+/** Couple signature - source of truth for names */
+const COUPLE_SIGNATURE = 'Love, Dominique & Justin';
+
+/**
+ * Welcome copy configuration
+ * Allows easy iteration on messaging without changing component logic
+ */
+const WELCOME_COPY = {
+  /** Default custom message when no relationship-specific copy exists */
+  defaultMessage:
+    "We're so happy you're here—thank you for being part of this season with us.",
+
+  /** Utility line describing what's available on the site */
+  utilityLine: 'Everything you need is here — details, travel, FAQs, and RSVP.',
+
+  /** Relationship-specific greetings */
+  relationships: {
+    sister_bride: "We're so grateful to have you here, dear sister.",
+    brother_bride: "We're honored to have you here, dear brother.",
+    sister_groom: "We're so grateful to have you here, dear sister.",
+    brother_groom: "We're honored to have you here, dear brother.",
+    parent: 'Your love and support has meant everything to us.',
+    friend_bride: "We're grateful to celebrate with you.",
+    friend_groom: "We're grateful to celebrate with you.",
+  },
+
+  /** Group-based greetings */
+  groups: {
+    grooms_family: "Family means everything to us. We're so happy you're here.",
+    brides_family: "Family means everything to us. We're so happy you're here.",
+    friends: 'Your friendship has enriched our lives in countless ways.',
+    extended_family: "We're delighted to have our extended family here.",
+    other: "We're so grateful you're here to celebrate with us.",
+  },
+};
 
 const WelcomeModal: React.FC = () => {
   const { user, isLoggedIn } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<Element | null>(null);
+
+  // Define handleClose early so it can be used in useEffect
+  const handleClose = useCallback(() => {
+    setShowModal(false);
+    if (user) {
+      // Mark as seen so it doesn't show again (versioned)
+      localStorage.setItem(`welcome-seen-${MODAL_VERSION}-${user._id}`, 'true');
+      // Save timestamp to prevent RSVP banners from showing immediately after
+      localStorage.setItem(
+        lsKey(user._id, 'welcome', 'lastClosedAt'),
+        String(Date.now())
+      );
+    }
+  }, [user]);
 
   useEffect(() => {
     // Only show for logged-in users (but not admin users)
@@ -17,7 +75,9 @@ const WelcomeModal: React.FC = () => {
     }
 
     // Check if user has seen the welcome modal before
-    const hasSeenWelcome = localStorage.getItem(`welcome-seen-${user._id}`);
+    const hasSeenWelcome = localStorage.getItem(
+      `welcome-seen-${MODAL_VERSION}-${user._id}`
+    );
 
     if (!hasSeenWelcome) {
       // Small delay to allow page to load
@@ -101,15 +161,7 @@ const WelcomeModal: React.FC = () => {
         previousActiveElement.current.focus();
       }
     };
-  }, [showModal]);
-
-  const handleClose = () => {
-    setShowModal(false);
-    if (user) {
-      // Mark as seen so it doesn't show again
-      localStorage.setItem(`welcome-seen-${user._id}`, 'true');
-    }
-  };
+  }, [showModal, handleClose]);
 
   if (!showModal || !isLoggedIn || !user || user.isAdmin === true) {
     return null;
@@ -139,70 +191,63 @@ const WelcomeModal: React.FC = () => {
 
   const householdGreeting = getHouseholdGreeting();
 
-  // Generate personalized greeting based on relationship
-  const getPersonalizedGreeting = (): string => {
-    // Use custom welcome message if set
+  // Generate personalized message based on relationship
+  const getPersonalizedMessage = (): string => {
+    // Use custom welcome message if set (highest priority)
     if (user.customWelcomeMessage) {
       return user.customWelcomeMessage;
     }
 
-    // Relationship-based greetings
+    // Relationship-specific messages
     if (user.relationshipToBride) {
       const relationship = user.relationshipToBride.toLowerCase();
       if (relationship.includes('sister')) {
-        return `We are so blessed to have you, dear sister of the bride, celebrating with us!`;
+        return WELCOME_COPY.relationships.sister_bride;
       }
       if (relationship.includes('brother')) {
-        return `We are so honored to have you, brother of the bride, celebrating with us!`;
+        return WELCOME_COPY.relationships.brother_bride;
       }
-      if (relationship.includes('mother') || relationship.includes('mom')) {
-        return `Your love and support has meant everything to us. We're so grateful to share this day with you!`;
-      }
-      if (relationship.includes('father') || relationship.includes('dad')) {
-        return `Your love and support has meant everything to us. We're so grateful to share this day with you!`;
+      if (
+        relationship.includes('mother') ||
+        relationship.includes('mom') ||
+        relationship.includes('father') ||
+        relationship.includes('dad')
+      ) {
+        return WELCOME_COPY.relationships.parent;
       }
       if (relationship.includes('friend')) {
-        return `We're thrilled to celebrate our special day with such a wonderful friend of the bride!`;
+        return WELCOME_COPY.relationships.friend_bride;
       }
     }
 
     if (user.relationshipToGroom) {
       const relationship = user.relationshipToGroom.toLowerCase();
       if (relationship.includes('sister')) {
-        return `We are so blessed to have you, dear sister of the groom, celebrating with us!`;
+        return WELCOME_COPY.relationships.sister_groom;
       }
       if (relationship.includes('brother')) {
-        return `We are so honored to have you, brother of the groom, celebrating with us!`;
+        return WELCOME_COPY.relationships.brother_groom;
       }
-      if (relationship.includes('mother') || relationship.includes('mom')) {
-        return `Your love and support has meant everything to us. We're so grateful to share this day with you!`;
-      }
-      if (relationship.includes('father') || relationship.includes('dad')) {
-        return `Your love and support has meant everything to us. We're so grateful to share this day with you!`;
+      if (
+        relationship.includes('mother') ||
+        relationship.includes('mom') ||
+        relationship.includes('father') ||
+        relationship.includes('dad')
+      ) {
+        return WELCOME_COPY.relationships.parent;
       }
       if (relationship.includes('friend')) {
-        return `We're thrilled to celebrate our special day with such a wonderful friend of the groom!`;
+        return WELCOME_COPY.relationships.friend_groom;
       }
     }
 
-    // Group-based greetings
-    if (user.guestGroup) {
-      switch (user.guestGroup) {
-        case 'grooms_family':
-          return `Family means everything to us! We're so happy to celebrate this special day with the groom's family.`;
-        case 'brides_family':
-          return `Family means everything to us! We're so happy to celebrate this special day with the bride's family.`;
-        case 'friends':
-          return `Your friendship has enriched our lives in countless ways. We're thrilled you're here!`;
-        case 'extended_family':
-          return `We're delighted to have our extended family here to share in our joy!`;
-        case 'other':
-          return `We're so grateful you're here to celebrate with us on our special day!`;
-      }
+    // Group-based messages
+    if (user.guestGroup && WELCOME_COPY.groups[user.guestGroup]) {
+      return WELCOME_COPY.groups[user.guestGroup];
     }
 
-    // Default greeting
-    return `We are absolutely thrilled that you are here and that you will be celebrating with us on our special day!`;
+    // Default message
+    return WELCOME_COPY.defaultMessage;
   };
 
   return (
@@ -243,10 +288,7 @@ const WelcomeModal: React.FC = () => {
 
         <div className="welcome-modal-content">
           <div className="welcome-modal-header">
-            <div className="welcome-hearts">💕</div>
-            <h2 id="welcome-modal-title">
-              Welcome to Our Wedding Website, {householdGreeting}!
-            </h2>
+            <h2 id="welcome-modal-title">Welcome, {householdGreeting}</h2>
           </div>
 
           <div className="welcome-modal-body">
@@ -266,69 +308,42 @@ const WelcomeModal: React.FC = () => {
             </div>
 
             <div className="welcome-message">
-              <p className="welcome-greeting">{getPersonalizedGreeting()}</p>
-
-              <p className="welcome-details">
-                This website has everything you need for our wedding weekend:
-                venue details, travel information, our registry, and the event
-                schedule.
-              </p>
-
-              {user.plusOneAllowed && (
-                <p className="welcome-plus-one">
-                  <strong>💝 Plus One Invited</strong>
-                  <br />
-                  You're welcome to bring a guest to celebrate with us. Please
-                  include their information when you RSVP.
-                </p>
-              )}
-
-              {user.specialInstructions && (
-                <div className="welcome-special-instructions">
-                  <p>
-                    <strong>📋 Important Information:</strong>
-                  </p>
-                  <p className="special-instructions-text">
-                    {user.specialInstructions}
-                  </p>
-                </div>
-              )}
-
-              {user.dietaryRestrictions && (
-                <div className="welcome-dietary-info">
-                  <p>
-                    <strong>🍽️ Dietary Preferences on File</strong>
-                  </p>
-                  <p className="dietary-info-text">
-                    {user.dietaryRestrictions}
-                  </p>
-                </div>
-              )}
-
-              <p className="welcome-personal">
-                We look forward to celebrating together!
-              </p>
-
-              <div className="welcome-signature">
-                <p>With all our love,</p>
-                <p className="names">Dominique & Justin</p>
-              </div>
+              <p className="personal-message">{getPersonalizedMessage()}</p>
             </div>
           </div>
 
           <div className="welcome-modal-footer">
-            {!user.hasRSVPed && (
-              <a
-                href="/rsvp"
-                className="welcome-rsvp-btn"
-                onClick={handleClose}
-              >
-                RSVP Now 💌
-              </a>
-            )}
-            <button className="welcome-explore-btn" onClick={handleClose}>
-              Explore the Website ✨
-            </button>
+            <p className="utility-line">{WELCOME_COPY.utilityLine}</p>
+
+            <p className="helper-text">
+              This note is always available from the menu.
+            </p>
+
+            <div className="welcome-footer-actions">
+              {!user.hasRSVPed && (
+                <>
+                  <a
+                    href="/rsvp"
+                    className="welcome-rsvp-btn"
+                    onClick={handleClose}
+                  >
+                    RSVP
+                  </a>
+                  <button className="welcome-text-link" onClick={handleClose}>
+                    Browse site
+                  </button>
+                </>
+              )}
+              {user.hasRSVPed && (
+                <button className="welcome-explore-btn" onClick={handleClose}>
+                  Browse site
+                </button>
+              )}
+            </div>
+
+            <div className="welcome-signature">
+              <p className="names">{COUPLE_SIGNATURE}</p>
+            </div>
           </div>
         </div>
       </div>

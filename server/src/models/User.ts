@@ -94,6 +94,7 @@ export interface IUser extends Document {
   rsvpId?: mongoose.Types.ObjectId;
   rsvp?: any; // Virtual field populated from RSVP collection
   qrToken: string;
+  qrAlias?: string;
   relationshipToBride?: string;
   relationshipToGroom?: string;
   householdMembers?: IHouseholdMember[];
@@ -158,6 +159,19 @@ const userSchema = new Schema<IUser>(
       required: [true, "QR token is required"],
       unique: true,
       trim: true,
+    },
+    qrAlias: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows null/undefined values, only enforces uniqueness when present
+      trim: true,
+      lowercase: true,
+      match: [
+        /^[a-z0-9-]+$/,
+        "QR alias must contain only lowercase letters, numbers, and hyphens",
+      ],
+      minlength: [3, "QR alias must be at least 3 characters"],
+      maxlength: [50, "QR alias cannot exceed 50 characters"],
     },
     relationshipToBride: {
       type: String,
@@ -272,7 +286,7 @@ const userSchema = new Schema<IUser>(
     specialInstructions: {
       type: String,
       trim: true,
-      maxlength: [1000, "Special instructions cannot exceed 1000 characters"],
+      maxlength: [500, "Special instructions cannot exceed 500 characters"],
     },
     dietaryRestrictions: {
       type: String,
@@ -294,7 +308,7 @@ const userSchema = new Schema<IUser>(
         return ret;
       },
     },
-  }
+  },
 );
 
 // Compound indexes for common query patterns
@@ -342,6 +356,17 @@ userSchema.statics.findByEmail = function (email: string) {
 
 userSchema.statics.findByQRToken = function (qrToken: string) {
   return this.findOne({ qrToken: qrToken.trim() });
+};
+
+userSchema.statics.findByQRAlias = function (qrAlias: string) {
+  return this.findOne({ qrAlias: qrAlias.toLowerCase().trim() });
+};
+
+userSchema.statics.findByQRTokenOrAlias = function (identifier: string) {
+  const normalizedIdentifier = identifier.toLowerCase().trim();
+  return this.findOne({
+    $or: [{ qrToken: identifier.trim() }, { qrAlias: normalizedIdentifier }],
+  });
 };
 
 userSchema.statics.findInvitedUsers = function () {

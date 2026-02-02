@@ -130,7 +130,7 @@ export function validateName(name: string, fieldName = "Name"): string {
 
   if (trimmedName.length < 2) {
     throw new ValidationError(
-      `${fieldName} must be at least 2 characters long`
+      `${fieldName} must be at least 2 characters long`,
     );
   }
 
@@ -281,7 +281,7 @@ export function validateGuestCount(count: number): number {
  */
 export function validateMealPreference(
   preference: string,
-  attending?: string
+  attending?: string,
 ): string {
   const validPreferences = [
     "chicken",
@@ -427,9 +427,12 @@ export function validateQRToken(token: string): string {
     throw new ValidationError("QR token is required");
   }
 
-  // QR tokens are alphanumeric strings (generated using Math.random().toString(36))
-  // They typically consist of lowercase letters and numbers, 15-30 characters long
-  const tokenRegex = /^[a-z0-9]{10,40}$/i;
+  // QR tokens can be:
+  // 1. Original format: alphanumeric strings (generated using Math.random().toString(36))
+  //    - Lowercase letters and numbers, 10-40 characters
+  // 2. QR alias format: human-readable aliases (e.g., "smith-family")
+  //    - Lowercase letters, numbers, and hyphens, 3-50 characters
+  const tokenRegex = /^[a-z0-9-]{3,50}$/i;
   if (!tokenRegex.test(trimmedToken)) {
     throw new ValidationError("Invalid QR token format");
   }

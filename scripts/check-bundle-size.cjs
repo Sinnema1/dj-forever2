@@ -25,7 +25,7 @@ const path = require("node:path");
 // Configuration
 const KB = 1024;
 const MAIN_BUDGET = 120 * KB; // 120kb gzipped
-const TOTAL_BUDGET = 242 * KB; // 242kb gzipped (increased for admin address management features)
+const TOTAL_BUDGET = 245 * KB; // 245kb gzipped (increased for UTC date handling)
 
 // Paths (assumes invocation from client/ working directory)
 const dist = path.join(process.cwd(), "dist");
@@ -37,7 +37,7 @@ if (!fs.existsSync(assets)) {
   console.error("   Expected:", assets);
   console.error("   CWD:", process.cwd());
   console.error(
-    "\n💡 Tip: Run 'npm run build' first or check working directory"
+    "\n💡 Tip: Run 'npm run build' first or check working directory",
   );
   process.exit(1);
 }
@@ -49,7 +49,7 @@ if (files.length === 0) {
   console.warn("⚠️  Warning: No .js.gz files found");
   console.warn("   Did the build run with compression enabled?");
   console.warn(
-    "   Check vite.config.ts for vite-plugin-compression configuration"
+    "   Check vite.config.ts for vite-plugin-compression configuration",
   );
   process.exit(1);
 }
@@ -76,12 +76,12 @@ console.log("━".repeat(50));
 console.log(
   `   Main bundle:  ${(mainGz / KB).toFixed(1)}kb / ${(
     MAIN_BUDGET / KB
-  ).toFixed(0)}kb`
+  ).toFixed(0)}kb`,
 );
 console.log(
   `   Total bundle: ${(totalGz / KB).toFixed(1)}kb / ${(
     TOTAL_BUDGET / KB
-  ).toFixed(0)}kb`
+  ).toFixed(0)}kb`,
 );
 console.log("━".repeat(50));
 
@@ -118,10 +118,10 @@ if (mainExceeded || totalExceeded) {
 console.log("\n✅ SIZE GATE PASSED\n");
 console.log(`Analyzed ${files.length} gzipped JavaScript files`);
 console.log(
-  `Main bundle: ${((mainGz / MAIN_BUDGET) * 100).toFixed(1)}% of budget`
+  `Main bundle: ${((mainGz / MAIN_BUDGET) * 100).toFixed(1)}% of budget`,
 );
 console.log(
-  `Total bundle: ${((totalGz / TOTAL_BUDGET) * 100).toFixed(1)}% of budget\n`
+  `Total bundle: ${((totalGz / TOTAL_BUDGET) * 100).toFixed(1)}% of budget\n`,
 );
 
 process.exit(0);

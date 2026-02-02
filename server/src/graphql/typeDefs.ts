@@ -99,6 +99,8 @@ export const typeDefs = `
     rsvp: RSVP
     isInvited: Boolean!
     qrToken: String!
+    """Human-readable alias for QR token (e.g., 'smith-family')"""
+    qrAlias: String
     relationshipToBride: String
     relationshipToGroom: String
     customWelcomeMessage: String

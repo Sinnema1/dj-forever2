@@ -29,4 +29,27 @@ global.IntersectionObserver = class IntersectionObserver {
   }
 };
 
+// Mock ResizeObserver (used for dynamic navbar height measurement)
+global.ResizeObserver = class ResizeObserver {
+  constructor(_callback: ResizeObserverCallback) {}
+  observe(_target: Element) {}
+  unobserve(_target: Element) {}
+  disconnect() {}
+};
+
+// Mock window.matchMedia (used for responsive design checks)
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
 // You can add more global mocks here if needed

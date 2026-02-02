@@ -115,3 +115,4 @@ server/src/seeds/userData-generated.json
 
 # Wedding documents (contracts, vendor info, sensitive planning materials)
 docs/wedding/
+server/qr-codes/development/*.png
