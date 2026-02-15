@@ -78,7 +78,7 @@ export async function getWeddingStats(): Promise<AdminStats> {
 
     // Get all invited users with their RSVPs
     const users = await (User.find as any)({ isInvited: true }).populate(
-      "rsvp"
+      "rsvp",
     );
 
     const totalInvited = users.length;
@@ -116,7 +116,7 @@ export async function getWeddingStats(): Promise<AdminStats> {
             const preference = guest.mealPreference || "Not specified";
             mealPreferenceCounts.set(
               preference,
-              (mealPreferenceCounts.get(preference) || 0) + 1
+              (mealPreferenceCounts.get(preference) || 0) + 1,
             );
 
             if (guest.allergies) {
@@ -128,7 +128,7 @@ export async function getWeddingStats(): Promise<AdminStats> {
           const preference = rsvp.mealPreference || "Not specified";
           mealPreferenceCounts.set(
             preference,
-            (mealPreferenceCounts.get(preference) || 0) + 1
+            (mealPreferenceCounts.get(preference) || 0) + 1,
           );
 
           if (rsvp.allergies) {
@@ -142,7 +142,7 @@ export async function getWeddingStats(): Promise<AdminStats> {
       totalInvited > 0 ? (totalRSVPed / totalInvited) * 100 : 0;
 
     const mealPreferences: MealPreferenceCount[] = Array.from(
-      mealPreferenceCounts.entries()
+      mealPreferenceCounts.entries(),
     )
       .map(([preference, count]) => ({ preference, count }))
       .sort((a, b) => b.count - a.count);
@@ -160,9 +160,9 @@ export async function getWeddingStats(): Promise<AdminStats> {
 
     logger.info(
       `Wedding stats calculated: ${totalRSVPed}/${totalInvited} RSVPs (${rsvpPercentage.toFixed(
-        1
+        1,
       )}%)`,
-      "AdminService"
+      "AdminService",
     );
     return stats;
   } catch (error) {
@@ -198,6 +198,7 @@ export async function getAllUsersWithRSVPs(): Promise<AdminUser[]> {
       hasRSVPed: user.hasRSVPed,
       isInvited: user.isInvited,
       qrToken: user.qrToken,
+      qrAlias: user.qrAlias,
       rsvp: user.rsvp,
       createdAt: user.createdAt?.toISOString(),
       lastUpdated: user.updatedAt?.toISOString(),
@@ -209,6 +210,7 @@ export async function getAllUsersWithRSVPs(): Promise<AdminUser[]> {
       personalPhoto: user.personalPhoto,
       specialInstructions: user.specialInstructions,
       dietaryRestrictions: user.dietaryRestrictions,
+      householdMembers: user.householdMembers,
       streetAddress: user.streetAddress,
       addressLine2: user.addressLine2,
       city: user.city,
@@ -219,7 +221,7 @@ export async function getAllUsersWithRSVPs(): Promise<AdminUser[]> {
 
     logger.info(
       `Retrieved ${adminUsers.length} users for admin interface`,
-      "AdminService"
+      "AdminService",
     );
     return adminUsers;
   } catch (error) {
@@ -329,7 +331,7 @@ export async function exportGuestListCSV(): Promise<string> {
  */
 export async function adminUpdateRSVP(
   userId: string,
-  input: AdminRSVPUpdateInput
+  input: AdminRSVPUpdateInput,
 ): Promise<any> {
   try {
     logger.info(`Admin updating RSVP for user ${userId}`, {
@@ -370,7 +372,7 @@ export async function adminUpdateRSVP(
 
     logger.info(
       `Admin successfully updated RSVP for user ${userId}`,
-      "AdminService"
+      "AdminService",
     );
     return rsvp;
   } catch (error) {
@@ -393,7 +395,7 @@ export async function adminUpdateRSVP(
  */
 export async function adminUpdateUser(
   userId: string,
-  input: AdminUserUpdateInput
+  input: AdminUserUpdateInput,
 ): Promise<AdminUser> {
   try {
     logger.info(`Admin updating user ${userId}`, { service: "AdminService" });
@@ -406,6 +408,32 @@ export async function adminUpdateUser(
     if (input.fullName !== undefined) user.fullName = input.fullName;
     if (input.email !== undefined) user.email = input.email;
     if (input.isInvited !== undefined) user.isInvited = input.isInvited;
+
+    // QR Alias validation and uniqueness check
+    if (input.qrAlias !== undefined) {
+      if (input.qrAlias === null || input.qrAlias === "") {
+        // Allow clearing the alias by deleting the property
+        delete user.qrAlias;
+      } else {
+        // Normalize the alias
+        const normalizedAlias = input.qrAlias.toLowerCase().trim();
+
+        // Check if alias is already in use by another user
+        const existingAlias = await User.findOne({
+          qrAlias: normalizedAlias,
+          _id: { $ne: userId },
+        });
+
+        if (existingAlias) {
+          throw new ValidationError(
+            `QR alias "${normalizedAlias}" is already in use by another guest`,
+          );
+        }
+
+        user.qrAlias = normalizedAlias;
+      }
+    }
+
     // Address fields
     if (input.streetAddress !== undefined)
       user.streetAddress = input.streetAddress;
@@ -525,7 +553,7 @@ export async function adminCreateUser(input: {
         user._id.toString(),
         user.fullName,
         user.email,
-        user.qrToken
+        user.qrToken,
       );
       logger.info(`QR code auto-generated for new user ${user._id}`, {
         service: "AdminService",
@@ -536,7 +564,7 @@ export async function adminCreateUser(input: {
         `Failed to generate QR code for new user ${user._id}: ${
           qrError instanceof Error ? qrError.message : "Unknown error"
         }`,
-        { service: "AdminService" }
+        { service: "AdminService" },
       );
     }
 
@@ -648,7 +676,7 @@ export async function adminDeleteRSVP(userId: string): Promise<boolean> {
 
     logger.info(
       `Admin successfully deleted RSVP for user ${userId}`,
-      "AdminService"
+      "AdminService",
     );
     return true;
   } catch (error) {
@@ -672,6 +700,7 @@ export async function bulkUpdatePersonalization(
     email: string;
     fullName?: string;
     personalization: {
+      qrAlias?: string;
       relationshipToBride?: string;
       relationshipToGroom?: string;
       customWelcomeMessage?: string;
@@ -687,7 +716,7 @@ export async function bulkUpdatePersonalization(
       zipCode?: string;
       country?: string;
     };
-  }>
+  }>,
 ): Promise<{
   success: number;
   created: number;
@@ -707,7 +736,7 @@ export async function bulkUpdatePersonalization(
     `Starting bulk personalization update for ${updates.length} users`,
     {
       service: "AdminService",
-    }
+    },
   );
 
   for (const update of updates) {
@@ -719,6 +748,34 @@ export async function bulkUpdatePersonalization(
 
       // Build update object with only defined fields
       const updateFields: Record<string, any> = {};
+
+      // QR Alias validation (if provided)
+      if (update.personalization.qrAlias !== undefined) {
+        if (
+          update.personalization.qrAlias === null ||
+          update.personalization.qrAlias === ""
+        ) {
+          updateFields.qrAlias = undefined;
+        } else {
+          const normalizedAlias = update.personalization.qrAlias
+            .toLowerCase()
+            .trim();
+
+          // Check uniqueness (exclude current user if updating)
+          const existingAlias = await User.findOne({
+            qrAlias: normalizedAlias,
+            ...(user ? { _id: { $ne: user._id } } : {}),
+          });
+
+          if (existingAlias) {
+            throw new ValidationError(
+              `QR alias "${normalizedAlias}" is already in use`,
+            );
+          }
+
+          updateFields.qrAlias = normalizedAlias;
+        }
+      }
 
       if (update.personalization.relationshipToBride !== undefined) {
         updateFields.relationshipToBride =
@@ -808,7 +865,7 @@ export async function bulkUpdatePersonalization(
             {
               service: "AdminService",
               email: update.email,
-            }
+            },
           );
         }
 
@@ -822,7 +879,7 @@ export async function bulkUpdatePersonalization(
             `Failed to generate unique QR token for ${update.email}`,
             {
               service: "AdminService",
-            }
+            },
           );
           continue;
         }
@@ -849,7 +906,7 @@ export async function bulkUpdatePersonalization(
         await (User.findByIdAndUpdate as any)(
           user._id,
           { $set: updateFields },
-          { new: true, runValidators: true }
+          { new: true, runValidators: true },
         );
         result.updated++;
 
@@ -875,7 +932,7 @@ export async function bulkUpdatePersonalization(
 
   logger.info(
     `Bulk personalization update complete: ${result.success} succeeded, ${result.failed} failed, ${result.created} created, ${result.updated} updated`,
-    { service: "AdminService" }
+    { service: "AdminService" },
   );
 
   return result;
@@ -913,7 +970,7 @@ export async function adminRegenerateQRCodes(): Promise<{
     // Fetch all users with QR tokens
     const users = await (User.find as any)(
       {},
-      "_id fullName email qrToken"
+      "_id fullName email qrToken",
     ).lean();
 
     logger.info(`Found ${users.length} users for QR code regeneration`, {
@@ -930,7 +987,7 @@ export async function adminRegenerateQRCodes(): Promise<{
         environment,
         success: result.success,
         failed: result.failed,
-      }
+      },
     );
 
     return result;
@@ -939,7 +996,7 @@ export async function adminRegenerateQRCodes(): Promise<{
       `Failed to regenerate QR codes: ${
         error instanceof Error ? error.message : "Unknown error"
       }`,
-      { service: "AdminService" }
+      { service: "AdminService" },
     );
     throw new ValidationError("Failed to regenerate QR codes");
   }
