@@ -81,8 +81,8 @@ export const typeDefs = `
   type HouseholdMember {
     """First name of the household member"""
     firstName: String!
-    """Last name of the household member"""
-    lastName: String!
+    """Last name of the household member (optional for single-name cultures)"""
+    lastName: String
     """Relationship to the bride (optional)"""
     relationshipToBride: String
     """Relationship to the groom (optional)"""
@@ -93,8 +93,8 @@ export const typeDefs = `
   input HouseholdMemberInput {
     """First name of the household member"""
     firstName: String!
-    """Last name of the household member"""
-    lastName: String!
+    """Last name of the household member (optional)"""
+    lastName: String
     """Relationship to the bride (optional)"""
     relationshipToBride: String
     """Relationship to the groom (optional)"""

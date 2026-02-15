@@ -196,7 +196,7 @@ function validateGuests(
         mealPreference:
           attending === "YES"
             ? validateMealPreference(
-                guest.mealPreference,
+                guest.mealPreference || "",
                 attending,
                 featuresConfig.mealPreferencesEnabled,
               )

@@ -412,11 +412,19 @@ export async function adminUpdateUser(
     // QR Alias validation and uniqueness check
     if (input.qrAlias !== undefined) {
       if (input.qrAlias === null || input.qrAlias === "") {
-        // Allow clearing the alias by deleting the property
-        delete user.qrAlias;
+        // Clear the alias using Mongoose's set method for proper type handling
+        user.set("qrAlias", undefined);
       } else {
         // Normalize the alias
         const normalizedAlias = input.qrAlias.toLowerCase().trim();
+
+        // Validate format before database save for clear error messages
+        const qrAliasRegex = /^[a-z0-9-]{3,50}$/;
+        if (!qrAliasRegex.test(normalizedAlias)) {
+          throw new ValidationError(
+            "QR alias must contain only lowercase letters, numbers, and hyphens (3-50 characters)",
+          );
+        }
 
         // Check if alias is already in use by another user
         const existingAlias = await User.findOne({

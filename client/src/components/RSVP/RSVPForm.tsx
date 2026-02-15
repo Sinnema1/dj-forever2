@@ -446,7 +446,7 @@ export default function RSVPForm() {
         if (!guest.fullName.trim()) {
           errors[`guest-${index}-fullName`] = "Please enter guest's full name";
         }
-        if (!guest.mealPreference) {
+        if (features.mealPreferencesEnabled && !guest.mealPreference) {
           errors[`guest-${index}-mealPreference`] =
             'Please select a meal preference';
         }
