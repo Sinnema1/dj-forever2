@@ -8,6 +8,19 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    # MongoDB service container
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
       NODE_ENV: test
       JWT_SECRET: test-jwt-secret-for-ci-pipeline-32-chars
@@ -24,12 +37,6 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-
-      # Start MongoDB for tests
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.12.0
-        with:
-          mongodb-version: "6.0"
 
       # Install dependencies
       - name: Install server dependencies
