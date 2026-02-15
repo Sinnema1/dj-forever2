@@ -12,7 +12,7 @@ export default function MealPreferencesComingSoon() {
       <div className="coming-soon-icon" aria-hidden="true">
         🍽️
       </div>
-      <h3 className="coming-soon-title">Menu Selection Coming in April</h3>
+      <h3 className="coming-soon-title">Menu Selection Coming Soon</h3>
       <p className="coming-soon-description">
         We're finalizing our delicious menu options and will notify you when
         meal selection becomes available. You'll be able to choose your

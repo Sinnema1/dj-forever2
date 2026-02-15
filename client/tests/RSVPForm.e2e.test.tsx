@@ -666,7 +666,7 @@ describe('RSVPForm integration', () => {
       // Coming soon banner should be visible
       await waitFor(() => {
         expect(
-          screen.getByText(/menu selection coming in april/i)
+          screen.getByText(/menu selection coming soon/i)
         ).toBeInTheDocument();
       });
 

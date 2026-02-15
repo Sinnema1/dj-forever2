@@ -78,7 +78,9 @@ const BulkPersonalization: React.FC = () => {
   // Parse CSV file
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) {return;}
+    if (!file) {
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = e => {
@@ -105,7 +107,9 @@ const BulkPersonalization: React.FC = () => {
 
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i];
-      if (!line || line.trim() === '') {continue;}
+      if (!line || line.trim() === '') {
+        continue;
+      }
 
       const values = parseCSVLine(line);
       const row: any = {};
@@ -205,6 +209,18 @@ const BulkPersonalization: React.FC = () => {
           });
           continue;
         }
+        // Check for duplicate qrAlias within the same CSV
+        const existingIndex = data.findIndex(
+          entry => entry.qrAlias && entry.qrAlias === row.qrAlias
+        );
+        if (existingIndex !== -1) {
+          errors.push({
+            row: i + 1,
+            field: 'qrAlias',
+            message: `Row ${i + 1}: duplicate qrAlias "${row.qrAlias}" already used in row ${existingIndex + 2}`,
+          });
+          continue;
+        }
       }
 
       data.push({
@@ -259,7 +275,9 @@ const BulkPersonalization: React.FC = () => {
 
   // Import data
   const handleImport = async () => {
-    if (csvData.length === 0) {return;}
+    if (csvData.length === 0) {
+      return;
+    }
 
     setIsProcessing(true);
 
@@ -268,29 +286,52 @@ const BulkPersonalization: React.FC = () => {
       const updates = csvData.map(row => {
         const personalization: any = {};
 
-        if (row.qrAlias) {personalization.qrAlias = row.qrAlias.toLowerCase();}
-        if (row.relationshipToBride)
-          {personalization.relationshipToBride = row.relationshipToBride;}
-        if (row.relationshipToGroom)
-          {personalization.relationshipToGroom = row.relationshipToGroom;}
-        if (row.guestGroup) {personalization.guestGroup = row.guestGroup;}
-        if (row.customWelcomeMessage)
-          {personalization.customWelcomeMessage = row.customWelcomeMessage;}
-        if (row.specialInstructions)
-          {personalization.specialInstructions = row.specialInstructions;}
-        if (row.dietaryRestrictions)
-          {personalization.dietaryRestrictions = row.dietaryRestrictions;}
-        if (row.plusOneName) {personalization.plusOneName = row.plusOneName;}
-        if (row.personalPhoto)
-          {personalization.personalPhoto = row.personalPhoto;}
+        if (row.qrAlias) {
+          personalization.qrAlias = row.qrAlias.toLowerCase();
+        }
+        if (row.relationshipToBride) {
+          personalization.relationshipToBride = row.relationshipToBride;
+        }
+        if (row.relationshipToGroom) {
+          personalization.relationshipToGroom = row.relationshipToGroom;
+        }
+        if (row.guestGroup) {
+          personalization.guestGroup = row.guestGroup;
+        }
+        if (row.customWelcomeMessage) {
+          personalization.customWelcomeMessage = row.customWelcomeMessage;
+        }
+        if (row.specialInstructions) {
+          personalization.specialInstructions = row.specialInstructions;
+        }
+        if (row.dietaryRestrictions) {
+          personalization.dietaryRestrictions = row.dietaryRestrictions;
+        }
+        if (row.plusOneName) {
+          personalization.plusOneName = row.plusOneName;
+        }
+        if (row.personalPhoto) {
+          personalization.personalPhoto = row.personalPhoto;
+        }
         // Address fields
-        if (row.streetAddress)
-          {personalization.streetAddress = row.streetAddress;}
-        if (row.addressLine2) {personalization.addressLine2 = row.addressLine2;}
-        if (row.city) {personalization.city = row.city;}
-        if (row.state) {personalization.state = row.state;}
-        if (row.zipCode) {personalization.zipCode = row.zipCode;}
-        if (row.country) {personalization.country = row.country;}
+        if (row.streetAddress) {
+          personalization.streetAddress = row.streetAddress;
+        }
+        if (row.addressLine2) {
+          personalization.addressLine2 = row.addressLine2;
+        }
+        if (row.city) {
+          personalization.city = row.city;
+        }
+        if (row.state) {
+          personalization.state = row.state;
+        }
+        if (row.zipCode) {
+          personalization.zipCode = row.zipCode;
+        }
+        if (row.country) {
+          personalization.country = row.country;
+        }
 
         // Only set plusOneAllowed if explicitly provided in CSV
         if (row.plusOneAllowed !== undefined && row.plusOneAllowed !== '') {

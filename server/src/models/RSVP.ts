@@ -121,7 +121,16 @@ const guestSchema = new Schema<IGuest>(
       required: false, // Meal preferences now optional (controlled by feature flag in service layer)
       trim: true,
       enum: {
-        values: ["chicken", "beef", "fish", "vegetarian", "vegan", "other", ""],
+        values: [
+          "chicken",
+          "beef",
+          "fish",
+          "vegetarian",
+          "vegan",
+          "kids",
+          "other",
+          "",
+        ],
         message: "Invalid meal preference",
       },
     },
@@ -187,7 +196,16 @@ const rsvpSchema = new Schema<IRSVP>(
       type: String,
       trim: true,
       enum: {
-        values: ["chicken", "beef", "fish", "vegetarian", "vegan", "other", ""],
+        values: [
+          "chicken",
+          "beef",
+          "fish",
+          "vegetarian",
+          "vegan",
+          "kids",
+          "other",
+          "",
+        ],
         message: "Invalid meal preference",
       },
     },

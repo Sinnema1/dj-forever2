@@ -130,9 +130,8 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     if (formData.email) {
       personalization.email = formData.email;
     }
-    if (formData.qrAlias !== undefined && formData.qrAlias !== '') {
-      personalization.qrAlias = formData.qrAlias;
-    }
+    // Always include qrAlias so empty string signals "clear" to the server
+    personalization.qrAlias = formData.qrAlias || '';
     if (formData.relationshipToBride) {
       personalization.relationshipToBride = formData.relationshipToBride;
     }
@@ -302,6 +301,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
                 onChange={e =>
                   handleInputChange('qrAlias', e.target.value.toLowerCase())
                 }
+                minLength={3}
                 maxLength={50}
                 placeholder="smith-family"
                 pattern="[a-z0-9-]+"
