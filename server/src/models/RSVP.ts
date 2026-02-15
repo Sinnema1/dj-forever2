@@ -118,10 +118,7 @@ const guestSchema = new Schema<IGuest>(
     },
     mealPreference: {
       type: String,
-      required: function (this: any) {
-        // Only require mealPreference if the parent RSVP is attending "YES"
-        return this.parent().attending === "YES";
-      },
+      required: false, // Meal preferences now optional (controlled by feature flag in service layer)
       trim: true,
       enum: {
         values: ["chicken", "beef", "fish", "vegetarian", "vegan", "other", ""],
@@ -136,7 +133,7 @@ const guestSchema = new Schema<IGuest>(
   },
   {
     _id: false, // Prevent automatic _id generation for subdocuments
-  }
+  },
 );
 
 const rsvpSchema = new Schema<IRSVP>(
@@ -214,7 +211,7 @@ const rsvpSchema = new Schema<IRSVP>(
         return ret;
       },
     },
-  }
+  },
 );
 
 // Compound indexes for common query patterns
@@ -248,7 +245,7 @@ rsvpSchema.pre("save", function (next) {
 
 // Static methods for common queries
 rsvpSchema.statics.findByUserId = function (
-  userId: string | mongoose.Types.ObjectId
+  userId: string | mongoose.Types.ObjectId,
 ) {
   return this.findOne({ userId });
 };

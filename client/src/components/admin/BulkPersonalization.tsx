@@ -7,6 +7,7 @@ import './BulkPersonalization.css';
 interface CSVRow {
   fullName: string;
   email: string;
+  qrAlias?: string;
   relationshipToBride?: string;
   relationshipToGroom?: string;
   guestGroup?: GuestGroup | '';
@@ -61,9 +62,9 @@ const BulkPersonalization: React.FC = () => {
 
   // Download CSV template
   const downloadTemplate = () => {
-    const template = `fullName,email,relationshipToBride,relationshipToGroom,guestGroup,plusOneAllowed,plusOneName,customWelcomeMessage,specialInstructions,dietaryRestrictions,personalPhoto,streetAddress,addressLine2,city,state,zipCode,country
-"John Doe","john@example.com","College Friend","","friends","true","Jane Doe","We're so excited to celebrate with you!","Hotel block at Marriott downtown","Vegetarian","https://example.com/photo.jpg","123 Main St","Apt 4B","New York","NY","10001","USA"
-"Jane Smith","jane@example.com","","Sister","brides_family","false","","","Shuttle service available from hotel","Gluten-free","","456 Oak Ave","","Los Angeles","CA","90001","USA"`;
+    const template = `fullName,email,qrAlias,relationshipToBride,relationshipToGroom,guestGroup,plusOneAllowed,plusOneName,customWelcomeMessage,specialInstructions,dietaryRestrictions,personalPhoto,streetAddress,addressLine2,city,state,zipCode,country
+"John Doe","john@example.com","doe-family","College Friend","","friends","true","Jane Doe","We're so excited to celebrate with you!","Hotel block at Marriott downtown","Vegetarian","https://example.com/photo.jpg","123 Main St","Apt 4B","New York","NY","10001","USA"
+"Jane Smith","jane@example.com","smith-family","","Sister","brides_family","false","","","Shuttle service available from hotel","Gluten-free","","456 Oak Ave","","Los Angeles","CA","90001","USA"`;
 
     const blob = new Blob([template], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -77,7 +78,7 @@ const BulkPersonalization: React.FC = () => {
   // Parse CSV file
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {return;}
 
     const reader = new FileReader();
     reader.onload = e => {
@@ -104,7 +105,7 @@ const BulkPersonalization: React.FC = () => {
 
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i];
-      if (!line || line.trim() === '') continue;
+      if (!line || line.trim() === '') {continue;}
 
       const values = parseCSVLine(line);
       const row: any = {};
@@ -185,9 +186,31 @@ const BulkPersonalization: React.FC = () => {
         continue;
       }
 
+      // Validate qrAlias format
+      if (row.qrAlias) {
+        const qrAliasRegex = /^[a-z0-9-]+$/;
+        if (!qrAliasRegex.test(row.qrAlias)) {
+          errors.push({
+            row: i + 1,
+            field: 'qrAlias',
+            message: `Row ${i + 1}: qrAlias must contain only lowercase letters, numbers, and hyphens`,
+          });
+          continue;
+        }
+        if (row.qrAlias.length < 3 || row.qrAlias.length > 50) {
+          errors.push({
+            row: i + 1,
+            field: 'qrAlias',
+            message: `Row ${i + 1}: qrAlias must be 3-50 characters`,
+          });
+          continue;
+        }
+      }
+
       data.push({
         fullName: row.fullName,
         email: row.email,
+        qrAlias: row.qrAlias || undefined,
         relationshipToBride: row.relationshipToBride || undefined,
         relationshipToGroom: row.relationshipToGroom || undefined,
         guestGroup: (row.guestGroup as GuestGroup) || undefined,
@@ -236,7 +259,7 @@ const BulkPersonalization: React.FC = () => {
 
   // Import data
   const handleImport = async () => {
-    if (csvData.length === 0) return;
+    if (csvData.length === 0) {return;}
 
     setIsProcessing(true);
 
@@ -245,28 +268,29 @@ const BulkPersonalization: React.FC = () => {
       const updates = csvData.map(row => {
         const personalization: any = {};
 
+        if (row.qrAlias) {personalization.qrAlias = row.qrAlias.toLowerCase();}
         if (row.relationshipToBride)
-          personalization.relationshipToBride = row.relationshipToBride;
+          {personalization.relationshipToBride = row.relationshipToBride;}
         if (row.relationshipToGroom)
-          personalization.relationshipToGroom = row.relationshipToGroom;
-        if (row.guestGroup) personalization.guestGroup = row.guestGroup;
+          {personalization.relationshipToGroom = row.relationshipToGroom;}
+        if (row.guestGroup) {personalization.guestGroup = row.guestGroup;}
         if (row.customWelcomeMessage)
-          personalization.customWelcomeMessage = row.customWelcomeMessage;
+          {personalization.customWelcomeMessage = row.customWelcomeMessage;}
         if (row.specialInstructions)
-          personalization.specialInstructions = row.specialInstructions;
+          {personalization.specialInstructions = row.specialInstructions;}
         if (row.dietaryRestrictions)
-          personalization.dietaryRestrictions = row.dietaryRestrictions;
-        if (row.plusOneName) personalization.plusOneName = row.plusOneName;
+          {personalization.dietaryRestrictions = row.dietaryRestrictions;}
+        if (row.plusOneName) {personalization.plusOneName = row.plusOneName;}
         if (row.personalPhoto)
-          personalization.personalPhoto = row.personalPhoto;
+          {personalization.personalPhoto = row.personalPhoto;}
         // Address fields
         if (row.streetAddress)
-          personalization.streetAddress = row.streetAddress;
-        if (row.addressLine2) personalization.addressLine2 = row.addressLine2;
-        if (row.city) personalization.city = row.city;
-        if (row.state) personalization.state = row.state;
-        if (row.zipCode) personalization.zipCode = row.zipCode;
-        if (row.country) personalization.country = row.country;
+          {personalization.streetAddress = row.streetAddress;}
+        if (row.addressLine2) {personalization.addressLine2 = row.addressLine2;}
+        if (row.city) {personalization.city = row.city;}
+        if (row.state) {personalization.state = row.state;}
+        if (row.zipCode) {personalization.zipCode = row.zipCode;}
+        if (row.country) {personalization.country = row.country;}
 
         // Only set plusOneAllowed if explicitly provided in CSV
         if (row.plusOneAllowed !== undefined && row.plusOneAllowed !== '') {

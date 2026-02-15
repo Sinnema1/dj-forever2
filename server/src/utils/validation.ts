@@ -282,6 +282,7 @@ export function validateGuestCount(count: number): number {
 export function validateMealPreference(
   preference: string,
   attending?: string,
+  mealPreferencesEnabled: boolean = true,
 ): string {
   const validPreferences = [
     "chicken",
@@ -294,12 +295,12 @@ export function validateMealPreference(
 
   const lowerPreference = preference.toLowerCase().trim();
 
-  // Only require meal preference for attending guests
+  // Only require meal preference for attending guests when feature is enabled
   if (!lowerPreference) {
-    if (attending === "YES") {
+    if (attending === "YES" && mealPreferencesEnabled) {
       throw new ValidationError("Meal preference is required");
     }
-    return ""; // Return empty string for non-attending guests
+    return ""; // Return empty string for non-attending guests or when feature disabled
   }
 
   if (!validPreferences.includes(lowerPreference)) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, GuestGroup } from '../../models/userTypes';
+import { User, GuestGroup, HouseholdMember } from '../../models/userTypes';
 import './GuestPersonalizationModal.css';
 
 interface GuestPersonalizationModalProps {
@@ -9,6 +9,7 @@ interface GuestPersonalizationModalProps {
     userId: string,
     personalization: {
       email?: string;
+      qrAlias?: string;
       relationshipToBride?: string;
       relationshipToGroom?: string;
       customWelcomeMessage?: string;
@@ -17,6 +18,7 @@ interface GuestPersonalizationModalProps {
       personalPhoto?: string;
       specialInstructions?: string;
       dietaryRestrictions?: string;
+      householdMembers?: HouseholdMember[];
       streetAddress?: string;
       addressLine2?: string;
       city?: string;
@@ -39,6 +41,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
 }) => {
   const [formData, setFormData] = useState({
     email: user.email || '',
+    qrAlias: user.qrAlias || '',
     relationshipToBride: user.relationshipToBride || '',
     relationshipToGroom: user.relationshipToGroom || '',
     customWelcomeMessage: user.customWelcomeMessage || '',
@@ -48,6 +51,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     personalPhoto: user.personalPhoto || '',
     specialInstructions: user.specialInstructions || '',
     dietaryRestrictions: user.dietaryRestrictions || '',
+    householdMembers: user.householdMembers || [],
     streetAddress: user.streetAddress || '',
     addressLine2: user.addressLine2 || '',
     city: user.city || '',
@@ -58,6 +62,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
 
   const [charCount, setCharCount] = useState({
     email: user.email?.length || 0,
+    qrAlias: user.qrAlias?.length || 0,
     relationshipToBride: user.relationshipToBride?.length || 0,
     relationshipToGroom: user.relationshipToGroom?.length || 0,
     customWelcomeMessage: user.customWelcomeMessage?.length || 0,
@@ -77,6 +82,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     // Update character counts
     setCharCount({
       email: formData.email.length,
+      qrAlias: formData.qrAlias.length,
       relationshipToBride: formData.relationshipToBride.length,
       relationshipToGroom: formData.relationshipToGroom.length,
       customWelcomeMessage: formData.customWelcomeMessage.length,
@@ -99,6 +105,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     // Build personalization object with only defined values
     const personalization: {
       email?: string;
+      qrAlias?: string;
       relationshipToBride?: string;
       relationshipToGroom?: string;
       customWelcomeMessage?: string;
@@ -108,6 +115,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       personalPhoto?: string;
       specialInstructions?: string;
       dietaryRestrictions?: string;
+      householdMembers?: HouseholdMember[];
       streetAddress?: string;
       addressLine2?: string;
       city?: string;
@@ -116,10 +124,14 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       country?: string;
     } = {
       plusOneAllowed: formData.plusOneAllowed,
+      householdMembers: formData.householdMembers,
     };
 
     if (formData.email) {
       personalization.email = formData.email;
+    }
+    if (formData.qrAlias !== undefined && formData.qrAlias !== '') {
+      personalization.qrAlias = formData.qrAlias;
     }
     if (formData.relationshipToBride) {
       personalization.relationshipToBride = formData.relationshipToBride;
@@ -170,11 +182,45 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
 
   const handleInputChange = (
     field: keyof typeof formData,
-    value: string | boolean
+    value: string | boolean | HouseholdMember[]
   ) => {
     setFormData(prev => ({
       ...prev,
       [field]: value,
+    }));
+  };
+
+  // Household member management functions
+  const addHouseholdMember = () => {
+    const newMember: HouseholdMember = {
+      firstName: '',
+      lastName: '',
+      relationshipToBride: '',
+      relationshipToGroom: '',
+    };
+    setFormData(prev => ({
+      ...prev,
+      householdMembers: [...prev.householdMembers, newMember],
+    }));
+  };
+
+  const updateHouseholdMember = (
+    index: number,
+    field: keyof HouseholdMember,
+    value: string
+  ) => {
+    setFormData(prev => ({
+      ...prev,
+      householdMembers: prev.householdMembers.map((member, i) =>
+        i === index ? { ...member, [field]: value } : member
+      ),
+    }));
+  };
+
+  const removeHouseholdMember = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      householdMembers: prev.householdMembers.filter((_, i) => i !== index),
     }));
   };
 
@@ -241,6 +287,29 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
               />
               <small className="form-hint">
                 Primary email address for QR code login and notifications
+              </small>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="qrAlias">
+                QR Alias (Optional)
+                <span className="char-count">{charCount.qrAlias}/50</span>
+              </label>
+              <input
+                type="text"
+                id="qrAlias"
+                value={formData.qrAlias}
+                onChange={e =>
+                  handleInputChange('qrAlias', e.target.value.toLowerCase())
+                }
+                maxLength={50}
+                placeholder="smith-family"
+                pattern="[a-z0-9-]+"
+                className="form-input"
+              />
+              <small className="form-hint">
+                Human-readable URL alias for QR login (lowercase letters,
+                numbers, and hyphens only, 3-50 characters)
               </small>
             </div>
           </div>
@@ -420,6 +489,177 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
                 This will be used for personalized greetings
               </small>
             </div>
+          </div>
+
+          <div className="form-section">
+            <h3>Household Members</h3>
+            <small
+              className="form-hint"
+              style={{ display: 'block', marginBottom: '1rem' }}
+            >
+              Additional family members who share this QR code for
+              authentication
+            </small>
+
+            {formData.householdMembers.map((member, index) => (
+              <div
+                key={index}
+                className="household-member-item"
+                style={{
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  padding: '1rem',
+                  marginBottom: '1rem',
+                  position: 'relative',
+                  background: '#f9f9f9',
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => removeHouseholdMember(index)}
+                  className="remove-household-member"
+                  style={{
+                    position: 'absolute',
+                    top: '0.5rem',
+                    right: '0.5rem',
+                    background: '#ff4444',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '28px',
+                    height: '28px',
+                    cursor: 'pointer',
+                    fontSize: '18px',
+                    lineHeight: '1',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background 0.2s',
+                  }}
+                  onMouseEnter={e =>
+                    (e.currentTarget.style.background = '#cc0000')
+                  }
+                  onMouseLeave={e =>
+                    (e.currentTarget.style.background = '#ff4444')
+                  }
+                  title="Remove household member"
+                >
+                  ×
+                </button>
+
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '1rem',
+                  }}
+                >
+                  <div className="form-group">
+                    <label htmlFor={`household-firstName-${index}`}>
+                      First Name *
+                    </label>
+                    <input
+                      type="text"
+                      id={`household-firstName-${index}`}
+                      value={member.firstName}
+                      onChange={e =>
+                        updateHouseholdMember(
+                          index,
+                          'firstName',
+                          e.target.value
+                        )
+                      }
+                      maxLength={50}
+                      placeholder="First name"
+                      className="form-input"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor={`household-lastName-${index}`}>
+                      Last Name *
+                    </label>
+                    <input
+                      type="text"
+                      id={`household-lastName-${index}`}
+                      value={member.lastName}
+                      onChange={e =>
+                        updateHouseholdMember(index, 'lastName', e.target.value)
+                      }
+                      maxLength={50}
+                      placeholder="Last name"
+                      className="form-input"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor={`household-relationshipToBride-${index}`}>
+                      Relationship to Bride
+                    </label>
+                    <input
+                      type="text"
+                      id={`household-relationshipToBride-${index}`}
+                      value={member.relationshipToBride || ''}
+                      onChange={e =>
+                        updateHouseholdMember(
+                          index,
+                          'relationshipToBride',
+                          e.target.value
+                        )
+                      }
+                      maxLength={100}
+                      placeholder="e.g., Daughter, Son"
+                      className="form-input"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor={`household-relationshipToGroom-${index}`}>
+                      Relationship to Groom
+                    </label>
+                    <input
+                      type="text"
+                      id={`household-relationshipToGroom-${index}`}
+                      value={member.relationshipToGroom || ''}
+                      onChange={e =>
+                        updateHouseholdMember(
+                          index,
+                          'relationshipToGroom',
+                          e.target.value
+                        )
+                      }
+                      maxLength={100}
+                      placeholder="e.g., Daughter, Son"
+                      className="form-input"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={addHouseholdMember}
+              className="add-household-member-btn"
+              style={{
+                background: '#4CAF50',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '0.75rem 1.5rem',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500',
+                transition: 'background 0.2s',
+                width: '100%',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#45a049')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#4CAF50')}
+            >
+              + Add Household Member
+            </button>
           </div>
 
           <div className="form-section">

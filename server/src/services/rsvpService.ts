@@ -62,6 +62,7 @@ import RSVP, { IRSVP, IGuest } from "../models/RSVP.js";
 import User, { IUser } from "../models/User.js";
 import mongoose, { Document } from "mongoose";
 import { ValidationError } from "../utils/errors.js";
+import { featuresConfig } from "../config/index.js";
 import {
   validateName,
   validateAttendance,
@@ -142,7 +143,7 @@ function validatePartySize(guestCount: number, user: IUser): void {
       `Party size ${guestCount} exceeds maximum allowed ${maxAllowed} guests. ` +
         `(${namedGuestCount} household member${namedGuestCount > 1 ? "s" : ""}${
           user.plusOneAllowed ? " + 1 plus-one" : ""
-        })`
+        })`,
     );
   }
 }
@@ -179,7 +180,7 @@ function validateGuests(
     mealPreference: string;
     allergies?: string;
   }>,
-  attending: string
+  attending: string,
 ): IGuest[] {
   if (attending === "YES" && (!guests || guests.length === 0)) {
     throw new ValidationError("At least one guest is required when attending");
@@ -194,7 +195,11 @@ function validateGuests(
             : guest.fullName || "",
         mealPreference:
           attending === "YES"
-            ? validateMealPreference(guest.mealPreference, attending)
+            ? validateMealPreference(
+                guest.mealPreference,
+                attending,
+                featuresConfig.mealPreferencesEnabled,
+              )
             : guest.mealPreference || "",
       };
 
@@ -260,7 +265,7 @@ export async function createRSVP(input: CreateRSVPInput): Promise<any> {
       // Ensure guest count matches guests array
       if (validatedGuests.length !== validatedGuestCount) {
         throw new ValidationError(
-          "Guest count must match the number of guests provided"
+          "Guest count must match the number of guests provided",
         );
       }
     } else if (validatedAttending === "YES") {
@@ -272,7 +277,11 @@ export async function createRSVP(input: CreateRSVPInput): Promise<any> {
       const defaultGuest: IGuest = {
         fullName: validateName(fullName),
         mealPreference: mealPreference
-          ? validateMealPreference(mealPreference, validatedAttending)
+          ? validateMealPreference(
+              mealPreference,
+              validatedAttending,
+              featuresConfig.mealPreferencesEnabled,
+            )
           : "",
       };
 
@@ -322,7 +331,7 @@ export async function createRSVP(input: CreateRSVPInput): Promise<any> {
  */
 export async function updateRSVP(
   userId: string,
-  updates: UpdateRSVPInput
+  updates: UpdateRSVPInput,
 ): Promise<any> {
   try {
     if (!userId) {
@@ -366,7 +375,7 @@ export async function updateRSVP(
     if (updates.additionalNotes !== undefined) {
       validatedUpdates.additionalNotes = sanitizeText(
         updates.additionalNotes,
-        500
+        500,
       );
     }
 
@@ -378,7 +387,8 @@ export async function updateRSVP(
 
       validatedUpdates.mealPreference = validateMealPreference(
         updates.mealPreference,
-        currentAttending
+        currentAttending,
+        featuresConfig.mealPreferencesEnabled,
       );
     }
 
@@ -389,7 +399,7 @@ export async function updateRSVP(
     const rsvp = (await (RSVP.findOneAndUpdate as any)(
       { userId },
       { $set: validatedUpdates },
-      { new: true }
+      { new: true },
     )) as (Document<unknown, {}, IRSVP> & IRSVP) | null;
 
     if (!rsvp) {

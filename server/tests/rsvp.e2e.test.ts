@@ -170,7 +170,7 @@ describe("RSVP End-to-End", () => {
       expect(rsvpRes.body.data.createRSVP.guests).toHaveLength(1);
       expect(rsvpRes.body.data.createRSVP.guests[0].fullName).toBe("Test User");
       expect(rsvpRes.body.data.createRSVP.guests[0].mealPreference).toBe(
-        "chicken"
+        "chicken",
       );
     });
 
@@ -217,7 +217,7 @@ describe("RSVP End-to-End", () => {
       expect(rsvpRes.body.data.createRSVP).not.toBeNull();
       expect(rsvpRes.body.data.createRSVP.attending).toBe("NO");
       expect(rsvpRes.body.data.createRSVP.additionalNotes).toBe(
-        "Sorry, cant make it"
+        "Sorry, cant make it",
       );
 
       // For non-attending, guest details should be empty/cleared
@@ -331,8 +331,20 @@ describe("RSVP End-to-End", () => {
           `,
         });
 
-      expect(rsvpRes.body.errors).toBeDefined();
-      expect(rsvpRes.body.errors[0].message).toContain("Meal preference");
+      // Test behavior depends on ENABLE_MEAL_PREFERENCES feature flag
+      const mealPreferencesEnabled =
+        process.env.ENABLE_MEAL_PREFERENCES === "true";
+
+      if (mealPreferencesEnabled) {
+        // When feature is enabled, meal preference should be required
+        expect(rsvpRes.body.errors).toBeDefined();
+        expect(rsvpRes.body.errors[0].message).toContain("Meal preference");
+      } else {
+        // When feature is disabled, RSVP should succeed without meal preference
+        expect(rsvpRes.body.errors).toBeUndefined();
+        expect(rsvpRes.body.data.createRSVP).toBeDefined();
+        expect(rsvpRes.body.data.createRSVP.attending).toBe("YES");
+      }
     });
   });
 
@@ -404,7 +416,7 @@ describe("RSVP End-to-End", () => {
       expect(editRes.body.data.editRSVP).not.toBeNull();
       expect(editRes.body.data.editRSVP.attending).toBe("NO");
       expect(editRes.body.data.editRSVP.additionalNotes).toBe(
-        "Sorry, cant make it after all"
+        "Sorry, cant make it after all",
       );
     });
   });
@@ -480,7 +492,7 @@ describe("RSVP End-to-End", () => {
       // Should either truncate or reject
       if (rsvpRes.body.data?.createRSVP) {
         expect(
-          rsvpRes.body.data.createRSVP.additionalNotes.length
+          rsvpRes.body.data.createRSVP.additionalNotes.length,
         ).toBeLessThanOrEqual(500);
       } else {
         expect(rsvpRes.body.errors).toBeDefined();

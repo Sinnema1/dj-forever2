@@ -89,6 +89,18 @@ export const typeDefs = `
     relationshipToGroom: String
   }
 
+  """Input for household member data"""
+  input HouseholdMemberInput {
+    """First name of the household member"""
+    firstName: String!
+    """Last name of the household member"""
+    lastName: String!
+    """Relationship to the bride (optional)"""
+    relationshipToBride: String
+    """Relationship to the groom (optional)"""
+    relationshipToGroom: String
+  }
+
   type User {
     _id: ID!
     fullName: String!
@@ -123,7 +135,7 @@ export const typeDefs = `
 
   type Guest {
     fullName: String!
-    mealPreference: String!
+    mealPreference: String
     allergies: String
   }
 
@@ -147,7 +159,7 @@ export const typeDefs = `
 
   input GuestInput {
     fullName: String!
-    mealPreference: String!
+    mealPreference: String
     allergies: String
   }
 
@@ -208,6 +220,8 @@ export const typeDefs = `
     hasRSVPed: Boolean!
     isInvited: Boolean!
     qrToken: String!
+    """Human-readable alias for QR token (e.g., 'smith-family')"""
+    qrAlias: String
     rsvp: RSVP
     """Date when user was created/invited"""
     createdAt: String
@@ -239,6 +253,7 @@ export const typeDefs = `
     fullName: String
     email: String
     isInvited: Boolean
+    qrAlias: String
     streetAddress: String
     addressLine2: String
     city: String
@@ -250,6 +265,7 @@ export const typeDefs = `
   """Input for updating user personalization fields"""
   input UserPersonalizationInput {
     email: String
+    qrAlias: String
     relationshipToBride: String
     relationshipToGroom: String
     customWelcomeMessage: String
@@ -259,6 +275,7 @@ export const typeDefs = `
     personalPhoto: String
     specialInstructions: String
     dietaryRestrictions: String
+    householdMembers: [HouseholdMemberInput!]
     streetAddress: String
     addressLine2: String
     city: String

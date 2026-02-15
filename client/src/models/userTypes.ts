@@ -91,6 +91,8 @@ export interface User {
   rsvpId?: string | null;
   /** RSVP details including attendance status */
   rsvp?: RSVP | null;
+  /** Human-readable URL alias for QR login (e.g., "smith-family") */
+  qrAlias?: string;
   /** Guest's relationship to the bride (e.g., "Sister", "College Friend") */
   relationshipToBride?: string;
   /** Guest's relationship to the groom (e.g., "Brother", "Coworker") */

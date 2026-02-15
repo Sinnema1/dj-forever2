@@ -281,6 +281,7 @@ export interface AdminUserUpdateInput {
   fullName?: string;
   email?: string;
   isInvited?: boolean;
+  qrAlias?: string;
   streetAddress?: string;
   addressLine2?: string;
   city?: string;

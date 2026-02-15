@@ -1,0 +1,130 @@
+.meal-preferences-coming-soon {
+  background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+  border: 2px solid #ffb84d;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 1.5rem 0;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.coming-soon-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.coming-soon-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #cc6600;
+  margin: 0 0 1rem 0;
+}
+
+.coming-soon-description {
+  font-size: 1rem;
+  color: #664400;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.coming-soon-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: #664400;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.feature-item:hover {
+  transform: translateX(5px);
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.feature-text {
+  text-align: left;
+  flex: 1;
+}
+
+.coming-soon-note {
+  font-size: 0.9rem;
+  color: #996600;
+  margin: 1.5rem 0 0 0;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+.coming-soon-note strong {
+  color: #cc6600;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .meal-preferences-coming-soon {
+    padding: 1.5rem 1rem;
+    margin: 1rem 0;
+  }
+
+  .coming-soon-icon {
+    font-size: 2.5rem;
+  }
+
+  .coming-soon-title {
+    font-size: 1.25rem;
+  }
+
+  .coming-soon-description {
+    font-size: 0.95rem;
+  }
+
+  .coming-soon-features {
+    gap: 0.5rem;
+  }
+
+  .feature-item {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .feature-icon {
+    font-size: 1.25rem;
+  }
+
+  .coming-soon-note {
+    font-size: 0.85rem;
+    padding: 0.75rem;
+  }
+}

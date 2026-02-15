@@ -2,8 +2,10 @@ import React, { useState, useEffect, useTransition } from 'react';
 import { useRSVP } from '../../features/rsvp/hooks/useRSVP';
 import { useAuth } from '../../context/AuthContext';
 import RSVPConfirmation from './RSVPConfirmation';
+import MealPreferencesComingSoon from './MealPreferencesComingSoon';
 import { RSVPFormData, Guest } from '../../features/rsvp/types/rsvpTypes';
 import { logDebug } from '../../utils/logger';
+import { features } from '../../config/features';
 // Styles now imported globally via main.tsx
 
 /**
@@ -301,13 +303,21 @@ export default function RSVPForm() {
       case 'mealPreference': {
         if (guestIndex !== undefined) {
           // Validating individual guest meal preference
-          if (formData.attending === 'YES' && !value) {
+          if (
+            formData.attending === 'YES' &&
+            !value &&
+            features.mealPreferencesEnabled
+          ) {
             errors[`guest-${guestIndex}-mealPreference`] =
               'Please select a meal preference';
           }
         } else {
           // Legacy validation
-          if (formData.attending === 'YES' && !value) {
+          if (
+            formData.attending === 'YES' &&
+            !value &&
+            features.mealPreferencesEnabled
+          ) {
             errors.mealPreference = 'Please select a meal preference';
           }
         }
@@ -729,6 +739,9 @@ export default function RSVPForm() {
             </small>
           </div>
 
+          {/* Meal Preferences Coming Soon Banner (when feature disabled) */}
+          {!features.mealPreferencesEnabled && <MealPreferencesComingSoon />}
+
           {/* Individual Guest Forms */}
           {formData.guests.map((guest, index) => (
             <div
@@ -808,65 +821,67 @@ export default function RSVPForm() {
                 )}
               </div>
 
-              {/* Guest Meal Preference */}
-              <div className="form-group">
-                <label
-                  htmlFor={`guest-${index}-mealPreference`}
-                  className="form-label"
-                >
-                  Meal Preference{' '}
-                  <span className="required" aria-label="required">
-                    *
-                  </span>
-                </label>
-                <div className="form-select-container">
-                  <select
-                    id={`guest-${index}-mealPreference`}
-                    name={`guest-${index}-mealPreference`}
-                    className={`form-select ${validationErrors[`guest-${index}-mealPreference`] ? 'error' : ''} ${guest.mealPreference ? 'filled' : ''}`}
-                    value={guest.mealPreference}
-                    onChange={e => {
-                      updateGuest(index, 'mealPreference', e.target.value);
-                      validateField('mealPreference', e.target.value, index);
-                    }}
-                    required={formData.attending === 'YES'}
-                    aria-describedby={
-                      validationErrors[`guest-${index}-mealPreference`]
-                        ? `guest-${index}-mealPreference-error`
-                        : undefined
-                    }
-                    aria-invalid={
-                      validationErrors[`guest-${index}-mealPreference`]
-                        ? 'true'
-                        : 'false'
-                    }
+              {/* Guest Meal Preference - Only show when feature is enabled */}
+              {features.mealPreferencesEnabled && (
+                <div className="form-group">
+                  <label
+                    htmlFor={`guest-${index}-mealPreference`}
+                    className="form-label"
                   >
-                    {mealOptions.map(option => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  {guest.mealPreference && (
-                    <div className="form-select-check" aria-hidden="true">
-                      ✓
+                    Meal Preference{' '}
+                    <span className="required" aria-label="required">
+                      *
+                    </span>
+                  </label>
+                  <div className="form-select-container">
+                    <select
+                      id={`guest-${index}-mealPreference`}
+                      name={`guest-${index}-mealPreference`}
+                      className={`form-select ${validationErrors[`guest-${index}-mealPreference`] ? 'error' : ''} ${guest.mealPreference ? 'filled' : ''}`}
+                      value={guest.mealPreference}
+                      onChange={e => {
+                        updateGuest(index, 'mealPreference', e.target.value);
+                        validateField('mealPreference', e.target.value, index);
+                      }}
+                      required={formData.attending === 'YES'}
+                      aria-describedby={
+                        validationErrors[`guest-${index}-mealPreference`]
+                          ? `guest-${index}-mealPreference-error`
+                          : undefined
+                      }
+                      aria-invalid={
+                        validationErrors[`guest-${index}-mealPreference`]
+                          ? 'true'
+                          : 'false'
+                      }
+                    >
+                      {mealOptions.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {guest.mealPreference && (
+                      <div className="form-select-check" aria-hidden="true">
+                        ✓
+                      </div>
+                    )}
+                  </div>
+                  {validationErrors[`guest-${index}-mealPreference`] && (
+                    <div
+                      id={`guest-${index}-mealPreference-error`}
+                      className="field-error mobile-friendly"
+                      role="alert"
+                      aria-live="assertive"
+                    >
+                      <span className="error-icon" aria-hidden="true">
+                        ⚠️
+                      </span>
+                      {validationErrors[`guest-${index}-mealPreference`]}
                     </div>
                   )}
                 </div>
-                {validationErrors[`guest-${index}-mealPreference`] && (
-                  <div
-                    id={`guest-${index}-mealPreference-error`}
-                    className="field-error mobile-friendly"
-                    role="alert"
-                    aria-live="assertive"
-                  >
-                    <span className="error-icon" aria-hidden="true">
-                      ⚠️
-                    </span>
-                    {validationErrors[`guest-${index}-mealPreference`]}
-                  </div>
-                )}
-              </div>
+              )}
 
               {/* Guest Allergies */}
               <div className="form-group">

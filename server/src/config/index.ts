@@ -90,6 +90,9 @@ interface Config {
     introspection: boolean;
     playground: boolean;
   };
+  features: {
+    mealPreferencesEnabled: boolean;
+  };
 }
 
 // Validate required environment variables
@@ -114,7 +117,7 @@ function validateConfig(): Config {
 
   if (missingVars.length > 0) {
     throw new Error(
-      `Missing required environment variables: ${missingVars.join(", ")}`
+      `Missing required environment variables: ${missingVars.join(", ")}`,
     );
   }
 
@@ -150,6 +153,9 @@ function validateConfig(): Config {
       introspection: environment !== "production",
       playground: environment !== "production",
     },
+    features: {
+      mealPreferencesEnabled: process.env.ENABLE_MEAL_PREFERENCES === "true",
+    },
   };
 }
 
@@ -162,4 +168,5 @@ export const {
   auth: authConfig,
   frontend: frontendConfig,
   apollo: apolloConfig,
+  features: featuresConfig,
 } = config;
