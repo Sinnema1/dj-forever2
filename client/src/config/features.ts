@@ -28,4 +28,16 @@ export const features = {
    */
   mealPreferencesEnabled:
     import.meta.env.VITE_ENABLE_MEAL_PREFERENCES === 'true',
+
+  /**
+   * Guestbook Feature
+   *
+   * Controls whether the guestbook section is visible on the homepage
+   * and in the navigation. When disabled, the section is completely hidden
+   * — no "coming soon" tease is shown.
+   *
+   * @default false (disabled until guestbook backend is implemented)
+   * @env VITE_ENABLE_GUESTBOOK
+   */
+  guestbookEnabled: import.meta.env.VITE_ENABLE_GUESTBOOK === 'true',
 };

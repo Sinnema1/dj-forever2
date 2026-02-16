@@ -166,7 +166,7 @@ export class ErrorReportingService {
 
     // In production, could send to external services
     if (!this.isDevelopment) {
-      this.sendToExternalServices(report);
+      this.sendToExternalServicesIfConfigured(report);
     }
   }
 
@@ -280,18 +280,24 @@ export class ErrorReportingService {
     }
   }
 
-  private sendToExternalServices(report: ErrorReport): void {
-    // Placeholder for external error reporting services
-    // Examples:
+  private sendToExternalServicesIfConfigured(_report: ErrorReport): void {
+    // External error reporting integration point.
+    // Configure via VITE_ERROR_REPORTING_PROVIDER env var.
+    // Supported values (when implemented): sentry, logrocket, bugsnag
+    //
+    // Example integrations:
     // - Sentry: Sentry.captureException(report.error, { contexts: { custom: report.context } })
     // - LogRocket: LogRocket.captureException(report.error)
     // - Bugsnag: Bugsnag.notify(report.error, { context: report.context })
 
-    // For now, just ensure it's stored locally
-    console.warn(
-      'Error report ready for external service:',
-      report.fingerprint
-    );
+    const provider = import.meta.env.VITE_ERROR_REPORTING_PROVIDER as
+      | string
+      | undefined;
+    if (!provider) {
+      return; // No provider configured — silent no-op
+    }
+
+    // TODO: Add provider-specific integration when ready
   }
 
   /**
