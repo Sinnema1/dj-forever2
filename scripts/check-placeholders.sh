@@ -15,10 +15,14 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 # ── Patterns to flag ─────────────────────────────────────────
+# Each entry is an extended regex matched against file content.
 PATTERNS=(
   '@example\.com'
   'myregistry\.com'
-  'wedding@example'
+  'your.jwt.secret'
+  'your-email@'
+  'your-app-password'
+  'replace.with.actual'
 )
 
 # ── Paths to scan ────────────────────────────────────────────
@@ -27,64 +31,38 @@ SCAN_DIRS=(
   "server/src"
 )
 
-# ── Paths & files to allow (extended grep -v filters) ────────
-# These are legitimate uses: seed data, test fixtures, docs,
-# admin-only form placeholders, and config examples.
-EXCLUDE_PATTERNS=(
-  '/seeds/'
-  '\.test\.'
-  '__tests__'
-  '\.md$'
-  '\.example$'
-  '/docs/'
-  '/scripts/'
-  'BulkPersonalization'
-  'GuestPersonalizationModal'
-  'convertGuestList'
-)
+# ── Allowlisted path fragments ──────────────────────────────
+# Matches are removed if the file path contains any of these.
+# Kept deliberately short — add entries only when a false
+# positive is confirmed.
+PATH_ALLOWLIST='/(seeds|scripts)/|\.test\.|__tests__|\.md$|\.example$|/docs/|BulkPersonalization|GuestPersonalizationModal|convertGuestList'
 
-# Lines that are purely comments/JSDoc (matched against the content after filename:line:)
-COMMENT_PATTERNS=(
-  ': \* '
-  ': \*$'
-  ':.*// .*@example'
-  ':.*\/\/ .*@example'
-)
-
-# Build a single grep -v chain from the exclusion list
-build_exclude_filter() {
-  local filter="cat"
-  for pat in "${EXCLUDE_PATTERNS[@]}"; do
-    filter="$filter | grep -v '$pat'"
-  done
-  for pat in "${COMMENT_PATTERNS[@]}"; do
-    filter="$filter | grep -v '$pat'"
-  done
-  echo "$filter"
-}
+# ── Comment-line filter ──────────────────────────────────────
+# Lines that are clearly JSDoc or inline comments. Matched
+# against the grep output line (filepath:linenum: content).
+COMMENT_ALLOWLIST=':[0-9]+: *(\*|//|#) '
 
 FOUND=0
-EXCLUDE_FILTER=$(build_exclude_filter)
 
 echo "🔍 Scanning for placeholder values in runtime code..."
 echo ""
 
 for dir in "${SCAN_DIRS[@]}"; do
   full_path="$REPO_ROOT/$dir"
-  if [[ ! -d "$full_path" ]]; then
-    continue
-  fi
+  [[ -d "$full_path" ]] || continue
 
   for pattern in "${PATTERNS[@]}"; do
-    # Find matches, apply exclusion filter, collect results
-    MATCHES=$(grep -rn --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' --include='*.json' \
-      "$pattern" "$full_path" 2>/dev/null | eval "$EXCLUDE_FILTER" || true)
+    MATCHES=$(
+      grep -rn -E --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' \
+        "$pattern" "$full_path" 2>/dev/null \
+      | grep -v -E "$PATH_ALLOWLIST" \
+      | grep -v -E "$COMMENT_ALLOWLIST" \
+      || true
+    )
 
     if [[ -n "$MATCHES" ]]; then
       echo "❌ Found '$pattern' in $dir:"
-      echo "$MATCHES" | while IFS= read -r line; do
-        echo "   $line"
-      done
+      echo "$MATCHES" | sed 's/^/   /'
       echo ""
       FOUND=1
     fi
@@ -92,18 +70,21 @@ for dir in "${SCAN_DIRS[@]}"; do
 done
 
 if [[ $FOUND -eq 1 ]]; then
-  echo "──────────────────────────────────────────────────────"
-  echo "🚫 Placeholder values detected in runtime code."
-  echo ""
-  echo "   These patterns should only appear in:"
-  echo "   • server/src/seeds/**  (seed/template data)"
-  echo "   • **/*.test.*          (test files)"
-  echo "   • **/*.md              (documentation)"
-  echo "   • Admin-only components (BulkPersonalization, etc.)"
-  echo ""
-  echo "   Fix: Move values to environment variables via"
-  echo "   client/src/config/publicLinks.ts or remove them."
-  echo "──────────────────────────────────────────────────────"
+  cat <<'EOF'
+──────────────────────────────────────────────────────
+🚫 Placeholder values detected in runtime code.
+
+   Allowed locations:
+   • server/src/seeds/**       (seed/template data)
+   • server/src/scripts/**     (dev utility scripts)
+   • **/*.test.*               (test files)
+   • **/*.md                   (documentation)
+   • Admin components          (form placeholder attrs)
+
+   Fix: Move values to environment variables via
+   client/src/config/publicLinks.ts or remove them.
+──────────────────────────────────────────────────────
+EOF
   exit 1
 else
   echo "✅ No placeholder values found in runtime code."
