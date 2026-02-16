@@ -4,6 +4,7 @@ on:
   pull_request:
   push:
     branches: [main, feature-branch]
+  workflow_call: # Allow deploy.yml to call CI as a reusable workflow
 
 jobs:
   build-and-test:
@@ -68,6 +69,11 @@ jobs:
       - name: Typecheck server
         working-directory: server
         run: npx tsc --noEmit
+
+      # Lint
+      - name: Lint client
+        working-directory: client
+        run: npm run lint
 
       # Build client
       - name: Build client
