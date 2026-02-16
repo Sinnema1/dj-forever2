@@ -32,6 +32,7 @@ import { useAuth } from '../context/AuthContext';
 import { smoothScroll, scrollToTop } from '../utils/smoothScroll';
 import QRLoginModal from './QRLoginModal';
 import MobileDrawer, { type MobileDrawerHandle } from './MobileDrawer';
+import { features } from '../config/features';
 
 /**
  * Interface for navigation link configuration
@@ -54,6 +55,9 @@ const sectionLinks = [
   { label: 'Gallery', to: 'gallery' },
   { label: 'Travel Guide', to: 'travel' },
   { label: 'FAQs', to: 'faqs' },
+  ...(features.guestbookEnabled
+    ? [{ label: 'Guestbook', to: 'guestbook' }]
+    : []),
 ];
 
 /**
