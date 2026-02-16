@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { logDebug } from '../utils/logger';
+import { PUBLIC_LINKS } from '../config/publicLinks';
 
 const QRHelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [email, setEmail] = useState('');
@@ -204,8 +205,16 @@ const QRHelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
             <div style={{ marginTop: '20px', textAlign: 'center' }}>
               <p>
-                Or contact us directly at: <br />
-                <a href="mailto:wedding@example.com">wedding@example.com</a>
+                {PUBLIC_LINKS.contactEmail ? (
+                  <>
+                    Or contact us directly at: <br />
+                    <a href={`mailto:${PUBLIC_LINKS.contactEmail}`}>
+                      {PUBLIC_LINKS.contactEmail}
+                    </a>
+                  </>
+                ) : (
+                  'Or reach out to the couple directly for assistance.'
+                )}
               </p>
             </div>
           </>
