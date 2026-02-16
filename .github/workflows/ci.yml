@@ -32,6 +32,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Placeholder scan — runs before npm ci for fast feedback (bash/grep only)
+      - name: Check for placeholder values
+        run: ./scripts/check-placeholders.sh
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -46,10 +50,6 @@ jobs:
       - name: Install client dependencies
         working-directory: client
         run: npm ci
-
-      # Placeholder scan — fail if @example.com, myregistry.com, etc. leak into runtime code
-      - name: Check for placeholder values
-        run: ./scripts/check-placeholders.sh
 
       # Run tests
       - name: Test server

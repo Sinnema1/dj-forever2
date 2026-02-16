@@ -25,14 +25,12 @@
 export const PUBLIC_LINKS = {
   /** Guest-facing registry URLs — omit the env var to hide the card */
   registry: {
-    crateAndBarrel:
-      (import.meta.env.VITE_CRATE_BARREL_REGISTRY_URL as string) ?? '',
-    williamsSonoma:
-      (import.meta.env.VITE_WILLIAMS_SONOMA_REGISTRY_URL as string) ?? '',
-    costco: (import.meta.env.VITE_COSTCO_REGISTRY_URL as string) ?? '',
-    honeymoon: (import.meta.env.VITE_HONEYMOON_FUND_URL as string) ?? '',
+    crateAndBarrel: import.meta.env.VITE_CRATE_BARREL_REGISTRY_URL ?? '',
+    williamsSonoma: import.meta.env.VITE_WILLIAMS_SONOMA_REGISTRY_URL ?? '',
+    costco: import.meta.env.VITE_COSTCO_REGISTRY_URL ?? '',
+    honeymoon: import.meta.env.VITE_HONEYMOON_FUND_URL ?? '',
   },
 
   /** Wedding contact email for help pages and modals */
-  contactEmail: (import.meta.env.VITE_WEDDING_CONTACT_EMAIL as string) ?? '',
+  contactEmail: import.meta.env.VITE_WEDDING_CONTACT_EMAIL ?? '',
 } as const;

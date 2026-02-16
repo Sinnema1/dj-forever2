@@ -53,6 +53,9 @@ export const RSVP = lazy(() => import('../pages/RSVP'));
 /** TravelGuide component - Travel information and accommodations */
 export const TravelGuide = lazy(() => import('../pages/TravelGuide'));
 
+/** Guestbook component - Guest messages and well wishes (feature-flagged) */
+export const Guestbook = lazy(() => import('../pages/Guestbook'));
+
 // Note: RSVPForm and CountdownTimer are not lazy-loaded here because they are
 // critical components needed immediately on page load by HeroBanner and RSVP pages.
 // Static imports in those components are more appropriate for performance.
