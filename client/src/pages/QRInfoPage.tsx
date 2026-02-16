@@ -1,4 +1,5 @@
 import React from 'react';
+import { PUBLIC_LINKS } from '../config/publicLinks';
 
 const QRInfoPage: React.FC = () => {
   return (
@@ -240,9 +241,17 @@ const QRInfoPage: React.FC = () => {
       >
         <h3>Still Having Trouble?</h3>
         <p>
-          Contact us at{' '}
-          <a href="mailto:wedding@example.com">wedding@example.com</a> and we'll
-          help you access the website.
+          {PUBLIC_LINKS.contactEmail ? (
+            <>
+              Contact us at{' '}
+              <a href={`mailto:${PUBLIC_LINKS.contactEmail}`}>
+                {PUBLIC_LINKS.contactEmail}
+              </a>{' '}
+              and we&apos;ll help you access the website.
+            </>
+          ) : (
+            'Please reach out to the couple directly for help accessing the website.'
+          )}
         </p>
       </div>
     </div>
