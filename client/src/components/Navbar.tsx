@@ -343,7 +343,6 @@ function Navbar() {
         ref={mobileDrawerRef}
         isOpen={mobileMenuOpen}
         onClose={() => {
-          console.log('[Navbar] Drawer onClose called');
           setMobileMenuOpen(false);
         }}
         className="navbar-drawer"
