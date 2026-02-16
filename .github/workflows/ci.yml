@@ -4,7 +4,6 @@ on:
   pull_request:
   push:
     branches: [main, feature-branch]
-  workflow_call: # Allow deploy.yml to call CI as a reusable workflow
 
 jobs:
   build-and-test:
