@@ -54,7 +54,6 @@ const sectionLinks = [
   { label: 'Gallery', to: 'gallery' },
   { label: 'Travel Guide', to: 'travel' },
   { label: 'FAQs', to: 'faqs' },
-  { label: 'Guestbook', to: 'guestbook' },
 ];
 
 /**

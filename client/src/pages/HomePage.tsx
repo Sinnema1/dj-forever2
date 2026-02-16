@@ -11,6 +11,7 @@ import OurStory from './OurStory';
 import TheDetails from './TheDetails';
 import FAQs from './FAQs';
 import Guestbook from './Guestbook';
+import { features } from '../config/features';
 
 export default function HomePage() {
   // IntersectionObserver to fade in each .section-content
@@ -112,14 +113,16 @@ export default function HomePage() {
         <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
 
-      {/* Guestbook Section */}
-      <section id="guestbook">
-        <SectionDivider position="top" color={theme.colors.cream} />
-        <h2 className="section-title">Guestbook</h2>
-        <div className="section-content">
-          <Guestbook />
-        </div>
-      </section>
+      {/* Guestbook Section — hidden when feature flag is off */}
+      {features.guestbookEnabled && (
+        <section id="guestbook">
+          <SectionDivider position="top" color={theme.colors.cream} />
+          <h2 className="section-title">Guestbook</h2>
+          <div className="section-content">
+            <Guestbook />
+          </div>
+        </section>
+      )}
     </>
   );
 }
