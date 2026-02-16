@@ -3,6 +3,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  padding-top: clamp(6rem, 8vw, 8rem); /* offset fixed navbar (72px) */
   background: var(--background-color, #f8f9fa);
   min-height: 100vh;
 }
