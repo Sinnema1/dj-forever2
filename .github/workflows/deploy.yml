@@ -1,17 +1,14 @@
 name: Deploy
 
+# Deploy only after CI workflow completes successfully on main
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
 
-# Deploy only runs after CI passes on the same commit
 jobs:
-  # Wait for CI to complete successfully before deploying
-  ci:
-    uses: ./.github/workflows/ci.yml
-
   deploy-server:
-    needs: ci
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +31,7 @@ jobs:
           fi
 
   deploy-client:
-    needs: ci
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

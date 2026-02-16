@@ -10,9 +10,7 @@ const User = UserModel as Model<IUser>;
 
 const dbName = process.env.MONGODB_DB_NAME || "djforever2";
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017";
-console.log(
-  `[printUsers] Connecting to MongoDB URI: ${MONGODB_URI}, DB Name: ${dbName}`,
-);
+console.log(`[printUsers] Connecting to MongoDB (dbName: ${dbName})`);
 
 async function printUsers(): Promise<void> {
   // Project pattern: Always use { dbName } option, never append to URI
