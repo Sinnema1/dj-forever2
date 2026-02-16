@@ -122,18 +122,10 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
         : window.location.origin;
       const qrUrl = `${apiBaseUrl}/api/qr-code/${qrToken}`;
 
-      console.log('[QR Download] Fetching from:', qrUrl);
-
       // Fetch the QR code with credentials
       const response = await fetch(qrUrl, {
         credentials: 'include',
       });
-
-      console.log('[QR Download] Response status:', response.status);
-      console.log(
-        '[QR Download] Content-Type:',
-        response.headers.get('Content-Type')
-      );
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -151,8 +143,6 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
 
       // Get the blob and create download
       const blob = await response.blob();
-      console.log('[QR Download] Blob size:', blob.size, 'bytes');
-      console.log('[QR Download] Blob type:', blob.type);
 
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -162,8 +152,6 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-
-      console.log('[QR Download] Download triggered successfully');
     } catch (error: any) {
       console.error('Failed to download QR code:', error);
       alert(
