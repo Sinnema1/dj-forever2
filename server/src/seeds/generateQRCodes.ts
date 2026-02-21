@@ -48,13 +48,24 @@ console.log(`[generateQRCodes] Connecting to MongoDB (dbName: ${dbName})`);
 
 const OUTPUT_DIR = path.resolve(`./qr-codes/${environment}`);
 
+// Print-quality settings:
+// - 1200px width: yields ~4" at 300 DPI — excellent for Save the Date cards
+// - ECC Level H (30% error correction): maximum resilience for print + real-world scanning
+// - Margin 4: adequate quiet zone (~4 modules of whitespace)
+const QR_WIDTH = 1200;
+const QR_ERROR_CORRECTION = "H" as const;
+const QR_MARGIN = 4;
+
 async function main() {
   // Project pattern: Always use { dbName } option, never append to URI
   // This ensures consistent database targeting across dev/test/production
   await mongoose.connect(MONGODB_URI, { dbName });
-  const users = await (User.find as any)({}, "_id fullName email qrToken");
+  const users = await (User.find as any)(
+    {},
+    "_id fullName email qrToken qrAlias",
+  );
   console.log(`Found ${users.length} users in database`);
-  if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR);
+  if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
   for (const user of users) {
     if (!user.qrToken) {
@@ -63,16 +74,27 @@ async function main() {
       );
       continue;
     }
+
+    // Prefer alias-based URL (human-readable, print-friendly) with token fallback
+    const loginIdentifier = user.qrAlias || user.qrToken;
+    if (!user.qrAlias) {
+      console.warn(
+        `⚠️ No alias for ${user.fullName} — using qrToken in QR URL. Consider setting an alias before printing.`,
+      );
+    }
+
     const fileName = `${user.fullName.replace(
       /[^a-z0-9]/gi,
       "_",
     )}_${user.email.replace(/[^a-z0-9]/gi, "_")}_${user._id}.png`;
     const filePath = path.join(OUTPUT_DIR, fileName);
-    const loginUrl = `${FRONTEND_URL}/login/qr/${user.qrToken}`;
+    const loginUrl = `${FRONTEND_URL}/login/qr/${loginIdentifier}`;
     try {
       await QRCode.toFile(filePath, loginUrl, {
         color: { dark: "#000", light: "#FFF" },
-        width: 300,
+        width: QR_WIDTH,
+        errorCorrectionLevel: QR_ERROR_CORRECTION,
+        margin: QR_MARGIN,
       });
       console.log(
         `✅ QR code generated for ${user.fullName} (${user.email}) [ID: ${user._id}]: ${filePath} (URL: ${loginUrl})`,

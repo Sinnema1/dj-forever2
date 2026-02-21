@@ -255,3 +255,47 @@
     width: 100%;
   }
 }
+
+/* QR Alias lock toggle */
+.qr-alias-input-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.qr-alias-input-row .form-input {
+  flex: 1;
+}
+
+.qr-alias-input-row .form-input:disabled {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.alias-lock-btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.65rem 0.75rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.alias-lock-btn:hover {
+  background: #f0f0f0;
+}
+
+.alias-lock-btn.locked {
+  border-color: var(--color-sage, #9fb5a1);
+  background: rgba(159, 181, 161, 0.08);
+}
+
+.alias-lock-btn.unlocked {
+  border-color: #ddd;
+}

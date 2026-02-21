@@ -237,6 +237,7 @@ export interface AdminUser {
   hasRSVPed: boolean;
   isInvited: boolean;
   qrToken: string;
+  qrAliasLocked?: boolean;
   rsvp?: any;
   createdAt?: string;
   lastUpdated?: string;
@@ -282,6 +283,7 @@ export interface AdminUserUpdateInput {
   email?: string;
   isInvited?: boolean;
   qrAlias?: string;
+  qrAliasLocked?: boolean;
   streetAddress?: string;
   addressLine2?: string;
   city?: string;
