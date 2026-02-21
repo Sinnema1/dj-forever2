@@ -117,7 +117,8 @@ async function startServer() {
   const dbName = process.env.MONGODB_DB_NAME || "djforever2";
   const uri = process.env.MONGODB_URI || "mongodb://localhost:27017";
   // Use { dbName } option for consistency with seed scripts
-  console.log(`[server] Connecting to MongoDB URI: ${uri}, DB Name: ${dbName}`);
+  // Never log the full URI — it may contain credentials
+  console.log(`[server] Connecting to MongoDB (dbName: ${dbName})`);
 
   try {
     await mongoose.connect(uri, { dbName });
@@ -135,7 +136,7 @@ async function startServer() {
       process.env.PORT
         ? `ENV override: ${process.env.PORT}`
         : `Default: ${PORT}`
-    }`
+    }`,
   );
 
   // Apollo Server setup
@@ -178,7 +179,7 @@ async function startServer() {
         "https://dj-forever2.onrender.com", // Production frontend URL
       ],
       credentials: true,
-    })
+    }),
   );
 
   // Rate limiting for GraphQL endpoint
@@ -196,7 +197,7 @@ async function startServer() {
           user,
         };
       },
-    })
+    }),
   );
 
   // Root endpoint for health checks (Render infrastructure)
@@ -250,7 +251,7 @@ async function startServer() {
       // {name}_{email}_{_id}.png
       const fileName = `${user.fullName.replace(
         /[^a-z0-9]/gi,
-        "_"
+        "_",
       )}_${user.email.replace(/[^a-z0-9]/gi, "_")}_${user._id}.png`;
 
       // Construct absolute file path
@@ -259,7 +260,7 @@ async function startServer() {
         serverRoot,
         "qr-codes",
         environment,
-        fileName
+        fileName,
       );
 
       console.log(`[QR Download] User: ${user.fullName} (${user.email})`);
@@ -283,7 +284,7 @@ async function startServer() {
       res.setHeader("Content-Type", "image/png");
       res.setHeader(
         "Content-Disposition",
-        `attachment; filename="${downloadFilename}"`
+        `attachment; filename="${downloadFilename}"`,
       );
 
       // Send the file - sendFile requires absolute path
