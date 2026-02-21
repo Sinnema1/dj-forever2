@@ -229,8 +229,12 @@ export const useRSVP = () => {
   return {
     /** Current user's RSVP data or null if no RSVP exists */
     rsvp: data?.getRSVP ?? null,
-    /** Consolidated loading state for all RSVP operations */
+    /** Consolidated loading state for all RSVP operations (query + mutations) */
     loading: queryLoading || createLoading || editLoading,
+    /** True only while the initial GET_RSVP query is in-flight */
+    queryLoading,
+    /** True only while a create or edit mutation is in-flight */
+    mutationLoading: createLoading || editLoading,
     /** Any error from query or mutation operations */
     error: queryError || createError || editError,
     /** Function to create a new RSVP submission */
