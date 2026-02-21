@@ -410,9 +410,11 @@ export const resolvers = {
           });
         }
 
-        // QR Alias lock enforcement
+        // QR Alias lock enforcement (skip if same request is unlocking)
+        const isUnlocking = args.input.qrAliasLocked === false;
         if (
           existingUser.qrAliasLocked === true &&
+          !isUnlocking &&
           args.input.qrAlias !== undefined &&
           args.input.qrAlias !== existingUser.qrAlias
         ) {
