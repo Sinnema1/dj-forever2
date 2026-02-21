@@ -54,7 +54,7 @@ import { features } from '../../config/features';
  * - `Guest` - Individual guest data structure
  */
 export default function RSVPForm() {
-  const { createRSVP, editRSVP, rsvp, loading } = useRSVP();
+  const { createRSVP, editRSVP, rsvp, loading, mutationLoading } = useRSVP();
   const { user } = useAuth();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [submittedData, setSubmittedData] = useState<RSVPFormData | null>(null);
@@ -939,7 +939,7 @@ export default function RSVPForm() {
         {/* Submit Button */}
         <div className="submit-section">
           <button
-            className={`rsvp-submit-btn ${loading || isPending ? 'loading' : ''} ${Object.keys(validationErrors).length > 0 ? 'has-errors' : ''}`}
+            className={`rsvp-submit-btn ${mutationLoading || isPending ? 'loading' : ''} ${Object.keys(validationErrors).length > 0 ? 'has-errors' : ''}`}
             type="submit"
             disabled={loading || isPending}
             aria-describedby={
@@ -948,9 +948,9 @@ export default function RSVPForm() {
                 : undefined
             }
             aria-live="polite"
-            aria-busy={loading || isPending ? 'true' : 'false'}
+            aria-busy={mutationLoading || isPending ? 'true' : 'false'}
           >
-            {loading || isPending ? (
+            {mutationLoading || isPending ? (
               <>
                 <span className="loading-spinner" aria-hidden="true" />
                 <span className="loading-text">
@@ -976,7 +976,7 @@ export default function RSVPForm() {
           </button>
 
           {/* Progress indicator for mobile */}
-          {(loading || isPending) && (
+          {(mutationLoading || isPending) && (
             <div
               className="submission-progress"
               aria-live="polite"
