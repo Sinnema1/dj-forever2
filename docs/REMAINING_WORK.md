@@ -23,6 +23,15 @@ See [docs/CONFIGURATION.md](CONFIGURATION.md) for the full env var reference and
 
 ## Feature Work (Post-Launch)
 
+### RSVP Confirmation Emails
+
+- **Status**: No post-submission email exists. SMTP infra is configured (nodemailer) but only used for admin-triggered reminder emails.
+- **Remaining**:
+  - [ ] Backend: Send confirmation email after `createRSVP` and `updateRSVP`
+  - [ ] Email template: Branded HTML email with attendance summary, guest names, dietary info
+  - [ ] Throttle/dedupe: Prevent email spam on rapid re-edits (e.g., 5-minute cooldown on update emails)
+  - [ ] Flip `ENABLE_PRODUCTION_EMAILS=true` when ready
+
 ### Guestbook (gated — `VITE_ENABLE_GUESTBOOK`)
 
 - **Status**: UI stubs exist (`GuestbookForm`, `GuestbookFeed` return `null`), gated behind feature flag

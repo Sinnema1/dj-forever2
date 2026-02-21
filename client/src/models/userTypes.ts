@@ -93,6 +93,8 @@ export interface User {
   rsvp?: RSVP | null;
   /** Human-readable URL alias for QR login (e.g., "smith-family") */
   qrAlias?: string;
+  /** Whether the QR alias is locked to prevent accidental changes (for print safety) */
+  qrAliasLocked?: boolean;
   /** Guest's relationship to the bride (e.g., "Sister", "College Friend") */
   relationshipToBride?: string;
   /** Guest's relationship to the groom (e.g., "Brother", "Coworker") */

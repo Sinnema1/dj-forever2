@@ -374,6 +374,7 @@ export const resolvers = {
         input: {
           email?: string;
           qrAlias?: string;
+          qrAliasLocked?: boolean;
           relationshipToBride?: string;
           relationshipToGroom?: string;
           customWelcomeMessage?: string;
@@ -401,6 +402,26 @@ export const resolvers = {
     ) => {
       requireAdmin(context);
       try {
+        // Pre-fetch user to enforce alias lock before building update
+        const existingUser = await (User.findById as any)(args.userId);
+        if (!existingUser) {
+          throw new GraphQLError("User not found", {
+            extensions: { code: "NOT_FOUND" },
+          });
+        }
+
+        // QR Alias lock enforcement
+        if (
+          existingUser.qrAliasLocked === true &&
+          args.input.qrAlias !== undefined &&
+          args.input.qrAlias !== existingUser.qrAlias
+        ) {
+          throw new GraphQLError(
+            "QR alias is locked and cannot be changed. Unlock it first via the admin panel.",
+            { extensions: { code: "ALIAS_LOCKED" } },
+          );
+        }
+
         // Build update object with only defined fields
         const updateFields: Record<string, any> = {};
         if (args.input.email !== undefined) {
@@ -408,6 +429,21 @@ export const resolvers = {
         }
         if (args.input.qrAlias !== undefined) {
           updateFields.qrAlias = args.input.qrAlias;
+        }
+        // QR Alias lock toggle
+        if (args.input.qrAliasLocked !== undefined) {
+          // Prevent locking when no alias is set
+          const effectiveAlias =
+            args.input.qrAlias !== undefined
+              ? args.input.qrAlias
+              : existingUser.qrAlias;
+          if (args.input.qrAliasLocked === true && !effectiveAlias) {
+            throw new GraphQLError(
+              "Cannot lock QR alias — no alias is currently set. Set an alias first.",
+              { extensions: { code: "VALIDATION_ERROR" } },
+            );
+          }
+          updateFields.qrAliasLocked = args.input.qrAliasLocked;
         }
         if (args.input.relationshipToBride !== undefined) {
           updateFields.relationshipToBride = args.input.relationshipToBride;

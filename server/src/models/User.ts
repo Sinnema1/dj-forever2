@@ -95,6 +95,7 @@ export interface IUser extends Document {
   rsvp?: any; // Virtual field populated from RSVP collection
   qrToken: string;
   qrAlias?: string;
+  qrAliasLocked?: boolean;
   relationshipToBride?: string;
   relationshipToGroom?: string;
   householdMembers?: IHouseholdMember[];
@@ -172,6 +173,10 @@ const userSchema = new Schema<IUser>(
       ],
       minlength: [3, "QR alias must be at least 3 characters"],
       maxlength: [50, "QR alias cannot exceed 50 characters"],
+    },
+    qrAliasLocked: {
+      type: Boolean,
+      default: false,
     },
     relationshipToBride: {
       type: String,

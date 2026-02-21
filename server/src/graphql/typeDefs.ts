@@ -113,6 +113,8 @@ export const typeDefs = `
     qrToken: String!
     """Human-readable alias for QR token (e.g., 'smith-family')"""
     qrAlias: String
+    """Whether the QR alias is locked to prevent accidental changes (for print safety)"""
+    qrAliasLocked: Boolean
     relationshipToBride: String
     relationshipToGroom: String
     customWelcomeMessage: String
@@ -222,6 +224,8 @@ export const typeDefs = `
     qrToken: String!
     """Human-readable alias for QR token (e.g., 'smith-family')"""
     qrAlias: String
+    """Whether the QR alias is locked to prevent accidental changes (for print safety)"""
+    qrAliasLocked: Boolean
     rsvp: RSVP
     """Date when user was created/invited"""
     createdAt: String
@@ -254,6 +258,7 @@ export const typeDefs = `
     email: String
     isInvited: Boolean
     qrAlias: String
+    qrAliasLocked: Boolean
     streetAddress: String
     addressLine2: String
     city: String
@@ -266,6 +271,7 @@ export const typeDefs = `
   input UserPersonalizationInput {
     email: String
     qrAlias: String
+    qrAliasLocked: Boolean
     relationshipToBride: String
     relationshipToGroom: String
     customWelcomeMessage: String

@@ -10,6 +10,7 @@ interface GuestPersonalizationModalProps {
     personalization: {
       email?: string;
       qrAlias?: string;
+      qrAliasLocked?: boolean;
       relationshipToBride?: string;
       relationshipToGroom?: string;
       customWelcomeMessage?: string;
@@ -42,6 +43,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
   const [formData, setFormData] = useState({
     email: user.email || '',
     qrAlias: user.qrAlias || '',
+    qrAliasLocked: user.qrAliasLocked || false,
     relationshipToBride: user.relationshipToBride || '',
     relationshipToGroom: user.relationshipToGroom || '',
     customWelcomeMessage: user.customWelcomeMessage || '',
@@ -106,6 +108,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     const personalization: {
       email?: string;
       qrAlias?: string;
+      qrAliasLocked?: boolean;
       relationshipToBride?: string;
       relationshipToGroom?: string;
       customWelcomeMessage?: string;
@@ -132,6 +135,8 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     }
     // Always include qrAlias so empty string signals "clear" to the server
     personalization.qrAlias = formData.qrAlias || '';
+    // Always include qrAliasLocked
+    personalization.qrAliasLocked = formData.qrAliasLocked;
     if (formData.relationshipToBride) {
       personalization.relationshipToBride = formData.relationshipToBride;
     }
@@ -294,22 +299,43 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
                 QR Alias (Optional)
                 <span className="char-count">{charCount.qrAlias}/50</span>
               </label>
-              <input
-                type="text"
-                id="qrAlias"
-                value={formData.qrAlias}
-                onChange={e =>
-                  handleInputChange('qrAlias', e.target.value.toLowerCase())
-                }
-                minLength={3}
-                maxLength={50}
-                placeholder="smith-family"
-                pattern="[a-z0-9-]+"
-                className="form-input"
-              />
+              <div className="qr-alias-input-row">
+                <input
+                  type="text"
+                  id="qrAlias"
+                  value={formData.qrAlias}
+                  onChange={e =>
+                    handleInputChange('qrAlias', e.target.value.toLowerCase())
+                  }
+                  minLength={3}
+                  maxLength={50}
+                  placeholder="smith-family"
+                  pattern="[a-z0-9-]+"
+                  className="form-input"
+                  disabled={formData.qrAliasLocked}
+                />
+                <button
+                  type="button"
+                  className={`alias-lock-btn ${formData.qrAliasLocked ? 'locked' : 'unlocked'}`}
+                  onClick={() =>
+                    handleInputChange('qrAliasLocked', !formData.qrAliasLocked)
+                  }
+                  title={
+                    formData.qrAliasLocked
+                      ? 'Alias locked for print safety — click to unlock'
+                      : 'Click to lock alias (prevents accidental changes)'
+                  }
+                  aria-label={
+                    formData.qrAliasLocked ? 'Unlock QR alias' : 'Lock QR alias'
+                  }
+                >
+                  {formData.qrAliasLocked ? '🔒' : '🔓'}
+                </button>
+              </div>
               <small className="form-hint">
-                Human-readable URL alias for QR login (lowercase letters,
-                numbers, and hyphens only, 3-50 characters)
+                {formData.qrAliasLocked
+                  ? 'Alias is locked for print safety. Unlock to make changes.'
+                  : 'Human-readable URL alias for QR login (lowercase letters, numbers, and hyphens only, 3-50 characters)'}
               </small>
             </div>
           </div>

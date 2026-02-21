@@ -409,6 +409,17 @@ export async function adminUpdateUser(
     if (input.email !== undefined) user.email = input.email;
     if (input.isInvited !== undefined) user.isInvited = input.isInvited;
 
+    // QR Alias lock enforcement
+    if (
+      user.qrAliasLocked === true &&
+      input.qrAlias !== undefined &&
+      input.qrAlias !== user.qrAlias
+    ) {
+      throw new ValidationError(
+        "QR alias is locked and cannot be changed. Unlock it first via the admin panel.",
+      );
+    }
+
     // QR Alias validation and uniqueness check
     if (input.qrAlias !== undefined) {
       if (input.qrAlias === null || input.qrAlias === "") {
@@ -442,6 +453,16 @@ export async function adminUpdateUser(
       }
     }
 
+    // QR Alias lock toggle (allow locking/unlocking independently of alias changes)
+    if (input.qrAliasLocked !== undefined) {
+      if (input.qrAliasLocked === true && !user.qrAlias && !input.qrAlias) {
+        throw new ValidationError(
+          "Cannot lock QR alias — no alias is currently set. Set an alias first.",
+        );
+      }
+      user.qrAliasLocked = input.qrAliasLocked;
+    }
+
     // Address fields
     if (input.streetAddress !== undefined)
       user.streetAddress = input.streetAddress;
@@ -462,6 +483,7 @@ export async function adminUpdateUser(
       hasRSVPed: user.hasRSVPed,
       isInvited: user.isInvited,
       qrToken: user.qrToken,
+      qrAliasLocked: user.qrAliasLocked ?? false,
       rsvp: user.rsvp,
       createdAt: user.createdAt?.toISOString(),
       lastUpdated: user.updatedAt?.toISOString(),
@@ -759,7 +781,17 @@ export async function bulkUpdatePersonalization(
 
       // QR Alias validation (if provided)
       if (update.personalization.qrAlias !== undefined) {
+        // Enforce alias lock — skip alias change with warning instead of failing batch
         if (
+          user?.qrAliasLocked === true &&
+          update.personalization.qrAlias !== user.qrAlias
+        ) {
+          logger.warn(
+            `Skipped alias change for ${update.email} — alias is locked`,
+            { service: "AdminService" },
+          );
+          // Don't process the alias change, but continue with other fields
+        } else if (
           update.personalization.qrAlias === null ||
           update.personalization.qrAlias === ""
         ) {

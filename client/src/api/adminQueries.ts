@@ -31,6 +31,7 @@ export const GET_ADMIN_RSVPS = gql`
       hasRSVPed
       qrToken
       qrAlias
+      qrAliasLocked
       relationshipToBride
       relationshipToGroom
       customWelcomeMessage
@@ -125,6 +126,7 @@ export const UPDATE_USER_PERSONALIZATION = gql`
       fullName
       email
       qrAlias
+      qrAliasLocked
       relationshipToBride
       relationshipToGroom
       customWelcomeMessage
