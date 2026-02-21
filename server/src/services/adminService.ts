@@ -199,6 +199,7 @@ export async function getAllUsersWithRSVPs(): Promise<AdminUser[]> {
       isInvited: user.isInvited,
       qrToken: user.qrToken,
       qrAlias: user.qrAlias,
+      qrAliasLocked: user.qrAliasLocked ?? false,
       rsvp: user.rsvp,
       createdAt: user.createdAt?.toISOString(),
       lastUpdated: user.updatedAt?.toISOString(),
@@ -409,9 +410,11 @@ export async function adminUpdateUser(
     if (input.email !== undefined) user.email = input.email;
     if (input.isInvited !== undefined) user.isInvited = input.isInvited;
 
-    // QR Alias lock enforcement
+    // QR Alias lock enforcement (skip if same request is unlocking)
+    const isUnlocking = input.qrAliasLocked === false;
     if (
       user.qrAliasLocked === true &&
+      !isUnlocking &&
       input.qrAlias !== undefined &&
       input.qrAlias !== user.qrAlias
     ) {
