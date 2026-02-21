@@ -118,7 +118,19 @@ async function startServer() {
   const uri = process.env.MONGODB_URI || "mongodb://localhost:27017";
   // Use { dbName } option for consistency with seed scripts
   // Never log the full URI — it may contain credentials
-  console.log(`[server] Connecting to MongoDB (dbName: ${dbName})`);
+  let redactedMongoTarget = "[unparseable MongoDB URI]";
+  try {
+    const parsedUri = new URL(uri);
+    const hostPort = parsedUri.port
+      ? `${parsedUri.hostname}:${parsedUri.port}`
+      : parsedUri.hostname;
+    redactedMongoTarget = `${parsedUri.protocol}//${hostPort}`;
+  } catch {
+    // Fall back to placeholder without exposing the raw URI
+  }
+  console.log(
+    `[server] Connecting to MongoDB at ${redactedMongoTarget} (dbName: ${dbName})`,
+  );
 
   try {
     await mongoose.connect(uri, { dbName });
