@@ -38,6 +38,7 @@
  * - ../utils/errors: Custom error classes for proper error handling
  */
 
+import { randomBytes } from "crypto";
 import UserModel, { IUser } from "../models/User.js";
 import RSVP from "../models/RSVP.js";
 import { ValidationError } from "../utils/errors.js";
@@ -890,9 +891,9 @@ export async function bulkUpdatePersonalization(
 
         while (attempts < maxAttempts) {
           // Use crypto.randomBytes for secure token generation
-          const randomBytes = require("crypto").randomBytes(16).toString("hex");
+          const tokenHex = randomBytes(16).toString("hex");
           const timestamp = Date.now().toString(36);
-          qrToken = `${randomBytes}-${timestamp}`;
+          qrToken = `${tokenHex}-${timestamp}`;
 
           // Check for uniqueness
           const existingUser = await (User.findOne as any)({

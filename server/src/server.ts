@@ -194,6 +194,9 @@ async function startServer() {
     }),
   );
 
+  // Trust reverse proxy (Render.com) so rate limiter uses real client IPs, not proxy IPs
+  app.set("trust proxy", 1);
+
   // Rate limiting for GraphQL endpoint
   app.use("/graphql", createRateLimiter(15 * 60 * 1000, 100)); // 100 requests per 15 minutes
 
