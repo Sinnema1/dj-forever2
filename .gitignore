@@ -123,3 +123,7 @@ server/qr-codes/development/*.png
 # Admin docs containing real credentials / tokens
 docs/admin/ADMIN_LOGIN_GUIDE.md
 docs/archive/AGENT_CONTRACT.md
+
+# .env.example files — keep locally but not in remote repo
+server/.env.example
+client/.env.example
