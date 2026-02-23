@@ -53,7 +53,10 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
     personalPhoto: user.personalPhoto || '',
     specialInstructions: user.specialInstructions || '',
     dietaryRestrictions: user.dietaryRestrictions || '',
-    householdMembers: user.householdMembers || [],
+    householdMembers: (user.householdMembers || []).map(
+      ({ __typename, ...member }: HouseholdMember & { __typename?: string }) =>
+        member
+    ),
     streetAddress: user.streetAddress || '',
     addressLine2: user.addressLine2 || '',
     city: user.city || '',
@@ -127,7 +130,14 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
       country?: string;
     } = {
       plusOneAllowed: formData.plusOneAllowed,
-      householdMembers: formData.householdMembers,
+      // Strip Apollo __typename from household members — it's added by the
+      // cache on fetch but is not a valid field on HouseholdMemberInput.
+      householdMembers: formData.householdMembers.map(
+        ({
+          __typename,
+          ...member
+        }: HouseholdMember & { __typename?: string }) => member
+      ),
     };
 
     if (formData.email) {
