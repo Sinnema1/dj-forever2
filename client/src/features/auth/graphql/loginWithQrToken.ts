@@ -12,6 +12,24 @@ export const LOGIN_WITH_QR_TOKEN = gql`
         isAdmin
         qrToken
         hasRSVPed
+        rsvp {
+          _id
+          attending
+        }
+        relationshipToBride
+        relationshipToGroom
+        customWelcomeMessage
+        guestGroup
+        plusOneAllowed
+        personalPhoto
+        specialInstructions
+        dietaryRestrictions
+        householdMembers {
+          firstName
+          lastName
+          relationshipToBride
+          relationshipToGroom
+        }
       }
     }
   }

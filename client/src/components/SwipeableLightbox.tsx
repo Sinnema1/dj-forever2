@@ -258,12 +258,9 @@ export default function SwipeableLightbox({
       document.body.style.width = 'unset';
 
       // Restore scroll position immediately without animation
+      // Use numeric overload for iOS Safari 12+ compatibility
       requestAnimationFrame(() => {
-        window.scrollTo({
-          top: scrollY,
-          left: 0,
-          behavior: 'instant',
-        });
+        window.scrollTo(0, scrollY);
       });
 
       // Restore focus
@@ -281,6 +278,7 @@ export default function SwipeableLightbox({
 
   // Create portal element to render modal at body level
   const modalContent = (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
       ref={overlayRef}
       className="lightbox-overlay"
@@ -290,13 +288,12 @@ export default function SwipeableLightbox({
           onClose();
         }
       }}
-      // Make overlay keyboard-accessible so users can close with Enter/Space
+      // Make overlay keyboard-accessible so users can close with Escape
       role="dialog"
       aria-modal="true"
       aria-label="Image gallery lightbox"
-      tabIndex={0}
       onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === 'Escape') {
           e.preventDefault();
           onClose();
         }

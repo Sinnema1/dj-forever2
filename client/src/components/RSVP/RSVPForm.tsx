@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useTransition } from 'react';
 import { useRSVP } from '../../features/rsvp/hooks/useRSVP';
+import { useAuth } from '../../context/AuthContext';
 import RSVPConfirmation from './RSVPConfirmation';
+import MealPreferencesComingSoon from './MealPreferencesComingSoon';
 import { RSVPFormData, Guest } from '../../features/rsvp/types/rsvpTypes';
 import { logDebug } from '../../utils/logger';
+import { features } from '../../config/features';
 // Styles now imported globally via main.tsx
 
 /**
@@ -51,7 +54,8 @@ import { logDebug } from '../../utils/logger';
  * - `Guest` - Individual guest data structure
  */
 export default function RSVPForm() {
-  const { createRSVP, editRSVP, rsvp, loading } = useRSVP();
+  const { createRSVP, editRSVP, rsvp, loading, mutationLoading } = useRSVP();
+  const { user } = useAuth();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [submittedData, setSubmittedData] = useState<RSVPFormData | null>(null);
 
@@ -113,25 +117,62 @@ export default function RSVPForm() {
 
   const [formData, setFormData] = useState<RSVPFormData>(() => {
     // Initialize with proper guest structure, handling legacy data
-    const initialGuests = rsvp?.guests?.map(guest => ({
-      fullName: guest.fullName || '',
-      mealPreference: normalizeMealPreference(guest.mealPreference || ''),
-      allergies: guest.allergies || '',
-    })) || [
-      {
-        fullName: rsvp?.fullName || '',
-        mealPreference: normalizeMealPreference(rsvp?.mealPreference || ''),
-        allergies: rsvp?.allergies || '',
-      },
-    ];
+    const initialGuests =
+      rsvp?.guests?.map(guest => ({
+        fullName: guest.fullName || '',
+        mealPreference: normalizeMealPreference(guest.mealPreference || ''),
+        allergies: guest.allergies || '',
+      })) ||
+      (() => {
+        // If no existing RSVP, pre-populate with household members
+        const guests: Guest[] = [
+          {
+            fullName: user?.fullName || '',
+            mealPreference: '',
+            allergies: user?.dietaryRestrictions || '',
+          },
+        ];
+
+        // Add household members if they exist
+        if (user?.householdMembers && user.householdMembers.length > 0) {
+          user.householdMembers.forEach(member => {
+            guests.push({
+              fullName: [member.firstName, member.lastName]
+                .filter(Boolean)
+                .join(' '),
+              mealPreference: '',
+              allergies: '',
+            });
+          });
+        }
+
+        return guests;
+      })();
+
+    // Pre-populate guest count based on household size or plusOneAllowed
+    let initialGuestCount = rsvp?.guestCount || initialGuests.length;
+    if (
+      !rsvp &&
+      user?.plusOneAllowed &&
+      initialGuestCount === (user?.householdMembers?.length || 0) + 1
+    ) {
+      // Suggest adding one more guest if plus-one is allowed
+      initialGuestCount++;
+      initialGuests.push({
+        fullName: user?.plusOneName || '', // Pre-fill plus-one name if known
+        mealPreference: '',
+        allergies: '',
+      });
+    }
 
     return {
       fullName: rsvp?.fullName || '',
       attending: rsvp?.attending || 'NO',
       mealPreference: normalizeMealPreference(rsvp?.mealPreference || ''),
-      allergies: rsvp?.allergies || '',
+      // Pre-populate with user's dietary restrictions if available
+      allergies: rsvp?.allergies || user?.dietaryRestrictions || '',
       additionalNotes: rsvp?.additionalNotes || '',
-      guestCount: rsvp?.guestCount || initialGuests.length,
+      guestCount: initialGuestCount,
       guests: initialGuests,
     };
   });
@@ -262,13 +303,21 @@ export default function RSVPForm() {
       case 'mealPreference': {
         if (guestIndex !== undefined) {
           // Validating individual guest meal preference
-          if (formData.attending === 'YES' && !value) {
+          if (
+            formData.attending === 'YES' &&
+            !value &&
+            features.mealPreferencesEnabled
+          ) {
             errors[`guest-${guestIndex}-mealPreference`] =
               'Please select a meal preference';
           }
         } else {
           // Legacy validation
-          if (formData.attending === 'YES' && !value) {
+          if (
+            formData.attending === 'YES' &&
+            !value &&
+            features.mealPreferencesEnabled
+          ) {
             errors.mealPreference = 'Please select a meal preference';
           }
         }
@@ -397,7 +446,7 @@ export default function RSVPForm() {
         if (!guest.fullName.trim()) {
           errors[`guest-${index}-fullName`] = "Please enter guest's full name";
         }
-        if (!guest.mealPreference) {
+        if (features.mealPreferencesEnabled && !guest.mealPreference) {
           errors[`guest-${index}-mealPreference`] =
             'Please select a meal preference';
         }
@@ -529,10 +578,10 @@ export default function RSVPForm() {
         }
       >
         <div className="rsvp-header">
-          <h2 id="rsvp-form-title" className="rsvp-title">
-            💌 RSVP for Our Wedding
+          <h2 id="rsvp-form-title" className="rsvp-form-title">
+            Your Response
           </h2>
-          <p id="rsvp-form-description" className="rsvp-subtitle">
+          <p id="rsvp-form-description" className="rsvp-form-subtitle">
             We can't wait to celebrate with you! Please let us know if you'll be
             joining us.
           </p>
@@ -690,10 +739,13 @@ export default function RSVPForm() {
             </small>
           </div>
 
+          {/* Meal Preferences Coming Soon Banner (when feature disabled) */}
+          {!features.mealPreferencesEnabled && <MealPreferencesComingSoon />}
+
           {/* Individual Guest Forms */}
           {formData.guests.map((guest, index) => (
             <div
-              key={`${guest.fullName || 'guest'}-${index}`}
+              key={`guest-${index}`}
               className="guest-form-section"
               data-guest-index={index}
             >
@@ -769,65 +821,67 @@ export default function RSVPForm() {
                 )}
               </div>
 
-              {/* Guest Meal Preference */}
-              <div className="form-group">
-                <label
-                  htmlFor={`guest-${index}-mealPreference`}
-                  className="form-label"
-                >
-                  Meal Preference{' '}
-                  <span className="required" aria-label="required">
-                    *
-                  </span>
-                </label>
-                <div className="form-select-container">
-                  <select
-                    id={`guest-${index}-mealPreference`}
-                    name={`guest-${index}-mealPreference`}
-                    className={`form-select ${validationErrors[`guest-${index}-mealPreference`] ? 'error' : ''} ${guest.mealPreference ? 'filled' : ''}`}
-                    value={guest.mealPreference}
-                    onChange={e => {
-                      updateGuest(index, 'mealPreference', e.target.value);
-                      validateField('mealPreference', e.target.value, index);
-                    }}
-                    required={formData.attending === 'YES'}
-                    aria-describedby={
-                      validationErrors[`guest-${index}-mealPreference`]
-                        ? `guest-${index}-mealPreference-error`
-                        : undefined
-                    }
-                    aria-invalid={
-                      validationErrors[`guest-${index}-mealPreference`]
-                        ? 'true'
-                        : 'false'
-                    }
+              {/* Guest Meal Preference - Only show when feature is enabled */}
+              {features.mealPreferencesEnabled && (
+                <div className="form-group">
+                  <label
+                    htmlFor={`guest-${index}-mealPreference`}
+                    className="form-label"
                   >
-                    {mealOptions.map(option => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  {guest.mealPreference && (
-                    <div className="form-select-check" aria-hidden="true">
-                      ✓
+                    Meal Preference{' '}
+                    <span className="required" aria-label="required">
+                      *
+                    </span>
+                  </label>
+                  <div className="form-select-container">
+                    <select
+                      id={`guest-${index}-mealPreference`}
+                      name={`guest-${index}-mealPreference`}
+                      className={`form-select ${validationErrors[`guest-${index}-mealPreference`] ? 'error' : ''} ${guest.mealPreference ? 'filled' : ''}`}
+                      value={guest.mealPreference}
+                      onChange={e => {
+                        updateGuest(index, 'mealPreference', e.target.value);
+                        validateField('mealPreference', e.target.value, index);
+                      }}
+                      required={formData.attending === 'YES'}
+                      aria-describedby={
+                        validationErrors[`guest-${index}-mealPreference`]
+                          ? `guest-${index}-mealPreference-error`
+                          : undefined
+                      }
+                      aria-invalid={
+                        validationErrors[`guest-${index}-mealPreference`]
+                          ? 'true'
+                          : 'false'
+                      }
+                    >
+                      {mealOptions.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {guest.mealPreference && (
+                      <div className="form-select-check" aria-hidden="true">
+                        ✓
+                      </div>
+                    )}
+                  </div>
+                  {validationErrors[`guest-${index}-mealPreference`] && (
+                    <div
+                      id={`guest-${index}-mealPreference-error`}
+                      className="field-error mobile-friendly"
+                      role="alert"
+                      aria-live="assertive"
+                    >
+                      <span className="error-icon" aria-hidden="true">
+                        ⚠️
+                      </span>
+                      {validationErrors[`guest-${index}-mealPreference`]}
                     </div>
                   )}
                 </div>
-                {validationErrors[`guest-${index}-mealPreference`] && (
-                  <div
-                    id={`guest-${index}-mealPreference-error`}
-                    className="field-error mobile-friendly"
-                    role="alert"
-                    aria-live="assertive"
-                  >
-                    <span className="error-icon" aria-hidden="true">
-                      ⚠️
-                    </span>
-                    {validationErrors[`guest-${index}-mealPreference`]}
-                  </div>
-                )}
-              </div>
+              )}
 
               {/* Guest Allergies */}
               <div className="form-group">
@@ -885,7 +939,7 @@ export default function RSVPForm() {
         {/* Submit Button */}
         <div className="submit-section">
           <button
-            className={`rsvp-submit-btn ${loading || isPending ? 'loading' : ''} ${Object.keys(validationErrors).length > 0 ? 'has-errors' : ''}`}
+            className={`rsvp-submit-btn ${mutationLoading || isPending ? 'loading' : ''} ${Object.keys(validationErrors).length > 0 ? 'has-errors' : ''}`}
             type="submit"
             disabled={loading || isPending}
             aria-describedby={
@@ -894,9 +948,9 @@ export default function RSVPForm() {
                 : undefined
             }
             aria-live="polite"
-            aria-busy={loading || isPending ? 'true' : 'false'}
+            aria-busy={mutationLoading || isPending ? 'true' : 'false'}
           >
-            {loading || isPending ? (
+            {mutationLoading || isPending ? (
               <>
                 <span className="loading-spinner" aria-hidden="true" />
                 <span className="loading-text">
@@ -922,7 +976,7 @@ export default function RSVPForm() {
           </button>
 
           {/* Progress indicator for mobile */}
-          {(loading || isPending) && (
+          {(mutationLoading || isPending) && (
             <div
               className="submission-progress"
               aria-live="polite"

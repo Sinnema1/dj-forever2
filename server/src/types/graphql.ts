@@ -51,6 +51,16 @@
  */
 
 /**
+ * Guest group classification enum matching GraphQL schema
+ */
+export type GuestGroup =
+  | "grooms_family"
+  | "brides_family"
+  | "friends"
+  | "extended_family"
+  | "other";
+
+/**
  * GraphQL execution context interface defining request context and authentication state.
  * Passed to all GraphQL resolvers for user authentication and request handling.
  *
@@ -216,7 +226,7 @@ export interface MealPreferenceCount {
 
 /**
  * Enhanced user data for admin management
- *
+/**
  * @interface AdminUser
  */
 export interface AdminUser {
@@ -227,9 +237,24 @@ export interface AdminUser {
   hasRSVPed: boolean;
   isInvited: boolean;
   qrToken: string;
+  qrAliasLocked?: boolean;
   rsvp?: any;
   createdAt?: string;
   lastUpdated?: string;
+  relationshipToBride?: string;
+  relationshipToGroom?: string;
+  customWelcomeMessage?: string;
+  guestGroup?: GuestGroup;
+  plusOneAllowed?: boolean;
+  personalPhoto?: string;
+  specialInstructions?: string;
+  dietaryRestrictions?: string;
+  streetAddress?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
 }
 
 /**
@@ -257,4 +282,12 @@ export interface AdminUserUpdateInput {
   fullName?: string;
   email?: string;
   isInvited?: boolean;
+  qrAlias?: string;
+  qrAliasLocked?: boolean;
+  streetAddress?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
 }

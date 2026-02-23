@@ -40,6 +40,12 @@
  */
 
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
+
+/**
+ * Site configuration constants
+ */
+const SITE_ORIGIN = 'https://dj-forever2.onrender.com';
 
 /**
  * Props for SEO component configuration
@@ -52,10 +58,12 @@ interface SEOProps {
   description?: string;
   /** Social sharing image URL */
   image?: string;
-  /** Canonical URL for the page */
+  /** Canonical URL for the page (optional - derived from current location if not provided) */
   url?: string;
   /** OpenGraph type (website, article, etc.) */
   type?: string;
+  /** Whether this page should be indexed by search engines (default: true, false for admin/auth pages) */
+  index?: boolean;
 }
 
 /**
@@ -102,14 +110,27 @@ interface SEOProps {
 export function SEO({
   title = "Dominique & Justin's Wedding",
   description = 'Join us as we celebrate our special day. Find all the details about our wedding ceremony, reception, and how to RSVP.',
-  image = '/og-image.jpg',
-  url = 'https://dj-forever2.onrender.com',
+  image = '/assets/images/dj_forever.webp', // Use existing hero image as OG image
+  url,
   type = 'website',
+  index = true,
 }: SEOProps) {
+  const location = useLocation();
+
+  // Derive canonical URL from current location if not explicitly provided
+  const canonicalUrl = url || `${SITE_ORIGIN}${location.pathname}`;
+
+  // Construct full image URL (ensure absolute URL for social sharing)
+  const fullImageUrl = image.startsWith('http')
+    ? image
+    : `${SITE_ORIGIN}${image}`;
+
   const fullTitle =
     title === "Dominique & Justin's Wedding"
       ? title
       : `${title} | Dominique & Justin's Wedding`;
+
+  const robotsContent = index ? 'index, follow' : 'noindex, nofollow';
 
   return (
     <Helmet>
@@ -120,26 +141,26 @@ export function SEO({
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
-      <meta property="og:url" content={url} />
+      <meta property="og:url" content={canonicalUrl} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={image} />
+      <meta property="og:image" content={fullImageUrl} />
       <meta property="og:site_name" content="Dominique & Justin's Wedding" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:url" content={url} />
+      <meta name="twitter:url" content={canonicalUrl} />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image} />
+      <meta name="twitter:image" content={fullImageUrl} />
 
       {/* Additional SEO */}
-      <meta name="robots" content="index, follow" />
+      <meta name="robots" content={robotsContent} />
       <meta name="language" content="English" />
       <meta name="theme-color" content="#C9A66B" />
 
       {/* Canonical URL */}
-      <link rel="canonical" href={url} />
+      <link rel="canonical" href={canonicalUrl} />
 
       {/* Preconnect to domains */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -221,6 +242,34 @@ export function RegistryPageSEO() {
     <SEO
       title="Wedding Registry"
       description="Our wedding registry with gift ideas and links to our favorite stores. Your presence is the greatest gift, but if you wish to honor us with a gift, here are our registries."
+    />
+  );
+}
+
+/**
+ * SEO component for admin dashboard (noindex)
+ * @returns SEO configuration that prevents search engine indexing
+ */
+export function AdminPageSEO() {
+  return (
+    <SEO
+      title="Admin Dashboard"
+      description="Wedding website administration"
+      index={false}
+    />
+  );
+}
+
+/**
+ * SEO component for authentication/debug routes (noindex)
+ * @returns SEO configuration that prevents search engine indexing
+ */
+export function AuthPageSEO() {
+  return (
+    <SEO
+      title="Authentication"
+      description="Wedding website authentication"
+      index={false}
     />
   );
 }

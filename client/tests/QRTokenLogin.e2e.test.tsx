@@ -1,19 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter, Routes, Route } from "react-router-dom";
-import { MockedProvider } from "@apollo/client/testing";
-import { AuthProvider } from "../src/context/AuthContext";
-import QRTokenLogin from "../src/pages/QRTokenLogin";
-import { LOGIN_WITH_QR_TOKEN } from "../src/features/auth/graphql/loginWithQrToken";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { MockedProvider } from '@apollo/client/testing';
+import { AuthProvider } from '../src/context/AuthContext';
+import QRTokenLogin from '../src/pages/QRTokenLogin';
+import { LOGIN_WITH_QR_TOKEN } from '../src/features/auth/graphql/loginWithQrToken';
 
 // Create navigate mock first
 const navigateMock = vi.fn();
 
 // Mock the react-router-dom's useNavigate
-vi.mock("react-router-dom", async () => {
+vi.mock('react-router-dom', async () => {
   const actualModule =
-    await vi.importActual<typeof import("react-router-dom")>(
-      "react-router-dom"
+    await vi.importActual<typeof import('react-router-dom')>(
+      'react-router-dom'
     );
   return {
     ...actualModule,
@@ -21,15 +21,26 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-const qrToken = "valid-token-123";
+const qrToken = 'valid-token-123';
 const user = {
-  _id: "1",
-  fullName: "Test User",
-  email: "test@example.com",
+  _id: '1',
+  fullName: 'Test User',
+  email: 'test@example.com',
   isInvited: true,
+  isAdmin: false,
+  qrToken: 'valid-token-123',
+  hasRSVPed: false,
+  relationshipToBride: undefined,
+  relationshipToGroom: undefined,
+  customWelcomeMessage: undefined,
+  guestGroup: undefined,
+  plusOneAllowed: false,
+  personalPhoto: undefined,
+  specialInstructions: undefined,
+  householdMembers: [],
 };
 
-describe("QRTokenLogin", () => {
+describe('QRTokenLogin', () => {
   beforeEach(() => {
     // Mock localStorage
     global.localStorage = {
@@ -45,7 +56,7 @@ describe("QRTokenLogin", () => {
     navigateMock.mockReset();
   });
 
-  it("redirects after successful QR token login", async () => {
+  it('redirects after successful QR token login', async () => {
     // Mock the GraphQL response
     const mocks = [
       {
@@ -56,7 +67,7 @@ describe("QRTokenLogin", () => {
         result: {
           data: {
             loginWithQrToken: {
-              token: "test-jwt-token",
+              token: 'test-jwt-token',
               user,
             },
           },
@@ -78,14 +89,14 @@ describe("QRTokenLogin", () => {
     );
 
     // Check for loading spinner (no text, just visual indicator)
-    const loadingSpinner = screen.getByRole("button", {
+    const loadingSpinner = screen.getByRole('button', {
       name: /having trouble/i,
     });
     expect(loadingSpinner).toBeInTheDocument();
 
     // Wait for navigation to be called (should redirect directly to home)
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith("/", {
+      expect(navigateMock).toHaveBeenCalledWith('/', {
         replace: true,
       });
     });

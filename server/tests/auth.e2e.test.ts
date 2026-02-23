@@ -44,7 +44,24 @@ describe("Auth End-to-End", () => {
           mutation {
             loginWithQrToken(qrToken: "${qrToken}") {
               token
-              user { email isInvited qrToken }
+              user { 
+                email 
+                isInvited 
+                qrToken 
+                relationshipToBride
+                relationshipToGroom
+                customWelcomeMessage
+                guestGroup
+                plusOneAllowed
+                personalPhoto
+                specialInstructions
+                householdMembers {
+                  firstName
+                  lastName
+                  relationshipToBride
+                  relationshipToGroom
+                }
+              }
             }
           }
         `,

@@ -22,14 +22,58 @@
  * ```typescript
  * const guest: User = {
  *   _id: '507f1f77bcf86cd799439011',
- *   fullName: 'Alice Johnson',
- *   email: 'alice@example.com',
+ *   fullName: 'John Budach',
+ *   email: 'jpbudach@gmail.com',
  *   isInvited: true,
  *   hasRSVPed: true,
  *   rsvpId: '507f1f77bcf86cd799439012'
  * };
  * ```
  */
+/**
+ * Guest group classification for invitation management and personalization.
+ * Matches the GraphQL GuestGroup enum from the backend.
+ * Values are lowercase to match MongoDB schema validation.
+ */
+export type GuestGroup =
+  | 'grooms_family'
+  | 'friends'
+  | 'brides_family'
+  | 'extended_family'
+  | 'other';
+
+/**
+ * Attendance status for RSVP responses.
+ * Matches the GraphQL AttendanceStatus enum from the backend.
+ */
+export type AttendanceStatus = 'YES' | 'NO' | 'MAYBE';
+
+/**
+ * RSVP data interface representing a guest's response to the wedding invitation.
+ * Minimal structure to support banner and modal personalization.
+ */
+export interface RSVP {
+  /** Unique database identifier for the RSVP record */
+  _id: string;
+  /** Whether the guest is attending the wedding */
+  attending: AttendanceStatus;
+}
+
+/**
+ * Household member interface for multi-person household authentication.
+ * Represents additional guests who share a QR code with the primary user.
+ */
+export interface HouseholdMember {
+  /** First name of the household member */
+  firstName: string;
+  /** Last name of the household member */
+  lastName: string;
+  /** Relationship to the bride (optional) */
+  relationshipToBride?: string;
+  /** Relationship to the groom (optional) */
+  relationshipToGroom?: string;
+}
+
 export interface User {
   /** Unique database identifier for the user (MongoDB ObjectId as string) */
   _id: string;
@@ -45,6 +89,44 @@ export interface User {
   hasRSVPed?: boolean;
   /** Reference to the user's RSVP record ID (optional, null if no RSVP exists) */
   rsvpId?: string | null;
+  /** RSVP details including attendance status */
+  rsvp?: RSVP | null;
+  /** Human-readable URL alias for QR login (e.g., "smith-family") */
+  qrAlias?: string;
+  /** Whether the QR alias is locked to prevent accidental changes (for print safety) */
+  qrAliasLocked?: boolean;
+  /** Guest's relationship to the bride (e.g., "Sister", "College Friend") */
+  relationshipToBride?: string;
+  /** Guest's relationship to the groom (e.g., "Brother", "Coworker") */
+  relationshipToGroom?: string;
+  /** Personalized welcome message for this guest */
+  customWelcomeMessage?: string;
+  /** Guest group classification for organizing invitations */
+  guestGroup?: GuestGroup;
+  /** Whether this guest is allowed to bring a plus-one */
+  plusOneAllowed?: boolean;
+  /** Name of the plus-one guest (if known in advance) */
+  plusOneName?: string;
+  /** Optional URL to a personal photo for this guest */
+  personalPhoto?: string;
+  /** Special instructions for guest (travel info, accommodation, etc.) */
+  specialInstructions?: string;
+  /** Dietary restrictions or preferences for this guest (e.g., "Vegetarian", "Gluten-free") */
+  dietaryRestrictions?: string;
+  /** Additional household members who share this QR code (optional) */
+  householdMembers?: HouseholdMember[];
+  /** Street address for mailing invitations (optional) */
+  streetAddress?: string;
+  /** Address line 2 - Apt, Suite, Unit (optional) */
+  addressLine2?: string;
+  /** City for mailing address (optional) */
+  city?: string;
+  /** State or province for mailing address (optional) */
+  state?: string;
+  /** Zip or postal code for mailing address (optional) */
+  zipCode?: string;
+  /** Country for mailing address (optional) */
+  country?: string;
 }
 
 /**

@@ -1,53 +1,82 @@
-const registries = [
+import { PUBLIC_LINKS } from '../config/publicLinks';
+
+type RegistryLink = {
+  name: string;
+  url: string;
+  description: string;
+  note?: string;
+};
+
+/**
+ * All possible registry entries. Each entry's URL is read from an env var
+ * via PUBLIC_LINKS. Entries whose URL is empty are filtered out at render
+ * time so guests never see a broken or placeholder link.
+ */
+const allRegistries: RegistryLink[] = [
   {
     name: 'Crate & Barrel',
-    url: 'https://www.crateandbarrel.com/gift-registry/',
-    logo: '/images/registries/crate-and-barrel.svg',
+    url: PUBLIC_LINKS.registry.crateAndBarrel,
+    description: 'Kitchen essentials & home goods',
   },
   {
     name: 'Williams-Sonoma',
-    url: 'https://www.williams-sonoma.com/registry/',
-    logo: '/images/registries/williams-sonoma.svg',
+    url: PUBLIC_LINKS.registry.williamsSonoma,
+    description: 'Cookware & entertaining pieces',
   },
   {
-    name: 'Zola',
-    url: 'https://www.zola.com/registry/',
-    logo: '/images/registries/zola.svg',
+    name: 'Costco Registry',
+    url: PUBLIC_LINKS.registry.costco,
+    description: 'Costco favorites & group gifting options',
+    note: 'via MyRegistry',
   },
-  // Add more registries as needed
+  {
+    name: 'Honeymoon Fund',
+    url: PUBLIC_LINKS.registry.honeymoon,
+    description: 'Experiences, dinners, and adventures together',
+  },
 ];
 
 export default function RegistryLinks() {
-  return (
-    <div className="registry-links">
-      <p className="registry-message">
-        Your presence at our wedding is the greatest gift of all. However, if
-        you wish to honor us with a gift, we have registered at the following
-        places:
-      </p>
+  const registries = allRegistries.filter(r => Boolean(r.url));
 
-      <div className="registry-buttons">
-        {registries.map(registry => (
-          <a
-            key={registry.name}
-            href={registry.url}
-            className="registry-button"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${registry.name} registry (opens in new tab)`}
-          >
-            {registry.logo ? (
-              <div className="registry-logo-container">
-                <img src={registry.logo} alt={`${registry.name} Registry`} />
-              </div>
-            ) : (
-              registry.name
-            )}
-          </a>
-        ))}
+  if (registries.length === 0) {
+    return (
+      <div className="registry-grid" role="list">
+        <p style={{ textAlign: 'center', opacity: 0.7 }}>
+          Registry information will be available soon.
+        </p>
       </div>
+    );
+  }
 
-      <p className="registry-thank-you">Thank you for your love and support!</p>
+  return (
+    <div className="registry-grid" role="list">
+      {registries.map(registry => (
+        <a
+          key={registry.name}
+          href={registry.url}
+          className="registry-card"
+          target="_blank"
+          rel="noopener noreferrer external"
+          aria-label={`Visit our ${registry.name} registry (opens in new tab)`}
+        >
+          <div className="registry-card-content">
+            <div className="registry-card-header">
+              <div className="registry-card-titlewrap">
+                <h3 className="registry-card-name">{registry.name}</h3>
+                {registry.note ? (
+                  <span className="registry-card-note">{registry.note}</span>
+                ) : null}
+              </div>
+              <span className="registry-card-arrow" aria-hidden="true">
+                →
+              </span>
+            </div>
+            <p className="registry-card-description">{registry.description}</p>
+          </div>
+          <span className="registry-card-hint">Opens in new tab</span>
+        </a>
+      ))}
     </div>
   );
 }

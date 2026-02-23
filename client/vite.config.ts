@@ -46,9 +46,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       // Let Workbox handle all assets automatically via globPatterns
       devOptions: {
-        enabled: false, // set to true only if you want to test SW in dev
+        enabled: false, // Disabled for faster dev - enable only for PWA testing
       },
       manifest: {
+        id: '/',
         name: "Dominique & Justin's Wedding",
         short_name: 'D&J Wedding',
         description: 'Join us for our special day - November 8, 2026',
@@ -61,9 +62,15 @@ export default defineConfig({
         categories: ['lifestyle', 'social'],
         icons: [
           {
-            src: 'favicon.svg',
-            sizes: '32x32 64x64 128x128 256x256',
-            type: 'image/svg+xml',
+            src: '/pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+          {
+            src: '/pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
             purpose: 'any maskable',
           },
         ],
@@ -86,12 +93,10 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: [
-          '**/*.{js,css,html}',
-          'assets/**/*.{png,svg,jpg,jpeg,webp}', // Only assets folder for images
-          'images/**/*.{png,svg,jpg,jpeg,webp}', // Images in public/images
-          // Note: favicon.svg excluded to prevent duplicate caching with different revisions
-          'offline.html', // Offline page
-          'manifest.webmanifest', // PWA manifest
+          '**/*.{js,css,html,webmanifest}',
+          'assets/**/*.{png,svg,jpg,jpeg,webp}',
+          'images/**/*.{png,svg,jpg,jpeg,webp}',
+          // Note: offline.html is included via *.html glob pattern above
         ],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         // AUTOMATIC UPDATE CONFIGURATION
@@ -103,8 +108,13 @@ export default defineConfig({
         dontCacheBustURLsMatching: /\.\w{8}\./,
         // Explicitly exclude files to prevent double inclusion
         globIgnores: ['**/node_modules/**/*'],
-        // FIXED: Remove navigateFallback to prevent offline.html duplication
-        navigateFallback: null,
+        // Enable offline fallback for navigation requests
+        navigateFallback: '/offline.html',
+        navigateFallbackDenylist: [
+          /^\/(graphql|api)/, // Exclude API routes
+          /\.[^/]+$/, // Exclude direct file requests
+          /^\/(admin|rsvp|login|registry|qr-help|auth-debug)/, // Exclude all SPA routes (React Router handles these)
+        ],
         runtimeCaching: [
           // GraphQL API - Network first with offline fallback
           {
@@ -200,6 +210,10 @@ export default defineConfig({
     },
     proxy: {
       '/graphql': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+      '/api': {
         target: 'http://localhost:3001',
         changeOrigin: true,
       },

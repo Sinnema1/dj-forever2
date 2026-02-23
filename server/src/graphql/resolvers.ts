@@ -55,6 +55,8 @@ import {
   adminDeleteRSVP,
   adminCreateUser,
   adminDeleteUser,
+  bulkUpdatePersonalization,
+  adminRegenerateQRCodes,
 } from "../services/adminService.js";
 import {
   sendRSVPReminder,
@@ -174,7 +176,7 @@ export const resolvers = {
     adminGetAllRSVPs: async (
       _: unknown,
       __: unknown,
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
@@ -187,7 +189,7 @@ export const resolvers = {
     adminGetUserStats: async (
       _: unknown,
       __: unknown,
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
@@ -195,14 +197,14 @@ export const resolvers = {
       } catch (error: any) {
         console.error("Error in adminGetUserStats resolver:", error);
         throw new GraphQLError(
-          error?.message || "Failed to fetch wedding statistics"
+          error?.message || "Failed to fetch wedding statistics",
         );
       }
     },
     adminExportGuestList: async (
       _: unknown,
       __: unknown,
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
@@ -224,18 +226,17 @@ export const resolvers = {
     emailPreview: async (
       _: unknown,
       args: { userId: string; template: string },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
-        const { generateEmailPreview } = await import(
-          "../services/emailService.js"
-        );
+        const { generateEmailPreview } =
+          await import("../services/emailService.js");
         return await generateEmailPreview(args.userId, args.template);
       } catch (error: any) {
         console.error("Error in emailPreview resolver:", error);
         throw new GraphQLError(
-          error?.message || "Failed to generate email preview"
+          error?.message || "Failed to generate email preview",
         );
       }
     },
@@ -251,7 +252,7 @@ export const resolvers = {
     emailSendHistory: async (
       _: unknown,
       args: { limit?: number; status?: string },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
@@ -260,7 +261,7 @@ export const resolvers = {
       } catch (error: any) {
         console.error("Error in emailSendHistory resolver:", error);
         throw new GraphQLError(
-          error?.message || "Failed to fetch email history"
+          error?.message || "Failed to fetch email history",
         );
       }
     },
@@ -286,7 +287,7 @@ export const resolvers = {
     submitRSVP: async (
       _: unknown,
       args: SubmitRSVPArgs,
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       // Legacy mutation - create new RSVP
       const user = requireAuth(context);
@@ -305,7 +306,7 @@ export const resolvers = {
     createRSVP: async (
       _: unknown,
       { input }: { input: CreateRSVPInput },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       // New mutation for creating RSVP
       const user = requireAuth(context);
@@ -324,7 +325,7 @@ export const resolvers = {
     editRSVP: async (
       _: unknown,
       { updates }: { updates: RSVPInput },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       // Update existing RSVP
       const user = requireAuth(context);
@@ -332,7 +333,7 @@ export const resolvers = {
       try {
         return await updateRSVP(
           user._id?.toString() || user.id?.toString(),
-          updates
+          updates,
         );
       } catch (error: any) {
         console.error("Error in editRSVP resolver:", error);
@@ -343,7 +344,7 @@ export const resolvers = {
     adminUpdateRSVP: async (
       _: unknown,
       args: { rsvpId: string; updates: AdminRSVPUpdateInput },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
@@ -355,21 +356,187 @@ export const resolvers = {
     },
     adminUpdateUser: async (
       _: unknown,
-      args: { userId: string; updates: AdminUserUpdateInput },
-      context: GraphQLContext
+      args: { userId: string; input: AdminUserUpdateInput },
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
-        return await adminUpdateUser(args.userId, args.updates);
+        return await adminUpdateUser(args.userId, args.input);
       } catch (error: any) {
         console.error("Error in adminUpdateUser resolver:", error);
         throw new GraphQLError(error?.message || "Failed to update user");
       }
     },
+    adminUpdateUserPersonalization: async (
+      _: unknown,
+      args: {
+        userId: string;
+        input: {
+          email?: string;
+          qrAlias?: string;
+          qrAliasLocked?: boolean;
+          relationshipToBride?: string;
+          relationshipToGroom?: string;
+          customWelcomeMessage?: string;
+          guestGroup?: string;
+          plusOneAllowed?: boolean;
+          plusOneName?: string;
+          personalPhoto?: string;
+          specialInstructions?: string;
+          dietaryRestrictions?: string;
+          householdMembers?: Array<{
+            firstName: string;
+            lastName: string;
+            relationshipToBride?: string;
+            relationshipToGroom?: string;
+          }>;
+          streetAddress?: string;
+          addressLine2?: string;
+          city?: string;
+          state?: string;
+          zipCode?: string;
+          country?: string;
+        };
+      },
+      context: GraphQLContext,
+    ) => {
+      requireAdmin(context);
+      try {
+        // Pre-fetch user to enforce alias lock before building update
+        const existingUser = await (User.findById as any)(args.userId);
+        if (!existingUser) {
+          throw new GraphQLError("User not found", {
+            extensions: { code: "NOT_FOUND" },
+          });
+        }
+
+        // QR Alias lock enforcement (skip if same request is unlocking)
+        const isUnlocking = args.input.qrAliasLocked === false;
+        if (
+          existingUser.qrAliasLocked === true &&
+          !isUnlocking &&
+          args.input.qrAlias !== undefined &&
+          args.input.qrAlias !== existingUser.qrAlias
+        ) {
+          throw new GraphQLError(
+            "QR alias is locked and cannot be changed. Unlock it first via the admin panel.",
+            { extensions: { code: "ALIAS_LOCKED" } },
+          );
+        }
+
+        // Build update object with only defined fields
+        const updateFields: Record<string, any> = {};
+        if (args.input.email !== undefined) {
+          updateFields.email = args.input.email;
+        }
+        if (args.input.qrAlias !== undefined) {
+          updateFields.qrAlias = args.input.qrAlias;
+        }
+        // QR Alias lock toggle
+        if (args.input.qrAliasLocked !== undefined) {
+          // Prevent locking when no alias is set
+          const effectiveAlias =
+            args.input.qrAlias !== undefined
+              ? args.input.qrAlias
+              : existingUser.qrAlias;
+          if (args.input.qrAliasLocked === true && !effectiveAlias) {
+            throw new GraphQLError(
+              "Cannot lock QR alias — no alias is currently set. Set an alias first.",
+              { extensions: { code: "VALIDATION_ERROR" } },
+            );
+          }
+          updateFields.qrAliasLocked = args.input.qrAliasLocked;
+        }
+        if (args.input.relationshipToBride !== undefined) {
+          updateFields.relationshipToBride = args.input.relationshipToBride;
+        }
+        if (args.input.relationshipToGroom !== undefined) {
+          updateFields.relationshipToGroom = args.input.relationshipToGroom;
+        }
+        if (args.input.customWelcomeMessage !== undefined) {
+          updateFields.customWelcomeMessage = args.input.customWelcomeMessage;
+        }
+        if (args.input.guestGroup !== undefined) {
+          updateFields.guestGroup = args.input.guestGroup;
+        }
+        if (args.input.plusOneAllowed !== undefined) {
+          updateFields.plusOneAllowed = args.input.plusOneAllowed;
+        }
+        if (args.input.plusOneName !== undefined) {
+          updateFields.plusOneName = args.input.plusOneName;
+        }
+        if (args.input.personalPhoto !== undefined) {
+          updateFields.personalPhoto = args.input.personalPhoto;
+        }
+        if (args.input.specialInstructions !== undefined) {
+          updateFields.specialInstructions = args.input.specialInstructions;
+        }
+        if (args.input.dietaryRestrictions !== undefined) {
+          updateFields.dietaryRestrictions = args.input.dietaryRestrictions;
+        }
+        if (args.input.householdMembers !== undefined) {
+          updateFields.householdMembers = args.input.householdMembers;
+        }
+        // Address fields
+        if (args.input.streetAddress !== undefined) {
+          updateFields.streetAddress = args.input.streetAddress;
+        }
+        if (args.input.addressLine2 !== undefined) {
+          updateFields.addressLine2 = args.input.addressLine2;
+        }
+        if (args.input.city !== undefined) {
+          updateFields.city = args.input.city;
+        }
+        if (args.input.state !== undefined) {
+          updateFields.state = args.input.state;
+        }
+        if (args.input.zipCode !== undefined) {
+          updateFields.zipCode = args.input.zipCode;
+        }
+        if (args.input.country !== undefined) {
+          updateFields.country = args.input.country;
+        }
+
+        const user = await (User.findByIdAndUpdate as any)(
+          args.userId,
+          { $set: updateFields },
+          { new: true, runValidators: true },
+        );
+
+        if (!user) {
+          throw new GraphQLError("User not found", {
+            extensions: { code: "NOT_FOUND" },
+          });
+        }
+
+        return user;
+      } catch (error: any) {
+        console.error(
+          "Error in adminUpdateUserPersonalization resolver:",
+          error,
+        );
+
+        // Handle MongoDB duplicate key error for qrAlias
+        if (error.code === 11000 && error.message?.includes("qrAlias")) {
+          const aliasMatch = error.message.match(
+            /dup key: \{ qrAlias: "([^"]+)" \}/,
+          );
+          const alias = aliasMatch ? aliasMatch[1] : "this value";
+          throw new GraphQLError(
+            `The QR alias "${alias}" is already in use by another guest. Please choose a different alias.`,
+            { extensions: { code: "DUPLICATE_ALIAS" } },
+          );
+        }
+
+        throw new GraphQLError(
+          error?.message || "Failed to update user personalization",
+        );
+      }
+    },
     adminDeleteRSVP: async (
       _: unknown,
       args: { rsvpId: string },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
@@ -383,7 +550,7 @@ export const resolvers = {
     adminCreateUser: async (
       _: unknown,
       args: { input: { fullName: string; email: string; isInvited: boolean } },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
@@ -396,7 +563,7 @@ export const resolvers = {
     adminDeleteUser: async (
       _: unknown,
       args: { userId: string },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
@@ -406,10 +573,61 @@ export const resolvers = {
         throw new GraphQLError(error?.message || "Failed to delete user");
       }
     },
+    adminBulkUpdatePersonalization: async (
+      _: unknown,
+      args: {
+        updates: Array<{
+          email: string;
+          fullName?: string;
+          personalization: {
+            relationshipToBride?: string;
+            relationshipToGroom?: string;
+            customWelcomeMessage?: string;
+            guestGroup?: string;
+            plusOneAllowed?: boolean;
+            plusOneName?: string;
+            personalPhoto?: string;
+            specialInstructions?: string;
+            dietaryRestrictions?: string;
+          };
+        }>;
+      },
+      context: GraphQLContext,
+    ) => {
+      requireAdmin(context);
+      try {
+        return await bulkUpdatePersonalization(args.updates);
+      } catch (error: any) {
+        console.error(
+          "Error in adminBulkUpdatePersonalization resolver:",
+          error,
+        );
+        throw new GraphQLError(
+          error?.message || "Failed to bulk update personalization",
+        );
+      }
+    },
+
+    adminRegenerateQRCodes: async (
+      _: unknown,
+      __: unknown,
+      context: GraphQLContext,
+    ) => {
+      requireAdmin(context);
+      try {
+        return await adminRegenerateQRCodes();
+      } catch (error: any) {
+        console.error("Error in adminRegenerateQRCodes resolver:", error);
+        throw new GraphQLError(
+          error?.message || "Failed to regenerate QR codes",
+        );
+      }
+    },
+
     adminSendReminderEmail: async (
       _: unknown,
       args: { userId: string },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
@@ -446,7 +664,7 @@ export const resolvers = {
     adminSendBulkReminderEmails: async (
       _: unknown,
       args: { userIds: string[] },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
@@ -474,14 +692,14 @@ export const resolvers = {
       } catch (error: any) {
         console.error("Error in adminSendBulkReminderEmails resolver:", error);
         throw new GraphQLError(
-          error?.message || "Failed to send bulk reminder emails"
+          error?.message || "Failed to send bulk reminder emails",
         );
       }
     },
     adminSendReminderToAllPending: async (
       _: unknown,
       _args: Record<string, never>,
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
@@ -508,10 +726,10 @@ export const resolvers = {
       } catch (error: any) {
         console.error(
           "Error in adminSendReminderToAllPending resolver:",
-          error
+          error,
         );
         throw new GraphQLError(
-          error?.message || "Failed to send reminders to all pending guests"
+          error?.message || "Failed to send reminders to all pending guests",
         );
       }
     },

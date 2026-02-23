@@ -7,7 +7,8 @@ import { analytics } from '../utils/analytics';
 const images = Object.values(
   import.meta.glob('../assets/images/gallery/*.{png,jpg,jpeg,svg}', {
     eager: true,
-    as: 'url',
+    query: '?url',
+    import: 'default',
   })
 ) as string[];
 

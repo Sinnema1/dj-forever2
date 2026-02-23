@@ -30,6 +30,28 @@ export const GET_ADMIN_RSVPS = gql`
       isAdmin
       hasRSVPed
       qrToken
+      qrAlias
+      qrAliasLocked
+      relationshipToBride
+      relationshipToGroom
+      customWelcomeMessage
+      guestGroup
+      plusOneAllowed
+      personalPhoto
+      specialInstructions
+      dietaryRestrictions
+      streetAddress
+      addressLine2
+      city
+      state
+      zipCode
+      country
+      householdMembers {
+        firstName
+        lastName
+        relationshipToBride
+        relationshipToGroom
+      }
       createdAt
       lastUpdated
       rsvp {
@@ -83,6 +105,48 @@ export const ADMIN_UPDATE_USER = gql`
       isInvited
       isAdmin
       hasRSVPed
+      streetAddress
+      addressLine2
+      city
+      state
+      zipCode
+      country
+    }
+  }
+`;
+
+// Admin Update User Personalization Mutation
+export const UPDATE_USER_PERSONALIZATION = gql`
+  mutation UpdateUserPersonalization(
+    $userId: ID!
+    $input: UserPersonalizationInput!
+  ) {
+    adminUpdateUserPersonalization(userId: $userId, input: $input) {
+      _id
+      fullName
+      email
+      qrAlias
+      qrAliasLocked
+      relationshipToBride
+      relationshipToGroom
+      customWelcomeMessage
+      guestGroup
+      plusOneAllowed
+      personalPhoto
+      specialInstructions
+      dietaryRestrictions
+      streetAddress
+      addressLine2
+      city
+      state
+      zipCode
+      country
+      householdMembers {
+        firstName
+        lastName
+        relationshipToBride
+        relationshipToGroom
+      }
     }
   }
 `;
@@ -106,6 +170,12 @@ export const ADMIN_CREATE_USER = gql`
       hasRSVPed
       qrToken
       createdAt
+      streetAddress
+      addressLine2
+      city
+      state
+      zipCode
+      country
     }
   }
 `;
@@ -114,6 +184,35 @@ export const ADMIN_CREATE_USER = gql`
 export const ADMIN_DELETE_USER = gql`
   mutation AdminDeleteUser($userId: ID!) {
     adminDeleteUser(userId: $userId)
+  }
+`;
+
+// Admin Regenerate QR Codes Mutation
+export const ADMIN_REGENERATE_QR_CODES = gql`
+  mutation AdminRegenerateQRCodes {
+    adminRegenerateQRCodes {
+      success
+      failed
+      errors
+    }
+  }
+`;
+
+// Admin Bulk Update Personalization Mutation
+export const ADMIN_BULK_UPDATE_PERSONALIZATION = gql`
+  mutation AdminBulkUpdatePersonalization(
+    $updates: [BulkPersonalizationInput!]!
+  ) {
+    adminBulkUpdatePersonalization(updates: $updates) {
+      success
+      created
+      updated
+      failed
+      errors {
+        email
+        error
+      }
+    }
   }
 `;
 

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import HeroBanner from '../components/HeroBanner';
 import SectionDivider from '../components/SectionDivider';
 import { HomePageSEO } from '../components/SEO';
-import { Gallery, TravelGuide } from '../components/LazyComponents';
+import { Gallery, TravelGuide, Guestbook } from '../components/LazyComponents';
 import { EnhancedLazyComponent } from '../components/EnhancedSuspense';
 import { analytics } from '../utils/analytics';
 import { performanceMonitor } from '../utils/performance';
@@ -10,7 +10,7 @@ import theme from '../theme/theme';
 import OurStory from './OurStory';
 import TheDetails from './TheDetails';
 import FAQs from './FAQs';
-import Guestbook from './Guestbook';
+import { features } from '../config/features';
 
 export default function HomePage() {
   // IntersectionObserver to fade in each .section-content
@@ -112,14 +112,21 @@ export default function HomePage() {
         <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
 
-      {/* Guestbook Section */}
-      <section id="guestbook">
-        <SectionDivider position="top" color={theme.colors.cream} />
-        <h2 className="section-title">Guestbook</h2>
-        <div className="section-content">
-          <Guestbook />
-        </div>
-      </section>
+      {/* Guestbook Section — hidden when feature flag is off */}
+      {features.guestbookEnabled && (
+        <section id="guestbook">
+          <SectionDivider position="top" color={theme.colors.cream} />
+          <h2 className="section-title">Guestbook</h2>
+          <div className="section-content">
+            <EnhancedLazyComponent
+              Component={Guestbook}
+              name="guestbook"
+              loadingMessage="Loading guestbook..."
+              enhanced
+            />
+          </div>
+        </section>
+      )}
     </>
   );
 }

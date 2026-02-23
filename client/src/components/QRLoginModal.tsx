@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 
 /**
@@ -131,7 +132,9 @@ export default function QRLoginModal(props: QRLoginModalProps) {
 
   // Focus trap implementation
   React.useEffect(() => {
-    if (!isOpen) {return undefined;}
+    if (!isOpen) {
+      return undefined;
+    }
 
     const handleKeyDown = (event: KeyboardEvent) => {
       // Close on Escape
@@ -168,10 +171,6 @@ export default function QRLoginModal(props: QRLoginModalProps) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) {
-    return null;
-  }
-
   const handleTokenSubmit = async (token: string) => {
     if (!token.trim() || loading) {
       return;
@@ -203,10 +202,14 @@ export default function QRLoginModal(props: QRLoginModalProps) {
     }
   };
 
-  return (
+  if (!isOpen) {
+    return null;
+  }
+
+  return createPortal(
     // Overlay is an interactive backdrop intended to close the modal when
-    // clicked. We make it keyboard-accessible (role/button + tabIndex + onKeyDown)
-    // and provide a visible Close button for screen reader and keyboard users.
+    // clicked. Only close on Escape key to prevent space bar from closing
+    // while typing in input fields.
     <div
       className="modal-overlay"
       onClick={e => {
@@ -214,10 +217,8 @@ export default function QRLoginModal(props: QRLoginModalProps) {
           onClose();
         }
       }}
-      role="button"
-      tabIndex={0}
       onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === 'Escape') {
           e.preventDefault();
           onClose();
         }
@@ -377,7 +378,7 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                 Quick test tokens (🔧 = Admin):
               </p>
               <button
-                onClick={() => handleTokenSubmit('r24gpj3wntgqwqfberlas')}
+                onClick={() => handleTokenSubmit('3rz4heotj11wbkhdjoiv')}
                 disabled={loading}
                 style={{
                   margin: '2px',
@@ -388,12 +389,12 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                   borderRadius: '3px',
                   cursor: loading ? 'not-allowed' : 'pointer',
                 }}
-                title="Alice Johnson"
+                title="John Budach"
               >
-                Alice
+                John
               </button>
               <button
-                onClick={() => handleTokenSubmit('ssq7b7bkfqqpd2724vlcol')}
+                onClick={() => handleTokenSubmit('zofkagycljqyexmqrgr5')}
                 disabled={loading}
                 style={{
                   margin: '2px',
@@ -404,28 +405,12 @@ export default function QRLoginModal(props: QRLoginModalProps) {
                   borderRadius: '3px',
                   cursor: loading ? 'not-allowed' : 'pointer',
                 }}
-                title="Bob Smith"
+                title="Brett Budach"
               >
-                Bob
+                Brett
               </button>
               <button
-                onClick={() => handleTokenSubmit('ss0qx6mg20f2qaiyl9hnl7')}
-                disabled={loading}
-                style={{
-                  margin: '2px',
-                  padding: '4px 8px',
-                  fontSize: '0.8rem',
-                  backgroundColor: loading ? '#f0f0f0' : '#e0e0e0',
-                  border: '1px solid #ccc',
-                  borderRadius: '3px',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                }}
-                title="Charlie Williams"
-              >
-                Charlie
-              </button>
-              <button
-                onClick={() => handleTokenSubmit('obnzixyen8f6fzr5xwznda')}
+                onClick={() => handleTokenSubmit('adminqrtoken2026justin')}
                 disabled={loading}
                 style={{
                   margin: '2px',
@@ -468,6 +453,7 @@ export default function QRLoginModal(props: QRLoginModalProps) {
           to { transform: rotate(360deg); }
         }
       `}</style>
-    </div>
+    </div>,
+    document.body
   );
 }

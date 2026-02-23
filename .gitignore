@@ -34,6 +34,9 @@ jspm_packages/
 *.tsbuildinfo
 .tsconfig.tsbuildinfo
 
+# Vite temporary files
+*.timestamp-*
+
 # IDE and editor settings
 .vscode/
 .idea/
@@ -82,3 +85,45 @@ DJ-Forever
 # Temporary commit planning files
 *COMMIT_MESSAGE*.txt
 READY_TO_COMMIT.md
+client/dev-dist/
+
+# Local development documentation (not for repository)
+# Status tracking and planning docs
+docs/archive/OUTSTANDING_TODOS_STATUS.md
+docs/archive/NEXT_PRIORITIES_ACTION_PLAN.md
+docs/development/mobile/MOBILE_ENHANCEMENT_PLAN.md
+docs/development/PHOTO_GUESTBOOK_IMPLEMENTATION.md
+docs/development/PERSONALIZED_MODAL_ENHANCEMENT_TODO.md
+docs/development/TYPESCRIPT_ENHANCEMENT_STATUS.md
+docs/development/CODE_CLEANUP_SUMMARY.md
+docs/development/QR_TEST_CLEANUP.md
+docs/development/DOCUMENTATION_QUALITY_SUMMARY.md
+docs/development/AGENT_TASKS_EVALUATION.md
+
+# Testing and debugging notes
+ADMIN_PRODUCTION_TESTING.md
+PRODUCTION_READINESS_CHECKLIST.md
+docs/CONVERTING_ISSUES_TO_AGENT_TASKS.md
+docs/T9_REQUEST_ID_COMPLETION.md
+docs/DOCUMENTATION_REORGANIZATION.md
+docs/UI_ENHANCEMENTS_TODO.md
+
+# Template/boilerplate files
+docs/development/WEBSITE_PROJECT_TEMPLATE.md
+docs/development/WEDDING_WEBSITE_STRUCTURE_AND_BOILERPLATE.md
+docs/development/EXAMPLE_PROJECT_STRUCTURE_AND_SNIPPETS.md
+
+# Generated seed data files
+server/src/seeds/userData-generated.json
+
+# Wedding documents (contracts, vendor info, sensitive planning materials)
+docs/wedding/
+server/qr-codes/development/*.png
+
+# Admin docs containing real credentials / tokens
+docs/admin/ADMIN_LOGIN_GUIDE.md
+docs/archive/AGENT_CONTRACT.md
+
+# .env.example files — keep locally but not in remote repo
+server/.env.example
+client/.env.example

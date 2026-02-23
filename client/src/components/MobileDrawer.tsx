@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, ReactNode } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  ReactNode,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 /**
@@ -13,6 +19,13 @@ interface MobileDrawerProps {
   children: ReactNode;
   /** Optional CSS class name for styling customization */
   className?: string;
+}
+
+/**
+ * Ref handle for MobileDrawer
+ */
+export interface MobileDrawerHandle {
+  skipScrollRestoreRef: React.MutableRefObject<boolean>;
 }
 
 /**
@@ -52,133 +65,146 @@ interface MobileDrawerProps {
  * </MobileDrawer>
  * ```
  */
-const MobileDrawer: React.FC<MobileDrawerProps> = ({
-  isOpen,
-  onClose,
-  children,
-  className = '',
-}) => {
-  const drawerRef = useRef<HTMLDivElement>(null);
-  const backdropRef = useRef<HTMLDivElement>(null);
-  const previousActiveElementRef = useRef<Element | null>(null);
+const MobileDrawer = forwardRef<MobileDrawerHandle, MobileDrawerProps>(
+  ({ isOpen, onClose, children, className = '' }, ref) => {
+    const drawerRef = useRef<HTMLDivElement>(null);
+    const backdropRef = useRef<HTMLDivElement>(null);
+    const previousActiveElementRef = useRef<Element | null>(null);
+    const skipScrollRestoreRef = useRef(false);
 
-  // Focus management
-  useEffect(() => {
-    if (isOpen) {
-      // Store the currently focused element
-      previousActiveElementRef.current = document.activeElement;
+    // Expose the ref to parent
+    useImperativeHandle(ref, () => ({
+      skipScrollRestoreRef,
+    }));
 
-      // Focus the drawer after it opens
-      setTimeout(() => {
-        drawerRef.current?.focus();
-      }, 100);
-    } else {
-      // Restore focus when closing
-      if (previousActiveElementRef.current) {
-        (previousActiveElementRef.current as HTMLElement)?.focus();
+    // Focus management
+    useEffect(() => {
+      if (isOpen) {
+        // Store the currently focused element
+        previousActiveElementRef.current = document.activeElement;
+
+        // Focus the drawer after it opens
+        setTimeout(() => {
+          drawerRef.current?.focus();
+        }, 100);
+      } else {
+        // Restore focus when closing
+        if (previousActiveElementRef.current) {
+          (previousActiveElementRef.current as HTMLElement)?.focus();
+        }
       }
-    }
-  }, [isOpen]);
+    }, [isOpen]);
 
-  // Body scroll lock
-  useEffect(() => {
-    if (!isOpen) {return;}
-
-    // Save current scroll position
-    const scrollY = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-    document.body.dataset.scrollY = scrollY.toString();
-
-    return () => {
-      // Restore scroll position
-      const scrollY = parseInt(document.body.dataset.scrollY || '0');
-
-      // Remove styles first
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-
-      // Use double requestAnimationFrame to ensure scroll restoration
-      // happens after the drawer animation completes and browser repaints
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          // Use numeric overload for iOS Safari 12+ compatibility
-          // ScrollToOptions (object parameter) not supported in older Safari
-          window.scrollTo(0, scrollY);
-        });
-      });
-
-      delete document.body.dataset.scrollY;
-    };
-  }, [isOpen]);
-
-  // Keyboard event handling
-  useEffect(() => {
-    if (!isOpen) {return;}
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Close on Escape
-      if (event.key === 'Escape') {
-        onClose();
+    // Body scroll lock - use overflow:hidden to prevent scroll without visual jump
+    useEffect(() => {
+      if (!isOpen) {
         return;
       }
 
-      // Focus trap
-      if (event.key === 'Tab' && drawerRef.current) {
-        const focusableElements = drawerRef.current.querySelectorAll(
-          'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
-        );
-        const firstElement = focusableElements[0] as HTMLElement;
-        const lastElement = focusableElements[
-          focusableElements.length - 1
-        ] as HTMLElement;
+      // Save current scroll position and prevent body scrolling
+      const scrollY = window.scrollY;
 
-        if (event.shiftKey) {
-          if (document.activeElement === firstElement) {
-            lastElement?.focus();
-            event.preventDefault();
+      // Use overflow:hidden instead of position:fixed to avoid visual jump
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = '0px'; // Prevent scrollbar shift
+      document.body.dataset.scrollY = scrollY.toString();
+
+      return () => {
+        // Remove overflow lock
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+
+        // Restore scroll position unless explicitly skipped (e.g., navigating to a section)
+        const savedScrollY = parseInt(document.body.dataset.scrollY || '0', 10);
+        delete document.body.dataset.scrollY;
+
+        if (!skipScrollRestoreRef.current && savedScrollY !== window.scrollY) {
+          window.scrollTo(0, savedScrollY);
+        }
+
+        // Reset the ref for next time
+        skipScrollRestoreRef.current = false;
+      };
+    }, [isOpen]);
+
+    // Keyboard event handling
+    useEffect(() => {
+      if (!isOpen) {
+        return;
+      }
+
+      const handleKeyDown = (event: KeyboardEvent) => {
+        // Close on Escape
+        if (event.key === 'Escape') {
+          onClose();
+          return;
+        }
+
+        // Focus trap
+        if (event.key === 'Tab' && drawerRef.current) {
+          const focusableElements = drawerRef.current.querySelectorAll(
+            'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
+          );
+
+          // Safety check: only trap focus if there are focusable elements
+          if (focusableElements.length === 0) {
+            return;
           }
-        } else {
-          if (document.activeElement === lastElement) {
-            firstElement?.focus();
-            event.preventDefault();
+
+          const firstElement = focusableElements[0] as HTMLElement;
+          const lastElement = focusableElements[
+            focusableElements.length - 1
+          ] as HTMLElement;
+
+          if (event.shiftKey) {
+            if (document.activeElement === firstElement) {
+              lastElement?.focus();
+              event.preventDefault();
+            }
+          } else {
+            if (document.activeElement === lastElement) {
+              firstElement?.focus();
+              event.preventDefault();
+            }
           }
         }
-      }
-    };
+      };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
 
-  if (!isOpen) {return null;}
+    if (!isOpen) {
+      return null;
+    }
 
-  return createPortal(
-    <div className="mobile-drawer-portal">
-      {/* Backdrop */}
-      <div
-        ref={backdropRef}
-        className="mobile-drawer-backdrop"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+    return createPortal(
+      <div className="mobile-drawer-portal">
+        {/* Backdrop */}
+        <div
+          ref={backdropRef}
+          className="mobile-drawer-backdrop"
+          onClick={onClose}
+          aria-hidden="true"
+        />
 
-      {/* Drawer */}
-      <nav
-        ref={drawerRef}
-        className={`mobile-drawer ${className}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Navigation menu"
-        tabIndex={-1}
-      >
-        <div className="mobile-drawer-content">{children}</div>
-      </nav>
-    </div>,
-    document.body
-  );
-};
+        {/* Drawer - proper dialog semantics with nested nav */}
+        <div
+          ref={drawerRef}
+          className={`mobile-drawer ${className}`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation menu"
+          tabIndex={-1}
+        >
+          <nav className="mobile-drawer-content">{children}</nav>
+        </div>
+      </div>,
+      document.body
+    );
+  }
+);
+
+MobileDrawer.displayName = 'MobileDrawer';
 
 export default MobileDrawer;

@@ -63,6 +63,44 @@ export const typeDefs = `
     MAYBE
   }
 
+  """Guest group classification for invitation management and personalization"""
+  enum GuestGroup {
+    """Groom's family members"""
+    grooms_family
+    """Close friends"""
+    friends
+    """Bride's family members"""
+    brides_family
+    """Extended family members"""
+    extended_family
+    """Other guests"""
+    other
+  }
+
+  """Household member for multi-person household authentication"""
+  type HouseholdMember {
+    """First name of the household member"""
+    firstName: String!
+    """Last name of the household member (optional for single-name cultures)"""
+    lastName: String
+    """Relationship to the bride (optional)"""
+    relationshipToBride: String
+    """Relationship to the groom (optional)"""
+    relationshipToGroom: String
+  }
+
+  """Input for household member data"""
+  input HouseholdMemberInput {
+    """First name of the household member"""
+    firstName: String!
+    """Last name of the household member (optional)"""
+    lastName: String
+    """Relationship to the bride (optional)"""
+    relationshipToBride: String
+    """Relationship to the groom (optional)"""
+    relationshipToGroom: String
+  }
+
   type User {
     _id: ID!
     fullName: String!
@@ -73,11 +111,33 @@ export const typeDefs = `
     rsvp: RSVP
     isInvited: Boolean!
     qrToken: String!
+    """Human-readable alias for QR token (e.g., 'smith-family')"""
+    qrAlias: String
+    """Whether the QR alias is locked to prevent accidental changes (for print safety)"""
+    qrAliasLocked: Boolean
+    relationshipToBride: String
+    relationshipToGroom: String
+    customWelcomeMessage: String
+    guestGroup: GuestGroup
+    plusOneAllowed: Boolean!
+    plusOneName: String
+    personalPhoto: String
+    specialInstructions: String
+    dietaryRestrictions: String
+    """Additional household members who share this QR code"""
+    householdMembers: [HouseholdMember!]
+    """Mailing address fields for invitation management"""
+    streetAddress: String
+    addressLine2: String
+    city: String
+    state: String
+    zipCode: String
+    country: String
   }
 
   type Guest {
     fullName: String!
-    mealPreference: String!
+    mealPreference: String
     allergies: String
   }
 
@@ -101,7 +161,7 @@ export const typeDefs = `
 
   input GuestInput {
     fullName: String!
-    mealPreference: String!
+    mealPreference: String
     allergies: String
   }
 
@@ -162,11 +222,34 @@ export const typeDefs = `
     hasRSVPed: Boolean!
     isInvited: Boolean!
     qrToken: String!
+    """Human-readable alias for QR token (e.g., 'smith-family')"""
+    qrAlias: String
+    """Whether the QR alias is locked to prevent accidental changes (for print safety)"""
+    qrAliasLocked: Boolean
     rsvp: RSVP
     """Date when user was created/invited"""
     createdAt: String
     """Date of last RSVP update"""
     lastUpdated: String
+    """Personalization fields"""
+    relationshipToBride: String
+    relationshipToGroom: String
+    customWelcomeMessage: String
+    guestGroup: GuestGroup
+    plusOneAllowed: Boolean
+    plusOneName: String
+    personalPhoto: String
+    specialInstructions: String
+    dietaryRestrictions: String
+    """Additional household members who share this QR code"""
+    householdMembers: [HouseholdMember!]
+    """Mailing address fields for invitation management"""
+    streetAddress: String
+    addressLine2: String
+    city: String
+    state: String
+    zipCode: String
+    country: String
   }
 
   """Input for updating user details from admin interface"""
@@ -174,6 +257,37 @@ export const typeDefs = `
     fullName: String
     email: String
     isInvited: Boolean
+    qrAlias: String
+    qrAliasLocked: Boolean
+    streetAddress: String
+    addressLine2: String
+    city: String
+    state: String
+    zipCode: String
+    country: String
+  }
+
+  """Input for updating user personalization fields"""
+  input UserPersonalizationInput {
+    email: String
+    qrAlias: String
+    qrAliasLocked: Boolean
+    relationshipToBride: String
+    relationshipToGroom: String
+    customWelcomeMessage: String
+    guestGroup: GuestGroup
+    plusOneAllowed: Boolean
+    plusOneName: String
+    personalPhoto: String
+    specialInstructions: String
+    dietaryRestrictions: String
+    householdMembers: [HouseholdMemberInput!]
+    streetAddress: String
+    addressLine2: String
+    city: String
+    state: String
+    zipCode: String
+    country: String
   }
 
   """Input for admin RSVP updates"""
@@ -189,6 +303,41 @@ export const typeDefs = `
     fullName: String!
     email: String!
     isInvited: Boolean!
+    streetAddress: String
+    addressLine2: String
+    city: String
+    state: String
+    zipCode: String
+    country: String
+  }
+
+  """Input for bulk personalization update - email is used to find the user"""
+  input BulkPersonalizationInput {
+    email: String!
+    fullName: String
+    personalization: UserPersonalizationInput!
+  }
+
+  """Result of bulk personalization update operation"""
+  type BulkPersonalizationResult {
+    success: Int!
+    created: Int!
+    updated: Int!
+    failed: Int!
+    errors: [BulkPersonalizationError!]!
+  }
+
+  """Error detail for failed bulk personalization update"""
+  type BulkPersonalizationError {
+    email: String!
+    error: String!
+  }
+
+  """Result of QR code regeneration operation"""
+  type QRCodeRegenerationResult {
+    success: Int!
+    failed: Int!
+    errors: [String!]!
   }
 
   type Query {
@@ -220,6 +369,9 @@ export const typeDefs = `
     adminCreateUser(input: AdminCreateUserInput!): AdminUser!
     adminUpdateRSVP(userId: ID!, input: AdminRSVPUpdateInput!): RSVP!
     adminUpdateUser(userId: ID!, input: AdminUserUpdateInput!): AdminUser!
+    adminUpdateUserPersonalization(userId: ID!, input: UserPersonalizationInput!): User!
+    adminBulkUpdatePersonalization(updates: [BulkPersonalizationInput!]!): BulkPersonalizationResult!
+    adminRegenerateQRCodes: QRCodeRegenerationResult!
     adminDeleteUser(userId: ID!): Boolean!
     adminDeleteRSVP(userId: ID!): Boolean!
     

@@ -7,6 +7,10 @@
   inset: 0;
   z-index: 999999;
   pointer-events: none;
+
+  /* Prevent background scrolling and touch interactions */
+  overflow: hidden;
+  touch-action: none;
 }
 
 /* Backdrop */
@@ -26,6 +30,9 @@
 
   /* Enable pointer events */
   pointer-events: all;
+
+  /* Optimize touch interactions */
+  touch-action: manipulation;
 }
 
 @keyframes backdrop-fade-in {
@@ -37,7 +44,7 @@
   }
 }
 
-/* Drawer Container */
+/* Drawer Container - Dialog wrapper */
 .mobile-drawer {
   position: fixed;
   top: 0;
@@ -72,6 +79,13 @@
 
   /* Enable pointer events */
   pointer-events: all;
+}
+
+/* Drawer Content - Nav element inside dialog */
+.mobile-drawer > nav {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Enhanced keyboard focus for drawer */
@@ -202,15 +216,42 @@
   border-radius: 2px;
 }
 
-/* Dividers between sections */
-.mobile-drawer-content .drawer-divider {
-  height: 1px;
-  background: rgba(0, 0, 0, 0.08);
-  margin: 12px 0;
+/* Primary CTA styling in mobile drawer (RSVP) */
+.mobile-drawer-content .drawer-link.nav-cta {
+  background: rgba(180, 148, 108, 0.15);
+  border: 1px solid rgba(180, 148, 108, 0.5);
+  color: var(--color-gold-dark) !important;
+  border-radius: 8px;
+  font-weight: 500;
+  margin: 8px 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.mobile-drawer-content .drawer-link.nav-cta:hover,
+.mobile-drawer-content .drawer-link.nav-cta:active {
+  background: rgba(180, 148, 108, 0.25);
+  border-color: rgba(180, 148, 108, 0.7);
+  box-shadow: 0 4px 8px rgba(180, 148, 108, 0.2);
+  transform: translateY(-1px);
+}
+.mobile-drawer-content .drawer-link.nav-cta.active::before {
+  display: none; /* Hide active indicator for CTA button */
+}
+
+/* Dividers between sections - wrapped in li with role=separator */
+.mobile-drawer-content li[role="separator"] {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   opacity: 0;
   animation: drawer-item-fade-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)
     forwards;
   animation-delay: calc(0.1s + (var(--item-index, 0) * 0.05s));
+}
+
+.mobile-drawer-content .drawer-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 12px 0;
 }
 
 /* Auth section at bottom */
@@ -258,7 +299,7 @@
   outline: none; /* Remove default outline for mouse users */
 
   /* Ensure visibility */
-  box-shadow: 0 2px 8px rgba(110, 143, 163, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Enhanced keyboard focus for auth buttons */
@@ -268,13 +309,14 @@
 }
 
 .mobile-drawer-content .drawer-auth-button:hover {
-  background: var(--color-dusty-blue-light, #a3bfcb);
+  background: rgba(159, 181, 161, 0.25);
+  border-color: rgba(159, 181, 161, 0.6);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(110, 143, 163, 0.2);
+  box-shadow: 0 4px 8px rgba(159, 181, 161, 0.2);
 }
 
 .mobile-drawer-content .drawer-auth-button:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0);
 }
 
 .mobile-drawer-content .drawer-auth-button:focus-visible {
@@ -288,8 +330,25 @@
   margin-bottom: 12px;
 
   font-size: 0.9rem;
-  color: var(--color-secondary, #6b7280);
+  font-weight: 500;
+  color: var(--color-dusty-blue-dark);
   text-align: center;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  user-select: none;
+  background: rgba(110, 143, 163, 0.1);
+  border: 1px solid rgba(110, 143, 163, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.mobile-drawer-content .drawer-user-greeting:hover {
+  background: rgba(110, 143, 163, 0.2);
+  border-color: rgba(110, 143, 163, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+.mobile-drawer-content .drawer-user-greeting:active {
+  transform: translateY(0);
 }
 
 .mobile-drawer-content .drawer-user-greeting .admin-badge {

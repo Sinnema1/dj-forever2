@@ -67,17 +67,52 @@ import mongoose, { Schema, Document } from "mongoose";
  * @property {boolean} isInvited - Invitation status flag (default: true)
  * @property {boolean} hasRSVPed - RSVP completion status (default: false, updated by RSVP service)
  * @property {string} qrToken - Unique QR token for authentication (required, unique)
+ * @property {string} relationshipToBride - Primary guest's relationship to bride (optional, for personalization)
+ * @property {string} relationshipToGroom - Primary guest's relationship to groom (optional, for personalization)
+ * @property {Array} householdMembers - Additional guests in the household (optional)
+ * @property {string} customWelcomeMessage - Personalized welcome message for entire household (optional)
+ * @property {string} guestGroup - Group classification (e.g., 'family', 'friends', 'work') (optional)
+ * @property {boolean} plusOneAllowed - Whether household is allowed a plus-one (default: false)
  * @property {Date} createdAt - Account creation timestamp (automatic)
  * @property {Date} updatedAt - Last modification timestamp (automatic)
  */
+
+export interface IHouseholdMember {
+  firstName: string;
+  lastName: string;
+  relationshipToBride?: string;
+  relationshipToGroom?: string;
+}
+
 export interface IUser extends Document {
+  _id: mongoose.Types.ObjectId;
   fullName: string;
   email: string;
   isAdmin: boolean;
   isInvited: boolean;
   hasRSVPed: boolean;
   rsvpId?: mongoose.Types.ObjectId;
+  rsvp?: any; // Virtual field populated from RSVP collection
   qrToken: string;
+  qrAlias?: string;
+  qrAliasLocked?: boolean;
+  relationshipToBride?: string;
+  relationshipToGroom?: string;
+  householdMembers?: IHouseholdMember[];
+  customWelcomeMessage?: string;
+  guestGroup?: string;
+  plusOneAllowed: boolean;
+  plusOneName?: string;
+  personalPhoto?: string;
+  specialInstructions?: string;
+  dietaryRestrictions?: string;
+  // Mailing address fields (for invitation sending)
+  streetAddress?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -126,6 +161,143 @@ const userSchema = new Schema<IUser>(
       unique: true,
       trim: true,
     },
+    qrAlias: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows null/undefined values, only enforces uniqueness when present
+      trim: true,
+      lowercase: true,
+      match: [
+        /^[a-z0-9-]+$/,
+        "QR alias must contain only lowercase letters, numbers, and hyphens",
+      ],
+      minlength: [3, "QR alias must be at least 3 characters"],
+      maxlength: [50, "QR alias cannot exceed 50 characters"],
+    },
+    qrAliasLocked: {
+      type: Boolean,
+      default: false,
+    },
+    relationshipToBride: {
+      type: String,
+      trim: true,
+      maxlength: [100, "Relationship description cannot exceed 100 characters"],
+    },
+    relationshipToGroom: {
+      type: String,
+      trim: true,
+      maxlength: [100, "Relationship description cannot exceed 100 characters"],
+    },
+    householdMembers: [
+      {
+        firstName: {
+          type: String,
+          required: true,
+          trim: true,
+          maxlength: [50, "First name cannot exceed 50 characters"],
+        },
+        lastName: {
+          type: String,
+          required: false,
+          trim: true,
+          maxlength: [50, "Last name cannot exceed 50 characters"],
+        },
+        relationshipToBride: {
+          type: String,
+          trim: true,
+          maxlength: [
+            100,
+            "Relationship description cannot exceed 100 characters",
+          ],
+        },
+        relationshipToGroom: {
+          type: String,
+          trim: true,
+          maxlength: [
+            100,
+            "Relationship description cannot exceed 100 characters",
+          ],
+        },
+      },
+    ],
+    customWelcomeMessage: {
+      type: String,
+      trim: true,
+      maxlength: [1000, "Welcome message cannot exceed 1000 characters"],
+    },
+    guestGroup: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      enum: {
+        values: [
+          "grooms_family",
+          "friends",
+          "brides_family",
+          "extended_family",
+          "other",
+        ],
+        message: "{VALUE} is not a valid guest group",
+      },
+      index: true,
+    },
+    plusOneAllowed: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    plusOneName: {
+      type: String,
+      trim: true,
+      maxlength: [100, "Plus-one name cannot exceed 100 characters"],
+    },
+    // Mailing address fields for invitation sending
+    streetAddress: {
+      type: String,
+      trim: true,
+      maxlength: [200, "Street address cannot exceed 200 characters"],
+    },
+    addressLine2: {
+      type: String,
+      trim: true,
+      maxlength: [100, "Address line 2 cannot exceed 100 characters"],
+    },
+    city: {
+      type: String,
+      trim: true,
+      maxlength: [100, "City cannot exceed 100 characters"],
+    },
+    state: {
+      type: String,
+      trim: true,
+      maxlength: [50, "State cannot exceed 50 characters"],
+    },
+    zipCode: {
+      type: String,
+      trim: true,
+      maxlength: [20, "ZIP code cannot exceed 20 characters"],
+    },
+    country: {
+      type: String,
+      trim: true,
+      default: "USA",
+      maxlength: [100, "Country cannot exceed 100 characters"],
+    },
+    personalPhoto: {
+      type: String,
+      trim: true,
+      maxlength: [500, "Photo URL cannot exceed 500 characters"],
+    },
+    specialInstructions: {
+      type: String,
+      trim: true,
+      maxlength: [500, "Special instructions cannot exceed 500 characters"],
+    },
+    dietaryRestrictions: {
+      type: String,
+      trim: true,
+      maxlength: [500, "Dietary restrictions cannot exceed 500 characters"],
+    },
   },
   {
     timestamps: true,
@@ -141,7 +313,7 @@ const userSchema = new Schema<IUser>(
         return ret;
       },
     },
-  }
+  },
 );
 
 // Compound indexes for common query patterns
@@ -189,6 +361,17 @@ userSchema.statics.findByEmail = function (email: string) {
 
 userSchema.statics.findByQRToken = function (qrToken: string) {
   return this.findOne({ qrToken: qrToken.trim() });
+};
+
+userSchema.statics.findByQRAlias = function (qrAlias: string) {
+  return this.findOne({ qrAlias: qrAlias.toLowerCase().trim() });
+};
+
+userSchema.statics.findByQRTokenOrAlias = function (identifier: string) {
+  const normalizedIdentifier = identifier.toLowerCase().trim();
+  return this.findOne({
+    $or: [{ qrToken: identifier.trim() }, { qrAlias: normalizedIdentifier }],
+  });
 };
 
 userSchema.statics.findInvitedUsers = function () {

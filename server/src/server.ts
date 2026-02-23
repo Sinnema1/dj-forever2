@@ -43,7 +43,7 @@
  *
  * @example
  * // Production deployment:
- * // npm run render-build - Render.com build command
+ * // Render.com build: npm install && npm run build (in server/ directory)
  * // Automatically starts server on assigned PORT
  *
  * @dependencies
@@ -63,11 +63,30 @@ import { resolvers } from "./graphql/resolvers.js";
 import { getUserFromRequest } from "./services/authService.js";
 import { healthRouter } from "./routes/health.js";
 import { withRequestId } from "./middleware/logging.js";
+import {
+  securityHeaders,
+  createRateLimiter,
+  requestLogger,
+} from "./middleware/security.js";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { readFileSync } from "fs";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import User from "./models/User.js";
 
 dotenv.config();
+
+// ESM module compatibility: Define __dirname for path resolution
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Cache package version at startup for health checks
+const packageJsonPath = path.join(__dirname, "../package.json");
+const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+const SERVER_VERSION = packageJson.version;
 
 /**
  * Main server startup function - initializes MongoDB connection, Apollo GraphQL server,
@@ -98,7 +117,20 @@ async function startServer() {
   const dbName = process.env.MONGODB_DB_NAME || "djforever2";
   const uri = process.env.MONGODB_URI || "mongodb://localhost:27017";
   // Use { dbName } option for consistency with seed scripts
-  console.log(`[server] Connecting to MongoDB URI: ${uri}, DB Name: ${dbName}`);
+  // Never log the full URI — it may contain credentials
+  let redactedMongoTarget = "[unparseable MongoDB URI]";
+  try {
+    const parsedUri = new URL(uri);
+    const hostPort = parsedUri.port
+      ? `${parsedUri.hostname}:${parsedUri.port}`
+      : parsedUri.hostname;
+    redactedMongoTarget = `${parsedUri.protocol}//${hostPort}`;
+  } catch {
+    // Fall back to placeholder without exposing the raw URI
+  }
+  console.log(
+    `[server] Connecting to MongoDB at ${redactedMongoTarget} (dbName: ${dbName})`,
+  );
 
   try {
     await mongoose.connect(uri, { dbName });
@@ -116,7 +148,7 @@ async function startServer() {
       process.env.PORT
         ? `ENV override: ${process.env.PORT}`
         : `Default: ${PORT}`
-    }`
+    }`,
   );
 
   // Apollo Server setup
@@ -141,6 +173,12 @@ async function startServer() {
   // Request ID middleware for distributed tracing
   app.use(withRequestId);
 
+  // Request logging middleware
+  app.use(requestLogger);
+
+  // Security headers middleware (helmet)
+  app.use(securityHeaders);
+
   // CORS setup
   app.use(
     cors({
@@ -153,8 +191,14 @@ async function startServer() {
         "https://dj-forever2.onrender.com", // Production frontend URL
       ],
       credentials: true,
-    })
+    }),
   );
+
+  // Trust reverse proxy (Render.com) so rate limiter uses real client IPs, not proxy IPs
+  app.set("trust proxy", 1);
+
+  // Rate limiting for GraphQL endpoint
+  app.use("/graphql", createRateLimiter(15 * 60 * 1000, 100)); // 100 requests per 15 minutes
 
   // GraphQL endpoint with authentication context
   app.use(
@@ -168,8 +212,22 @@ async function startServer() {
           user,
         };
       },
-    })
+    }),
   );
+
+  // Root endpoint for health checks (Render infrastructure)
+  app.get("/", (_req, res) => {
+    res.status(200).json({
+      status: "ok",
+      service: "dj-forever2-backend",
+      version: SERVER_VERSION,
+      endpoints: {
+        graphql: "/graphql",
+        health: "/health",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  });
 
   // Health check endpoints
   app.use("/health", healthRouter);
@@ -180,6 +238,92 @@ async function startServer() {
     const frontendUrl =
       process.env.CONFIG__FRONTEND_URL || "https://dj-forever2.onrender.com";
     res.redirect(`${frontendUrl}/login/qr/${req.params.qrToken}`);
+  });
+
+  // Serve QR code images for admin download
+  app.get("/api/qr-code/:qrToken", async (req, res) => {
+    try {
+      const { qrToken } = req.params;
+
+      // Find the user by QR token to get their ID and name
+      const user = await (User.findOne as any)({ qrToken });
+
+      if (!user) {
+        console.error(`[QR Download] User not found for token: ${qrToken}`);
+        return res.status(404).json({
+          error: "User not found",
+          message: `No user found with QR token ${qrToken}`,
+        });
+      }
+
+      // Determine environment
+      const isProduction =
+        process.env.NODE_ENV === "production" ||
+        process.env.MONGODB_URI?.includes("mongodb+srv");
+      const environment = isProduction ? "production" : "development";
+
+      // Construct filename matching generateQRCodes.ts format:
+      // {name}_{email}_{_id}.png
+      const fileName = `${user.fullName.replace(
+        /[^a-z0-9]/gi,
+        "_",
+      )}_${user.email.replace(/[^a-z0-9]/gi, "_")}_${user._id}.png`;
+
+      // Construct absolute file path
+      const serverRoot = path.resolve(__dirname, "..");
+      const filePath = path.resolve(
+        serverRoot,
+        "qr-codes",
+        environment,
+        fileName,
+      );
+
+      console.log(`[QR Download] User: ${user.fullName} (${user.email})`);
+      console.log(`[QR Download] Looking for file: ${filePath}`);
+
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        console.error(`[QR Download] File not found: ${filePath}`);
+        return res.status(404).json({
+          error: "QR code file not found",
+          message: `QR code file for ${user.fullName} does not exist. Use the 'Regenerate QR Codes' button in the admin dashboard to generate it.`,
+        });
+      }
+
+      // Prepare download filename
+      const downloadFilename = `${user.fullName.replace(/\s+/g, "_")}_QR.png`;
+
+      console.log(`[QR Download] Serving file as: ${downloadFilename}`);
+
+      // Serve the file with download headers
+      res.setHeader("Content-Type", "image/png");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${downloadFilename}"`,
+      );
+
+      // Send the file - sendFile requires absolute path
+      return res.sendFile(filePath, (err) => {
+        if (err) {
+          console.error(`[QR Download] Error sending file:`, err);
+          if (!res.headersSent) {
+            res.status(500).json({
+              error: "Failed to send QR code file",
+              message: err.message,
+            });
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Error serving QR code:", error);
+      if (!res.headersSent) {
+        res.status(500).json({
+          error: "Failed to retrieve QR code",
+          message: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+      return;
+    }
   });
 
   // Static file serving removed for Render backend-only deployment

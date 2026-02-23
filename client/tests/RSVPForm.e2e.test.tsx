@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { act } from 'react';
 import userEvent from '@testing-library/user-event';
@@ -7,6 +7,14 @@ import { AuthProvider } from '../src/context/AuthContext';
 import { MockedProvider } from '@apollo/client/testing';
 import { GET_RSVP } from '../src/features/rsvp/graphql/queries';
 import { CREATE_RSVP } from '../src/features/rsvp/graphql/mutations';
+
+// Mock feature flags - enable meal preferences for these tests
+// (tests were written with meal preferences visible)
+vi.mock('../src/config/features', () => ({
+  features: {
+    mealPreferencesEnabled: true,
+  },
+}));
 
 /**
  * RSVPForm E2E Test Suite
@@ -628,6 +636,42 @@ describe('RSVPForm integration', () => {
           expect.stringContaining('Fix')
         );
       });
+    });
+  });
+
+  describe('Meal Preferences Feature Flag (disabled)', () => {
+    it('hides meal preference fields and shows coming soon banner when feature is disabled', async () => {
+      // Override the mock for this test to disable meal preferences
+      const { features } = await import('../src/config/features');
+      const originalValue = features.mealPreferencesEnabled;
+      features.mealPreferencesEnabled = false;
+
+      const user = userEvent.setup();
+
+      await act(async () => {
+        renderRSVPForm();
+      });
+
+      const attendingYesRadio = screen.getByDisplayValue(
+        'YES'
+      ) as HTMLInputElement;
+
+      await user.click(attendingYesRadio);
+
+      // Meal preference dropdown should NOT be visible
+      expect(
+        screen.queryByLabelText(/meal preference/i)
+      ).not.toBeInTheDocument();
+
+      // Coming soon banner should be visible
+      await waitFor(() => {
+        expect(
+          screen.getByText(/menu selection coming soon/i)
+        ).toBeInTheDocument();
+      });
+
+      // Restore original value
+      features.mealPreferencesEnabled = originalValue;
     });
   });
 });

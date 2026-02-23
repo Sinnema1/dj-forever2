@@ -6,6 +6,8 @@ import AdminRSVPManager from './AdminRSVPManager';
 import AdminGuestExport from './AdminGuestExport';
 import AdminAnalytics from './AdminAnalytics';
 import AdminEmailReminders from './AdminEmailReminders';
+import AdminGuestPersonalization from './AdminGuestPersonalization';
+import BulkPersonalization from './BulkPersonalization';
 import './AdminDashboard.css';
 
 /**
@@ -15,7 +17,13 @@ import './AdminDashboard.css';
  */
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'analytics' | 'guests' | 'reminders' | 'export'
+    | 'overview'
+    | 'analytics'
+    | 'guests'
+    | 'personalization'
+    | 'bulk_upload'
+    | 'reminders'
+    | 'export'
   >('overview');
 
   const {
@@ -103,6 +111,22 @@ const AdminDashboard: React.FC = () => {
           Guest Management
         </button>
         <button
+          className={`tab-button ${activeTab === 'personalization' ? 'active' : ''}`}
+          onClick={() => setActiveTab('personalization')}
+          aria-pressed={activeTab === 'personalization'}
+          aria-label="Personalization tab"
+        >
+          Personalization
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'bulk_upload' ? 'active' : ''}`}
+          onClick={() => setActiveTab('bulk_upload')}
+          aria-pressed={activeTab === 'bulk_upload'}
+          aria-label="Bulk upload tab"
+        >
+          Bulk Upload
+        </button>
+        <button
           className={`tab-button ${activeTab === 'reminders' ? 'active' : ''}`}
           onClick={() => setActiveTab('reminders')}
           aria-pressed={activeTab === 'reminders'}
@@ -169,6 +193,10 @@ const AdminDashboard: React.FC = () => {
         {activeTab === 'guests' && (
           <AdminRSVPManager guests={guests} onUpdate={refetchRSVPs} />
         )}
+
+        {activeTab === 'personalization' && <AdminGuestPersonalization />}
+
+        {activeTab === 'bulk_upload' && <BulkPersonalization />}
 
         {activeTab === 'reminders' && <AdminEmailReminders guests={guests} />}
 

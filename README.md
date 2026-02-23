@@ -93,6 +93,9 @@ All authentication is handled by scanning your invitation QR code:
 
 - **QR Code Authentication**: Unique QR codes for each guest, enabling secure, password-free access.
 - **RSVP Management**: Guests can RSVP, select meal preferences, indicate dietary restrictions, and request songs.
+  - **Party Size Validation**: Enforces maximum party size based on household members and plus-one allowance
+  - **Per-Person Toggles**: Each household member (including kids) can individually confirm attendance
+  - **Plus-One Support**: Bailey Bowers and Abby Chose can bring a plus-one with free-text name entry
 - **Countdown Timer**: Real-time countdown to the wedding day.
 - **Photo Gallery**: Swipeable lightbox with double-tap zoom functionality.
 - **Registry Links**: Quick links to wedding registries.
@@ -100,19 +103,44 @@ All authentication is handled by scanning your invitation QR code:
 
 ### Admin Dashboard
 
-- **Guest Management**: Create/delete guests with automatic QR code generation
+- **Guest Management**: Create/delete guests with automatic QR code generation (30 real guests)
 - **RSVP Editing**: Comprehensive forms to edit existing RSVPs and guest information
 - **Analytics Dashboard**: 7 interactive visualizations including response timeline, meal preferences, party size distribution, and automated insights
-- **Email Reminders**: SMTP-powered email system with bulk operations for pending RSVPs
+- **Email Reminders**: SMTP-powered email system with bulk operations and production safety guard
 - **CSV Export**: Complete guest list export for external processing
 - **Real-time Statistics**: Live wedding stats including RSVP rates, attendance counts, and meal orders
 
-📖 **Complete Documentation**: See [`/docs`](./docs/README.md) for comprehensive documentation including:
+### 🛡️ Production Safety Features
 
-- [Admin Dashboard Guide](./docs/admin/ADMIN_DASHBOARD_SUMMARY.md) - Complete admin features overview
-- [Bug Fixes](./docs/bug-fixes/) - All documented bug fixes
-- [User Guides](./docs/guides/) - Setup and testing guides
-- [Development Docs](./docs/development/) - Technical documentation
+- **Email Safety Guard**: Prevents accidental emails to real guests during testing (whitelist-based)
+- **Test Data Isolation**: Separate databases for dev/test/production
+- **QR Token Validation**: Alphanumeric-only tokens (10-40 characters)
+- **Real Guest Data**: 30 households with production email addresses
+
+## 📚 Documentation
+
+Complete project documentation organized in [`/docs`](./docs/):
+
+### Quick Links
+
+- **[Admin Features](/docs/admin/)** - Dashboard, guest management, analytics, email system
+- **[Deployment Guides](/docs/deployment/)** - Production deployment, Render.com configuration, testing procedures
+- **[Development](/docs/development/)** - Architecture, testing, TypeScript enhancements, code quality
+- **[Mobile Features](/docs/development/mobile/)** - Mobile optimizations, QR scanning, touch interactions
+- **[User Guides](/docs/guides/)** - QR testing, debugging, quick start implementation
+- **[Bug Fixes](/docs/bug-fixes/)** - Historical issue resolutions and fixes
+
+### Key Documentation
+
+| Document                                                               | Description                                   |
+| ---------------------------------------------------------------------- | --------------------------------------------- |
+| [Admin Dashboard Summary](/docs/admin/ADMIN_DASHBOARD_SUMMARY.md)      | Complete admin features overview (500+ lines) |
+| [Admin Production Testing](/docs/admin/ADMIN_PRODUCTION_TESTING.md)    | Comprehensive production testing procedures   |
+| [Deployment Guide](/docs/deployment/DEPLOYMENT.md)                     | Complete Render.com deployment instructions   |
+| [Mobile Features](/docs/development/mobile/MOBILE_FEATURES_SUMMARY.md) | Mobile optimization details                   |
+| [RSVP Test Suite](/docs/development/RSVP_TEST_SUITE.md)                | Testing strategy and procedures               |
+
+📖 **Full Documentation Index**: See [`/docs/README.md`](./docs/README.md)
 
 ## Customization
 
@@ -186,6 +214,7 @@ After running performance commands, reports are generated in:
 - [x] **Analytics Dashboard** - 7 interactive visualizations (response timeline, meal preferences, party size, day of week analysis, insights)
 - [x] **Email Reminder System** - SMTP-powered email system with bulk operations for pending RSVPs
 - [x] **Email System Testing** - Full validation of SMTP health checks, email delivery, QR login links, and template rendering
+- [x] **Personalized Modal Enhancement Phase 3** - Enhanced banner system, smart RSVP pre-population, and dietary restrictions support
 
 #### Bug Fixes & Improvements
 
@@ -199,13 +228,14 @@ After running performance commands, reports are generated in:
 - [x] **Mobile Photo Viewing UX Enhancement** - Enhanced with double-tap zoom, improved swipe navigation, responsive grid
 - [x] **Email Environment Variable Fix** - Corrected `FRONTEND_URL` configuration for proper QR login link generation
 - [x] **AdminEmailReminders Toggle** - Added show all users vs pending only toggle for easier testing
+- [x] **Routing & Auth Improvements** - 404 page, token expiration checking, auto-logout, localStorage cleanup
+- [x] **Test Suite Fixes** - Fixed BulkPersonalization tests to match current implementation (all 66 tests passing)
 
 ### Next Steps
 
 #### High Priority
 
-- [ ] **Routing & Auth Improvements** - Token expiration checking, auto-logout, localStorage cleanup (see `ROUTING_AUTHENTICATION_TODO.md`)
-- [ ] **Accessibility Review** - Screen reader testing for countdown timer and focus management
+- [ ] **Production Validation Sprint** - Test admin features (analytics, guest management) with real production data
 
 #### Low Priority
 
@@ -213,9 +243,11 @@ After running performance commands, reports are generated in:
 
 ### Documentation
 
-📖 **Admin Features**: See [`/docs/admin`](./docs/admin/ADMIN_DASHBOARD_SUMMARY.md) for complete admin dashboard documentation  
-📧 **Email Setup**: See [`/docs/admin/EMAIL_SYSTEM_GUIDE.md`](./docs/admin/EMAIL_SYSTEM_GUIDE.md) for SMTP configuration guide  
-🐛 **Bug Fixes**: All fixes documented in [`/docs/bug-fixes`](./docs/bug-fixes/)
+📖 **See [PRODUCTION_TESTING_PLAN.md](./PRODUCTION_TESTING_PLAN.md)** for comprehensive testing procedures  
+📊 **See [/docs/admin/ADMIN_DASHBOARD_SUMMARY.md](/docs/admin/ADMIN_DASHBOARD_SUMMARY.md)** for complete admin features  
+📧 **See [/docs/admin/EMAIL_SYSTEM_GUIDE.md](/docs/admin/EMAIL_SYSTEM_GUIDE.md)** for SMTP configuration  
+🐛 **See [/docs/bug-fixes](/docs/bug-fixes/)** for all documented fixes  
+🚀 **See [/docs/deployment](/docs/deployment/)** for production deployment guides
 
 ---
 

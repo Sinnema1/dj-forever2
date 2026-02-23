@@ -9,7 +9,10 @@ import RegistryStandalonePage from './pages/RegistryStandalonePage';
 import QRTokenLogin from './pages/QRTokenLogin';
 import LoginSuccess from './pages/LoginSuccess';
 import QRInfoPage from './pages/QRInfoPage';
-import AuthDebug from './pages/AuthDebug';
+import NotFoundPage from './pages/NotFoundPage';
+
+// Lazy-load AuthDebug — only available in development builds
+const AuthDebug = lazy(() => import('./pages/AuthDebug'));
 import InvitedRoute from './components/InvitedRoute';
 import AdminRoute from './components/AdminRoute';
 import PersonalizedWelcome from './components/PersonalizedWelcome';
@@ -208,18 +211,23 @@ export default function App() {
                 </AdminRoute>
               }
             />
-            <Route
-              path="/auth-debug"
-              element={
-                <EnhancedSuspense
-                  name="auth-debug"
-                  loadingMessage="Loading debug info..."
-                  enhanced={false}
-                >
-                  <AuthDebug />
-                </EnhancedSuspense>
-              }
-            />
+            {/* Auth debug route — DEV only, tree-shaken from production builds */}
+            {import.meta.env.DEV && (
+              <Route
+                path="/auth-debug"
+                element={
+                  <EnhancedSuspense
+                    name="auth-debug"
+                    loadingMessage="Loading debug info..."
+                    enhanced={false}
+                  >
+                    <AuthDebug />
+                  </EnhancedSuspense>
+                }
+              />
+            )}
+            {/* Catch-all 404 route */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
       </ToastProvider>

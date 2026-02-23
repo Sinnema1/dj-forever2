@@ -20,18 +20,44 @@ This is a **QR-code-only authentication** wedding website with a client-server m
 
 ### Database Management
 
-```bash
-# Seed production data
-cd server && npm run seed-prod
+⚠️ **CRITICAL: Production Database Safety**
 
-# Seed test data
+**NEVER modify production database (`djforever2`) from local development environment.**
+
+Production database operations require explicit approval and safety controls:
+
+- ✅ **Allowed**: Read-only queries for debugging/verification
+- ❌ **Prohibited**: Seeding, cleaning, bulk updates, deletions without explicit controls
+- 🔒 **Required**: Backup verification + rollback plan before any prod changes
+- 📋 **Process**: All prod database changes must be documented and reviewed
+
+**Safe Development Practices:**
+
+```bash
+# ✅ SAFE: Development database (local changes only)
+MONGODB_DB_NAME=djforever2_dev npm run seed
+
+# ✅ SAFE: Test database (automated testing)
 cd server && npm run seed-test
 
-# Clean database
-cd server && npm run clean:db
+# ❌ DANGEROUS: Production seeding (requires explicit approval)
+cd server && npm run seed-prod  # DO NOT RUN without backup + approval
 
-# Generate QR codes after seeding
+# ✅ SAFE: Clean development database
+MONGODB_DB_NAME=djforever2_dev npm run clean:db
+
+# ❌ DANGEROUS: Clean production (data loss risk)
+MONGODB_DB_NAME=djforever2 npm run clean:db  # NEVER RUN
+
+# ✅ SAFE: Generate QR codes for development
 npm run generate:qrcodes
+```
+
+**Environment Variable Checks:**
+Always verify `MONGODB_DB_NAME` before running database operations:
+
+```bash
+echo $MONGODB_DB_NAME  # Should be djforever2_dev for local work
 ```
 
 ### Testing Strategy
@@ -53,7 +79,8 @@ npm run test:rsvp:graphql  # GraphQL integration tests
 npm run dev  # Starts both server and client with hot reload
 
 # Production build
-npm run render-build  # Render.com deployment command
+# Backend: cd server && npm install && npm run build
+# Frontend: cd client && npm install && npm run build
 ```
 
 ## Project-Specific Patterns
@@ -71,6 +98,10 @@ npm run render-build  # Render.com deployment command
 - **Legacy compatibility**: RSVP mutations support both new guest-array format AND legacy single-guest fields
 - **User model**: `hasRSVPed` boolean tracks RSVP completion status
 - **Authentication**: All resolvers receive `user` from JWT context in `src/graphql/resolvers.ts`
+- **Party size validation**: RSVP service enforces maximum party size limits
+  - Formula: `maxAllowed = 1 + (householdMembers?.length || 0) + (plusOneAllowed ? 1 : 0)`
+  - Validation in both `createRSVP` and `updateRSVP` functions
+  - Descriptive error messages include party size breakdown
 
 ### Database Patterns
 
@@ -79,6 +110,10 @@ npm run render-build  # Render.com deployment command
 // - Compound indexes: { isInvited: 1, hasRSVPed: 1 }
 // - Static methods: findByEmail(), findByQRToken()
 // - Always use { dbName } option in mongoose.connect(), never append to URI
+// - Email requirements: Only primary contact (guest_1) email required
+//   - Household members (guest_2-4) emails are optional
+//   - All household members share primary guest's QR code for authentication
+//   - @example.com placeholders acceptable for household members
 ```
 
 ### Error Handling
@@ -171,6 +206,8 @@ This project has extensive mobile optimizations:
 - **Environment Issues**: Different database names for dev/test/prod environments
 - **Index Warnings**: Avoid duplicate schema indexes (both `index: true` and `schema.index()`)
 - **Connection Format**: `mongoose.connect(uri, { dbName })` not `mongoose.connect(uri/dbname)`
+- **Safety Warning**: If URI contains a database name (e.g., `mongodb://localhost:27017/mydb`), the `{ dbName }` option will override it. Scripts include validation warnings to catch this mismatch and prevent connecting to wrong database.
+- **Best Practice**: Use URIs without database names (e.g., `mongodb://localhost:27017`) and rely on `MONGODB_DB_NAME` environment variable for database selection.
 
 ## Mobile Optimization Strategies
 
@@ -210,9 +247,9 @@ This project has extensive mobile optimizations:
 
 ### Build Configuration
 
-- **Command**: `npm run render-build` (not standard build)
-- **Environment**: Monorepo structure requires specific build paths
-- **Assets**: Large bundle (18MB+) requires optimization
+- **Backend Service**: Root directory `server/`, build command `npm install && npm run build`
+- **Frontend Service**: Root directory `client/`, build command `npm install && npm run build`
+- **Monorepo**: Each Render service operates independently in its own directory
 
 ### Environment Variables
 
@@ -317,3 +354,80 @@ This project has extensive mobile optimizations:
 - **Console monitoring**: Check browser console for client-side errors
 - **Network analysis**: Monitor Apollo Client network requests
 - **Mobile testing**: Test on actual devices, not just browser dev tools
+
+## Context Map & Anchor Files
+
+When reasoning about specific domains, prioritize context from these files:
+
+### 🔐 Authentication & Security
+
+- **Source of Truth**: `/server/src/services/authService.ts` (JWT generation, QR token validation)
+- **Frontend State**: `/client/src/context/AuthContext.tsx` (Login state, loginWithQrToken)
+- **Login Flow**: `/client/src/pages/QRTokenLogin.tsx` (QR redirect handler)
+- **Modal UI**: `/client/src/components/QRLoginModal.tsx` (Manual token entry, React Portal)
+- **Backend Routes**: `/server/src/server.ts` (QR redirect endpoint)
+
+### 💾 Database & Data Models
+
+- **User/Guest Model**: `/server/src/models/User.ts` (Compound indexes, static methods, personalization fields)
+- **RSVP Model**: `/server/src/models/RSVP.ts` (Legacy compatibility, guest arrays)
+- **Seeding Logic**: `/server/src/seeds/seed.ts` (Environment-aware seeding)
+- **QR Code Generation**: `/server/src/seeds/generateQRCodes.ts` (Per-environment QR generation)
+- **Connection**: `/server/src/config/database.ts` (dbName option, never URI append)
+
+### 📡 API & Data Fetching
+
+- **Schema Definitions**: `/server/src/graphql/typeDefs.ts` (Legacy field compatibility)
+- **Resolvers**: `/server/src/graphql/resolvers.ts` (JWT context, user authentication)
+- **Client Setup**: `/client/src/api/apolloClient.ts` (Error links, auth headers, InMemoryCache)
+- **Error Classes**: `/server/src/utils/errors.ts` (Custom error types)
+
+### 🧪 Testing
+
+- **E2E Test Patterns**: `/client/tests/*.e2e.test.tsx` (MockedProvider, vi.mock patterns)
+- **Backend E2E**: `/server/tests/*.e2e.test.ts` (Real database, test env)
+- **Test Suite**: `./test-rsvp-suite.sh` (Comprehensive validation)
+- **Setup**: `/client/tests/setupTests.ts`, `/server/tests/vitest.setup.ts`
+
+### 📱 UI/UX & Components
+
+- **Global Styles**: `/client/src/assets/styles.css` (CSS variables, modal styles)
+- **Mobile Enhancements**: `/client/src/assets/mobile-enhancements.css`
+- **Routing**: `/client/src/App.tsx` (React Router, protected routes)
+- **Navbar**: `/client/src/components/Navbar.tsx` (QR login trigger, mobile drawer)
+- **Welcome Modal**: `/client/src/components/WelcomeModal.tsx` (Personalized banners)
+
+### 🎨 Feature-Specific
+
+- **RSVP Form**: `/client/src/pages/RSVPPage.tsx` (Pre-population, validation)
+- **Admin Dashboard**: `/client/src/pages/AdminPage.tsx` (Guest management)
+- **Bulk Upload**: `/client/src/components/admin/BulkPersonalization.tsx` (CSV import)
+- **Photo Gallery**: `/client/src/components/PhotoGallery.tsx` (SwipeableLightbox integration)
+
+### 🔧 Configuration & Build
+
+- **Environment**: `.env.example` files in `/server` and `/client`
+- **Vite Config**: `/client/vite.config.ts` (PWA, image optimization)
+- **TypeScript**: `tsconfig.json` files (Strict mode settings)
+- **Package Scripts**: Root `/package.json` (Concurrent dev, test suites)
+
+### 📋 Documentation
+
+- **Action Plan**: `/NEXT_PRIORITIES_ACTION_PLAN.md` (Feature roadmap)
+- **Testing Guide**: `/RSVP_TEST_SUITE.md` (Test strategy documentation)
+- **Mobile Guide**: `/MOBILE_DEBUG_GUIDE.md` (Device testing procedures)
+
+### ⚠️ Common Anti-Patterns to Avoid
+
+- ❌ Never append database name to MongoDB URI (use `{ dbName }` option)
+- ❌ Don't suggest password-based authentication (QR-only)
+- ❌ Don't create separate login/registration flows
+- ❌ Avoid `any` types in TypeScript strict mode
+- ❌ Don't use `// ... existing code ...` in code suggestions (provide full implementation)
+
+### 📌 Architectural Decisions
+
+- **React Portal for Modals**: QRLoginModal, SwipeableLightbox render to document.body
+- **z-index Hierarchy**: Modals (9999) > Drawers (999999) > Content (1-100)
+- **Test Database Isolation**: Separate `djforever2_test` DB, auto-cleaned
+- **Legacy RSVP Compatibility**: Support both guest-array and single-guest formats

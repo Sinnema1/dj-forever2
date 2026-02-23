@@ -26,12 +26,13 @@
  * @see {@link https://www.w3.org/WAI/ARIA/apg/patterns/menubar/} ARIA Navigation Pattern
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { smoothScroll } from '../utils/smoothScroll';
+import { smoothScroll, scrollToTop } from '../utils/smoothScroll';
 import QRLoginModal from './QRLoginModal';
-import MobileDrawer from './MobileDrawer';
+import MobileDrawer, { type MobileDrawerHandle } from './MobileDrawer';
+import { features } from '../config/features';
 
 /**
  * Interface for navigation link configuration
@@ -54,7 +55,9 @@ const sectionLinks = [
   { label: 'Gallery', to: 'gallery' },
   { label: 'Travel Guide', to: 'travel' },
   { label: 'FAQs', to: 'faqs' },
-  { label: 'Guestbook', to: 'guestbook' },
+  ...(features.guestbookEnabled
+    ? [{ label: 'Guestbook', to: 'guestbook' }]
+    : []),
 ];
 
 /**
@@ -98,6 +101,10 @@ function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   /** Mobile drawer open/closed state */
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  /** Reference to MobileDrawer for controlling skip behavior */
+  const mobileDrawerRef = useRef<MobileDrawerHandle>(null);
+  /** Reference to navbar element for height measurement */
+  const navRef = useRef<HTMLElement | null>(null);
   /** Authentication context for user state management */
   const { user, isLoggedIn, isLoading, logout } = useAuth();
   /** Current route location for navigation state */
@@ -108,14 +115,38 @@ function Navbar() {
   const isHomePage = location.pathname === '/';
 
   /**
+   * Measure actual navbar height and set CSS variable
+   * Eliminates hardcoded height assumptions and prevents banner overlap
+   */
+  useEffect(() => {
+    const el = navRef.current;
+    if (!el) {
+      return;
+    }
+
+    const setNavHeight = () => {
+      const h = Math.ceil(el.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--nav-h', `${h}px`);
+    };
+
+    setNavHeight();
+
+    const ro = new ResizeObserver(() => setNavHeight());
+    ro.observe(el);
+
+    return () => ro.disconnect();
+  }, []);
+
+  /**
    * Scroll listener for navbar background transparency effect
    * Updates navbar styling based on scroll position for visual hierarchy
    */
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 100);
+      setScrolled(window.scrollY > 12);
     };
-    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial call
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -125,22 +156,48 @@ function Navbar() {
    */
   const [activeSection, setActiveSection] = useState('home');
   useEffect(() => {
-    if (isHomePage) {
-      const onScroll = () => {
-        const pos = window.scrollY + 100;
-        document.querySelectorAll('section[id]').forEach(sec => {
-          const el = sec as HTMLElement;
-          if (pos >= el.offsetTop && pos < el.offsetTop + el.offsetHeight) {
-            setActiveSection(el.id);
-          }
-        });
-      };
-      window.addEventListener('scroll', onScroll);
-      onScroll();
-      return () => window.removeEventListener('scroll', onScroll);
+    if (!isHomePage) {
+      return undefined;
     }
-    // No cleanup needed when not on home page
-    return undefined;
+
+    const updateActiveSection = () => {
+      // Add navbar offset to current scroll position for section detection
+      const scrollWithOffset = window.scrollY + 150;
+
+      let foundSection = 'home';
+      document.querySelectorAll('section[id]').forEach(sec => {
+        const el = sec as HTMLElement;
+        const sectionTop = el.offsetTop;
+        const sectionBottom = sectionTop + el.offsetHeight;
+
+        // Check if scroll position (with offset) is within this section
+        if (
+          scrollWithOffset >= sectionTop &&
+          scrollWithOffset < sectionBottom
+        ) {
+          foundSection = el.id;
+        }
+      });
+
+      setActiveSection(foundSection);
+    };
+
+    // Throttle scroll event for performance
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveSection();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    updateActiveSection(); // Initial call
+
+    return () => window.removeEventListener('scroll', onScroll);
   }, [isHomePage]);
 
   /**
@@ -157,15 +214,21 @@ function Navbar() {
   const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (isHomePage) {
       e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToTop(); // Use iOS-safe utility
     }
     // Otherwise, let React Router handle navigation to "/"
   };
 
+  const standalonePaths = ['/rsvp', '/registry', '/admin'];
+  const isStandalone = standalonePaths.some(
+    p => location.pathname === p || location.pathname.startsWith(p + '/')
+  );
+
   return (
     <nav
+      ref={navRef}
       id="navigation"
-      className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}
+      className={`navbar ${scrolled ? 'navbar-scrolled' : ''} ${isStandalone ? 'navbar-standalone' : ''}`}
       aria-label="Main navigation"
     >
       <Link to="/" className="navbar-logo" onClick={handleLogoClick}>
@@ -182,6 +245,7 @@ function Navbar() {
                 className={activeSection === link.to ? 'active' : ''}
                 onClick={e => {
                   e.preventDefault();
+                  setActiveSection(link.to);
                   smoothScroll(link.to);
                 }}
               >
@@ -191,7 +255,7 @@ function Navbar() {
           ))
         ) : (
           <li>
-            <Link to="/" className={isHomePage ? 'active' : ''}>
+            <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
               Home
             </Link>
           </li>
@@ -208,7 +272,7 @@ function Navbar() {
             <li key={link.to}>
               <Link
                 to={link.to}
-                className={location.pathname === link.to ? 'active' : ''}
+                className={`${location.pathname === link.to ? 'active' : ''} ${link.label === 'RSVP' ? 'nav-cta' : ''}`}
               >
                 {link.label}
               </Link>
@@ -234,7 +298,21 @@ function Navbar() {
             </button>
           ) : (
             <div className="desktop-user-info">
-              <span className="user-greeting">
+              <span
+                className="user-greeting"
+                onClick={() =>
+                  window.dispatchEvent(new Event('openWelcomeModal'))
+                }
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    window.dispatchEvent(new Event('openWelcomeModal'));
+                  }
+                }}
+                title="View your personalized welcome message"
+              >
                 Hello,{' '}
                 {user && user.fullName ? user.fullName.split(' ')[0] : 'Guest'}!
                 {user?.isAdmin && <span className="admin-badge">ADMIN</span>}
@@ -262,8 +340,11 @@ function Navbar() {
 
       {/* Modern Mobile Drawer */}
       <MobileDrawer
+        ref={mobileDrawerRef}
         isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
+        onClose={() => {
+          setMobileMenuOpen(false);
+        }}
         className="navbar-drawer"
       >
         <ul className="drawer-nav" id="mobile-navigation">
@@ -278,8 +359,21 @@ function Navbar() {
                   href={`#${link.to}`}
                   onClick={e => {
                     e.preventDefault();
-                    smoothScroll(link.to);
+
+                    // Immediately set active section to the clicked link
+                    setActiveSection(link.to);
+
+                    // Set the ref flag to skip scroll restore on drawer close
+                    if (mobileDrawerRef.current) {
+                      mobileDrawerRef.current.skipScrollRestoreRef.current =
+                        true;
+                    }
                     setMobileMenuOpen(false);
+
+                    // Schedule smooth scroll after drawer close animation completes
+                    setTimeout(() => {
+                      smoothScroll(link.to);
+                    }, 350); // Wait for drawer slide-out animation (300ms) + small buffer
                   }}
                   className={`drawer-link ${activeSection === link.to ? 'active' : ''}`}
                 >
@@ -291,7 +385,9 @@ function Navbar() {
             <li style={{ '--item-index': 0 } as React.CSSProperties}>
               <Link
                 to="/"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                }}
                 className={`drawer-link ${isHomePage ? 'active' : ''}`}
               >
                 Home
@@ -314,8 +410,10 @@ function Navbar() {
               >
                 <Link
                   to={link.to}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`drawer-link ${location.pathname === link.to ? 'active' : ''}`}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`drawer-link ${location.pathname === link.to ? 'active' : ''} ${link.label === 'RSVP' ? 'nav-cta' : ''}`}
                 >
                   {link.label}
                 </Link>
@@ -324,10 +422,13 @@ function Navbar() {
           })}
 
           {/* Divider */}
-          <div
-            className="drawer-divider"
+          <li
+            role="separator"
+            aria-hidden="true"
             style={{ '--item-index': 10 } as React.CSSProperties}
-          />
+          >
+            <div className="drawer-divider" />
+          </li>
         </ul>
 
         {/* Auth Section */}
@@ -350,7 +451,22 @@ function Navbar() {
             </button>
           ) : (
             <>
-              <div className="drawer-user-greeting">
+              <div
+                className="drawer-user-greeting"
+                onClick={() => {
+                  window.dispatchEvent(new Event('openWelcomeModal'));
+                  setMobileMenuOpen(false);
+                }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    window.dispatchEvent(new Event('openWelcomeModal'));
+                    setMobileMenuOpen(false);
+                  }
+                }}
+              >
                 Hello,{' '}
                 {user && user.fullName ? user.fullName.split(' ')[0] : 'Guest'}!
                 {user?.isAdmin && <span className="admin-badge">ADMIN</span>}

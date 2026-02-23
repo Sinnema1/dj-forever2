@@ -1,73 +1,150 @@
 .personalized-welcome-banner {
-  background-color: var(--color-sage);
-  color: var(--color-dark);
-  padding: 12px 20px;
-  border-radius: 6px;
-  margin: 10px auto;
-  max-width: 90%;
-  display: flex;
-  justify-content: space-between;
+  /* Reserve layout space + keep it "pinned" below the navbar */
+  position: sticky;
+  top: var(--nav-h); /* dynamically measured navbar height */
+
+  /* Centering + width */
+  left: auto;
+  transform: none;
+  width: min(860px, calc(100% - 24px));
+  margin: var(--banner-gap) auto 0;
+
+  background: rgba(255, 252, 248, 0.97);
+  border: 1px solid rgba(159, 181, 161, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.14);
+
+  padding: 14px 18px;
+
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  animation: slideDown 0.5s ease-out forwards;
-  position: fixed;
-  top: 70px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
+  gap: 12px;
+
+  z-index: 900; /* keep below navbar (1000) */
+  backdrop-filter: blur(4px);
+  animation: none;
+}
+
+/* Banner type variations - normalized to paper system */
+.banner-rsvp-reminder,
+.banner-thank-you,
+.banner-travel,
+.banner-accommodation,
+.banner-wedding-party,
+.banner-admin {
+  background: rgba(255, 252, 248, 0.96);
+}
+
+/* Deadline: keep urgency but within paper system */
+.banner-deadline {
+  background: rgba(255, 252, 248, 0.96);
+  border-color: rgba(180, 60, 60, 0.35);
 }
 
 .personalized-welcome-banner p {
   margin: 0;
   font-size: 16px;
+  color: rgba(25, 25, 25, 0.92);
+  line-height: 1.35;
 }
 
-.btn-small {
-  padding: 6px 12px;
-  font-size: 14px;
-  margin-left: 15px;
+.banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.banner-dismiss-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: transparent;
+  border: 0;
+  color: rgba(90, 110, 95, 0.9);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: grid;
+  place-items: center;
+}
+
+.banner-dismiss-btn:hover {
+  background: rgba(159, 181, 161, 0.1);
+}
+
+.banner-dismiss-btn:focus-visible {
+  outline: 2px solid var(--color-sage);
+  outline-offset: 2px;
+}
+
+.banner-snooze-btn {
+  background: transparent;
+  border: 0;
+  color: rgba(90, 110, 95, 0.95);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 6px;
   white-space: nowrap;
+  transition: color 0.2s ease;
 }
 
-@keyframes slideDown {
-  from {
-    transform: translate(-50%, -100%);
-    opacity: 0;
-  }
-  to {
-    transform: translate(-50%, 0);
-    opacity: 1;
-  }
+.banner-snooze-btn:hover {
+  color: rgba(70, 90, 75, 1);
+}
+
+.banner-snooze-btn:focus-visible {
+  outline: 2px solid var(--color-sage);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Banner CTA styling - matches modal sage system */
+.banner-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--color-sage);
+  color: rgba(255, 255, 255, 0.96);
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: filter 0.2s ease;
+}
+
+.banner-cta:hover {
+  filter: brightness(0.98);
+}
+
+.banner-cta:focus-visible {
+  outline: 3px solid var(--color-sage);
+  outline-offset: 3px;
+}
+
+.banner-cta-admin {
+  background: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
 }
 
 @media (max-width: 768px) {
   .personalized-welcome-banner {
-    flex-direction: column;
-    text-align: center;
-    padding: 12px;
+    top: calc(var(--nav-h) + env(safe-area-inset-top));
+    left: 12px;
+    right: 12px;
+    transform: none;
+    max-width: none;
+    padding: 14px 14px 14px 16px;
   }
 
-  .btn-small {
-    margin-left: 0;
-    margin-top: 8px;
+  .personalized-welcome-banner p {
+    font-size: 16px;
+    line-height: 1.35;
   }
-}
-
-/* Admin Dashboard Button Styling */
-.admin-dashboard-btn {
-  background: var(--color-accent) !important;
-  color: white !important;
-  border: 2px solid var(--color-accent) !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  transition: all 0.3s ease !important;
-}
-
-.admin-dashboard-btn:hover {
-  background: transparent !important;
-  color: var(--color-accent) !important;
-  border-color: var(--color-accent) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
 }
