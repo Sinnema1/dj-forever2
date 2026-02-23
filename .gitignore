@@ -119,3 +119,7 @@ server/src/seeds/userData-generated.json
 # Wedding documents (contracts, vendor info, sensitive planning materials)
 docs/wedding/
 server/qr-codes/development/*.png
+
+# Admin docs containing real credentials / tokens
+docs/admin/ADMIN_LOGIN_GUIDE.md
+docs/archive/AGENT_CONTRACT.md
