@@ -320,7 +320,7 @@ const GuestPersonalizationModal: React.FC<GuestPersonalizationModalProps> = ({
                   minLength={3}
                   maxLength={50}
                   placeholder="smith-family"
-                  pattern="[a-z0-9-]+"
+                  pattern="[-a-z0-9]+"
                   className="form-input"
                   disabled={formData.qrAliasLocked}
                 />
