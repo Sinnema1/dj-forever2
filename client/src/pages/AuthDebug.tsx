@@ -224,13 +224,13 @@ const AuthDebug: React.FC = () => {
           <ul>
             <li>
               <strong>Direct URL:</strong>{' '}
-              <a href="http://localhost:3002/login/qr/obnzixyen8f6fzr5xwznda">
-                http://localhost:3002/login/qr/obnzixyen8f6fzr5xwznda
-              </a>
+              <code>
+                http://localhost:3002/login/qr/&lt;your-admin-qr-token&gt;
+              </code>
             </li>
             <li>
               <strong>Manual Entry:</strong> Click QR icon in navbar and enter
-              token: <code>obnzixyen8f6fzr5xwznda</code>
+              your admin QR token.
             </li>
             <li>
               <strong>QR Code:</strong> Scan the QR code image at{' '}
