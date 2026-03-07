@@ -16,8 +16,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-FRONTEND_URL="${FRONTEND_URL:-https://dj-forever2.onrender.com}"
-BACKEND_URL="${BACKEND_URL:-https://dj-forever2-backend.onrender.com}"
+FRONTEND_URL="${FRONTEND_URL:-https://www.djforever2026.com}"
+BACKEND_URL="${BACKEND_URL:-https://api.djforever2026.com}"
 
 echo "📍 Testing Configuration:"
 echo "   Frontend: $FRONTEND_URL"

@@ -45,7 +45,7 @@ export function getFrontendURL(): string {
   return (
     process.env.CONFIG__FRONTEND_URL ||
     (isProduction
-      ? "https://dj-forever2.onrender.com"
+      ? "https://www.djforever2026.com"
       : "http://localhost:3002")
   );
 }

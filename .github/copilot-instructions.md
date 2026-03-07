@@ -83,6 +83,16 @@ npm run dev  # Starts both server and client with hot reload
 # Frontend: cd client && npm install && npm run build
 ```
 
+### Production URLs
+
+| Service | URL |
+|---------|-----|
+| Frontend | https://www.djforever2026.com |
+| Backend API | https://api.djforever2026.com |
+| Backend GraphQL | https://api.djforever2026.com/graphql |
+
+> Domain registered 2026-03-07 via Cloudflare. DNS proxied through Cloudflare. Apex `djforever2026.com` redirects → `www.djforever2026.com`. Old `onrender.com` URLs remain active as fallback.
+
 ## Project-Specific Patterns
 
 ### Authentication Flow
@@ -139,7 +149,7 @@ npm run dev  # Starts both server and client with hot reload
 MONGODB_URI=mongodb://localhost:27017
 MONGODB_DB_NAME=djforever2  # or djforever2_test, djforever2_dev
 JWT_SECRET=your-jwt-secret
-CONFIG__FRONTEND_URL=https://dj-forever2.onrender.com
+CONFIG__FRONTEND_URL=https://www.djforever2026.com
 
 # Client (.env)
 VITE_GRAPHQL_ENDPOINT=/graphql
@@ -250,11 +260,13 @@ This project has extensive mobile optimizations:
 - **Backend Service**: Root directory `server/`, build command `npm install && npm run build`
 - **Frontend Service**: Root directory `client/`, build command `npm install && npm run build`
 - **Monorepo**: Each Render service operates independently in its own directory
+- **Custom Domain**: `www.djforever2026.com` (frontend), `api.djforever2026.com` (backend) via Cloudflare DNS
 
 ### Environment Variables
 
 - **Database**: `MONGODB_DB_NAME` controls environment-specific databases
-- **Frontend URL**: `CONFIG__FRONTEND_URL` for QR redirects
+- **Frontend URL**: `CONFIG__FRONTEND_URL=https://www.djforever2026.com` for QR redirects and email links
+- **GraphQL Endpoint**: `VITE_GRAPHQL_ENDPOINT=https://api.djforever2026.com/graphql` (baked at Vite build time — redeploy after changing)
 - **Production Detection**: Uses `mongodb+srv` or `NODE_ENV=production`
 
 ### Port Configuration

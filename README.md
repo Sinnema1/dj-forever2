@@ -81,7 +81,7 @@ All authentication is handled by scanning your invitation QR code:
 
 - Each guest receives a physical "save the date" with a unique QR code.
 - Scanning the QR code directs you to a URL like:
-  `https://dj-forever2.onrender.com/login/qr/<qrToken>`
+  `https://www.djforever2026.com/login/qr/<qrToken>`
 - You are automatically logged in—no password, registration, or manual login required.
 - The site will show personalized content and RSVP options for your invitation.
 

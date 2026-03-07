@@ -1,102 +1,60 @@
 # Render.com Deployment URLs - Quick Reference
 
-## 🔍 Finding Your Service URLs
+## 🌐 Production URLs
 
-You likely have **TWO** Render.com services deployed:
+| Service | Custom Domain | Render URL (fallback) |
+|---------|-------------|----------------------|
+| Frontend | https://www.djforever2026.com | https://dj-forever2.onrender.com |
+| Backend API | https://api.djforever2026.com | https://dj-forever2-backend.onrender.com |
 
-### 1. Frontend Service (Static Site or Web Service)
+> DNS is managed in Cloudflare. Both Render `.onrender.com` URLs remain active as fallback.
 
-- **Service Name**: `dj-forever2` or `dj-forever2-client`
-- **Type**: Static Site or Web Service
-- **URL**: https://dj-forever2.onrender.com
+---
+
+## 🔍 Render.com Service Overview
+
+Two Render.com services are deployed:
+
+### 1. Frontend Service (Static Site)
+
+- **Service Name**: `dj-forever2`
+- **Custom Domain**: https://www.djforever2026.com
+- **Render URL**: https://dj-forever2.onrender.com
 - **Root Directory**: `client/`
 - **Build Command**: `npm install && npm run build`
 - **Publish Directory**: `dist`
 
-###2. Backend Service (Web Service)
+### 2. Backend Service (Web Service)
 
-- **Service Name**: `dj-forever2-backend` or `dj-forever2-server`
-- **Type**: Web Service
-- **URL**: https://dj-forever2-backend.onrender.com (or similar)
+- **Service Name**: `dj-forever2-backend`
+- **Custom Domain**: https://api.djforever2026.com
+- **Render URL**: https://dj-forever2-backend.onrender.com
 - **Root Directory**: `server/`
 - **Build Command**: `npm install && npm run build`
-- **Start Command**: `npm start` or `node dist/server.js`
+- **Start Command**: `npm start`
 
 ---
 
-## ✅ Action Required: Find Your Backend URL
+## ✅ Required Environment Variables
 
-### Option 1: Check Render.com Dashboard
-
-1. Log into https://dashboard.render.com
-2. Look for your services - you should see **TWO**:
-   - One for frontend (dj-forever2)
-   - One for backend (dj-forever2-backend or similar name)
-3. Click on the backend service
-4. Copy the URL shown at the top (e.g., `https://dj-forever2-backend.onrender.com`)
-
-### Option 2: Check Environment Variables
-
-Your **frontend** service should have this environment variable set:
+### Backend service (Render Dashboard → Environment):
 
 ```
-VITE_GRAPHQL_ENDPOINT=https://[BACKEND-SERVICE-URL].onrender.com/graphql
+NODE_ENV=production
+MONGODB_URI=mongodb+srv://[your-atlas-connection]
+MONGODB_DB_NAME=djforever2
+JWT_SECRET=[your-jwt-secret-min-32-chars]
+CONFIG__FRONTEND_URL=https://www.djforever2026.com
+LOG_LEVEL=INFO
 ```
 
-Check the frontend service → Environment tab to see what `VITE_GRAPHQL_ENDPOINT` is set to.
+### Frontend service (Render Dashboard → Environment):
 
----
+```
+VITE_GRAPHQL_ENDPOINT=https://api.djforever2026.com/graphql
+```
 
-## 🔧 If You Only Have One Service Deployed
-
-If you only deployed the **frontend** (static site), you need to deploy the backend separately.
-
-### Deploy Backend to Render.com
-
-1. **Create New Web Service**:
-
-   - Dashboard → New → Web Service
-   - Connect your GitHub repo: `Sinnema1/dj-forever2`
-   - Branch: `main` or `feature-branch`
-
-2. **Configure Build**:
-
-   - **Name**: `dj-forever2-backend`
-   - **Root Directory**: `server`
-   - **Environment**: `Node`
-   - **Build Command**: `npm install && npm run build`
-   - **Start Command**: `npm start`
-
-3. **Set Environment Variables**:
-
-   ```
-   NODE_ENV=production
-   MONGODB_URI=mongodb+srv://[your-atlas-connection]
-   MONGODB_DB_NAME=djforever2
-   JWT_SECRET=[your-jwt-secret-min-32-chars]
-   CONFIG__FRONTEND_URL=https://dj-forever2.onrender.com
-   LOG_LEVEL=INFO
-   ```
-
-4. **Deploy** and wait for build to complete
-
-5. **Copy the backend URL** (e.g., `https://dj-forever2-backend.onrender.com`)
-
-6. **Update Frontend Environment Variable**:
-   - Go to frontend service → Environment
-   - Add or update:
-     ```
-     VITE_GRAPHQL_ENDPOINT=https://dj-forever2-backend.onrender.com/graphql
-     ```
-   - Redeploy frontend (Manual Deploy → Clear build cache & deploy)
-
----
-
-## 🧪 Test Your URLs
-
-Once you have both URLs, test them:
-
-### Backend Health Check
+> ⚠️ After changing any `VITE_` env var, trigger a **Manual Deploy → Clear build cache & deploy** — Vite bakes these at build time.
 
 ```bash
 # Replace with your actual backend URL

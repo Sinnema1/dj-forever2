@@ -43,7 +43,7 @@ test_endpoint() {
 test_graphql() {
     echo -n "Testing GraphQL endpoint... "
     
-    response=$(curl -s -X POST https://dj-forever2-backend.onrender.com/graphql \
+    response=$(curl -s -X POST https://api.djforever2026.com/graphql \
         -H "Content-Type: application/json" \
         -d '{"query": "{ __typename }"}')
     
@@ -61,8 +61,8 @@ test_graphql() {
 
 echo "1️⃣ Frontend Tests"
 echo "-------------------"
-test_endpoint "Frontend Homepage" "https://dj-forever2.onrender.com" "200"
-test_endpoint "Frontend /admin Route" "https://dj-forever2.onrender.com/admin" "200"
+test_endpoint "Frontend Homepage" "https://www.djforever2026.com" "200"
+test_endpoint "Frontend /admin Route" "https://www.djforever2026.com/admin" "200"
 echo ""
 
 echo "2️⃣ Backend Tests"
@@ -73,8 +73,8 @@ echo ""
 
 echo "3️⃣ Static Assets"
 echo "-------------------"
-test_endpoint "Favicon" "https://dj-forever2.onrender.com/favicon.svg" "200"
-test_endpoint "Manifest" "https://dj-forever2.onrender.com/manifest.json" "200"
+test_endpoint "Favicon" "https://www.djforever2026.com/favicon.svg" "200"
+test_endpoint "Manifest" "https://www.djforever2026.com/manifest.json" "200"
 echo ""
 
 # Summary
