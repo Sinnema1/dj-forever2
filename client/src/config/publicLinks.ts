@@ -10,9 +10,10 @@
  * a fallback message instead of a broken mailto link.
  *
  * @example
- * // In .env file:
+ * // In .env.local (local dev) or Render environment variables (production):
+ * VITE_CRATE_BARREL_REGISTRY_URL=https://www.crateandbarrel.com/gift-registry/...
+ * VITE_ZOLA_REGISTRY_URL=https://www.zola.com/registry/...
  * VITE_WEDDING_CONTACT_EMAIL=dj@ourwedding.com
- * VITE_REGISTRY_URL=https://www.crateandbarrel.com/gift-registry/your-name
  *
  * @example
  * // In component:
@@ -22,15 +23,15 @@
  * }
  */
 
+const env = (value: string | undefined): string => value?.trim() ?? '';
+
 export const PUBLIC_LINKS = {
   /** Guest-facing registry URLs — omit the env var to hide the card */
   registry: {
-    crateAndBarrel: import.meta.env.VITE_CRATE_BARREL_REGISTRY_URL ?? '',
-    williamsSonoma: import.meta.env.VITE_WILLIAMS_SONOMA_REGISTRY_URL ?? '',
-    costco: import.meta.env.VITE_COSTCO_REGISTRY_URL ?? '',
-    honeymoon: import.meta.env.VITE_HONEYMOON_FUND_URL ?? '',
+    crateAndBarrel: env(import.meta.env.VITE_CRATE_BARREL_REGISTRY_URL),
+    zola: env(import.meta.env.VITE_ZOLA_REGISTRY_URL),
   },
 
   /** Wedding contact email for help pages and modals */
-  contactEmail: import.meta.env.VITE_WEDDING_CONTACT_EMAIL ?? '',
+  contactEmail: env(import.meta.env.VITE_WEDDING_CONTACT_EMAIL),
 } as const;
