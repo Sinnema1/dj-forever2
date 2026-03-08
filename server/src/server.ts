@@ -188,7 +188,8 @@ async function startServer() {
         "http://localhost:3003", // Adding port 3003 in case Vite uses it
         "http://localhost:3004", // Adding port 3004 just in case
         "https://studio.apollographql.com",
-        "https://dj-forever2.onrender.com", // Production frontend URL
+        "https://www.djforever2026.com", // Production frontend URL (custom domain)
+        "https://dj-forever2.onrender.com", // Legacy Render URL (keep for fallback)
       ],
       credentials: true,
     }),
@@ -236,7 +237,7 @@ async function startServer() {
   app.get("/login/qr/:qrToken", (req, res) => {
     // Redirect to the frontend URL with the QR token
     const frontendUrl =
-      process.env.CONFIG__FRONTEND_URL || "https://dj-forever2.onrender.com";
+      process.env.CONFIG__FRONTEND_URL || "https://www.djforever2026.com";
     res.redirect(`${frontendUrl}/login/qr/${req.params.qrToken}`);
   });
 

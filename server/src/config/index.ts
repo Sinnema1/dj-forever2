@@ -144,7 +144,7 @@ function validateConfig(): Config {
         "https://studio.apollographql.com",
       ].filter(Boolean),
       defaultUrl:
-        process.env.FRONTEND_URL || "https://dj-forever2.onrender.com",
+        process.env.CONFIG__FRONTEND_URL || "https://www.djforever2026.com",
     },
     logging: {
       level: process.env.LOG_LEVEL || "INFO",

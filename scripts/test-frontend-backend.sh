@@ -8,7 +8,7 @@ echo ""
 
 # Test direct backend access (should work)
 echo "1. Testing direct backend GraphQL access..."
-backend_response=$(curl -s -X POST https://dj-forever2-backend.onrender.com/graphql \
+backend_response=$(curl -s -X POST https://api.djforever2026.com/graphql \
   -H "Content-Type: application/json" \
   -d '{"query": "{ __typename }"}')
 
@@ -22,8 +22,8 @@ fi
 
 echo ""
 echo "2. Checking CORS headers..."
-cors_check=$(curl -s -I -X OPTIONS https://dj-forever2-backend.onrender.com/graphql \
-  -H "Origin: https://dj-forever2.onrender.com" \
+cors_check=$(curl -s -I -X OPTIONS https://api.djforever2026.com/graphql \
+  -H "Origin: https://www.djforever2026.com" \
   -H "Access-Control-Request-Method: POST" 2>&1)
 
 if echo "$cors_check" | grep -q "access-control-allow-origin"; then
