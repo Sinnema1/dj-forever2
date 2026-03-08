@@ -93,12 +93,19 @@
       "qrToken": "z2rx7tj50rephevd0syx",
       "qrAlias": "budach-family-4",
       "plusOneAllowed": false,
+      "householdMembers": [],
+      "relationshipToBride": "uncle",
+      "guestGroup": "extended_family"
+    },
+    {
+      "fullName": "Jill Budach",
+      "email": "jill@example.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "n4kw8mvxzp2qjy6crfth",
+      "qrAlias": "budach-family-7",
+      "plusOneAllowed": false,
       "householdMembers": [
-        {
-          "firstName": "Jill",
-          "lastName": "Budach",
-          "relationshipToBride": "aunt"
-        },
         {
           "firstName": "Makenzie",
           "lastName": "Budach",
@@ -110,7 +117,7 @@
           "relationshipToBride": "cousin"
         }
       ],
-      "relationshipToBride": "uncle",
+      "relationshipToBride": "aunt",
       "guestGroup": "extended_family"
     },
     {
