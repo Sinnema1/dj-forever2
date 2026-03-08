@@ -134,8 +134,16 @@ const PersonalizedWelcome: React.FC = () => {
 
   useEffect(() => {
     if (!isLoggedIn || !user?.fullName) {
+      setCurrentBanner(null);
+      setShowBanner(false);
       return undefined;
     }
+
+    // Clear stale banners before recomputing for the current user.
+    // Without this, banners from a previous session (e.g. a different logged-in user)
+    // persist when the new user has no banner to display.
+    setCurrentBanner(null);
+    setShowBanner(false);
 
     const banners: Banner[] = [];
     const firstName = user.fullName.split(' ')[0];
