@@ -16,6 +16,24 @@ import { logger } from "../utils/logger.js";
 export const healthRouter = Router();
 
 /**
+ * Canonical health check handler.
+ * Shared by GET /health and GET /health/basic.
+ *
+ * @returns {object} 200 - { status: "ok", uptime: number, timestamp: string, environment: string }
+ */
+function basicHealthHandler(_req: any, res: any) {
+  res.status(200).json({
+    status: "ok",
+    uptime: Math.round(process.uptime()),
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development",
+  });
+}
+
+/** @route GET /health — preferred monitoring endpoint */
+healthRouter.get("/", basicHealthHandler);
+
+/**
  * SMTP health check endpoint
  *
  * Verifies SMTP server connectivity and authentication.
@@ -109,27 +127,5 @@ healthRouter.get("/smtp", async (req, res) => {
   }
 });
 
-/**
- * Basic application health check endpoint
- *
- * Returns simple OK status for load balancer health checks.
- * Includes timestamp and environment information.
- *
- * @route GET /health/basic
- * @returns {object} 200 - Application healthy
- *
- * @example
- * GET /health/basic
- * {
- *   "status": "ok",
- *   "timestamp": "2025-10-18T10:30:00.000Z",
- *   "environment": "production"
- * }
- */
-healthRouter.get("/basic", (_req, res) => {
-  res.status(200).json({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || "development",
-  });
-});
+/** @route GET /health/basic — alias for GET /health (backward compat) */
+healthRouter.get("/basic", basicHealthHandler);
