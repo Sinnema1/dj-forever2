@@ -299,6 +299,7 @@ export const resolvers = {
           fullName: args.fullName || user.fullName,
         });
       } catch (error: any) {
+        if (error instanceof GraphQLError) throw error;
         console.error("Error in submitRSVP resolver:", error);
         throw new GraphQLError(error?.message || "Failed to submit RSVP");
       }
@@ -318,6 +319,7 @@ export const resolvers = {
           fullName: input.fullName || user.fullName,
         });
       } catch (error: any) {
+        if (error instanceof GraphQLError) throw error;
         console.error("Error in createRSVP resolver:", error);
         throw new GraphQLError(error?.message || "Failed to create RSVP");
       }
@@ -336,6 +338,7 @@ export const resolvers = {
           updates,
         );
       } catch (error: any) {
+        if (error instanceof GraphQLError) throw error;
         console.error("Error in editRSVP resolver:", error);
         throw new GraphQLError(error?.message || "Failed to update RSVP");
       }
