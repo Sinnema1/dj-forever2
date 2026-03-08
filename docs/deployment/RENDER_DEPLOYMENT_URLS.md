@@ -56,46 +56,37 @@ VITE_GRAPHQL_ENDPOINT=https://api.djforever2026.com/graphql
 
 > ⚠️ After changing any `VITE_` env var, trigger a **Manual Deploy → Clear build cache & deploy** — Vite bakes these at build time.
 
-```bash
-# Replace with your actual backend URL
-curl https://dj-forever2-backend.onrender.com/health
+---
 
-# Expected: { "status": "ok", "timestamp": "...", "uptime": ... }
+## 🧪 Test Your Deployment
+
+Use the verification scripts (already updated to use custom domains):
+
+```bash
+# Full verification suite
+bash scripts/verify-production.sh
+
+# Frontend-backend communication test
+bash scripts/test-frontend-backend.sh
+
+# Comprehensive validation
+bash scripts/validate-production.sh
 ```
 
-### Backend GraphQL
+Or manually:
 
 ```bash
-# Replace with your actual backend URL
-curl -X POST https://dj-forever2-backend.onrender.com/graphql \
+# Backend health
+curl https://api.djforever2026.com/health
+
+# Backend GraphQL
+curl -X POST https://api.djforever2026.com/graphql \
   -H "Content-Type: application/json" \
   -d '{"query": "{ __typename }"}'
 
-# Expected: { "data": { "__typename": "Query" } }
+# Frontend
+curl -I https://www.djforever2026.com
 ```
-
-### Frontend
-
-```bash
-# Should return HTML
-curl https://dj-forever2.onrender.com
-
-# Expected: <!doctype html>...
-```
-
----
-
-## 📝 Update Production Test Scripts
-
-Once you have the correct backend URL, update these files:
-
-### 1. `scripts/verify-production.sh`
-
-Replace all instances of `https://dj-forever2.onrender.com` for backend tests with your actual backend URL.
-
-### 2. `.github/copilot-instructions.md`
-
-Update the production URL documentation if needed.
 
 ---
 
@@ -103,31 +94,10 @@ Update the production URL documentation if needed.
 
 ### Issue: GraphQL endpoint returns HTML
 
-**Cause**: You're hitting the frontend URL instead of backend  
-**Fix**: Use the backend service URL for GraphQL requests
+**Cause**: Hitting the frontend URL instead of backend  
+**Fix**: Use `api.djforever2026.com` for GraphQL requests
 
 ### Issue: CORS errors in production
 
 **Cause**: Backend not configured to allow frontend domain  
-**Fix**: Check backend `server.ts` CORS configuration includes your frontend URL
-
-### Issue: Backend not deployed
-
-**Cause**: Only frontend service exists on Render.com  
-**Fix**: Deploy backend as separate web service (see instructions above)
-
----
-
-## 📞 Next Steps
-
-1. [ ] Find your backend service URL on Render.com dashboard
-2. [ ] Test backend `/health` endpoint works
-3. [ ] Test backend `/graphql` endpoint works
-4. [ ] Verify frontend can communicate with backend
-5. [ ] Update `VITE_GRAPHQL_ENDPOINT` if needed
-6. [ ] Run `./scripts/verify-production.sh` with correct URLs
-7. [ ] Proceed to `ADMIN_PRODUCTION_TESTING.md`
-
----
-
-**Once you have the backend URL, let me know and I'll update the test scripts!**
+**Fix**: Verify `server.ts` CORS origins includes `https://www.djforever2026.com`
