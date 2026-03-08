@@ -85,10 +85,10 @@ npm run dev  # Starts both server and client with hot reload
 
 ### Production URLs
 
-| Service | URL |
-|---------|-----|
-| Frontend | https://www.djforever2026.com |
-| Backend API | https://api.djforever2026.com |
+| Service         | URL                                   |
+| --------------- | ------------------------------------- |
+| Frontend        | https://www.djforever2026.com         |
+| Backend API     | https://api.djforever2026.com         |
 | Backend GraphQL | https://api.djforever2026.com/graphql |
 
 > Domain registered 2026-03-07 via Cloudflare. DNS proxied through Cloudflare. Apex `djforever2026.com` redirects → `www.djforever2026.com`. Old `onrender.com` URLs remain active as fallback.

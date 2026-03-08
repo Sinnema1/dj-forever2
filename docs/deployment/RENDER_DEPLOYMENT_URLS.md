@@ -2,9 +2,9 @@
 
 ## 🌐 Production URLs
 
-| Service | Custom Domain | Render URL (fallback) |
-|---------|-------------|----------------------|
-| Frontend | https://www.djforever2026.com | https://dj-forever2.onrender.com |
+| Service     | Custom Domain                 | Render URL (fallback)                    |
+| ----------- | ----------------------------- | ---------------------------------------- |
+| Frontend    | https://www.djforever2026.com | https://dj-forever2.onrender.com         |
 | Backend API | https://api.djforever2026.com | https://dj-forever2-backend.onrender.com |
 
 > DNS is managed in Cloudflare. Both Render `.onrender.com` URLs remain active as fallback.

@@ -44,9 +44,7 @@ export function getFrontendURL(): string {
 
   return (
     process.env.CONFIG__FRONTEND_URL ||
-    (isProduction
-      ? "https://www.djforever2026.com"
-      : "http://localhost:3002")
+    (isProduction ? "https://www.djforever2026.com" : "http://localhost:3002")
   );
 }
 
@@ -62,7 +60,7 @@ export async function generateQRCodeForUser(
   userId: string,
   fullName: string,
   email: string,
-  qrToken: string
+  qrToken: string,
 ): Promise<string> {
   const outputDir = getQRCodesDirectory();
   const frontendURL = getFrontendURL();
@@ -70,7 +68,7 @@ export async function generateQRCodeForUser(
   // Construct filename matching generateQRCodes.ts format
   const fileName = `${fullName.replace(/[^a-z0-9]/gi, "_")}_${email.replace(
     /[^a-z0-9]/gi,
-    "_"
+    "_",
   )}_${userId}.png`;
   const filePath = path.join(outputDir, fileName);
 
@@ -84,7 +82,7 @@ export async function generateQRCodeForUser(
   });
 
   console.log(
-    `✅ QR code generated for ${fullName} (${email}): ${filePath} (URL: ${loginUrl})`
+    `✅ QR code generated for ${fullName} (${email}): ${filePath} (URL: ${loginUrl})`,
   );
 
   return filePath;
@@ -101,7 +99,7 @@ export async function generateQRCodesForUsers(
     fullName: string;
     email: string;
     qrToken: string;
-  }>
+  }>,
 ): Promise<{ success: number; failed: number; errors: string[] }> {
   const outputDir = getQRCodesDirectory();
   const frontendURL = getFrontendURL();
@@ -127,7 +125,7 @@ export async function generateQRCodesForUsers(
         user._id,
         user.fullName,
         user.email,
-        user.qrToken
+        user.qrToken,
       );
       success++;
     } catch (err) {
