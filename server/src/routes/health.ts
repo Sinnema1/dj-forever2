@@ -16,6 +16,20 @@ import { logger } from "../utils/logger.js";
 export const healthRouter = Router();
 
 /**
+ * Basic health check endpoint
+ *
+ * @route GET /health
+ * @returns {object} 200 - { status: "ok", uptime: number, timestamp: string }
+ */
+healthRouter.get("/", (_req, res) => {
+  res.status(200).json({
+    status: "ok",
+    uptime: Math.round(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+/**
  * SMTP health check endpoint
  *
  * Verifies SMTP server connectivity and authentication.
