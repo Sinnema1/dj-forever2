@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useState,
-  useCallback,
-  useRef,
-} from 'react';
+import React, { useLayoutEffect, useState, useCallback, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 // Styles now imported globally via main.tsx
 
