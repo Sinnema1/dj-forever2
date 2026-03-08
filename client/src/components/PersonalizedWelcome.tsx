@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useCallback,
+  useRef,
+} from 'react';
 import { useAuth } from '../context/AuthContext';
 // Styles now imported globally via main.tsx
 
@@ -132,7 +138,9 @@ const PersonalizedWelcome: React.FC = () => {
     return lastClosedAt > fiveMinutesAgo;
   }, [user]);
 
-  useEffect(() => {
+  // useLayoutEffect ensures the banner is cleared before paint when user changes,
+  // preventing a one-frame flash of the previous user's banner.
+  useLayoutEffect(() => {
     if (!isLoggedIn || !user?.fullName) {
       setCurrentBanner(null);
       setShowBanner(false);
@@ -140,8 +148,6 @@ const PersonalizedWelcome: React.FC = () => {
     }
 
     // Clear stale banners before recomputing for the current user.
-    // Without this, banners from a previous session (e.g. a different logged-in user)
-    // persist when the new user has no banner to display.
     setCurrentBanner(null);
     setShowBanner(false);
 
