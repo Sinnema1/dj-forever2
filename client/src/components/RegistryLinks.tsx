@@ -19,20 +19,9 @@ const allRegistries: RegistryLink[] = [
     description: 'Kitchen essentials & home goods',
   },
   {
-    name: 'Williams-Sonoma',
-    url: PUBLIC_LINKS.registry.williamsSonoma,
-    description: 'Cookware & entertaining pieces',
-  },
-  {
-    name: 'Costco Registry',
-    url: PUBLIC_LINKS.registry.costco,
-    description: 'Costco favorites & group gifting options',
-    note: 'via MyRegistry',
-  },
-  {
-    name: 'Honeymoon Fund',
-    url: PUBLIC_LINKS.registry.honeymoon,
-    description: 'Experiences, dinners, and adventures together',
+    name: 'Zola',
+    url: PUBLIC_LINKS.registry.zola,
+    description: 'Registry & honeymoon fund',
   },
 ];
 

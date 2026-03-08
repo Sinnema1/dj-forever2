@@ -46,12 +46,27 @@ const faqs: FAQ[] = [
       'The ceremony and reception will be held outdoors at Venue at the Grove. An indoor space is available as a backup in case of weather.',
   },
   {
+    question: 'Is the ceremony unplugged?',
+    answer:
+      'We kindly ask that phones, tablets, and cameras be put away during the ceremony. Our photographer will capture every moment beautifully, and we would love for you to be fully present with us. Feel free to take photos and share throughout the rest of the evening!',
+  },
+  {
     question: 'Is there parking at the venue?',
     answer: 'Yes, free parking is available on site.',
   },
   {
+    question: 'How do I get to and from the venue?',
+    answer:
+      'Uber and Lyft are both highly available throughout the Phoenix area and are the easiest option if you prefer not to drive. Simply search for "Venue at the Grove, 7010 S. 27th Ave, Phoenix, AZ 85041" in either app. If you plan on enjoying the open bar, we strongly encourage rideshare for a safe and stress-free evening.',
+  },
+  {
     question: 'Will there be a bar?',
     answer: 'Yes! An open bar will be provided throughout the evening.',
+  },
+  {
+    question: 'Where should we stay?',
+    answer:
+      'There are a variety of hotels and short-term rentals near the venue in the South Mountain and Central Phoenix area. We recommend searching using the venue address (7010 S. 27th Ave, Phoenix, AZ 85041) as your reference point on your preferred booking platform. If you are traveling from out of town and need recommendations, feel free to reach out to Dominique or Justin directly.',
   },
   {
     question: 'Can I bring a plus one?',

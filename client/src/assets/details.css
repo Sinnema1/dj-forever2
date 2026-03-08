@@ -27,6 +27,18 @@
   font-size: var(--font-md);
   color: var(--color-charcoal);
 }
+.details-address {
+  font-size: var(--font-sm);
+  color: var(--color-charcoal);
+  margin-top: var(--spacing-1);
+}
+.details-address a {
+  color: var(--color-dusty-blue);
+  text-decoration: underline;
+}
+.details-address a:hover {
+  color: var(--color-gold);
+}
 .details-empty {
   grid-column: 1 / -1;
   text-align: center;

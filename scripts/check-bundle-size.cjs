@@ -25,7 +25,7 @@ const path = require("node:path");
 // Configuration
 const KB = 1024;
 const MAIN_BUDGET = 120 * KB; // 120kb gzipped
-const TOTAL_BUDGET = 245 * KB; // 245kb gzipped (increased for UTC date handling)
+const TOTAL_BUDGET = 246 * KB; // 246kb gzipped (increased for content additions: FAQs + venue address)
 
 // Paths (assumes invocation from client/ working directory)
 const dist = path.join(process.cwd(), "dist");

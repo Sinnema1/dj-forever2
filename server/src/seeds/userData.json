@@ -50,7 +50,7 @@
       "householdMembers": [
         {
           "firstName": "Greg",
-          "lastName": "TBD"
+          "lastName": "Thompson"
         }
       ],
       "relationshipToBride": "brother",
@@ -102,7 +102,7 @@
       "email": "jill@example.com",
       "isInvited": true,
       "hasRSVPed": false,
-      "qrToken": "n4kw8mvxzp2qjy6crfth",
+      "qrToken": "jillbudachdevtoken2026xq",
       "qrAlias": "budach-family-7",
       "plusOneAllowed": false,
       "householdMembers": [
@@ -562,6 +562,16 @@
       "householdMembers": [],
       "relationshipToBride": "friend",
       "relationshipToGroom": "friend",
+      "guestGroup": "other"
+    },
+    {
+      "fullName": "Mary Askenazi",
+      "email": "mary@example.com",
+      "isInvited": true,
+      "hasRSVPed": false,
+      "qrToken": "maryaskenazidevseed2026xq",
+      "plusOneAllowed": false,
+      "householdMembers": [],
       "guestGroup": "other"
     },
     {
