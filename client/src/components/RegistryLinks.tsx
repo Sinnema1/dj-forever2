@@ -16,12 +16,12 @@ const allRegistries: RegistryLink[] = [
   {
     name: 'Crate & Barrel',
     url: PUBLIC_LINKS.registry.crateAndBarrel,
-    description: 'Kitchen essentials & home goods',
+    description: 'Home goodies',
   },
   {
     name: 'Zola',
     url: PUBLIC_LINKS.registry.zola,
-    description: 'Registry & honeymoon fund',
+    description: 'Honeymoon fund',
   },
 ];
 

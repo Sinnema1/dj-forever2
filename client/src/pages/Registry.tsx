@@ -8,8 +8,8 @@ export default function Registry() {
         <p className="registry-philosophy">
           Your presence at our wedding is the greatest gift we could ask for.
           <br />
-          If you'd like to celebrate with us in another way, we've curated a few
-          registries to help us build our home together.
+          If you'd like to celebrate with us in another way, we've curated a couple
+          registries to help us build our home and travel together.
         </p>
         <div className="registry-divider" aria-hidden="true" />
       </div>
