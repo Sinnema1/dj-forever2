@@ -66,7 +66,7 @@ const faqs: FAQ[] = [
   {
     question: 'Where should we stay?',
     answer:
-      'There are a variety of hotels and short-term rentals near the venue in the South Mountain and Central Phoenix area. We recommend searching using the venue address as your reference point on your preferred booking platform. If you prefer to stay closer to the our house, let us know and we can provide some recommendations in that area as well.',
+      'There are a variety of hotels and short-term rentals near the venue in the South Mountain and Central Phoenix area. We recommend searching using the venue address as your reference point on your preferred booking platform. If you prefer to stay closer to our house, let us know and we can provide some recommendations in that area as well.',
   },
   {
     question: 'Can I bring a plus one?',
@@ -80,7 +80,8 @@ const faqs: FAQ[] = [
   },
   {
     question: 'When is the RSVP deadline?',
-    answer: 'Please RSVP by September 8, 2026 at the very latest. We encourage you to RSVP as soon as possible to help us with planning and logistics, and so we can share important updates with you in a timely manner.',
+    answer:
+      'Please RSVP by September 8, 2026 at the very latest. We encourage you to RSVP as soon as possible to help us with planning and logistics, and so we can share important updates with you in a timely manner.',
   },
 ];
 
