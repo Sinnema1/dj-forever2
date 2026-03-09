@@ -18,7 +18,7 @@ const faqs: FAQ[] = [
   {
     question: 'What is the dress code?',
     answer:
-      'Semi-formal attire is recommended. The ceremony and reception are outdoors, so consider bringing a light jacket for the evening.',
+      'Semi-formal attire is recommended. The ceremony and reception are outdoors, so consider bringing a light jacket for the evening. NO JEANS, PLEASE!',
   },
   {
     question: 'Where is the venue?',
@@ -57,7 +57,7 @@ const faqs: FAQ[] = [
   {
     question: 'How do I get to and from the venue?',
     answer:
-      'Uber and Lyft are both highly available throughout the Phoenix area and are the easiest option if you prefer not to drive. Simply search for "Venue at the Grove, 7010 S. 27th Ave, Phoenix, AZ 85041" in either app. If you plan on enjoying the open bar, we strongly encourage rideshare for a safe and stress-free evening.',
+      'Uber and Lyft are both highly available throughout the Phoenix area and are the easiest option if you prefer not to drive. If you plan on enjoying the open bar, we strongly encourage rideshare for a safe and stress-free evening.',
   },
   {
     question: 'Will there be a bar?',
@@ -66,7 +66,7 @@ const faqs: FAQ[] = [
   {
     question: 'Where should we stay?',
     answer:
-      'There are a variety of hotels and short-term rentals near the venue in the South Mountain and Central Phoenix area. We recommend searching using the venue address (7010 S. 27th Ave, Phoenix, AZ 85041) as your reference point on your preferred booking platform. If you are traveling from out of town and need recommendations, feel free to reach out to Dominique or Justin directly.',
+      'There are a variety of hotels and short-term rentals near the venue in the South Mountain and Central Phoenix area. We recommend searching using the venue address as your reference point on your preferred booking platform. If you prefer to stay closer to the our house, let us know and we can provide some recommendations in that area as well.',
   },
   {
     question: 'Can I bring a plus one?',
@@ -80,7 +80,7 @@ const faqs: FAQ[] = [
   },
   {
     question: 'When is the RSVP deadline?',
-    answer: 'Please RSVP by September 8, 2026.',
+    answer: 'Please RSVP by September 8, 2026 at the very latest. We encourage you to RSVP as soon as possible to help us with planning and logistics, and so we can share important updates with you in a timely manner.',
   },
 ];
 
