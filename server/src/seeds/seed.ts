@@ -85,10 +85,10 @@ export const seedDatabase = async (closeConnection = false) => {
 
     // Read and parse user & RSVP data from JSON files
     const userData = JSON.parse(
-      fs.readFileSync("./src/seeds/userData.json", "utf-8")
+      fs.readFileSync("./src/seeds/userData.json", "utf-8"),
     );
     const rsvpData = JSON.parse(
-      fs.readFileSync("./src/seeds/rsvpData.json", "utf-8")
+      fs.readFileSync("./src/seeds/rsvpData.json", "utf-8"),
     );
 
     // Helper to generate a random QR token
@@ -106,6 +106,8 @@ export const seedDatabase = async (closeConnection = false) => {
       isInvited: user.isInvited,
       hasRSVPed: user.hasRSVPed,
       qrToken: user.qrToken || generateQrToken(),
+      qrAlias: user.qrAlias,
+      qrAliasLocked: user.qrAliasLocked ?? false,
       // Personalization fields (Phase 1)
       relationshipToBride: user.relationshipToBride,
       relationshipToGroom: user.relationshipToGroom,
@@ -121,7 +123,7 @@ export const seedDatabase = async (closeConnection = false) => {
 
     // Create a user lookup (email → ObjectId)
     const userMap = new Map(
-      insertedUsers.map((user) => [user.email, user._id])
+      insertedUsers.map((user) => [user.email, user._id]),
     );
 
     // Map RSVPs with correct userIds
@@ -148,7 +150,7 @@ export const seedDatabase = async (closeConnection = false) => {
           {
             rsvpId: rsvp._id,
             hasRSVPed: true,
-          }
+          },
         );
       }
       console.log("🎉 Database seeding completed successfully!");
