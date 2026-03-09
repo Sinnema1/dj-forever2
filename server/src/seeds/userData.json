@@ -19,7 +19,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "3rz4heotj11wbkhdjoiv",
-      "qrAlias": "budach-family",
+      "qrAlias": "johnandkate",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -45,7 +45,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "zofkagycljqyexmqrgr5",
-      "qrAlias": "budach-family-2",
+      "qrAlias": "brett",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -63,7 +63,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "jec6ntcfoqks9zfqub6d",
-      "qrAlias": "budach-family-3",
+      "qrAlias": "chris",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -91,7 +91,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "z2rx7tj50rephevd0syx",
-      "qrAlias": "budach-family-4",
+      "qrAlias": "brian",
       "plusOneAllowed": false,
       "householdMembers": [],
       "relationshipToBride": "uncle",
@@ -103,7 +103,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "jillbudachdevtoken2026xq",
-      "qrAlias": "budach-family-7",
+      "qrAlias": "jill",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -118,7 +118,7 @@
         }
       ],
       "relationshipToBride": "aunt",
-      "guestGroup": "extended_family"
+      "guestGroup": "brides_family"
     },
     {
       "fullName": "Deb Budach",
@@ -126,7 +126,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "th1wxklyurmtlfruftd9",
-      "qrAlias": "budach-family-5",
+      "qrAlias": "debandken",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -144,7 +144,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "zk6r1fz1220eubzswzy1",
-      "qrAlias": "sheimo-family",
+      "qrAlias": "sheimo",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -162,7 +162,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "gf1ujoukln2mlo0idntv",
-      "qrAlias": "budach-family-6",
+      "qrAlias": "raven",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -182,7 +182,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "7i0jdkdeb0lqqbvxqp0u",
-      "qrAlias": "canny-family",
+      "qrAlias": "canny",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -202,7 +202,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "r3xtuukklkqecgpvqvmd",
-      "qrAlias": "bowers-family",
+      "qrAlias": "bailey",
       "plusOneAllowed": true,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -215,7 +215,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "rgjah8zpjalodpdesb5b",
-      "qrAlias": "chose-family",
+      "qrAlias": "abby",
       "plusOneAllowed": true,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -228,7 +228,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "jlhhklbmxup16x5z5mr2",
-      "qrAlias": "schau-family",
+      "qrAlias": "schau",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -248,7 +248,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "lvzvs0sqsu8k2on2vk90",
-      "qrAlias": "manning-family-2",
+      "qrAlias": "momandpop",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -268,7 +268,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "kdxubnp9cpioeamhb3ls",
-      "qrAlias": "manning-family-3",
+      "qrAlias": "joshandmia",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -300,7 +300,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "e6uu3pf4gfjkko1jkxxj",
-      "qrAlias": "manning-family-4",
+      "qrAlias": "nateandbritt",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -332,7 +332,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "vwrtub5jmmbp5dn5bnml",
-      "qrAlias": "manning-family-5",
+      "qrAlias": "jonandjake",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -352,7 +352,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "5ibbj1g5vkdt4plw0axt",
-      "qrAlias": "nadeau-family",
+      "qrAlias": "bear",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -372,7 +372,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "96w9c4fb1ows1ogayrdg",
-      "qrAlias": "askenazi-family",
+      "qrAlias": "mikeandmeg",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -392,7 +392,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "ozb9tutjijas9j6fku9u",
-      "qrAlias": "sanchez-family",
+      "qrAlias": "sanchez",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -412,7 +412,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "ypzgpqzkxrtbxqgdpsbo",
-      "qrAlias": "snider-family",
+      "qrAlias": "snider",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -432,7 +432,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "tdaf0myvnqr3ljcm9gce",
-      "qrAlias": "mirande-family",
+      "qrAlias": "mirande",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -452,7 +452,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "5lossys17umipkmiviwj",
-      "qrAlias": "dallas-family",
+      "qrAlias": "dallas",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -472,7 +472,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "d2xcwfvbb9liwbfh1zaf",
-      "qrAlias": "lich-family",
+      "qrAlias": "lich",
       "plusOneAllowed": false,
       "householdMembers": [
         {
@@ -492,7 +492,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "j9fdzt6cb8ckejldm0hy",
-      "qrAlias": "blythe-family",
+      "qrAlias": "blythe",
       "plusOneAllowed": false,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -505,7 +505,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "kc5ylobvs86ef0kl80ip",
-      "qrAlias": "johnson-family",
+      "qrAlias": "johnson",
       "plusOneAllowed": false,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -518,7 +518,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "ju9p1itwj7abosepjw6l",
-      "qrAlias": "kincaid-family",
+      "qrAlias": "kincaid",
       "plusOneAllowed": false,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -531,7 +531,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "y4hq20szwn1mcyoffjza",
-      "qrAlias": "church-family",
+      "qrAlias": "chloe",
       "plusOneAllowed": false,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -544,7 +544,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "mq1fuokfsztfzucoexyp",
-      "qrAlias": "dinovo-family",
+      "qrAlias": "dinovo",
       "plusOneAllowed": false,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -557,7 +557,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "xg01mn6z9pk6t7wseucs",
-      "qrAlias": "mcdonald-family",
+      "qrAlias": "mcdonald",
       "plusOneAllowed": false,
       "householdMembers": [],
       "relationshipToBride": "friend",
@@ -570,9 +570,10 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "maryaskenazidevseed2026xq",
+      "qrAlias": "mary",
       "plusOneAllowed": false,
       "householdMembers": [],
-      "guestGroup": "other"
+      "guestGroup": "friends"
     },
     {
       "fullName": "Adi Askenazi",
@@ -580,7 +581,7 @@
       "isInvited": true,
       "hasRSVPed": false,
       "qrToken": "akq70mkawspwnzumf0wc",
-      "qrAlias": "askenazi-family-2",
+      "qrAlias": "adi",
       "plusOneAllowed": false,
       "householdMembers": [],
       "relationshipToBride": "friend",
