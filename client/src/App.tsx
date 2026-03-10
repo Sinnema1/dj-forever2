@@ -10,6 +10,7 @@ import QRTokenLogin from './pages/QRTokenLogin';
 import LoginSuccess from './pages/LoginSuccess';
 import QRInfoPage from './pages/QRInfoPage';
 import NotFoundPage from './pages/NotFoundPage';
+import QRAliasRedirect from './components/QRAliasRedirect';
 
 // Lazy-load AuthDebug — only available in development builds
 const AuthDebug = lazy(() => import('./pages/AuthDebug'));
@@ -226,6 +227,9 @@ export default function App() {
                 }
               />
             )}
+            {/* Short URL redirect: /:alias → /login/qr/:alias
+                Must be last named route so all known paths match first */}
+            <Route path="/:alias" element={<QRAliasRedirect />} />
             {/* Catch-all 404 route */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
