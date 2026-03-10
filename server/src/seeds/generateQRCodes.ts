@@ -48,6 +48,18 @@ console.log(`[generateQRCodes] Connecting to MongoDB (dbName: ${dbName})`);
 
 const OUTPUT_DIR = path.resolve(`./qr-codes/${environment}`);
 
+// Top-level React Router routes that are matched before /:alias.
+// Aliases that collide with these would land on the page route, not the QR login flow.
+// Must be kept in sync with the <Routes> in client/src/App.tsx.
+const RESERVED_PATHS = new Set([
+  "rsvp",
+  "registry",
+  "login",
+  "admin",
+  "qr-help",
+  "auth-debug",
+]);
+
 // Print-quality settings:
 // - 1200px width: yields ~4" at 300 DPI — excellent for Save the Date cards
 // - ECC Level H (30% error correction): maximum resilience for print + real-world scanning
@@ -75,12 +87,26 @@ async function main() {
       continue;
     }
 
-    // Prefer alias-based URL (human-readable, print-friendly) with token fallback
-    const loginIdentifier = user.qrAlias || user.qrToken;
-    if (!user.qrAlias) {
+    // Build the QR login URL:
+    // - Alias + no collision → short URL (www.djforever2026.com/nateandbritt)
+    // - Alias + reserved path collision → safe /login/qr/:alias fallback
+    // - No alias → /login/qr/:token
+    let loginUrl: string;
+    if (user.qrAlias) {
+      if (RESERVED_PATHS.has(user.qrAlias)) {
+        console.warn(
+          `⚠️ Alias "${user.qrAlias}" for ${user.fullName} collides with a reserved route — ` +
+            `falling back to /login/qr/${user.qrAlias}. Rename the alias to use the short URL.`,
+        );
+        loginUrl = `${FRONTEND_URL}/login/qr/${user.qrAlias}`;
+      } else {
+        loginUrl = `${FRONTEND_URL}/${user.qrAlias}`;
+      }
+    } else {
       console.warn(
         `⚠️ No alias for ${user.fullName} — using qrToken in QR URL. Consider setting an alias before printing.`,
       );
+      loginUrl = `${FRONTEND_URL}/login/qr/${user.qrToken}`;
     }
 
     const fileName = `${user.fullName.replace(
@@ -88,7 +114,6 @@ async function main() {
       "_",
     )}_${user.email.replace(/[^a-z0-9]/gi, "_")}_${user._id}.png`;
     const filePath = path.join(OUTPUT_DIR, fileName);
-    const loginUrl = `${FRONTEND_URL}/login/qr/${loginIdentifier}`;
     try {
       await QRCode.toFile(filePath, loginUrl, {
         color: { dark: "#000", light: "#FFF" },

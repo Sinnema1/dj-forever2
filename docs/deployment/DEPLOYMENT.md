@@ -18,7 +18,7 @@ This project is deployed on Render with separate services for frontend and backe
 **Environment Variables**:
 
 ```bash
-FRONTEND_URL=https://dj-forever2.onrender.com
+CONFIG__FRONTEND_URL=https://dj-forever2.onrender.com
 JWT_SECRET=<your-secret>
 MONGODB_URI=<your-mongodb-atlas-uri>
 MONGODB_DB_NAME=djforever2
