@@ -75,7 +75,9 @@ async function main() {
       continue;
     }
 
-    // Prefer alias-based URL (human-readable, print-friendly) with token fallback
+    // Prefer alias-based URL (human-readable, print-friendly) with token fallback.
+    // Aliases use the short URL route (/:alias → /login/qr/:alias), which is
+    // shorter and cleaner for print. Tokens fall back to the full /login/qr/ path.
     const loginIdentifier = user.qrAlias || user.qrToken;
     if (!user.qrAlias) {
       console.warn(
@@ -88,7 +90,11 @@ async function main() {
       "_",
     )}_${user.email.replace(/[^a-z0-9]/gi, "_")}_${user._id}.png`;
     const filePath = path.join(OUTPUT_DIR, fileName);
-    const loginUrl = `${FRONTEND_URL}/login/qr/${loginIdentifier}`;
+    // Use short URL for aliases (www.djforever2026.com/nateandbritt),
+    // fall back to full /login/qr/:token path when no alias is set.
+    const loginUrl = user.qrAlias
+      ? `${FRONTEND_URL}/${user.qrAlias}`
+      : `${FRONTEND_URL}/login/qr/${loginIdentifier}`;
     try {
       await QRCode.toFile(filePath, loginUrl, {
         color: { dark: "#000", light: "#FFF" },
