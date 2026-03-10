@@ -96,7 +96,7 @@ async function main() {
       if (RESERVED_PATHS.has(user.qrAlias)) {
         console.warn(
           `⚠️ Alias "${user.qrAlias}" for ${user.fullName} collides with a reserved route — ` +
-          `falling back to /login/qr/${user.qrAlias}. Rename the alias to use the short URL.`,
+            `falling back to /login/qr/${user.qrAlias}. Rename the alias to use the short URL.`,
         );
         loginUrl = `${FRONTEND_URL}/login/qr/${user.qrAlias}`;
       } else {
