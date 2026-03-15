@@ -146,7 +146,6 @@ const PersonalizedWelcome: React.FC = () => {
     setShowBanner(false);
 
     const banners: Banner[] = [];
-    const firstName = user.fullName.split(' ')[0];
     const isHomePage = window.location.pathname === '/';
 
     // Admin banner (highest priority) - only show on homepage
@@ -196,7 +195,7 @@ const PersonalizedWelcome: React.FC = () => {
         banners.push({
           id,
           type: 'deadline',
-          message: `${firstName}, please submit your RSVP by ${formattedDeadline} to help us finalize our plans.`,
+          message: `Please submit your RSVP by ${formattedDeadline} to help us finalize our plans.`,
           actionLabel: 'RSVP',
           actionLink: '/rsvp',
           snoozeLabel: 'Remind me tomorrow',
@@ -235,7 +234,7 @@ const PersonalizedWelcome: React.FC = () => {
         banners.push({
           id,
           type: bannerType,
-          message: `📋 Important: ${user.specialInstructions}`,
+          message: `Important: ${user.specialInstructions}`,
           priority,
           dismissible: true,
         });
@@ -250,14 +249,14 @@ const PersonalizedWelcome: React.FC = () => {
         const attendanceStatus = user.rsvp?.attending;
 
         if (attendanceStatus === 'YES') {
-          message = `Thank you for your RSVP, ${firstName}! We can't wait to celebrate with you! 🎉`;
+          message = `Thank you for your RSVP! We can't wait to celebrate with you!`;
         } else if (attendanceStatus === 'NO') {
-          message = `Thank you for letting us know, ${firstName}. You'll be missed, but we understand.`;
+          message = `Thank you for letting us know. You'll be missed, but we understand.`;
         } else if (attendanceStatus === 'MAYBE') {
-          message = `Thank you for your response, ${firstName}. We hope you can join us—please update us when you decide.`;
+          message = `Thank you for your response. We hope you can join us—please update us when you decide.`;
         } else {
           // Fallback for legacy RSVPs without attending status
-          message = `Thank you for your RSVP, ${firstName}!`;
+          message = `Thank you for your RSVP!`;
         }
 
         banners.push({
@@ -282,7 +281,7 @@ const PersonalizedWelcome: React.FC = () => {
         banners.push({
           id,
           type: 'rsvp-reminder',
-          message: `${firstName}, please RSVP when you have a moment so we can finalize our plans.`,
+          message: `Please RSVP when you have a moment so we can finalize our plans.`,
           actionLabel: 'RSVP',
           actionLink: '/rsvp',
           priority: 50,

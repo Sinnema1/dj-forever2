@@ -283,15 +283,6 @@
   font-weight: 600;
 }
 
-.submit-icon {
-  font-size: 1.3rem;
-  transition: transform 0.2s ease;
-}
-
-.rsvp-submit-btn:hover:not(:disabled) .submit-icon {
-  transform: scale(1.1);
-}
-
 /* Loading Progress Indicator */
 .submission-progress {
   margin-top: var(--spacing-4);
@@ -693,9 +684,6 @@
     min-height: 140px;
   }
 
-  .option-icon {
-    margin-bottom: var(--spacing-2);
-  }
 }
 
 .attendance-option {
@@ -832,20 +820,6 @@
     transform: scale(1) rotate(360deg);
     opacity: 1;
   }
-}
-
-.option-icon {
-  font-size: 2rem;
-  min-width: 3rem;
-  text-align: center;
-  z-index: 2;
-  position: relative;
-  transition: transform 0.2s ease;
-}
-
-.attendance-option.selected .option-icon {
-  transform: scale(1.1);
-  filter: brightness(1.1) saturate(1.2);
 }
 
 .option-text {
@@ -1014,10 +988,6 @@
   pointer-events: none;
 }
 
-.submit-icon {
-  font-size: 1.2rem;
-}
-
 /* Loading Spinner */
 .loading-spinner {
   width: 20px;
@@ -1136,11 +1106,6 @@
   /* Add haptic-like feedback for mobile */
   .attendance-option:active {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-  }
-
-  .option-icon {
-    font-size: 2.5rem;
-    min-width: 3.5rem;
   }
 
   .option-text {
@@ -1317,11 +1282,6 @@
   .option-content {
     padding: var(--spacing-2);
     min-height: 48px;
-  }
-
-  .option-icon {
-    font-size: 1.25rem;
-    min-width: 1.5rem;
   }
 
   .rsvp-submit-btn {

@@ -510,11 +510,11 @@ export default function RSVPForm() {
 
           if (rsvp) {
             await editRSVP(submissionData);
-            setSuccessMessage('RSVP updated successfully! 🎉');
+            setSuccessMessage('RSVP updated successfully!');
             logDebug('RSVP updated', 'RSVPForm');
           } else {
             await createRSVP(submissionData);
-            setSuccessMessage('RSVP submitted successfully! 🎉');
+            setSuccessMessage('RSVP submitted successfully!');
             logDebug('RSVP submitted', 'RSVPForm');
           }
 
@@ -657,9 +657,9 @@ export default function RSVPForm() {
             aria-label="Attendance selection"
           >
             {[
-              { value: 'YES', label: "Yes, I'll be there!", icon: '🎉' },
-              { value: 'NO', label: "Sorry, I can't make it", icon: '😢' },
-              { value: 'MAYBE', label: "I'm not sure yet", icon: '⏰' },
+              { value: 'YES', label: "Yes, I'll be there!" },
+              { value: 'NO', label: "Sorry, I can't make it" },
+              { value: 'MAYBE', label: "I'm not sure yet" },
             ].map(option => (
               <label
                 key={option.value}
@@ -681,9 +681,6 @@ export default function RSVPForm() {
                   aria-label={option.label}
                 />
                 <div className="option-content">
-                  <span className="option-icon" aria-hidden="true">
-                    {option.icon}
-                  </span>
                   <span className="option-text">{option.label}</span>
                 </div>
               </label>
@@ -968,9 +965,6 @@ export default function RSVPForm() {
                 <span className="submit-text">
                   {rsvp ? 'Update RSVP' : 'Submit RSVP'}
                 </span>
-                <span className="submit-icon" aria-hidden="true">
-                  💕
-                </span>
               </>
             )}
           </button>
@@ -1011,7 +1005,7 @@ export default function RSVPForm() {
             aria-atomic="true"
           >
             <div className="success-icon" aria-hidden="true">
-              🎉
+              ✓
             </div>
             <div className="success-content">
               <strong>Amazing!</strong>
