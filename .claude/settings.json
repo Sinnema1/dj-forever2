@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git branch*)",
+      "Bash(git stash*)",
+      "Bash(npm run test*)",
+      "Bash(npm run lint*)",
+      "Bash(npm run build*)",
+      "Bash(npm run performance:check*)",
+      "Bash(cd client && npm run lint*)",
+      "Bash(cd client && npm run typecheck*)",
+      "Bash(cd server && npm run typecheck*)",
+      "Bash(cd server && npx vitest run*)",
+      "Bash(cd client && npx vitest run*)",
+      "Bash(npx vitest run*)",
+      "Bash(lsof*)",
+      "Bash(kill*)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -f*)",
+      "Bash(npm run seed-prod*)",
+      "Bash(rm -rf*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "fp=$(cat | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get('tool_input',{}).get('file_path',''))\" 2>/dev/null); case \"$fp\" in */client/*.ts|*/client/*.tsx) cd client && npm run lint -- --quiet 2>&1 | tail -30 ;; */server/src/*.ts) cd server && npm run lint -- --quiet 2>&1 | tail -30 ;; esac"
+          }
+        ]
+      }
+    ]
+  }
+}

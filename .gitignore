@@ -127,3 +127,7 @@ docs/archive/AGENT_CONTRACT.md
 # .env.example files — keep locally but not in remote repo
 server/.env.example
 client/.env.example
+
+# Claude Code local-only artifacts (rules/, settings.json, launch.json are committed)
+.claude/worktrees/
+.claude/settings.local.json

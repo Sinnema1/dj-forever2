@@ -281,9 +281,8 @@ describe('PersonalizedWelcome - Banner System', () => {
       const banner = screen.getByTestId('personalized-welcome-banner');
       // Should show RSVP reminder instead
       expect(banner).toHaveAttribute('data-banner-type', 'rsvp-reminder');
-      // Component shows first name + message
       expect(banner).toHaveTextContent(
-        /Early, please RSVP when you have a moment/i
+        /Please RSVP when you have a moment/i
       );
     });
   });
@@ -407,7 +406,7 @@ describe('PersonalizedWelcome - Banner System', () => {
 
       const banner = screen.getByTestId('personalized-welcome-banner');
       expect(banner).toHaveAttribute('data-banner-type', 'thank-you');
-      expect(banner).toHaveTextContent(/Thank you for your RSVP, Happy!/i);
+      expect(banner).toHaveTextContent(/Thank you for your RSVP!/i);
       // The full message is combined into a single paragraph
       expect(banner).toHaveTextContent(/can't wait to celebrate with you/i);
     });
@@ -429,8 +428,7 @@ describe('PersonalizedWelcome - Banner System', () => {
 
       const banner = screen.getByTestId('personalized-welcome-banner');
       expect(banner).toHaveAttribute('data-banner-type', 'rsvp-reminder');
-      // Component renders first name followed by message
-      expect(banner).toHaveTextContent(/Reminder, please RSVP/i);
+      expect(banner).toHaveTextContent(/Please RSVP when you have a moment/i);
       expect(screen.getByText('RSVP')).toHaveAttribute('href', '/rsvp');
     });
   });

@@ -44,7 +44,7 @@ describe("ConnectionStatus", () => {
     render(<ConnectionStatus showWhenOnline={true} />);
 
     expect(screen.getByText(/connected/i)).toBeInTheDocument();
-    expect(screen.getByText("✅")).toBeInTheDocument();
+    expect(screen.getByText("✓")).toBeInTheDocument();
   });
 
   it("shows offline status when disconnected", async () => {
@@ -89,7 +89,7 @@ describe("ConnectionStatus", () => {
     render(<ConnectionStatus showWhenOnline={true} />);
 
     expect(screen.getByText(/slow connection/i)).toBeInTheDocument();
-    expect(screen.getByText("🐌")).toBeInTheDocument();
+    expect(screen.getByText("⚠")).toBeInTheDocument();
   });
 
   it("shows connecting status even when transitioning", async () => {

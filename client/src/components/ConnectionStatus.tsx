@@ -112,7 +112,7 @@ export default function ConnectionStatus({
     // Online status (when showWhenOnline is true)
     return {
       text: connectionQuality === 'slow' ? 'Slow connection' : 'Connected',
-      icon: connectionQuality === 'slow' ? '🐌' : '✅',
+      icon: connectionQuality === 'slow' ? '⚠' : '✓',
       bgColor: connectionQuality === 'slow' ? '#ff9800' : '#4caf50',
       textColor: '#fff',
     };
