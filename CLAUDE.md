@@ -20,9 +20,9 @@ node debug-rsvp-graphql.js  # Manual GraphQL mutation testing
 
 ### Building
 ```bash
-npm run build        # Production build (both)
-npm run build:analyze  # Build with bundle visualizer output
-npm run performance:check  # Bundle size gate (must stay under 500KB)
+npm run build                          # Production build (both)
+cd client && npm run build:analyze     # Build with bundle visualizer output
+cd client && npm run performance:check # Bundle size gate (must stay under 500KB)
 ```
 
 ### Linting
@@ -39,8 +39,8 @@ cd server && npm run seed-test  # Test database (djforever2_test) — safe
 
 ### QR code generation
 ```bash
-npm run generate:qrcodes        # Dev environment
-npm run generate:qrcodes:prod   # Production (generates to server/qr-codes/production/)
+cd server && npm run generate:qrcodes       # Dev environment
+cd server && npm run generate:qrcodes:prod  # Production (generates to server/qr-codes/production/)
 ```
 
 ## Architecture

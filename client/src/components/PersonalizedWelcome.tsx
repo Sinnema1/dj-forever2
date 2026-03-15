@@ -249,7 +249,7 @@ const PersonalizedWelcome: React.FC = () => {
         const attendanceStatus = user.rsvp?.attending;
 
         if (attendanceStatus === 'YES') {
-          message = `Thank you for your RSVP! We can't wait to celebrate with you! 🎉`;
+          message = `Thank you for your RSVP! We can't wait to celebrate with you!`;
         } else if (attendanceStatus === 'NO') {
           message = `Thank you for letting us know. You'll be missed, but we understand.`;
         } else if (attendanceStatus === 'MAYBE') {

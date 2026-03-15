@@ -59,7 +59,7 @@ describe("ConnectionStatus", () => {
     render(<ConnectionStatus />);
 
     expect(screen.getByText(/you're offline/i)).toBeInTheDocument();
-    expect(screen.getByText("📵")).toBeInTheDocument();
+    expect(screen.getByText("✕")).toBeInTheDocument();
   });
 
   it("shows connecting status when reconnecting", async () => {
@@ -74,7 +74,7 @@ describe("ConnectionStatus", () => {
     render(<ConnectionStatus />);
 
     expect(screen.getByText(/reconnecting/i)).toBeInTheDocument();
-    expect(screen.getByText("🔄")).toBeInTheDocument();
+    expect(screen.getByText("↻")).toBeInTheDocument();
   });
 
   it("shows slow connection warning when online but slow", async () => {
@@ -104,7 +104,7 @@ describe("ConnectionStatus", () => {
     render(<ConnectionStatus />);
 
     expect(screen.getByText(/reconnecting/i)).toBeInTheDocument();
-    expect(screen.getByText("🔄")).toBeInTheDocument();
+    expect(screen.getByText("↻")).toBeInTheDocument();
   });
 
   it("applies correct styling based on connection state", async () => {

@@ -67,7 +67,7 @@ interface ConnectionStatusProps {
  * @features
  * - **Smart Visibility**: Only shows when relevant (offline/connecting)
  * - **Connection Quality**: Indicates slow vs fast connections
- * - **Visual Feedback**: Color-coded status with emoji indicators
+ * - **Visual Feedback**: Color-coded status with icon indicators
  * - **Responsive Design**: Fixed positioning optimized for mobile
  * - **Accessibility**: Clear text and color contrast
  *
@@ -94,7 +94,7 @@ export default function ConnectionStatus({
     if (isConnecting) {
       return {
         text: 'Reconnecting...',
-        icon: '🔄',
+        icon: '↻',
         bgColor: '#ff9800',
         textColor: '#fff',
       };
@@ -103,7 +103,7 @@ export default function ConnectionStatus({
     if (!isOnline) {
       return {
         text: "You're offline",
-        icon: '📵',
+        icon: '✕',
         bgColor: '#f44336',
         textColor: '#fff',
       };
@@ -142,7 +142,7 @@ export default function ConnectionStatus({
         animation: isConnecting ? 'pulse 1.5s infinite' : 'none',
       }}
     >
-      <span style={{ fontSize: '16px' }}>{status.icon}</span>
+      <span aria-hidden="true" style={{ fontSize: '16px' }}>{status.icon}</span>
       <span>{status.text}</span>
 
       <style>{`
