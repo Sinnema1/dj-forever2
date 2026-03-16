@@ -14,8 +14,8 @@ Production deployment guides and checklists for DJ Forever 2 wedding website.
 
 ## 🔗 Quick Links
 
-- **Frontend**: https://dj-forever2.onrender.com
-- **Backend**: https://dj-forever2-backend.onrender.com
+- **Frontend**: https://www.djforever2026.com
+- **Backend**: https://api.djforever2026.com
 - **Render Dashboard**: https://dashboard.render.com
 
 ## 🚀 Deployment Workflow

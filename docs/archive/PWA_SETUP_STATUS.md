@@ -74,7 +74,6 @@
    ```
 
 2. Updated `client/public/manifest.json`:
-
    - Changed icon paths to `/pwa-192x192.png` and `/pwa-512x512.png`
    - Changed type to `image/png`
 
@@ -114,7 +113,7 @@
 ### Production Testing
 
 - [ ] Deploy to Render
-- [ ] Visit https://dj-forever2.onrender.com
+- [ ] Visit https://www.djforever2026.com
 - [ ] Check manifest.json at `/manifest.json`
 - [ ] Verify icons at `/pwa-192x192.png` and `/pwa-512x512.png`
 - [ ] Install PWA on desktop (Chrome)

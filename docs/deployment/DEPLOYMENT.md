@@ -6,7 +6,7 @@ This project is deployed on Render with separate services for frontend and backe
 
 ### Backend Service (Web Service)
 
-**URL**: `https://dj-forever2-backend.onrender.com`
+**URL**: `https://api.djforever2026.com`
 
 **Build Command**:
 
@@ -18,7 +18,7 @@ This project is deployed on Render with separate services for frontend and backe
 **Environment Variables**:
 
 ```bash
-CONFIG__FRONTEND_URL=https://dj-forever2.onrender.com
+CONFIG__FRONTEND_URL=https://www.djforever2026.com
 JWT_SECRET=<your-secret>
 MONGODB_URI=<your-mongodb-atlas-uri>
 MONGODB_DB_NAME=djforever2
@@ -50,7 +50,7 @@ The project includes a safety mechanism to prevent accidentally sending emails t
 
 ### Frontend Service (Static Site)
 
-**URL**: `https://dj-forever2.onrender.com`
+**URL**: `https://www.djforever2026.com`
 
 **Build Command**: `cd client && npm install && npm run build`
 
@@ -59,7 +59,7 @@ The project includes a safety mechanism to prevent accidentally sending emails t
 **Environment Variables**:
 
 ```bash
-VITE_GRAPHQL_ENDPOINT=https://dj-forever2-backend.onrender.com/graphql
+VITE_GRAPHQL_ENDPOINT=https://api.djforever2026.com/graphql
 ```
 
 ## SMTP Email Configuration
@@ -98,9 +98,9 @@ QR codes are saved to `server/qr-codes/production/` directory.
 
 ## Health Checks
 
-- **Backend Health**: `https://dj-forever2-backend.onrender.com/health`
-- **SMTP Health**: `https://dj-forever2-backend.onrender.com/health/smtp`
-- **GraphQL**: `https://dj-forever2-backend.onrender.com/graphql`
+- **Backend Health**: `https://api.djforever2026.com/health`
+- **SMTP Health**: `https://api.djforever2026.com/health/smtp`
+- **GraphQL**: `https://api.djforever2026.com/graphql`
 
 ## Troubleshooting
 

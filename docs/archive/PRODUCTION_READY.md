@@ -1,5 +1,7 @@
 # ✅ Production Environment Ready!
 
+> Archived document: historical snapshot from 2025 rollout. URLs and runbooks may be superseded.
+
 **Date**: November 30, 2025  
 **Status**: All systems operational
 
@@ -112,7 +114,6 @@ Before starting admin production testing, complete these items:
 ### Environment Variable Confirmation
 
 - [ ] **Backend environment variables set** (in Render.com backend service):
-
   - `MONGODB_URI` - MongoDB Atlas connection string
   - `MONGODB_DB_NAME=djforever2` (not `djforever2_test`)
   - `JWT_SECRET` - Production secret (min 32 chars)
@@ -154,13 +155,11 @@ If all checklist items above are ✅, you're ready to proceed!
 1. **Review the testing guide**: [ADMIN_PRODUCTION_TESTING.md](./ADMIN_PRODUCTION_TESTING.md)
 
 2. **Prepare test CSV file**:
-
    - Use real production guest emails
    - Start with 3-5 guests for initial test
    - Save as `test_personalization.csv`
 
 3. **Begin Test 1**: Admin Login & Access Control
-
    - Navigate to https://dj-forever2.onrender.com/admin
    - Verify you can access the dashboard
 
@@ -218,12 +217,10 @@ If all checklist items above are ✅, you're ready to proceed!
 If you encounter issues during testing:
 
 1. Check Render.com logs:
-
    - Backend service → Logs tab
    - Frontend service → Logs tab
 
 2. Check browser console:
-
    - F12 → Console tab
    - Look for errors (red text)
 

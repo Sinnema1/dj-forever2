@@ -4,7 +4,7 @@
 
 ## 🎯 Pre-Validation Checklist
 
-- [ ] Login to admin dashboard: https://dj-forever2.onrender.com/admin
+- [ ] Login to admin dashboard: https://www.djforever2026.com/admin
 - [ ] Navigate to "Analytics" tab
 - [ ] Have database access ready for cross-verification (optional)
 - [ ] Browser DevTools open (Console + Network tabs)
@@ -206,9 +206,9 @@ Any visual glitches: Yes / No
 ```markdown
 ## Analytics Dashboard Validation - Production
 
-**Date**: ****\_\_\_****
-**Tester**: ****\_\_\_****
-**Browser**: ****\_\_\_****
+**Date**: \***\*\_\_\_\*\***
+**Tester**: \***\*\_\_\_\*\***
+**Browser**: \***\*\_\_\_\*\***
 
 ### Overview Tab Baseline
 

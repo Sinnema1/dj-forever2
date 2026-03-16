@@ -23,8 +23,8 @@
 ## Production Environment
 
 **Database**: `mongodb+srv://...cluster0...djforever2`
-**Frontend**: `https://dj-forever2.onrender.com`
-**Backend**: `https://dj-forever2-backend.onrender.com/graphql`
+**Frontend**: `https://www.djforever2026.com`
+**Backend**: `https://api.djforever2026.com/graphql`
 
 ### Production Guest Data:
 
