@@ -129,7 +129,7 @@ docs/
 
 **Priority**: High  
 **Risk**: Medium (involves data modification)  
-**Location**: https://dj-forever2.onrender.com/admin
+**Location**: https://www.djforever2026.com/admin
 
 **Steps**:
 
@@ -149,7 +149,7 @@ docs/
 
 **Priority**: High  
 **Risk**: Low (read-only validation)  
-**Location**: https://dj-forever2.onrender.com/admin → Analytics tab
+**Location**: https://www.djforever2026.com/admin → Analytics tab
 
 **Steps**:
 
@@ -205,7 +205,7 @@ docs/
 ### Environment Access
 
 - [ ] Admin credentials available
-- [ ] Production URL: https://dj-forever2.onrender.com/admin
+- [ ] Production URL: https://www.djforever2026.com/admin
 - [ ] Browser DevTools ready (Console + Network tabs)
 - [ ] Have 3-5 production guest emails ready for CSV test
 
@@ -318,9 +318,9 @@ tree docs/ -L 2
 
 ### Production URLs
 
-- **Frontend**: https://dj-forever2.onrender.com
-- **Backend**: https://dj-forever2-backend.onrender.com
-- **Admin**: https://dj-forever2.onrender.com/admin
+- **Frontend**: https://www.djforever2026.com
+- **Backend**: https://api.djforever2026.com
+- **Admin**: https://www.djforever2026.com/admin
 
 ---
 

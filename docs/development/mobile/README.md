@@ -11,11 +11,12 @@ Mobile optimization and debugging guides for DJ Forever 2 wedding website.
 ## 🐛 Debugging
 
 - **[MOBILE_DEBUG_GUIDE.md](./MOBILE_DEBUG_GUIDE.md)** - Mobile debugging strategies and tools
-- **[../../../guides/REAL_DEVICE_QR_TESTING_GUIDE.md](../../../guides/REAL_DEVICE_QR_TESTING_GUIDE.md)** - Physical device testing procedures
+- **[../../guides/REAL_DEVICE_QR_TESTING_GUIDE.md](../../guides/REAL_DEVICE_QR_TESTING_GUIDE.md)** - Physical device testing procedures
 
 ## 🔧 Technical Details
 
 ### Mobile Optimizations
+
 - Touch-friendly interactions
 - Responsive layouts
 - QR scanner with html5-qrcode
@@ -23,6 +24,7 @@ Mobile optimization and debugging guides for DJ Forever 2 wedding website.
 - Mobile drawer navigation
 
 ### Key Components
+
 - `client/src/components/QRLoginModal.tsx` - QR scanner modal
 - `client/src/components/MobileDrawer.tsx` - Mobile navigation
 - `client/src/components/SwipeableLightbox.tsx` - Photo gallery
@@ -30,11 +32,13 @@ Mobile optimization and debugging guides for DJ Forever 2 wedding website.
 ## 🧪 Testing
 
 ### Real Device Testing
+
 1. Review [MOBILE_DEBUG_GUIDE.md](./MOBILE_DEBUG_GUIDE.md)
-2. Follow [REAL_DEVICE_QR_TESTING_GUIDE.md](../../../guides/REAL_DEVICE_QR_TESTING_GUIDE.md)
+2. Follow [REAL_DEVICE_QR_TESTING_GUIDE.md](../../guides/REAL_DEVICE_QR_TESTING_GUIDE.md)
 3. Test on iOS and Android devices
 4. Verify QR scanner functionality
 5. Test touch interactions
 
 ### Mobile-Specific Bugs
+
 See [../../bug-fixes/MOBILE_DRAWER_SCROLL_COMPATIBILITY_FIX.md](../../bug-fixes/MOBILE_DRAWER_SCROLL_COMPATIBILITY_FIX.md) for resolved issues.

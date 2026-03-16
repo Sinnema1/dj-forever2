@@ -1,5 +1,7 @@
 # PWA Testing Guide - DJ Forever 2 Wedding Website
 
+> Archived document: historical testing guide from 2025. Validate URLs and workflow against current deployment docs before use.
+
 **Date**: November 22, 2025  
 **Testing Focus**: Progressive Web App functionality, offline capabilities, installation, and updates
 
@@ -10,7 +12,6 @@
 ### Phase 1: Desktop Testing (Chrome/Edge)
 
 - [ ] **PWA Installation**
-
   - [ ] Visit production site: https://dj-forever2.onrender.com
   - [ ] Check for install prompt in address bar (⊕ icon)
   - [ ] Install PWA from Chrome menu → "Install DJ Forever 2 Wedding Website"
@@ -18,7 +19,6 @@
   - [ ] Check app icon in taskbar/dock matches manifest
 
 - [ ] **Offline Functionality**
-
   - [ ] Load site fully while online
   - [ ] Open DevTools → Application → Service Workers
   - [ ] Verify service worker is "activated and running"
@@ -29,7 +29,6 @@
   - [ ] Test GraphQL queries (should show cached data or fallback)
 
 - [ ] **Cache Inspection**
-
   - [ ] DevTools → Application → Cache Storage
   - [ ] Verify caches exist:
     - `workbox-precache-v2-...` (HTML, CSS, JS)
@@ -53,7 +52,6 @@
 **Requirements**: iPhone or iPad with iOS 15.4+
 
 - [ ] **PWA Installation - iOS Safari**
-
   - [ ] Open https://dj-forever2.onrender.com in Safari
   - [ ] Tap Share button (□↑)
   - [ ] Scroll down and tap "Add to Home Screen"
@@ -62,7 +60,6 @@
   - [ ] Tap "Add" to install
 
 - [ ] **Launch & Standalone Mode**
-
   - [ ] Launch app from Home Screen
   - [ ] Verify app opens in full-screen (no Safari chrome/URL bar)
   - [ ] Check status bar shows theme color (#C9A66B - gold)
@@ -70,7 +67,6 @@
   - [ ] Navigate through all sections
 
 - [ ] **Offline Testing - iOS**
-
   - [ ] While app is open and fully loaded
   - [ ] Enable Airplane Mode (Settings or Control Center)
   - [ ] Force close the app (swipe up from app switcher)
@@ -96,7 +92,6 @@
 **Requirements**: Android phone with Chrome 90+
 
 - [ ] **PWA Installation - Android Chrome**
-
   - [ ] Open https://dj-forever2.onrender.com in Chrome
   - [ ] Wait for "Add to Home Screen" banner (bottom of screen)
   - [ ] Tap "Add to Home Screen" or Chrome menu → "Install app"
@@ -105,7 +100,6 @@
   - [ ] Check app icon appears on Home Screen
 
 - [ ] **Launch & Standalone Mode**
-
   - [ ] Launch app from Home Screen
   - [ ] Verify standalone mode (no Chrome browser UI)
   - [ ] Check theme color in status bar (#C9A66B)
@@ -113,7 +107,6 @@
   - [ ] Navigate through sections
 
 - [ ] **Offline Testing - Android**
-
   - [ ] Load full site while online
   - [ ] Enable Airplane Mode (quick settings)
   - [ ] Close and reopen app
@@ -133,13 +126,11 @@
 ### Phase 4: Cross-Browser Testing
 
 - [ ] **Safari (macOS)**
-
   - [ ] Test offline mode with DevTools
   - [ ] Check console for PWA-related errors
   - [ ] Verify manifest loads correctly
 
 - [ ] **Firefox**
-
   - [ ] Visit site and check PWA support
   - [ ] Test offline mode
   - [ ] Verify service worker registration
@@ -156,20 +147,17 @@
 ### ✅ Success Indicators
 
 1. **Installation**
-
    - Clean, branded install experience
    - App icon renders correctly
    - Standalone mode works (no browser UI)
 
 2. **Offline Functionality**
-
    - Pages load from cache instantly
    - Images display without network
    - Graceful error messages for failed API calls
    - No broken content or missing assets
 
 3. **Performance**
-
    - Fast initial load (< 3 seconds)
    - Instant navigation between cached pages
    - Smooth animations and transitions
@@ -183,21 +171,18 @@
 ### ❌ Issues to Document
 
 1. **Installation Problems**
-
    - Install prompt doesn't appear
    - App icon missing or incorrect
    - Splash screen issues
    - Wrong app name displayed
 
 2. **Offline Failures**
-
    - Pages don't load offline
    - Images missing when offline
    - Service worker not registering
    - Cache errors in console
 
 3. **Performance Issues**
-
    - Slow cache retrieval
    - Large bundle sizes causing delays
    - Memory leaks from service worker
@@ -267,11 +252,11 @@ caches.keys().then((keys) => {
 
 ### Test Environment
 
-- **Device**: **********\_**********
-- **OS**: **********\_**********
-- **Browser**: **********\_**********
-- **Date**: **********\_**********
-- **Site Version**: **********\_**********
+- **Device**: ****\*\*****\_****\*\*****
+- **OS**: ****\*\*****\_****\*\*****
+- **Browser**: ****\*\*****\_****\*\*****
+- **Date**: ****\*\*****\_****\*\*****
+- **Site Version**: ****\*\*****\_****\*\*****
 
 ### Installation
 
@@ -279,7 +264,7 @@ caches.keys().then((keys) => {
 - **Installation Successful**: ☐ Yes ☐ No
 - **Standalone Mode Works**: ☐ Yes ☐ No
 - **App Icon Correct**: ☐ Yes ☐ No
-- **Notes**: **********\_**********
+- **Notes**: ****\*\*****\_****\*\*****
 
 ### Offline Functionality
 
@@ -288,7 +273,7 @@ caches.keys().then((keys) => {
 - **Service Worker Active**: ☐ Yes ☐ No
 - **Cache Storage Present**: ☐ Yes ☐ No
 - **Cache Size**: **\_** MB
-- **Notes**: **********\_**********
+- **Notes**: ****\*\*****\_****\*\*****
 
 ### Performance
 
@@ -296,14 +281,14 @@ caches.keys().then((keys) => {
 - **Offline Load Time**: **\_** seconds
 - **Navigation Speed**: ☐ Fast ☐ Moderate ☐ Slow
 - **Memory Usage**: **\_** MB
-- **Notes**: **********\_**********
+- **Notes**: ****\*\*****\_****\*\*****
 
 ### Updates
 
 - **Auto-Update Works**: ☐ Yes ☐ No ☐ Not Tested
 - **Update Notification**: ☐ Yes ☐ No ☐ N/A
 - **Clean Update Process**: ☐ Yes ☐ No
-- **Notes**: **********\_**********
+- **Notes**: ****\*\*****\_****\*\*****
 
 ### Issues Found
 
@@ -457,19 +442,16 @@ navigator.serviceWorker.getRegistration().then((reg) => {
 ## 📝 Next Steps After Testing
 
 1. **Document Findings**
-
    - Create GitHub issue for each bug found
    - Update this guide with device-specific notes
    - Share results with team
 
 2. **Optimize Based on Results**
-
    - Adjust cache strategies if needed
    - Update service worker config
    - Fix any installation issues
 
 3. **Monitor Production**
-
    - Check GA4 for PWA install events
    - Monitor service worker errors
    - Track offline usage patterns

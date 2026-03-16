@@ -33,8 +33,10 @@ Google Analytics 4 has been fully integrated into the wedding website with compr
 1. In your new property, click **Data Streams** (under Property settings)
 2. Click **Add stream** → **Web**
 3. Enter details:
-   - **Website URL**: `https://dj-forever2.onrender.com`
-   - **Stream name**: "Wedding Website Production"
+
+- **Website URL**: `https://www.djforever2026.com`
+- **Stream name**: "Wedding Website Production"
+
 4. Click **Create stream**
 5. **Copy the Measurement ID** (format: `G-XXXXXXXXXX`)
 
@@ -70,7 +72,6 @@ VITE_GA4_MEASUREMENT_ID=G-XXXXXXXXXX
    - This is expected! GA4 only runs in production
 
 2. **Production testing** (after deployment):
-
    - Open website in production
    - Open browser console
    - Look for: `[Analytics] GA4 initialized: G-XXXXXXXXXX`

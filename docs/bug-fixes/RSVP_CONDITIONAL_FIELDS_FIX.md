@@ -6,7 +6,7 @@
 
 ## Problem Description
 
-When testing the production RSVP form at https://dj-forever2.onrender.com, selecting "Yes, I'll be there!" did not reveal the guest count and meal preference fields. The conditional fields remained hidden despite the attendance status being set to "YES".
+When testing the production RSVP form at https://www.djforever2026.com, selecting "Yes, I'll be there!" did not reveal the guest count and meal preference fields. The conditional fields remained hidden despite the attendance status being set to "YES".
 
 ### User Impact
 
