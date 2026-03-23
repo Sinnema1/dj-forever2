@@ -27,6 +27,8 @@
     "test:rsvp": "./test-rsvp-suite.sh",
     "test:rsvp:server": "cd server && npm test -- tests/rsvp.e2e.test.ts",
     "performance:ci": "./scripts/performance-ci.sh",
+    "audit:baseline": "bash ./scripts/audit-baseline.sh --write",
+    "audit:baseline:check": "bash ./scripts/audit-baseline.sh",
     "test:rsvp:client": "cd client && npm test -- tests/RSVPForm.e2e.test.tsx",
     "test:rsvp:graphql": "node debug-rsvp-graphql.js"
   },
