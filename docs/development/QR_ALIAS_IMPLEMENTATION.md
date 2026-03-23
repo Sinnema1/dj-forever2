@@ -412,7 +412,7 @@ const user = await User.create({
 
 ### Bulk Update Aliases
 
-Use admin mutation (TODO: implement if needed):
+Use admin mutation (implement when bulk alias editing is needed):
 
 ```graphql
 mutation {

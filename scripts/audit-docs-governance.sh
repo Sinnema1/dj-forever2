@@ -155,7 +155,7 @@ ACTIVE_LEGACY_DOMAIN_REFS="$(count_matches_in_docs_set "$LEGACY_PATTERN" "false"
 ARCHIVE_LEGACY_DOMAIN_REFS="$(count_matches_in_docs_set "$LEGACY_PATTERN" "true")"
 TOTAL_LEGACY_DOMAIN_REFS=$((ACTIVE_LEGACY_DOMAIN_REFS + ARCHIVE_LEGACY_DOMAIN_REFS))
 ARCHIVE_LABEL_REFS="$(count_matches 'Archived|historical|superseded' "$ROOT_DIR/docs/archive")"
-PLACEHOLDER_REFS="$(count_matches '\{\{[^}]+\}\}|TODO|FIXME|TBD' "$ROOT_DIR/docs")"
+PLACEHOLDER_REFS="$(count_matches_in_docs_set '\{\{[^}]+\}\}|TODO|FIXME|TBD' "false")"
 UNRESOLVED_LOCAL_LINKS="$(count_unresolved_local_links)"
 
 REPORT_CONTENT=$(cat <<EOF
@@ -178,7 +178,7 @@ REPORT_CONTENT=$(cat <<EOF
 - Legacy Render domain refs (archive docs): ${ARCHIVE_LEGACY_DOMAIN_REFS}
 - Legacy Render domain refs (all docs): ${TOTAL_LEGACY_DOMAIN_REFS}
 - Archive lifecycle label refs (archive docs): ${ARCHIVE_LABEL_REFS}
-- Placeholder refs (TODO/FIXME/TBD/{{...}}): ${PLACEHOLDER_REFS}
+- Placeholder markers (active docs): ${PLACEHOLDER_REFS}
 - Unresolved local markdown links (docs/): ${UNRESOLVED_LOCAL_LINKS}
 
 ## Recommended Next Steps

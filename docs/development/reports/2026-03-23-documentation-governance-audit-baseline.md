@@ -17,7 +17,7 @@
 - Legacy Render domain refs (archive docs): 16
 - Legacy Render domain refs (all docs): 16
 - Archive lifecycle label refs (archive docs): 8
-- Placeholder refs (TODO/FIXME/TBD/{{...}}): 53
+- Placeholder markers (active docs): 0
 - Unresolved local markdown links (docs/): 0
 
 ## Recommended Next Steps

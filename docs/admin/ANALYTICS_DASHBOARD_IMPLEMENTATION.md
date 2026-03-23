@@ -296,10 +296,10 @@ All expensive calculations are memoized:
 - [x] Responsive on mobile (breakpoints active)
 - [x] Tab navigation works (switches between views)
 - [x] Styling consistent (theme colors applied)
-- [ ] **TODO**: Test with real production data
-- [ ] **TODO**: Verify insights accuracy
-- [ ] **TODO**: Test timeline with many dates
-- [ ] **TODO**: Validate percentages sum to 100%
+- [ ] Action item: Test with real production data
+- [ ] Action item: Verify insights accuracy
+- [ ] Action item: Test timeline with many dates
+- [ ] Action item: Validate percentages sum to 100%
 
 ## Future Enhancements
 

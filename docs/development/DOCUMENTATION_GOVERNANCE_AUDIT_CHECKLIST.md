@@ -28,20 +28,20 @@ Use this checklist to execute Phase 4 with evidence-first validation of document
 
 ## Control Checklist
 
-| ID     | Domain            | Control                                                                             | Status            | Severity | Evidence                                                                                    |
-| ------ | ----------------- | ----------------------------------------------------------------------------------- | ----------------- | -------- | ------------------------------------------------------------------------------------------- |
-| DG-001 | Taxonomy          | docs index clearly maps active sections and archive guidance                        | [x] Pass [ ] Fail |          | docs/README.md, docs/deployment/README.md                                                   |
-| DG-002 | Taxonomy          | operational docs are separated from historical/archive docs                         | [x] Pass [ ] Fail |          | docs/README.md, docs/archive/                                                               |
-| DG-003 | Link Integrity    | local markdown links resolve correctly                                              | [x] Pass [ ] Fail |          | npm run audit:docs:check => Unresolved local markdown links: 0                              |
-| DG-004 | Link Integrity    | cross-doc links point to current canonical files                                    | [x] Pass [ ] Fail |          | docs/admin/TESTING_COMPLETION_SUMMARY.md, docs/deployment/PRODUCTION_READINESS_CHECKLIST.md |
-| DG-005 | Deployment Docs   | custom production domains are the default references                                | [x] Pass [ ] Fail |          | docs/deployment/DEPLOYMENT.md, docs/deployment/RENDER_DEPLOYMENT_URLS.md                    |
-| DG-006 | Deployment Docs   | legacy Render URLs are labeled as fallback/historical where present                 | [x] Pass [ ] Fail |          | docs/deployment/RENDER_DEPLOYMENT_URLS.md note + archive labels                             |
-| DG-007 | Config Docs       | environment variable docs match current .env.example templates                      | [x] Pass [ ] Fail |          | docs/CONFIGURATION.md, server/.env.example, client/.env.example                             |
-| DG-008 | Config Docs       | production safety guards are explicitly documented (emails/db safety)               | [x] Pass [ ] Fail |          | docs/CONFIGURATION.md, docs/deployment/PRODUCTION_READINESS_CHECKLIST.md                    |
-| DG-009 | Lifecycle Hygiene | archived docs are clearly labeled archived/superseded                               | [x] Pass [ ] Fail |          | docs/archive/PRODUCTION_READY.md and archive status notes                                   |
-| DG-010 | Lifecycle Hygiene | superseded docs point to current replacement docs                                   | [x] Pass [ ] Fail |          | docs/archive/PRODUCTION_READY.md => ../admin/ADMIN_PRODUCTION_TESTING.md                    |
-| DG-011 | Quality           | placeholders (TODO/FIXME/TBD/template tokens) are tracked or removed in active docs | [ ] Pass [x] Fail | Medium   | npm run audit:docs:check => Placeholder refs: 53                                            |
-| DG-012 | Governance        | each finding has owner, severity, and target date in the register                   | [x] Pass [ ] Fail |          | docs/development/DOCUMENTATION_GOVERNANCE_FINDINGS_REGISTER.md                              |
+| ID     | Domain            | Control                                                                              | Status            | Severity | Evidence                                                                                    |
+| ------ | ----------------- | ------------------------------------------------------------------------------------ | ----------------- | -------- | ------------------------------------------------------------------------------------------- |
+| DG-001 | Taxonomy          | docs index clearly maps active sections and archive guidance                         | [x] Pass [ ] Fail |          | docs/README.md, docs/deployment/README.md                                                   |
+| DG-002 | Taxonomy          | operational docs are separated from historical/archive docs                          | [x] Pass [ ] Fail |          | docs/README.md, docs/archive/                                                               |
+| DG-003 | Link Integrity    | local markdown links resolve correctly                                               | [x] Pass [ ] Fail |          | npm run audit:docs:check => Unresolved local markdown links: 0                              |
+| DG-004 | Link Integrity    | cross-doc links point to current canonical files                                     | [x] Pass [ ] Fail |          | docs/admin/TESTING_COMPLETION_SUMMARY.md, docs/deployment/PRODUCTION_READINESS_CHECKLIST.md |
+| DG-005 | Deployment Docs   | custom production domains are the default references                                 | [x] Pass [ ] Fail |          | docs/deployment/DEPLOYMENT.md, docs/deployment/RENDER_DEPLOYMENT_URLS.md                    |
+| DG-006 | Deployment Docs   | legacy Render URLs are labeled as fallback/historical where present                  | [x] Pass [ ] Fail |          | docs/deployment/RENDER_DEPLOYMENT_URLS.md note + archive labels                             |
+| DG-007 | Config Docs       | environment variable docs match current .env.example templates                       | [x] Pass [ ] Fail |          | docs/CONFIGURATION.md, server/.env.example, client/.env.example                             |
+| DG-008 | Config Docs       | production safety guards are explicitly documented (emails/db safety)                | [x] Pass [ ] Fail |          | docs/CONFIGURATION.md, docs/deployment/PRODUCTION_READINESS_CHECKLIST.md                    |
+| DG-009 | Lifecycle Hygiene | archived docs are clearly labeled archived/superseded                                | [x] Pass [ ] Fail |          | docs/archive/PRODUCTION_READY.md and archive status notes                                   |
+| DG-010 | Lifecycle Hygiene | superseded docs point to current replacement docs                                    | [x] Pass [ ] Fail |          | docs/archive/PRODUCTION_READY.md => ../admin/ADMIN_PRODUCTION_TESTING.md                    |
+| DG-011 | Quality           | placeholder action markers and template tokens are tracked or removed in active docs | [x] Pass [ ] Fail |          | npm run audit:docs:check => Placeholder markers (active docs): 0                            |
+| DG-012 | Governance        | each finding has owner, severity, and target date in the register                    | [x] Pass [ ] Fail |          | docs/development/DOCUMENTATION_GOVERNANCE_FINDINGS_REGISTER.md                              |
 
 ## Evidence Sources
 
