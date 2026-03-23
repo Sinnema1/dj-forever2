@@ -26,7 +26,7 @@
 - Workflows directory present: yes
 - CI workflow present: yes
 - Deploy workflow present: yes
-- Dependency audit references in workflows: 2
+- Dependency audit references in workflows: 4
 
 ## Documentation Coverage Signals
 - Deployment backup guidance references: 9

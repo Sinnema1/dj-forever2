@@ -6,13 +6,13 @@
 
 ## KPI Dashboard
 - Workflow files present: 2
-- Security dependency-audit workflow references: 2
+- Security dependency-audit workflow references: 4
 - Docs active legacy refs: 0
 - Docs unresolved local links: 0
 - Docs placeholder markers (active): 0
-- Security open findings: 1
+- Security open findings: 0
 - Documentation open findings: 0
-- Total open findings: 1
+- Total open findings: 0
 
 ## KPI Gates
 - Docs quality gate (legacy=0, unresolved=0, placeholders=0): pass
