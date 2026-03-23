@@ -32,7 +32,9 @@
     "test:rsvp:client": "cd client && npm test -- tests/RSVPForm.e2e.test.tsx",
     "test:rsvp:graphql": "node debug-rsvp-graphql.js",
     "audit:security": "bash ./scripts/audit-security-ops.sh --write",
-    "audit:security:check": "bash ./scripts/audit-security-ops.sh"
+    "audit:security:check": "bash ./scripts/audit-security-ops.sh",
+    "audit:docs": "bash ./scripts/audit-docs-governance.sh --write",
+    "audit:docs:check": "bash ./scripts/audit-docs-governance.sh"
   },
   "keywords": [],
   "author": "",

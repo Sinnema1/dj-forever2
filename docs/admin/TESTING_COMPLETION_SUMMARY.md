@@ -36,7 +36,7 @@
 - [ ] Bulk CSV upload workflow (6 sub-sections)
 - [ ] Data export validation (5 checks)
 
-📄 **Full Checklist**: [PRODUCTION_TESTING_PLAN.md](../PRODUCTION_TESTING_PLAN.md) Part 1
+📄 **Full Checklist**: [ADMIN_PRODUCTION_TESTING.md](./ADMIN_PRODUCTION_TESTING.md)
 
 ---
 
@@ -141,7 +141,7 @@ docs/
 6. Verify data persistence
 7. Export guest list (CSV validation)
 
-**Checklist**: See [PRODUCTION_TESTING_PLAN.md](../PRODUCTION_TESTING_PLAN.md) Part 1 (sections A-F)
+**Checklist**: See [ADMIN_PRODUCTION_TESTING.md](./ADMIN_PRODUCTION_TESTING.md)
 
 ---
 
@@ -229,7 +229,7 @@ docs/
 
 | File                              | Purpose                      | Lines | Location                  |
 | --------------------------------- | ---------------------------- | ----- | ------------------------- |
-| PRODUCTION_TESTING_PLAN.md        | Master testing plan          | 400+  | /root                     |
+| ADMIN_PRODUCTION_TESTING.md       | Master testing plan          | 700+  | /docs/admin/              |
 | ANALYTICS_VALIDATION_GUIDE.md     | Analytics-specific guide     | 300+  | /docs/admin/              |
 | docs/deployment/README.md         | Deployment index             | 50    | /docs/deployment/         |
 | docs/admin/README.md              | Admin features index         | 80    | /docs/admin/              |
@@ -273,7 +273,7 @@ docs/
 
 ### Immediate (You)
 
-1. **Review Testing Plan**: Read [PRODUCTION_TESTING_PLAN.md](../PRODUCTION_TESTING_PLAN.md)
+1. **Review Testing Plan**: Read [ADMIN_PRODUCTION_TESTING.md](./ADMIN_PRODUCTION_TESTING.md)
 2. **Create Database Backup**: MongoDB Atlas snapshot before testing
 3. **Schedule Testing Time**: Allocate 2.5-3 hours for comprehensive testing
 4. **Prepare Test Data**: Identify 3-5 production guests for CSV test
@@ -311,7 +311,7 @@ tree docs/ -L 2
 
 ### Documentation Links
 
-- [PRODUCTION_TESTING_PLAN.md](../PRODUCTION_TESTING_PLAN.md) - Master testing guide
+- [ADMIN_PRODUCTION_TESTING.md](./ADMIN_PRODUCTION_TESTING.md) - Master testing guide
 - [ANALYTICS_VALIDATION_GUIDE.md](./ANALYTICS_VALIDATION_GUIDE.md) - Analytics specifics
 - [ADMIN_PRODUCTION_TESTING.md](./ADMIN_PRODUCTION_TESTING.md) - Detailed test suite
 - [ADMIN_DASHBOARD_SUMMARY.md](./ADMIN_DASHBOARD_SUMMARY.md) - Feature overview

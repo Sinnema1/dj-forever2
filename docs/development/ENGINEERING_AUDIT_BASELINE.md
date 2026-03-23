@@ -64,6 +64,21 @@ npm run audit:security:check
 npm run audit:security
 ```
 
+## Phase 4 Artifacts
+
+- [Documentation Governance Audit Checklist](./DOCUMENTATION_GOVERNANCE_AUDIT_CHECKLIST.md)
+- [Documentation Governance Findings Register](./DOCUMENTATION_GOVERNANCE_FINDINGS_REGISTER.md)
+
+## Phase 4 Commands
+
+```bash
+# Print current Phase 4 baseline summary to terminal
+npm run audit:docs:check
+
+# Print and write report file to docs/development/reports/
+npm run audit:docs
+```
+
 ## Recommended Cadence
 
 - During active cleanup: run baseline weekly

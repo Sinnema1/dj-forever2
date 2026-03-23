@@ -152,7 +152,7 @@ If all checklist items above are ✅, you're ready to proceed!
 
 ### Next Steps
 
-1. **Review the testing guide**: [ADMIN_PRODUCTION_TESTING.md](./ADMIN_PRODUCTION_TESTING.md)
+1. **Review the testing guide**: [ADMIN_PRODUCTION_TESTING.md](../admin/ADMIN_PRODUCTION_TESTING.md)
 
 2. **Prepare test CSV file**:
    - Use real production guest emails
