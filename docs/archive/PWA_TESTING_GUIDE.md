@@ -252,11 +252,11 @@ caches.keys().then((keys) => {
 
 ### Test Environment
 
-- **Device**: ****\*\*****\_****\*\*****
-- **OS**: ****\*\*****\_****\*\*****
-- **Browser**: ****\*\*****\_****\*\*****
-- **Date**: ****\*\*****\_****\*\*****
-- **Site Version**: ****\*\*****\_****\*\*****
+- **Device**: \_\_\_\_
+- **OS**: \_\_\_\_
+- **Browser**: \_\_\_\_
+- **Date**: \_\_\_\_
+- **Site Version**: \_\_\_\_
 
 ### Installation
 
@@ -264,7 +264,7 @@ caches.keys().then((keys) => {
 - **Installation Successful**: ☐ Yes ☐ No
 - **Standalone Mode Works**: ☐ Yes ☐ No
 - **App Icon Correct**: ☐ Yes ☐ No
-- **Notes**: ****\*\*****\_****\*\*****
+- **Notes**: \_\_\_\_
 
 ### Offline Functionality
 
@@ -273,7 +273,7 @@ caches.keys().then((keys) => {
 - **Service Worker Active**: ☐ Yes ☐ No
 - **Cache Storage Present**: ☐ Yes ☐ No
 - **Cache Size**: **\_** MB
-- **Notes**: ****\*\*****\_****\*\*****
+- **Notes**: \_\_\_\_
 
 ### Performance
 
@@ -281,14 +281,14 @@ caches.keys().then((keys) => {
 - **Offline Load Time**: **\_** seconds
 - **Navigation Speed**: ☐ Fast ☐ Moderate ☐ Slow
 - **Memory Usage**: **\_** MB
-- **Notes**: ****\*\*****\_****\*\*****
+- **Notes**: \_\_\_\_
 
 ### Updates
 
 - **Auto-Update Works**: ☐ Yes ☐ No ☐ Not Tested
 - **Update Notification**: ☐ Yes ☐ No ☐ N/A
 - **Clean Update Process**: ☐ Yes ☐ No
-- **Notes**: ****\*\*****\_****\*\*****
+- **Notes**: \_\_\_\_
 
 ### Issues Found
 
