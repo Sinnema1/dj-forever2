@@ -49,6 +49,21 @@ When run with `--write`, a dated report is generated at:
 - [Structure Audit Scorecard](./STRUCTURE_AUDIT_SCORECARD.md)
 - [Audit Ownership Matrix Template](./AUDIT_OWNERSHIP_MATRIX_TEMPLATE.md)
 
+## Phase 3 Artifacts
+
+- [Security and Operations Audit Checklist](./SECURITY_OPERATIONS_AUDIT_CHECKLIST.md)
+- [Security and Operations Findings Register](./SECURITY_OPERATIONS_FINDINGS_REGISTER.md)
+
+## Phase 3 Commands
+
+```bash
+# Print current Phase 3 baseline summary to terminal
+npm run audit:security:check
+
+# Print and write report file to docs/development/reports/
+npm run audit:security
+```
+
 ## Recommended Cadence
 
 - During active cleanup: run baseline weekly

@@ -30,7 +30,9 @@
     "audit:baseline": "bash ./scripts/audit-baseline.sh --write",
     "audit:baseline:check": "bash ./scripts/audit-baseline.sh",
     "test:rsvp:client": "cd client && npm test -- tests/RSVPForm.e2e.test.tsx",
-    "test:rsvp:graphql": "node debug-rsvp-graphql.js"
+    "test:rsvp:graphql": "node debug-rsvp-graphql.js",
+    "audit:security": "bash ./scripts/audit-security-ops.sh --write",
+    "audit:security:check": "bash ./scripts/audit-security-ops.sh"
   },
   "keywords": [],
   "author": "",
