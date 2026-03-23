@@ -7,7 +7,7 @@
 | Frontend    | https://www.djforever2026.com | https://dj-forever2.onrender.com         |
 | Backend API | https://api.djforever2026.com | https://dj-forever2-backend.onrender.com |
 
-> DNS is managed in Cloudflare. Both Render `.onrender.com` URLs remain active as fallback.
+> DNS is managed in Cloudflare. Custom domains are primary for all guest-facing traffic. Render `.onrender.com` URLs are fallback/legacy endpoints for diagnostics and rollback only.
 
 ---
 

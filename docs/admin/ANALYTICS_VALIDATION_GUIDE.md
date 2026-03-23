@@ -4,7 +4,7 @@
 
 ## 🎯 Pre-Validation Checklist
 
-- [ ] Login to admin dashboard: https://dj-forever2.onrender.com/admin
+- [ ] Login to admin dashboard: https://www.djforever2026.com/admin
 - [ ] Navigate to "Analytics" tab
 - [ ] Have database access ready for cross-verification (optional)
 - [ ] Browser DevTools open (Console + Network tabs)
@@ -206,23 +206,23 @@ Any visual glitches: Yes / No
 ```markdown
 ## Analytics Dashboard Validation - Production
 
-**Date**: ****\_\_\_****
-**Tester**: ****\_\_\_****
-**Browser**: ****\_\_\_****
+**Date**: \_**\_
+**Tester**: \_\_**
+**Browser**: \_\_\_\_
 
 ### Overview Tab Baseline
 
-- Total Invited: **\_**
-- Total RSVPed: **\_**
-- Attending: **\_**
-- Not Attending: **\_**
-- Maybe: **\_**
+- Total Invited: **\_\_\_\_**
+- Total RSVPed: **\_\_\_\_**
+- Attending: **\_\_\_\_**
+- Not Attending: **\_\_\_\_**
+- Maybe: **\_\_\_\_**
 
 ### Analytics Validation Results
 
 | Component               | Status | Notes                         |
 | ----------------------- | ------ | ----------------------------- |
-| Key Insights            | ✅/❌  | **\_** cards displayed        |
+| Key Insights            | ✅/❌  | **\_\_\_\_** cards displayed  |
 | Response Timeline       | ✅/❌  | Cumulative pattern correct    |
 | Meal Preferences        | ✅/❌  | Attending-only filter working |
 | Party Size Distribution | ✅/❌  | Totals match RSVPs            |
@@ -232,13 +232,13 @@ Any visual glitches: Yes / No
 ### Cross-Validation
 
 - Attending count matches: ✅/❌
-- Attendance rate correct: ✅/❌ (**\_**%)
+- Attendance rate correct: ✅/❌ (**\_\_\_\_**%)
 - Pending count accurate: ✅/❌
 - Maybe count matches: ✅/❌
 
 ### Performance
 
-- Load time: **\_** seconds
+- Load time: **\_\_\_\_** seconds
 - Time range switching: Smooth / Laggy
 - Console errors: None / Listed below
 

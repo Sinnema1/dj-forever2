@@ -152,13 +152,13 @@ Both formats work identically:
 **Original QR Token**:
 
 ```
-https://dj-forever2.onrender.com/login/qr/abc123xyz789
+https://www.djforever2026.com/login/qr/abc123xyz789
 ```
 
 **Human-Readable Alias**:
 
 ```
-https://dj-forever2.onrender.com/login/qr/smith-family
+https://www.djforever2026.com/login/qr/smith-family
 ```
 
 ---
@@ -344,7 +344,7 @@ Email template with both options:
 <p>Login to RSVP:</p>
 <ul>
   <li>Scan your invitation QR code, or</li>
-  <li>Visit: https://dj-forever2.onrender.com/login/qr/smith-family</li>
+  <li>Visit: https://www.djforever2026.com/login/qr/smith-family</li>
 </ul>
 ```
 

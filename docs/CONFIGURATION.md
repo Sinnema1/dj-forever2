@@ -6,18 +6,16 @@ All environment variables for DJ Forever 2, split by service.
 
 ## Client (`client/.env`)
 
-| Variable                            | Required | Default    | Description                                                                                    |
-| ----------------------------------- | -------- | ---------- | ---------------------------------------------------------------------------------------------- |
-| `VITE_GRAPHQL_ENDPOINT`             | Yes      | `/graphql` | GraphQL API URL. Use relative path in dev (Vite proxy); full backend URL in production.        |
-| `VITE_WEDDING_CONTACT_EMAIL`        | **Prod** | _(empty)_  | Contact email shown on QR help pages. Fallback text renders when empty.                        |
-| `VITE_CRATE_BARREL_REGISTRY_URL`    | No       | _(empty)_  | Crate & Barrel registry URL. Card hidden when empty.                                           |
-| `VITE_WILLIAMS_SONOMA_REGISTRY_URL` | No       | _(empty)_  | Williams-Sonoma registry URL. Card hidden when empty.                                          |
-| `VITE_COSTCO_REGISTRY_URL`          | No       | _(empty)_  | Costco/MyRegistry URL. Card hidden when empty.                                                 |
-| `VITE_HONEYMOON_FUND_URL`           | No       | _(empty)_  | Honeymoon fund URL. Card hidden when empty.                                                    |
-| `VITE_ENABLE_MEAL_PREFERENCES`      | No       | `false`    | Show meal selection in RSVP form. Set `true` when menu is finalized.                           |
-| `VITE_ENABLE_GUESTBOOK`             | No       | `false`    | Show Guestbook section on homepage and in navigation.                                          |
-| `VITE_GA4_MEASUREMENT_ID`           | No       | _(empty)_  | Google Analytics 4 measurement ID (`G-XXXXXXXXXX`).                                            |
-| `VITE_ERROR_REPORTING_PROVIDER`     | No       | _(empty)_  | External error reporting provider (`sentry`, `logrocket`, `bugsnag`). Silent no-op when empty. |
+| Variable                         | Required | Default    | Description                                                                                    |
+| -------------------------------- | -------- | ---------- | ---------------------------------------------------------------------------------------------- |
+| `VITE_GRAPHQL_ENDPOINT`          | Yes      | `/graphql` | GraphQL API URL. Use relative path in dev (Vite proxy); full backend URL in production.        |
+| `VITE_WEDDING_CONTACT_EMAIL`     | **Prod** | _(empty)_  | Contact email shown on QR help pages. Fallback text renders when empty.                        |
+| `VITE_CRATE_BARREL_REGISTRY_URL` | No       | _(empty)_  | Crate & Barrel registry URL. Card hidden when empty.                                           |
+| `VITE_ZOLA_REGISTRY_URL`         | No       | _(empty)_  | Zola registry URL. Card hidden when empty.                                                     |
+| `VITE_ENABLE_MEAL_PREFERENCES`   | No       | `false`    | Show meal selection in RSVP form. Set `true` when menu is finalized.                           |
+| `VITE_ENABLE_GUESTBOOK`          | No       | `false`    | Show Guestbook section on homepage and in navigation.                                          |
+| `VITE_GA4_MEASUREMENT_ID`        | No       | _(empty)_  | Google Analytics 4 measurement ID (`G-XXXXXXXXXX`).                                            |
+| `VITE_ERROR_REPORTING_PROVIDER`  | No       | _(empty)_  | External error reporting provider (`sentry`, `logrocket`, `bugsnag`). Silent no-op when empty. |
 
 ## Server (`server/.env`)
 
@@ -27,7 +25,7 @@ All environment variables for DJ Forever 2, split by service.
 | `MONGODB_DB_NAME`          | Yes      | `djforever2_dev`            | Database name. Production: `djforever2`. Test: `djforever2_test`.                                                           |
 | `JWT_SECRET`               | Yes      | —                           | Secret for signing JWT tokens. Must be ≥ 32 characters in production.                                                       |
 | `PORT`                     | No       | `3001`                      | HTTP port. Render assigns this automatically in production.                                                                 |
-| `FRONTEND_URL`             | Yes      | `http://localhost:3002`     | Frontend origin for QR login redirects and CORS.                                                                            |
+| `CONFIG__FRONTEND_URL`     | Yes      | `http://localhost:3002`     | Frontend origin for QR login redirects and email links.                                                                     |
 | `ENABLE_MEAL_PREFERENCES`  | No       | `false`                     | Server-side meal preference validation gate. Must match client flag.                                                        |
 | `ENABLE_PRODUCTION_EMAILS` | No       | `false`                     | When `false`, emails only sent to whitelisted test addresses. Set `true` **only** in production after verifying guest list. |
 | `SMTP_HOST`                | No       | —                           | SMTP server hostname (e.g., `smtp.gmail.com`).                                                                              |
@@ -49,7 +47,7 @@ Before going live, ensure these are set in your deployment platform:
 - [ ] `MONGODB_URI` → Atlas connection string
 - [ ] `MONGODB_DB_NAME` → `djforever2`
 - [ ] `JWT_SECRET` → strong random secret (≥ 32 chars)
-- [ ] `FRONTEND_URL` → production frontend URL
+- [ ] `CONFIG__FRONTEND_URL` → production frontend URL
 
 ### Recommended
 

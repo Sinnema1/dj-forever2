@@ -1,5 +1,7 @@
 # Routing & Authentication Improvements TODO
 
+> Archived document: historical TODO list from 2025. Current implementation may differ.
+
 **Priority:** Medium  
 **Estimated Time:** 4-6 hours  
 **Created:** October 26, 2025
