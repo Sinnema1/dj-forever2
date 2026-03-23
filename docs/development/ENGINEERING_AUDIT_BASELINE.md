@@ -94,6 +94,10 @@ npm run audit:kpi:check
 npm run audit:kpi
 ```
 
+## Phase 6 Artifact
+
+- [Phase 6 30/60/90 Roadmap](./PHASE6_30_60_90_ROADMAP.md)
+
 ## Recommended Cadence
 
 - During active cleanup: run baseline weekly
