@@ -51,6 +51,16 @@ jobs:
         working-directory: client
         run: npm ci
 
+      # Dependency audit signal for Phase 5 KPI tracking.
+      # Non-blocking for now; findings are reviewed via audit reports.
+      - name: Audit server dependencies
+        working-directory: server
+        run: npm audit --audit-level=high || true
+
+      - name: Audit client dependencies
+        working-directory: client
+        run: npm audit --audit-level=high || true
+
       # Run tests
       - name: Test server
         working-directory: server

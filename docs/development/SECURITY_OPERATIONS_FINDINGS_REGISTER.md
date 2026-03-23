@@ -11,10 +11,10 @@ Track all Phase 3 findings with ownership, severity, and closure evidence.
 
 ## Findings Table
 
-| ID      | Control ID | Title | Severity | Impact | Owner          | Target Date | Status | Evidence | Notes |
-| ------- | ---------- | ----- | -------- | ------ | -------------- | ----------- | ------ | -------- | ----- |
-| SOF-001 | SO-\_\_\_  |       |          |        | Justin Manning |             | Open   |          |       |
-| SOF-002 | SO-\_\_\_  |       |          |        | Justin Manning |             | Open   |          |       |
+| ID      | Control ID | Title                                                         | Severity | Impact                                               | Owner          | Target Date | Status    | Evidence                                                                                                                | Notes                               |
+| ------- | ---------- | ------------------------------------------------------------- | -------- | ---------------------------------------------------- | -------------- | ----------- | --------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------- | ------------------- | --- | ----------------------------------------------------------- |
+| SOF-001 | SO-011     | Dependency audit is non-blocking in CI                        | Medium   | High-severity dependency issues may not block merges | Justin Manning | 2026-03-30  | Open      | .github/workflows/ci.yml includes `npm audit --audit-level=high                                                         |                                     | true`; npm run audit:security:check shows dependency audit refs present | Next step: remove ` |     | true` after one stable week and document exception handling |
+| SOF-002 | SO-015     | Rollback procedure not fully documented as executable runbook | Medium   | Slower recovery during failed production deploys     | Justin Manning | 2026-03-23  | Validated | docs/deployment/ROLLBACK_RUNBOOK.md published; docs/deployment/PRODUCTION_READINESS_CHECKLIST.md links rollback runbook | Closed in Phase 5 operating cadence |
 
 ## Status Definitions
 

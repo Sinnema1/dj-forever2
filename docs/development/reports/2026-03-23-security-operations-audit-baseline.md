@@ -26,12 +26,12 @@
 - Workflows directory present: yes
 - CI workflow present: yes
 - Deploy workflow present: yes
-- Dependency audit references in workflows: 0
+- Dependency audit references in workflows: 2
 
 ## Documentation Coverage Signals
-- Deployment backup guidance references: 7
-- Deployment health guidance references: 6
-- Security guidance references across docs: 34
+- Deployment backup guidance references: 9
+- Deployment health guidance references: 9
+- Security guidance references across docs: 47
 
 ## Immediate Risk Notes
 - No immediate shell-level production safety flags detected.

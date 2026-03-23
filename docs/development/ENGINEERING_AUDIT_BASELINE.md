@@ -79,6 +79,21 @@ npm run audit:docs:check
 npm run audit:docs
 ```
 
+## Phase 5 Artifacts
+
+- [Phase 5 KPI Tracker](./PHASE5_KPI_TRACKER.md)
+- [Phase 5 Execution Runbook](./PHASE5_EXECUTION_RUNBOOK.md)
+
+## Phase 5 Commands
+
+```bash
+# Print current Phase 5 KPI snapshot to terminal
+npm run audit:kpi:check
+
+# Print and write report file to docs/development/reports/
+npm run audit:kpi
+```
+
 ## Recommended Cadence
 
 - During active cleanup: run baseline weekly
