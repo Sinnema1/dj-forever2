@@ -18,15 +18,15 @@ Use this tracker to monitor audit health trends and execution discipline after P
 - Docs unresolved local links: 0
 - Docs placeholder markers (active): 0
 - Total open findings: 0
-- Dependency-audit workflow references: 2
+- Dependency-audit workflow references: 4
 
 ## Weekly Log
 
 | Week Of    | Docs Legacy Refs | Unresolved Links | Placeholder Markers | Open Findings | Dep-Audit Refs | Gate Status | Notes                                                           |
 | ---------- | ---------------- | ---------------- | ------------------- | ------------- | -------------- | ----------- | --------------------------------------------------------------- |
-| 2026-03-23 | 0                | 0                | 0                   | 2             | 2              | Pass        | Dependency-audit gate restored via CI workflow audit steps      |
-| 2026-03-23 | 0                | 0                | 0                   | 1             | 2              | Pass        | SOF-002 closed after publishing rollback runbook                |
-| 2026-03-23 | 0                | 0                | 0                   | 0             | 2              | Pass        | SOF-001 closed after enforcing production dependency audit gate |
+| 2026-03-23 | 0                | 0                | 0                   | 2             | 4              | Pass        | Dependency-audit gate restored via CI workflow audit steps      |
+| 2026-03-23 | 0                | 0                | 0                   | 1             | 4              | Pass        | SOF-002 closed after publishing rollback runbook                |
+| 2026-03-23 | 0                | 0                | 0                   | 0             | 4              | Pass        | SOF-001 closed after enforcing production dependency audit gate |
 
 ## Action Queue
 

@@ -24,7 +24,7 @@ count_md_files() {
 count_matches() {
   local pattern="$1"
   local path="$2"
-  grep -R -E -o "$pattern" "$path" 2>/dev/null | wc -l | tr -d ' '
+  (grep -R -E -o "$pattern" "$path" 2>/dev/null || true) | wc -l | tr -d ' '
 }
 
 exists() {
