@@ -379,8 +379,8 @@ npm run test:rsvp:server  # ✅ 9/9 tests passing
 
 Test locations:
 
-- `/client/tests/GuestPersonalizationModal.e2e.test.tsx` (TODO: add qrAlias test)
-- `/client/tests/BulkPersonalization.e2e.test.tsx` (TODO: add CSV validation test)
+- `/client/tests/GuestPersonalizationModal.e2e.test.tsx` (action: add qrAlias test)
+- `/client/tests/BulkPersonalization.e2e.test.tsx` (action: add CSV validation test)
 
 ## Future Enhancements
 

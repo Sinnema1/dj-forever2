@@ -51,6 +51,24 @@ jobs:
         working-directory: client
         run: npm ci
 
+      # Enforced production dependency audit gate.
+      - name: Audit server production dependencies
+        working-directory: server
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Audit client production dependencies
+        working-directory: client
+        run: npm audit --omit=dev --audit-level=high
+
+      # Full dependency audit remains informational for dev-tooling risk triage.
+      - name: Audit server full dependency tree (informational)
+        working-directory: server
+        run: npm audit --audit-level=high || true
+
+      - name: Audit client full dependency tree (informational)
+        working-directory: client
+        run: npm audit --audit-level=high || true
+
       # Run tests
       - name: Test server
         working-directory: server

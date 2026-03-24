@@ -2,10 +2,10 @@
 
 ## 🌐 Production URLs
 
-| Service     | Custom Domain                 | Render URL (fallback)                    |
-| ----------- | ----------------------------- | ---------------------------------------- |
-| Frontend    | https://www.djforever2026.com | https://dj-forever2.onrender.com         |
-| Backend API | https://api.djforever2026.com | https://dj-forever2-backend.onrender.com |
+| Service     | Custom Domain                 | Render URL (fallback)                   |
+| ----------- | ----------------------------- | --------------------------------------- |
+| Frontend    | https://www.djforever2026.com | https://<frontend-service>.onrender.com |
+| Backend API | https://api.djforever2026.com | https://<backend-service>.onrender.com  |
 
 > DNS is managed in Cloudflare. Custom domains are primary for all guest-facing traffic. Render `.onrender.com` URLs are fallback/legacy endpoints for diagnostics and rollback only.
 
@@ -19,7 +19,7 @@ Two Render.com services are deployed:
 
 - **Service Name**: `dj-forever2`
 - **Custom Domain**: https://www.djforever2026.com
-- **Render URL**: https://dj-forever2.onrender.com
+- **Render URL**: https://<frontend-service>.onrender.com
 - **Root Directory**: `client/`
 - **Build Command**: `npm install && npm run build`
 - **Publish Directory**: `dist`
@@ -28,7 +28,7 @@ Two Render.com services are deployed:
 
 - **Service Name**: `dj-forever2-backend`
 - **Custom Domain**: https://api.djforever2026.com
-- **Render URL**: https://dj-forever2-backend.onrender.com
+- **Render URL**: https://<backend-service>.onrender.com
 - **Root Directory**: `server/`
 - **Build Command**: `npm install && npm run build`
 - **Start Command**: `npm start`

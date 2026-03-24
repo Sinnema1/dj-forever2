@@ -710,7 +710,7 @@ interface Banner {
 
 ### Related Documentation
 
-- `/docs/UI_ENHANCEMENTS_TODO.md` - Original requirements
+- `/docs/UI_ENHANCEMENTS_BACKLOG.md` - Original requirements
 - `/.github/copilot-instructions.md` - Project conventions
 - `/docs/development/QR_ALIAS_IMPLEMENTATION.md` - Related feature
 

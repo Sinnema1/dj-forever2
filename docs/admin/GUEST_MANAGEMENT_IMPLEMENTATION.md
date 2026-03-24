@@ -207,11 +207,11 @@ const qrToken =
 - [x] Frontend mutations added
 - [x] UI components implemented
 - [x] Styling complete
-- [ ] **TODO**: Test creating new guest in production
-- [ ] **TODO**: Test deleting existing guest in production
-- [ ] **TODO**: Verify QR token generation works
-- [ ] **TODO**: Test email uniqueness validation
-- [ ] **TODO**: Verify admin protection (cannot delete admins)
+- [ ] Action item: Test creating new guest in production
+- [ ] Action item: Test deleting existing guest in production
+- [ ] Action item: Verify QR token generation works
+- [ ] Action item: Test email uniqueness validation
+- [ ] Action item: Verify admin protection (cannot delete admins)
 
 ## Files Modified
 
