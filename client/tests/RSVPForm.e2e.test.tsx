@@ -51,14 +51,14 @@ const createdAttendingRSVP = {
   guests: [
     {
       fullName: 'Test User',
-      mealPreference: 'vegetarian',
+      mealPreference: 'brisket',
       allergies: '',
     },
   ],
   additionalNotes: '',
   // Legacy fields for backward compatibility
   fullName: 'Test User',
-  mealPreference: 'vegetarian',
+  mealPreference: 'brisket',
   allergies: '',
 };
 
@@ -106,14 +106,14 @@ const createAttendingRSVPMock = {
         guests: [
           {
             fullName: 'Test User',
-            mealPreference: 'vegetarian',
+            mealPreference: 'brisket',
             allergies: '',
           },
         ],
         additionalNotes: '',
         // Legacy fields synchronized with first guest for backward compatibility
         fullName: 'Test User',
-        mealPreference: 'vegetarian',
+        mealPreference: 'brisket',
         allergies: '',
       },
     },
@@ -237,12 +237,12 @@ describe('RSVPForm integration', () => {
       ) as HTMLSelectElement;
 
       // Complete form filling - userEvent handles async, no act() needed
-      await user.selectOptions(mealPrefSelect, 'vegetarian');
+      await user.selectOptions(mealPrefSelect, 'brisket');
 
       // Verify form state
       expect(fullNameInput.value).toBe('Test User');
       expect(attendingYesRadio.checked).toBe(true);
-      expect(mealPrefSelect.value).toBe('vegetarian');
+      expect(mealPrefSelect.value).toBe('brisket');
 
       // Submit the form
       await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
@@ -666,7 +666,7 @@ describe('RSVPForm integration', () => {
       // Coming soon banner should be visible
       await waitFor(() => {
         expect(
-          screen.getByText(/menu selection coming soon/i)
+          screen.getByText(/dinner menu/i)
         ).toBeInTheDocument();
       });
 

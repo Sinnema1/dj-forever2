@@ -60,6 +60,22 @@ import type {
   AdminUserUpdateInput,
 } from "../types/graphql.js";
 
+const MEAL_PREFERENCE_LABELS: Record<string, string> = {
+  brisket: "BBQ Beef Brisket",
+  tritip: "Carved Tri Tip",
+  kids_chicken: "Kids - Chicken Tenders",
+  kids_mac: "Kids - Macaroni and Cheese",
+  dietary: "Dietary Accommodation",
+};
+
+function formatMealPreferenceLabel(
+  preference: string | null | undefined,
+): string {
+  const normalized = (preference || "").trim().toLowerCase();
+  if (!normalized) return "Not specified";
+  return MEAL_PREFERENCE_LABELS[normalized] || preference || "Not specified";
+}
+
 /**
  * Get comprehensive wedding statistics for admin dashboard
  *
@@ -114,7 +130,7 @@ export async function getWeddingStats(): Promise<AdminStats> {
       if (rsvp.attending === "YES") {
         if (rsvp.guests && rsvp.guests.length > 0) {
           for (const guest of rsvp.guests) {
-            const preference = guest.mealPreference || "Not specified";
+            const preference = formatMealPreferenceLabel(guest.mealPreference);
             mealPreferenceCounts.set(
               preference,
               (mealPreferenceCounts.get(preference) || 0) + 1,
@@ -126,7 +142,7 @@ export async function getWeddingStats(): Promise<AdminStats> {
           }
         } else {
           // Legacy format
-          const preference = rsvp.mealPreference || "Not specified";
+          const preference = formatMealPreferenceLabel(rsvp.mealPreference);
           mealPreferenceCounts.set(
             preference,
             (mealPreferenceCounts.get(preference) || 0) + 1,
@@ -276,14 +292,16 @@ export async function exportGuestListCSV(): Promise<string> {
         guestCount = rsvp.guestCount?.toString() || "1";
 
         if (rsvp.guests && rsvp.guests.length > 0) {
-          mealPrefs = rsvp.guests.map((g: any) => g.mealPreference).join("; ");
+          mealPrefs = rsvp.guests
+            .map((g: any) => formatMealPreferenceLabel(g.mealPreference))
+            .join("; ");
           dietaryRestrictions =
             rsvp.guests
               .filter((g: any) => g.allergies)
               .map((g: any) => g.allergies)
               .join("; ") || "None";
         } else {
-          mealPrefs = rsvp.mealPreference || "Not specified";
+          mealPrefs = formatMealPreferenceLabel(rsvp.mealPreference);
           dietaryRestrictions = rsvp.allergies || "None";
         }
       }

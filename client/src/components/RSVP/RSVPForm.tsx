@@ -99,20 +99,9 @@ export default function RSVPForm() {
 
     const normalizedValue = value.toLowerCase().trim();
 
-    // Map legacy values to current form values
-    const legacyMapping: Record<string, string> = {
-      vegetarian: 'vegetarian',
-      chicken: 'chicken',
-      beef: 'beef',
-      fish: 'fish',
-      salmon: 'fish',
-      vegan: 'vegan',
-      kids: 'kids',
-      kid: 'kids',
-      children: 'kids',
-    };
-
-    return legacyMapping[normalizedValue] || '';
+    // Pass through current values; legacy values map to empty (re-selection required)
+    const validValues = ['brisket', 'tritip', 'kids_chicken', 'kids_mac', 'dietary'];
+    return validValues.includes(normalizedValue) ? normalizedValue : '';
   };
 
   const [formData, setFormData] = useState<RSVPFormData>(() => {
@@ -219,16 +208,21 @@ export default function RSVPForm() {
     }
   }, [rsvp]); // Only depend on rsvp data, not successMessage
 
-  // Available meal options
-  const mealOptions = [
-    { value: '', label: 'Select your preference' },
-    { value: 'chicken', label: '🍗 Herb-Roasted Chicken' },
-    { value: 'beef', label: '🥩 Grilled Beef Tenderloin' },
-    { value: 'fish', label: '🐟 Pan-Seared Salmon' },
-    { value: 'vegetarian', label: '🥗 Vegetarian Pasta Primavera' },
-    { value: 'vegan', label: '🌱 Vegan Mediterranean Bowl' },
-    { value: 'kids', label: '🍕 Kids Menu (Chicken Tenders & Fries)' },
-  ];
+  // Available meal options — grouped by adult entrees, kids menu, and dietary accommodation
+  const mealOptions = {
+    placeholder: { value: '', label: 'Select your entree' },
+    adult: [
+      { value: 'brisket', label: 'BBQ Beef Brisket' },
+      { value: 'tritip', label: 'Carved Tri Tip' },
+    ],
+    kids: [
+      { value: 'kids_chicken', label: 'Chicken Tenders' },
+      { value: 'kids_mac', label: 'Macaroni and Cheese' },
+    ],
+    other: [
+      { value: 'dietary', label: 'Dietary Accommodation' },
+    ],
+  };
 
   // Helper function to update guest count and manage guests array
   const updateGuestCount = (newCount: number) => {
@@ -852,7 +846,24 @@ export default function RSVPForm() {
                           : 'false'
                       }
                     >
-                      {mealOptions.map(option => (
+                      <option value={mealOptions.placeholder.value}>
+                        {mealOptions.placeholder.label}
+                      </option>
+                      <optgroup label="Adult Entrees">
+                        {mealOptions.adult.map(option => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Kids Menu (ages 3-12)">
+                        {mealOptions.kids.map(option => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </optgroup>
+                      {mealOptions.other.map(option => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
@@ -876,6 +887,19 @@ export default function RSVPForm() {
                       </span>
                       {validationErrors[`guest-${index}-mealPreference`]}
                     </div>
+                  )}
+                  <p className="form-hint meal-selection-note">
+                    Shared for all guests: Field of Greens salad, Roasted Garlic
+                    Mashed Potatoes, and Glazed Carrots.
+                    {(guest.mealPreference === 'kids_chicken' ||
+                      guest.mealPreference === 'kids_mac') &&
+                      ' Kids meals served with french fries, fresh fruit, and a juice box.'}
+                  </p>
+                  {guest.mealPreference === 'dietary' && (
+                    <p className="form-hint dietary-hint">
+                      Please describe your dietary needs in the field below so
+                      our kitchen can prepare a suitable meal for you.
+                    </p>
                   )}
                 </div>
               )}

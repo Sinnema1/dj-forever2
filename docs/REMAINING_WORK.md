@@ -52,11 +52,11 @@ See [docs/CONFIGURATION.md](CONFIGURATION.md) for the full env var reference and
 
 ### Meal Preferences (gated — `VITE_ENABLE_MEAL_PREFERENCES`)
 
-- **Status**: Full RSVP form integration complete, gated behind feature flag
+- **Status**: Full RSVP form integration complete; finalized dinner menu with kids menu and dietary accommodation option, gated behind feature flag
 - **Remaining**:
-  - [ ] Finalize wedding menu options
-  - [ ] Update meal enum values in schema if menu differs from current options
   - [ ] Flip `VITE_ENABLE_MEAL_PREFERENCES=true`
+  - [ ] Flip `ENABLE_MEAL_PREFERENCES=true`
+  - [ ] Send RSVP update notice if enabling after guests have already submitted responses
 
 ---
 

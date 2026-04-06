@@ -93,7 +93,7 @@ describe("RSVP End-to-End", () => {
             mutation {
               submitRSVP(
                 attending: YES
-                mealPreference: "chicken"
+                mealPreference: "brisket"
                 allergies: "None"
                 additionalNotes: "Excited!"
               ) {
@@ -114,7 +114,7 @@ describe("RSVP End-to-End", () => {
 
       expect(rsvpRes.body.data.submitRSVP).not.toBeNull();
       expect(rsvpRes.body.data.submitRSVP.attending).toBe("YES");
-      expect(rsvpRes.body.data.submitRSVP.mealPreference).toBe("chicken");
+      expect(rsvpRes.body.data.submitRSVP.mealPreference).toBe("brisket");
       expect(rsvpRes.body.data.submitRSVP.allergies).toBe("None");
       expect(rsvpRes.body.data.submitRSVP.additionalNotes).toBe("Excited!");
     });
@@ -134,13 +134,13 @@ describe("RSVP End-to-End", () => {
                 guests: [
                   {
                     fullName: "Test User"
-                    mealPreference: "chicken"
+                    mealPreference: "brisket"
                     allergies: "None"
                   }
                 ]
                 additionalNotes: "Looking forward to it!"
                 fullName: "Test User"
-                mealPreference: "chicken"
+                mealPreference: "brisket"
                 allergies: "None"
               }) {
                 _id
@@ -170,7 +170,7 @@ describe("RSVP End-to-End", () => {
       expect(rsvpRes.body.data.createRSVP.guests).toHaveLength(1);
       expect(rsvpRes.body.data.createRSVP.guests[0].fullName).toBe("Test User");
       expect(rsvpRes.body.data.createRSVP.guests[0].mealPreference).toBe(
-        "chicken",
+        "brisket",
       );
     });
 
@@ -282,13 +282,13 @@ describe("RSVP End-to-End", () => {
                 guests: [
                   {
                     fullName: ""
-                    mealPreference: "chicken"
+                    mealPreference: "brisket"
                     allergies: ""
                   }
                 ]
                 additionalNotes: ""
                 fullName: ""
-                mealPreference: "chicken"
+                mealPreference: "brisket"
                 allergies: ""
               }) {
                 _id
@@ -363,13 +363,13 @@ describe("RSVP End-to-End", () => {
                 guests: [
                   {
                     fullName: "Test User"
-                    mealPreference: "chicken"
+                    mealPreference: "brisket"
                     allergies: "None"
                   }
                 ]
                 additionalNotes: "Looking forward to it!"
                 fullName: "Test User"
-                mealPreference: "chicken"
+                mealPreference: "brisket"
                 allergies: "None"
               }) {
                 _id
