@@ -281,9 +281,7 @@ describe('PersonalizedWelcome - Banner System', () => {
       const banner = screen.getByTestId('personalized-welcome-banner');
       // Should show RSVP reminder instead
       expect(banner).toHaveAttribute('data-banner-type', 'rsvp-reminder');
-      expect(banner).toHaveTextContent(
-        /Please RSVP when you have a moment/i
-      );
+      expect(banner).toHaveTextContent(/Please RSVP when you have a moment/i);
     });
   });
 
@@ -397,6 +395,7 @@ describe('PersonalizedWelcome - Banner System', () => {
         isAdmin: false,
         hasRSVPed: true,
         rsvp: {
+          _id: 'rsvp-user-14',
           attending: 'YES',
         },
       };
