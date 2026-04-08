@@ -10,11 +10,9 @@ import { CREATE_RSVP } from '../src/features/rsvp/graphql/mutations';
 
 // Mock feature flags - enable meal preferences for these tests
 // (tests were written with meal preferences visible)
-vi.mock('../src/config/features', () => ({
-  features: {
-    mealPreferencesEnabled: true,
-  },
-}));
+vi.mock('../src/config/features', async () => {
+  return { features: { mealPreferencesEnabled: true } };
+});
 
 /**
  * RSVPForm E2E Test Suite
@@ -641,15 +639,39 @@ describe('RSVPForm integration', () => {
 
   describe('Meal Preferences Feature Flag (disabled)', () => {
     it('hides meal preference fields and shows coming soon banner when feature is disabled', async () => {
-      // Override the mock for this test to disable meal preferences
-      const { features } = await import('../src/config/features');
-      const originalValue = features.mealPreferencesEnabled;
-      features.mealPreferencesEnabled = false;
+      // Clean up any prior renders and reset module cache
+      const { cleanup } = await import('@testing-library/react');
+      cleanup();
+
+      vi.resetModules();
+      vi.doMock('../src/config/features', () => ({
+        features: { mealPreferencesEnabled: false },
+      }));
+
+      // Dynamic imports to pick up the new mock (resetModules cleared cache)
+      const { default: RSVPFormDisabled } = await import(
+        '../src/components/RSVP/RSVPForm'
+      );
+      const { MockedProvider: MP } = await import('@apollo/client/testing');
+      const { AuthProvider: AP } = await import('../src/context/AuthContext');
+      const { GET_RSVP: GR } = await import(
+        '../src/features/rsvp/graphql/queries'
+      );
+      const freshMock = () => ({
+        request: { query: GR },
+        result: { data: { getRSVP: null } },
+      });
 
       const user = userEvent.setup();
 
       await act(async () => {
-        renderRSVPForm();
+        render(
+          <MP mocks={[freshMock(), freshMock()]} addTypename={false}>
+            <AP>
+              <RSVPFormDisabled />
+            </AP>
+          </MP>
+        );
       });
 
       const attendingYesRadio = screen.getByDisplayValue(
@@ -666,12 +688,14 @@ describe('RSVPForm integration', () => {
       // Coming soon banner should be visible
       await waitFor(() => {
         expect(
-          screen.getByText(/dinner menu/i)
+          screen.getByRole('heading', { name: /dinner menu/i })
         ).toBeInTheDocument();
       });
 
-      // Restore original value
-      features.mealPreferencesEnabled = originalValue;
+      // Restore original mock for any subsequent tests
+      vi.doMock('../src/config/features', () => ({
+        features: { mealPreferencesEnabled: true },
+      }));
     });
   });
 });
