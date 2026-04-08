@@ -49,8 +49,8 @@ export default function MealPreferencesComingSoon() {
             🥗
           </span>
           <span className="feature-text">
-            Shared for everyone: Field of Greens, Roasted Garlic Mashed
-            Potatoes, and Glazed Carrots
+            Every meal includes a Field of Greens salad, Roasted Garlic
+            Mashed Potatoes, and Glazed Carrots
           </span>
         </div>
       </div>

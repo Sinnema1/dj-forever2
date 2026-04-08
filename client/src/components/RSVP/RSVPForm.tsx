@@ -889,11 +889,10 @@ export default function RSVPForm() {
                     </div>
                   )}
                   <p className="form-hint meal-selection-note">
-                    Shared for all guests: Field of Greens salad, Roasted Garlic
-                    Mashed Potatoes, and Glazed Carrots.
-                    {(guest.mealPreference === 'kids_chicken' ||
-                      guest.mealPreference === 'kids_mac') &&
-                      ' Kids meals served with french fries, fresh fruit, and a juice box.'}
+                    {guest.mealPreference === 'kids_chicken' ||
+                    guest.mealPreference === 'kids_mac'
+                      ? 'Kids meals come with french fries, fresh fruit, and a juice box.'
+                      : 'Every meal includes a Field of Greens salad, Roasted Garlic Mashed Potatoes, and Glazed Carrots.'}
                   </p>
                   {guest.mealPreference === 'dietary' && (
                     <p className="form-hint dietary-hint">
@@ -928,8 +927,7 @@ export default function RSVPForm() {
                   id={`guest-${index}-allergies-hint`}
                   className="form-hint"
                 >
-                  Help us ensure this guest has a safe and enjoyable dining
-                  experience
+                  Let us know so we can make sure you're taken care of
                 </small>
               </div>
             </div>
