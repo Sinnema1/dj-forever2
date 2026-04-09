@@ -48,6 +48,19 @@ interface AdminRSVPManagerProps {
   onUpdate: () => void;
 }
 
+const MEAL_PREFERENCE_LABELS: Record<string, string> = {
+  brisket: 'BBQ Beef Brisket',
+  tritip: 'Carved Tri Tip',
+  kids_chicken: 'Kids - Chicken Tenders',
+  kids_mac: 'Kids - Macaroni and Cheese',
+  dietary: 'Dietary Accommodation',
+};
+
+const formatMealPreferenceLabel = (mealPreference: string): string => {
+  const normalized = mealPreference.trim().toLowerCase();
+  return MEAL_PREFERENCE_LABELS[normalized] || mealPreference;
+};
+
 /**
  * Admin RSVP Manager - Guest management interface for administrators.
  * Allows viewing, editing, and managing all guest RSVPs and user information.
@@ -562,7 +575,9 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
                       >
                         <span className="guest-name">{g.fullName}</span>
                         {g.mealPreference && (
-                          <span className="meal-badge">{g.mealPreference}</span>
+                          <span className="meal-badge">
+                            {formatMealPreferenceLabel(g.mealPreference)}
+                          </span>
                         )}
                         {g.allergies && (
                           <span className="allergy-badge">
@@ -664,9 +679,7 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
                           </div>
 
                           <div className="form-row">
-                            <input
-                              type="text"
-                              placeholder="Meal Preference (e.g., Chicken, Vegetarian, Fish)"
+                            <select
                               value={guest.mealPreference}
                               onChange={e =>
                                 handleGuestChange(
@@ -676,7 +689,18 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
                                 )
                               }
                               className="form-input"
-                            />
+                            >
+                              <option value="">Not specified</option>
+                              <optgroup label="Adult Entrees">
+                                <option value="brisket">BBQ Beef Brisket</option>
+                                <option value="tritip">Carved Tri Tip</option>
+                              </optgroup>
+                              <optgroup label="Kids Menu (ages 3-12)">
+                                <option value="kids_chicken">Chicken Tenders</option>
+                                <option value="kids_mac">Macaroni and Cheese</option>
+                              </optgroup>
+                              <option value="dietary">Dietary Accommodation</option>
+                            </select>
                           </div>
 
                           <div className="form-row">

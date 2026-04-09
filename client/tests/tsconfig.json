@@ -1,8 +1,16 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "rootDir": "..",
+    "noEmit": true,
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "jsx": "react-jsx"
   },
-  "include": ["./**/*", "./vitest-dom.d.ts"]
+  "include": [
+    "./**/*",
+    "./vitest-dom.d.ts",
+    "../src/vite-env.d.ts",
+    "../src/images.d.ts",
+    "../src/react-app-env.d.ts"
+  ]
 }

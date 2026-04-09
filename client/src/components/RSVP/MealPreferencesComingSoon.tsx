@@ -1,10 +1,11 @@
 import './MealPreferencesComingSoon.css';
 
 /**
- * MealPreferencesComingSoon - Placeholder banner for meal selection feature
+ * MealPreferencesComingSoon - Dinner menu summary banner
  *
- * Displays when meal preferences feature is disabled (before menu is finalized).
- * Provides clear communication about when meal selection will be available.
+ * Displays when meal preferences feature is disabled in the current environment.
+ * Shows the finalized dinner menu so guests know what to expect even when
+ * meal selection is not yet enabled.
  */
 export default function MealPreferencesComingSoon() {
   return (
@@ -12,37 +13,42 @@ export default function MealPreferencesComingSoon() {
       <div className="coming-soon-icon" aria-hidden="true">
         🍽️
       </div>
-      <h3 className="coming-soon-title">Menu Selection Coming Soon</h3>
+      <h3 className="coming-soon-title">Dinner Menu</h3>
       <p className="coming-soon-description">
-        We're finalizing our delicious menu options and will notify you when
-        meal selection becomes available. You'll be able to choose your
-        preferences before the big day!
+        Choose your entrée from our finalized menu.
       </p>
       <div className="coming-soon-features">
         <div className="feature-item">
           <span className="feature-icon" aria-hidden="true">
-            ✉️
-          </span>
-          <span className="feature-text">Email notification when ready</span>
-        </div>
-        <div className="feature-item">
-          <span className="feature-icon" aria-hidden="true">
-            🌱
+            🥩
           </span>
           <span className="feature-text">
-            Vegetarian, vegan, and dietary options
+            BBQ Beef Brisket: served with chipotle honey BBQ sauce
           </span>
         </div>
         <div className="feature-item">
           <span className="feature-icon" aria-hidden="true">
-            👶
+            🥩
           </span>
-          <span className="feature-text">Kids menu available</span>
+          <span className="feature-text">
+            Carved Tri Tip: marinated in fresh garlic and herbs, with a
+            peppercorn crust, served with chimichurri, horseradish cream, or au
+            jus
+          </span>
+        </div>
+        <div className="feature-item">
+          <span className="feature-icon" aria-hidden="true">
+            🧒
+          </span>
+          <span className="feature-text">
+            Kids Menu (ages 3-12): Chicken Tenders or Macaroni and Cheese with
+            fries, fruit, and a juice box
+          </span>
         </div>
       </div>
       <p className="coming-soon-note">
-        <strong>Note:</strong> Please include any food allergies or dietary
-        restrictions in the fields below so we can accommodate your needs.
+        Dietary accommodations are available. Share any allergies or dietary
+        restrictions below.
       </p>
     </div>
   );

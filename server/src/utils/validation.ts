@@ -246,12 +246,11 @@ export function validateGuestCount(count: number): number {
  * - Normalizes case for consistent storage
  *
  * Available Menu Options:
- * - chicken: Standard chicken entrée
- * - beef: Standard beef entrée
- * - fish: Standard fish entrée
- * - vegetarian: Vegetarian option
- * - vegan: Vegan option
- * - kids: Children's meal option
+ * - brisket: BBQ Beef Brisket (adult entree)
+ * - tritip: Carved Tri Tip (adult entree)
+ * - kids_chicken: Kids - Chicken Tenders (ages 3-12)
+ * - kids_mac: Kids - Macaroni and Cheese (ages 3-12)
+ * - dietary: Dietary Accommodation (guest describes needs in allergies field)
  *
  * @param preference - Raw meal preference from user
  * @param attending - Attendance status for conditional validation
@@ -261,12 +260,12 @@ export function validateGuestCount(count: number): number {
  * @example
  * ```typescript
  * // Attending guests (preference required)
- * const meal = validateMealPreference('CHICKEN', 'YES');
- * console.log(meal); // 'chicken'
+ * const meal = validateMealPreference('BRISKET', 'YES');
+ * console.log(meal); // 'brisket'
  *
  * // Non-attending guests (preference optional)
  * validateMealPreference('', 'NO'); // Returns ''
- * validateMealPreference('vegetarian', 'MAYBE'); // 'vegetarian'
+ * validateMealPreference('tritip', 'MAYBE'); // 'tritip'
  *
  * // Validation errors
  * validateMealPreference('', 'YES'); // ValidationError: Meal preference is required
@@ -285,12 +284,11 @@ export function validateMealPreference(
   mealPreferencesEnabled: boolean = true,
 ): string {
   const validPreferences = [
-    "chicken",
-    "beef",
-    "fish",
-    "vegetarian",
-    "vegan",
-    "kids",
+    "brisket",
+    "tritip",
+    "kids_chicken",
+    "kids_mac",
+    "dietary",
   ];
 
   const lowerPreference = preference.toLowerCase().trim();

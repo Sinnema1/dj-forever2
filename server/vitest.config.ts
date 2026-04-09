@@ -5,9 +5,7 @@ export default defineConfig({
     setupFiles: ["./tests/vitest.setup.ts"],
     environment: "node",
     globals: true,
-    // Use threads pool with maxConcurrency: 1 for true sequential execution
-    // Forks pool doesn't guarantee sequential execution in this vitest version
-    pool: "threads",
+    // In this Vitest version, enforce single-thread execution via thread limits.
     maxConcurrency: 1, // Run one test at a time across all files
     minThreads: 1,
     maxThreads: 1,

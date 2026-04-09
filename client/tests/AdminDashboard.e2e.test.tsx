@@ -37,8 +37,8 @@ const mockStats = {
     totalMaybe: 0,
     rsvpPercentage: 50,
     mealPreferences: [
-      { preference: 'Chicken', count: 20 },
-      { preference: 'Beef', count: 20 },
+      { preference: 'BBQ Beef Brisket', count: 20 },
+      { preference: 'Carved Tri Tip', count: 20 },
     ],
     dietaryRestrictions: ['Gluten Free', 'Vegan'],
   },
@@ -72,7 +72,7 @@ const mockRSVPs = {
         guests: [
           {
             fullName: 'Guest One',
-            mealPreference: 'Chicken',
+            mealPreference: 'brisket',
             dietaryRestrictions: 'None',
             ageGroup: 'Adult',
             allergies: 'None',

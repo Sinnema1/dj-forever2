@@ -623,6 +623,7 @@
   background-position: right var(--spacing-3) center;
   background-size: 16px;
   padding-right: calc(var(--spacing-4) + 24px); /* Space for arrow */
+  min-height: 56px; /* 12+12 padding + 4 border + 28 line-height = 56 */
 }
 
 .form-input:focus,

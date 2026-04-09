@@ -42,7 +42,7 @@ export class TestDataFactory {
       guests: [
         {
           fullName: "Test Guest",
-          mealPreference: "chicken",
+          mealPreference: "brisket",
           allergies: "None",
         },
       ],
@@ -128,7 +128,7 @@ export class TestDatabaseHelpers {
         guests: [
           {
             fullName: `Guest ${i + 1}`,
-            mealPreference: ["chicken", "beef", "vegetarian"][i % 3],
+            mealPreference: ["brisket", "tritip", "dietary"][i % 3],
           },
         ],
       });

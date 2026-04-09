@@ -45,7 +45,7 @@
  * // const rsvp = new RSVP({
  * //   userId: '507f1f77bcf86cd799439011',
  * //   attending: 'YES',
- * //   guests: [{ fullName: 'John Doe', mealPreference: 'chicken' }]
+ * //   guests: [{ fullName: 'John Doe', mealPreference: 'brisket' }]
  * // });
  *
  * @example
@@ -65,7 +65,7 @@ import mongoose, { Schema, Document } from "mongoose";
  *
  * @interface IGuest
  * @property {string} fullName - Guest's full name (required for attending guests)
- * @property {string} mealPreference - Meal choice (chicken, beef, fish, vegetarian, vegan, other)
+ * @property {string} mealPreference - Meal choice (brisket, tritip, kids_chicken, kids_mac, dietary)
  * @property {string} [allergies] - Optional dietary restrictions or allergies (max 200 characters)
  */
 export interface IGuest {
@@ -122,13 +122,11 @@ const guestSchema = new Schema<IGuest>(
       trim: true,
       enum: {
         values: [
-          "chicken",
-          "beef",
-          "fish",
-          "vegetarian",
-          "vegan",
-          "kids",
-          "other",
+          "brisket",
+          "tritip",
+          "kids_chicken",
+          "kids_mac",
+          "dietary",
           "",
         ],
         message: "Invalid meal preference",
@@ -197,13 +195,11 @@ const rsvpSchema = new Schema<IRSVP>(
       trim: true,
       enum: {
         values: [
-          "chicken",
-          "beef",
-          "fish",
-          "vegetarian",
-          "vegan",
-          "kids",
-          "other",
+          "brisket",
+          "tritip",
+          "kids_chicken",
+          "kids_mac",
+          "dietary",
           "",
         ],
         message: "Invalid meal preference",
