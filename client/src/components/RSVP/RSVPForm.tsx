@@ -100,7 +100,13 @@ export default function RSVPForm() {
     const normalizedValue = value.toLowerCase().trim();
 
     // Pass through current values; legacy values map to empty (re-selection required)
-    const validValues = ['brisket', 'tritip', 'kids_chicken', 'kids_mac', 'dietary'];
+    const validValues = [
+      'brisket',
+      'tritip',
+      'kids_chicken',
+      'kids_mac',
+      'dietary',
+    ];
     return validValues.includes(normalizedValue) ? normalizedValue : '';
   };
 
@@ -219,9 +225,7 @@ export default function RSVPForm() {
       { value: 'kids_chicken', label: 'Chicken Tenders' },
       { value: 'kids_mac', label: 'Macaroni and Cheese' },
     ],
-    other: [
-      { value: 'dietary', label: 'Dietary Accommodation' },
-    ],
+    other: [{ value: 'dietary', label: 'Dietary Accommodation' }],
   };
 
   // Helper function to update guest count and manage guests array
@@ -889,10 +893,34 @@ export default function RSVPForm() {
                     </div>
                   )}
                   <p className="form-hint meal-selection-note">
-                    {guest.mealPreference === 'kids_chicken' ||
-                    guest.mealPreference === 'kids_mac'
-                      ? 'Kids meals come with french fries, fresh fruit, and a juice box.'
-                      : 'Every meal includes a Field of Greens salad, Roasted Garlic Mashed Potatoes, and Glazed Carrots.'}
+                    {guest.mealPreference === 'brisket' ? (
+                      <>
+                        Served with chipotle honey BBQ sauce.
+                        <br /><br />
+                        Every meal includes a Field of Greens salad, Roasted
+                        Garlic Mashed Potatoes, and Glazed Carrots.
+                      </>
+                    ) : guest.mealPreference === 'tritip' ? (
+                      <>
+                        Marinated in fresh garlic and herbs, with a peppercorn
+                        crust, served with chimichurri, horseradish cream, or au
+                        jus.
+                        <br /><br />
+                        Every meal includes a Field of Greens salad, Roasted
+                        Garlic Mashed Potatoes, and Glazed Carrots.
+                      </>
+                    ) : guest.mealPreference === 'kids_chicken' ||
+                      guest.mealPreference === 'kids_mac' ? (
+                      <>
+                        Kids meals come with french fries, fresh fruit, and a
+                        juice box.
+                      </>
+                    ) : (
+                      <>
+                        Every meal includes a Field of Greens salad, Roasted
+                        Garlic Mashed Potatoes, and Glazed Carrots.
+                      </>
+                    )}
                   </p>
                   {guest.mealPreference === 'dietary' && (
                     <p className="form-hint dietary-hint">

@@ -15,8 +15,7 @@ export default function MealPreferencesComingSoon() {
       </div>
       <h3 className="coming-soon-title">Dinner Menu</h3>
       <p className="coming-soon-description">
-        Our dinner menu is finalized! When meal selection opens, each guest will
-        choose one entree.
+        Choose your entrée from our finalized menu.
       </p>
       <div className="coming-soon-features">
         <div className="feature-item">
@@ -24,7 +23,7 @@ export default function MealPreferencesComingSoon() {
             🥩
           </span>
           <span className="feature-text">
-            BBQ Beef Brisket with chipotle honey BBQ sauce
+            BBQ Beef Brisket: served with chipotle honey BBQ sauce
           </span>
         </div>
         <div className="feature-item">
@@ -32,7 +31,9 @@ export default function MealPreferencesComingSoon() {
             🥩
           </span>
           <span className="feature-text">
-            Carved Tri Tip with chimichurri, horseradish cream, or au jus
+            Carved Tri Tip: marinated in fresh garlic and herbs, with a
+            peppercorn crust, served with chimichurri, horseradish cream, or au
+            jus
           </span>
         </div>
         <div className="feature-item">
@@ -44,19 +45,10 @@ export default function MealPreferencesComingSoon() {
             fries, fruit, and a juice box
           </span>
         </div>
-        <div className="feature-item">
-          <span className="feature-icon" aria-hidden="true">
-            🥗
-          </span>
-          <span className="feature-text">
-            Every meal includes a Field of Greens salad, Roasted Garlic
-            Mashed Potatoes, and Glazed Carrots
-          </span>
-        </div>
       </div>
       <p className="coming-soon-note">
-        <strong>Note:</strong> Dietary accommodations will be available. Please
-        include any food allergies or dietary restrictions in the fields below.
+        Dietary accommodations are available. Share any allergies or dietary
+        restrictions below.
       </p>
     </div>
   );
