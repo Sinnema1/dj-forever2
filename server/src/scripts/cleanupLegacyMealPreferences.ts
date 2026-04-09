@@ -6,14 +6,16 @@
  * will re-select from the current menu when the feature flag is enabled.
  *
  * Usage:
- *   npx tsx src/scripts/cleanupLegacyMealPreferences.ts --db djforever2_dev
- *   npx tsx src/scripts/cleanupLegacyMealPreferences.ts --db djforever2  (prod — requires confirmation)
+ *   npx tsx src/scripts/cleanupLegacyMealPreferences.ts --db djforever2_dev --yes
+ *   npx tsx src/scripts/cleanupLegacyMealPreferences.ts --db djforever2 --yes  (prod — review audit output first)
  */
 
 import { RSVP } from "../models/RSVP";
 import { BaseScript, ScriptUtils } from "../utils/script-runner";
 
 const VALID_MEAL_VALUES = ["brisket", "tritip", "kids_chicken", "kids_mac", "dietary", ""];
+// Display label for null/undefined — not legacy, just unset
+const NON_LEGACY_DISPLAY_KEYS = new Set([...VALID_MEAL_VALUES, "(none)"]);
 
 class CleanupLegacyMealPreferencesScript extends BaseScript {
   constructor() {
@@ -24,7 +26,7 @@ class CleanupLegacyMealPreferencesScript extends BaseScript {
     // Audit: count legacy values before cleanup
     const beforeCounts = await this.auditMealValues();
     const legacyCount = Object.entries(beforeCounts)
-      .filter(([value]) => !VALID_MEAL_VALUES.includes(value))
+      .filter(([value]) => !NON_LEGACY_DISPLAY_KEYS.has(value))
       .reduce((sum, [, count]) => sum + count, 0);
 
     this.logProgress("Current meal preference distribution:", beforeCounts);
@@ -56,9 +58,10 @@ class CleanupLegacyMealPreferencesScript extends BaseScript {
     this.logProgress(`Top-level mealPreference reset: ${topLevelResult.modifiedCount} documents`);
 
     // Clean guests[].mealPreference (array format)
+    // Use $elemMatch so docs with mixed valid/legacy guest values are still matched
     const arrayResult = await (RSVP as any).updateMany(
       {
-        "guests.mealPreference": { $exists: true, $nin: VALID_MEAL_VALUES },
+        guests: { $elemMatch: { mealPreference: { $exists: true, $nin: VALID_MEAL_VALUES } } },
       },
       { $set: { "guests.$[elem].mealPreference": "" } },
       { arrayFilters: [{ "elem.mealPreference": { $nin: VALID_MEAL_VALUES } }] }
@@ -71,7 +74,7 @@ class CleanupLegacyMealPreferencesScript extends BaseScript {
     this.logProgress("Meal preference distribution after cleanup:", afterCounts);
 
     const remainingLegacy = Object.entries(afterCounts)
-      .filter(([value]) => !VALID_MEAL_VALUES.includes(value))
+      .filter(([value]) => !NON_LEGACY_DISPLAY_KEYS.has(value))
       .reduce((sum, [, count]) => sum + count, 0);
 
     if (remainingLegacy > 0) {
@@ -84,18 +87,9 @@ class CleanupLegacyMealPreferencesScript extends BaseScript {
   private async auditMealValues(): Promise<Record<string, number>> {
     const counts: Record<string, number> = {};
 
-    // Count top-level mealPreference values
-    const topLevel = await (RSVP as any).aggregate([
-      { $match: { mealPreference: { $exists: true } } },
-      { $group: { _id: "$mealPreference", count: { $sum: 1 } } },
-    ]).exec();
-
-    for (const row of topLevel) {
-      const key = row._id || "(empty)";
-      counts[key] = (counts[key] || 0) + row.count;
-    }
-
-    // Count guests[].mealPreference values
+    // Only audit guests[] array — the canonical source of truth.
+    // Top-level mealPreference is a legacy sync field that mirrors guests[0],
+    // so counting both would double-count every single-guest RSVP.
     const guestLevel = await (RSVP as any).aggregate([
       { $unwind: "$guests" },
       { $match: { "guests.mealPreference": { $exists: true } } },
@@ -103,7 +97,9 @@ class CleanupLegacyMealPreferencesScript extends BaseScript {
     ]).exec();
 
     for (const row of guestLevel) {
-      const key = row._id || "(empty)";
+      // Preserve "" as a key — it's a valid value (unselected).
+      // Only map null/undefined to a display label.
+      const key = row._id ?? "(none)";
       counts[key] = (counts[key] || 0) + row.count;
     }
 
