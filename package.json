@@ -36,7 +36,10 @@
     "audit:docs": "bash ./scripts/audit-docs-governance.sh --write",
     "audit:docs:check": "bash ./scripts/audit-docs-governance.sh",
     "audit:kpi": "bash ./scripts/audit-kpi-tracker.sh --write",
-    "audit:kpi:check": "bash ./scripts/audit-kpi-tracker.sh"
+    "audit:kpi:check": "bash ./scripts/audit-kpi-tracker.sh",
+    "prepare": "bash scripts/install-hooks.sh",
+    "docs:freshness": "bash scripts/check-docs-freshness.sh --staged",
+    "docs:freshness:ci": "bash scripts/check-docs-freshness.sh --diff-base=origin/main --ci"
   },
   "keywords": [],
   "author": "",

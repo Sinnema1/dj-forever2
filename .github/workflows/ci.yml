@@ -36,6 +36,12 @@ jobs:
       - name: Check for placeholder values
         run: ./scripts/check-placeholders.sh
 
+      # Documentation freshness — warns when source changes may require doc updates
+      - name: Check documentation freshness
+        if: github.event_name == 'pull_request'
+        run: ./scripts/check-docs-freshness.sh --diff-base=origin/${{ github.base_ref }} --ci
+        continue-on-error: true
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
