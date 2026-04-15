@@ -104,6 +104,7 @@ export async function getWeddingStats(): Promise<AdminStats> {
 
     // Count attendance responses
     let totalAttending = 0;
+    let totalAttendingGuests = 0;
     let totalNotAttending = 0;
     let totalMaybe = 0;
     const mealPreferenceCounts = new Map<string, number>();
@@ -116,6 +117,8 @@ export async function getWeddingStats(): Promise<AdminStats> {
       switch (rsvp.attending) {
         case "YES":
           totalAttending++;
+          // Headcount: primary guest + additional guests
+          totalAttendingGuests += 1 + (rsvp.guestCount || 0);
           break;
         case "NO":
           totalNotAttending++;
@@ -168,6 +171,7 @@ export async function getWeddingStats(): Promise<AdminStats> {
       totalInvited,
       totalRSVPed,
       totalAttending,
+      totalAttendingGuests,
       totalNotAttending,
       totalMaybe,
       rsvpPercentage: Math.round(rsvpPercentage * 100) / 100,

@@ -193,8 +193,10 @@ export const typeDefs = `
     totalInvited: Int!
     """Number of guests who have submitted RSVPs"""
     totalRSVPed: Int!
-    """Number of guests attending (YES responses)"""
+    """Number of RSVPs with YES response (count of RSVP records, not headcount)"""
     totalAttending: Int!
+    """Total attending headcount including plus-ones (1 + guestCount per YES RSVP)"""
+    totalAttendingGuests: Int!
     """Number of guests not attending (NO responses)"""
     totalNotAttending: Int!
     """Number of guests with uncertain attendance (MAYBE responses)"""

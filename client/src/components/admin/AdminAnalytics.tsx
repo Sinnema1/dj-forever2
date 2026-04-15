@@ -178,7 +178,7 @@ const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ stats, guests }) => {
       });
     }
 
-    // Attendance rate insight
+    // Response-based rate: what % of respondents said YES (not headcount-based)
     const attendanceRate =
       stats.totalRSVPed > 0
         ? (stats.totalAttending / stats.totalRSVPed) * 100

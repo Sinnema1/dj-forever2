@@ -490,7 +490,9 @@ export async function regenerateQRToken(userId: string): Promise<IUser> {
 }
 
 /**
- * Get comprehensive user statistics
+ * @deprecated Dead code — not called by any resolver. Admin stats use
+ * getWeddingStats() in adminService.ts. Has the same totalAttending++
+ * (record-count, not headcount) pattern. Do not revive without fixing.
  *
  * @returns User and RSVP statistics
  */

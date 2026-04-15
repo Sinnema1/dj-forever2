@@ -7,6 +7,7 @@ export const GET_ADMIN_STATS = gql`
       totalInvited
       totalRSVPed
       totalAttending
+      totalAttendingGuests
       totalNotAttending
       totalMaybe
       rsvpPercentage

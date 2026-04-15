@@ -207,6 +207,7 @@ export interface AdminStats {
   totalInvited: number;
   totalRSVPed: number;
   totalAttending: number;
+  totalAttendingGuests: number;
   totalNotAttending: number;
   totalMaybe: number;
   rsvpPercentage: number;

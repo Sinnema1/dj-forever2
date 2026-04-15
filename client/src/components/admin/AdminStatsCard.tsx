@@ -10,6 +10,7 @@ interface AdminStats {
   totalInvited: number;
   totalRSVPed: number;
   totalAttending: number;
+  totalAttendingGuests: number;
   totalNotAttending: number;
   totalMaybe: number;
   rsvpPercentage: number;
@@ -40,10 +41,15 @@ const AdminStatsCard: React.FC<AdminStatsCardProps> = ({ stats }) => {
         <div
           className="stat-item primary"
           role="group"
-          aria-label="Attending guests"
+          aria-label="Attending headcount"
         >
+          <div className="stat-number">{stats.totalAttendingGuests}</div>
+          <div className="stat-label">Attending Headcount</div>
+        </div>
+
+        <div className="stat-item" role="group" aria-label="Attending RSVPs">
           <div className="stat-number">{stats.totalAttending}</div>
-          <div className="stat-label">Attending Guests</div>
+          <div className="stat-label">Attending RSVPs</div>
         </div>
 
         <div className="stat-item" role="group" aria-label="RSVPs received">
