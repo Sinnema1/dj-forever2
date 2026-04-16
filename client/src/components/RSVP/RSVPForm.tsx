@@ -9,6 +9,13 @@ import { logDebug } from '../../utils/logger';
 import { features } from '../../config/features';
 // Styles now imported globally via main.tsx
 
+// Same character set as server validateName — keeps client and server in sync
+const VALID_NAME_RE = /^[a-zA-Z\s\-']+$/;
+function isValidGuestName(name: string): boolean {
+  const t = name.trim();
+  return t.length >= 2 && VALID_NAME_RE.test(t);
+}
+
 // Module-level helper — safe to call before component mounts
 function normalizeMealPreference(value: string): string {
   if (!value) return '';
@@ -59,7 +66,7 @@ function buildGuestRows(
       ];
       user?.householdMembers?.forEach(m => {
         const name = [m.firstName, m.lastName].filter(Boolean).join(' ');
-        if (name) rows.push({ fullName: name, mealPreference: '', allergies: '', attending: false });
+        if (isValidGuestName(name)) rows.push({ fullName: name, mealPreference: '', allergies: '', attending: false });
       });
       return rows;
     }
@@ -84,7 +91,7 @@ function buildGuestRows(
     // Household members absent from RSVP → attending: false  (AC 3)
     user?.householdMembers?.forEach(m => {
       const name = [m.firstName, m.lastName].filter(Boolean).join(' ');
-      if (name && !rsvpGuestNames.has(normalize(name))) {
+      if (isValidGuestName(name) && !rsvpGuestNames.has(normalize(name))) {
         rows.push({ fullName: name, mealPreference: '', allergies: '', attending: false });
       }
     });
@@ -104,7 +111,7 @@ function buildGuestRows(
 
   user?.householdMembers?.forEach(m => {
     const name = [m.firstName, m.lastName].filter(Boolean).join(' ');
-    if (name) rows.push({ fullName: name, mealPreference: '', allergies: '', attending: true });
+    if (isValidGuestName(name)) rows.push({ fullName: name, mealPreference: '', allergies: '', attending: true });
   });
 
   // Plus-one slot (only when not already covered by a named household member)
