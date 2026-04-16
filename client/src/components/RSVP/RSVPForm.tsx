@@ -547,7 +547,7 @@ export default function RSVPForm() {
               {/* AC 3: neutral hint for unselected rows */}
               {!guest.attending && (
                 <p className="guest-not-attending-hint">
-                  Not in your current response. Select to include them.
+                  Not in your response yet — check the box above to include them.
                 </p>
               )}
 

@@ -284,6 +284,52 @@ describe('Phase 3: RSVP Pre-population', () => {
     });
   });
 
+  it('should skip household members with invalid names (e.g. digits) to prevent ghost rows', async () => {
+    // Regression test for validation parity: client VALID_NAME_RE must match server validateName.
+    // A household member whose constructed name fails /^[a-zA-Z\s\-']+$/ should be silently
+    // filtered by buildGuestRows so it never becomes a row that would block RSVP submission.
+    mockUser = {
+      _id: 'user-invalid',
+      fullName: 'Valid Guest',
+      email: 'valid@test.com',
+      isInvited: true,
+      plusOneAllowed: false,
+      householdMembers: [
+        {
+          firstName: 'Valid',
+          lastName: 'Member',
+          relationshipToBride: 'friend',
+          relationshipToGroom: 'friend',
+        },
+        {
+          // "Guest 2" has a digit — server validateName would reject it
+          firstName: 'Guest',
+          lastName: '2',
+          relationshipToBride: 'child',
+          relationshipToGroom: 'child',
+        },
+      ],
+    };
+    mockIsLoggedIn = true;
+
+    render(
+      <MockedProvider mocks={[noRSVPMock, noRSVPMock, noMeMock]} addTypename={false}>
+        <RSVPForm />
+      </MockedProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /your response/i })).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      // Valid member is shown as a guest row
+      expect(screen.getByDisplayValue('Valid Member')).toBeInTheDocument();
+      // Invalid-named member is silently dropped — not an unselectable ghost row
+      expect(screen.queryByDisplayValue('Guest 2')).not.toBeInTheDocument();
+    });
+  });
+
   it('should pre-populate guests with household members when no RSVP exists', async () => {
     mockUser = {
       _id: 'user-5',
