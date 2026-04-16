@@ -1,7 +1,8 @@
 import { useQuery, useMutation } from '@apollo/client/react/hooks';
-import { GET_RSVP } from '../graphql/queries';
+import { GET_RSVP, GET_ME } from '../graphql/queries';
 import { CREATE_RSVP, EDIT_RSVP } from '../graphql/mutations';
 import { RSVP, CreateRSVPInput, RSVPInput } from '../types/rsvpTypes';
+import { User } from '../../../models/userTypes';
 import { reportGraphQLError } from '../../../services/errorReportingService';
 
 /**
@@ -10,6 +11,14 @@ import { reportGraphQLError } from '../../../services/errorReportingService';
 interface GetRSVPResponse {
   /** RSVP data for the current user, null if no RSVP exists */
   getRSVP: RSVP | null;
+}
+
+/**
+ * GraphQL query response interface for fetching fresh user data
+ */
+interface GetMeResponse {
+  /** Current authenticated user from the database, null if not authenticated */
+  me: User | null;
 }
 
 /**
@@ -127,6 +136,12 @@ export const useRSVP = () => {
     refetch,
   } = useQuery<GetRSVPResponse>(GET_RSVP);
 
+  // Fetch fresh user data from DB to pick up household members added after login
+  const { data: meData, loading: meLoading } = useQuery<GetMeResponse>(GET_ME, {
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
+  });
+
   const [executeCreateRSVP, { loading: createLoading, error: createError }] =
     useMutation<CreateRSVPResponse, { input: CreateRSVPInput }>(CREATE_RSVP);
 
@@ -229,8 +244,10 @@ export const useRSVP = () => {
   return {
     /** Current user's RSVP data or null if no RSVP exists */
     rsvp: data?.getRSVP ?? null,
-    /** Consolidated loading state for all RSVP operations (query + mutations) */
-    loading: queryLoading || createLoading || editLoading,
+    /** Fresh user data from DB (includes household members added after login) */
+    freshUser: meData?.me ?? null,
+    /** Consolidated loading state for all RSVP operations (query + mutations + me) */
+    loading: queryLoading || meLoading || createLoading || editLoading,
     /** True only while the initial GET_RSVP query is in-flight */
     queryLoading,
     /** True only while a create or edit mutation is in-flight */

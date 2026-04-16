@@ -244,8 +244,9 @@ rsvpSchema.virtual("totalGuestCount").get(function () {
 // Pre-save middleware for data validation and consistency
 rsvpSchema.pre("save", function (next) {
   // Ensure guest count is consistent with guests array
+  // guestCount = additional guests beyond the primary (guests[0])
   if (this.guests && this.guests.length > 0) {
-    this.guestCount = Math.max(this.guestCount || 0, this.guests.length - 1);
+    this.guestCount = this.guests.length - 1;
   }
 
   // If not attending, clear guest-related fields

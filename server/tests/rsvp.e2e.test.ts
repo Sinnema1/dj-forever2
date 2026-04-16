@@ -166,7 +166,8 @@ describe("RSVP End-to-End", () => {
 
       expect(rsvpRes.body.data.createRSVP).not.toBeNull();
       expect(rsvpRes.body.data.createRSVP.attending).toBe("YES");
-      expect(rsvpRes.body.data.createRSVP.guestCount).toBe(1);
+      // guestCount = additional guests beyond primary (guests.length - 1)
+      expect(rsvpRes.body.data.createRSVP.guestCount).toBe(0);
       expect(rsvpRes.body.data.createRSVP.guests).toHaveLength(1);
       expect(rsvpRes.body.data.createRSVP.guests[0].fullName).toBe("Test User");
       expect(rsvpRes.body.data.createRSVP.guests[0].mealPreference).toBe(

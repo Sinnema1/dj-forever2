@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import RSVPForm from '../src/components/RSVP/RSVPForm';
 import { AuthProvider } from '../src/context/AuthContext';
 import { MockedProvider } from '@apollo/client/testing';
-import { GET_RSVP } from '../src/features/rsvp/graphql/queries';
+import { GET_RSVP, GET_ME } from '../src/features/rsvp/graphql/queries';
 import { CREATE_RSVP } from '../src/features/rsvp/graphql/mutations';
 
 // Mock feature flags - enable meal preferences for these tests
@@ -38,6 +38,26 @@ vi.mock('../src/config/features', async () => {
 const createInitialRSVPMock = () => ({
   request: { query: GET_RSVP },
   result: { data: { getRSVP: null } },
+});
+
+// Helper to create GET_ME mock (fresh user data from server)
+// useRSVP fetches this with network-only to pick up admin changes (e.g. household members)
+const createMeMock = () => ({
+  request: { query: GET_ME },
+  result: {
+    data: {
+      me: {
+        _id: '1',
+        fullName: 'Test User',
+        email: 'test@example.com',
+        isInvited: true,
+        plusOneAllowed: false,
+        plusOneName: null,
+        dietaryRestrictions: null,
+        householdMembers: [],
+      },
+    },
+  },
 });
 
 // Mock for attending RSVP
@@ -193,6 +213,9 @@ function renderRSVPForm(
     createInitialRSVPMock(),
     createAttendingRSVPMock,
     getRSVPMockAfterCreate,
+    // GET_ME mock: useRSVP fetches fresh user data with network-only to pick up
+    // household members added after login
+    createMeMock(),
   ]
 ) {
   return render(

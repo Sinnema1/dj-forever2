@@ -54,8 +54,10 @@ import { features } from '../../config/features';
  * - `Guest` - Individual guest data structure
  */
 export default function RSVPForm() {
-  const { createRSVP, editRSVP, rsvp, loading, mutationLoading } = useRSVP();
-  const { user } = useAuth();
+  const { createRSVP, editRSVP, rsvp, loading, mutationLoading, freshUser } = useRSVP();
+  const { user: cachedUser } = useAuth();
+  // Use fresh user data for household members (falls back to cached)
+  const user = freshUser ?? cachedUser;
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [submittedData, setSubmittedData] = useState<RSVPFormData | null>(null);
 
@@ -112,40 +114,59 @@ export default function RSVPForm() {
 
   const [formData, setFormData] = useState<RSVPFormData>(() => {
     // Initialize with proper guest structure, handling legacy data
-    const initialGuests =
-      rsvp?.guests?.map(guest => ({
+    let initialGuests: Guest[];
+
+    if (rsvp?.guests && rsvp.guests.length > 0) {
+      // Start with existing RSVP guests
+      initialGuests = rsvp.guests.map(guest => ({
         fullName: guest.fullName || '',
         mealPreference: normalizeMealPreference(guest.mealPreference || ''),
         allergies: guest.allergies || '',
-      })) ||
-      (() => {
-        // If no existing RSVP, pre-populate with household members
-        const guests: Guest[] = [
-          {
-            fullName: user?.fullName || '',
-            mealPreference: '',
-            allergies: user?.dietaryRestrictions || '',
-          },
-        ];
+      }));
 
-        // Add household members if they exist
-        if (user?.householdMembers && user.householdMembers.length > 0) {
-          user.householdMembers.forEach(member => {
-            guests.push({
-              fullName: [member.firstName, member.lastName]
-                .filter(Boolean)
-                .join(' '),
+      // Merge in household members added after the RSVP was created
+      if (user?.householdMembers && user.householdMembers.length > 0) {
+        const existingNames = new Set(
+          initialGuests.map(g => g.fullName.toLowerCase().trim()),
+        );
+        user.householdMembers.forEach(member => {
+          const memberName = [member.firstName, member.lastName]
+            .filter(Boolean)
+            .join(' ');
+          if (memberName && !existingNames.has(memberName.toLowerCase().trim())) {
+            initialGuests.push({
+              fullName: memberName,
               mealPreference: '',
               allergies: '',
             });
-          });
-        }
+          }
+        });
+      }
+    } else {
+      // No existing RSVP — pre-populate with primary guest + household members
+      initialGuests = [
+        {
+          fullName: user?.fullName || '',
+          mealPreference: '',
+          allergies: user?.dietaryRestrictions || '',
+        },
+      ];
 
-        return guests;
-      })();
+      if (user?.householdMembers && user.householdMembers.length > 0) {
+        user.householdMembers.forEach(member => {
+          initialGuests.push({
+            fullName: [member.firstName, member.lastName]
+              .filter(Boolean)
+              .join(' '),
+            mealPreference: '',
+            allergies: '',
+          });
+        });
+      }
+    }
 
     // Pre-populate guest count based on household size or plusOneAllowed
-    let initialGuestCount = rsvp?.guestCount || initialGuests.length;
+    let initialGuestCount = initialGuests.length;
     if (
       !rsvp &&
       user?.plusOneAllowed &&
@@ -185,26 +206,47 @@ export default function RSVPForm() {
   useEffect(() => {
     if (rsvp) {
       setFormData(prev => {
+        let guests = rsvp.guests?.map(guest => ({
+          fullName: guest.fullName || '',
+          mealPreference: normalizeMealPreference(guest.mealPreference || ''),
+          allergies: guest.allergies || '',
+        })) || [
+          {
+            fullName: rsvp.fullName || '',
+            mealPreference: normalizeMealPreference(
+              rsvp.mealPreference || ''
+            ),
+            allergies: rsvp.allergies || '',
+          },
+        ];
+
+        // Merge household members not already in RSVP guest list
+        if (user?.householdMembers && user.householdMembers.length > 0) {
+          const existingNames = new Set(
+            guests.map(g => g.fullName.toLowerCase().trim()),
+          );
+          user.householdMembers.forEach(member => {
+            const memberName = [member.firstName, member.lastName]
+              .filter(Boolean)
+              .join(' ');
+            if (memberName && !existingNames.has(memberName.toLowerCase().trim())) {
+              guests.push({
+                fullName: memberName,
+                mealPreference: '',
+                allergies: '',
+              });
+            }
+          });
+        }
+
         const newData = {
           fullName: rsvp.fullName || '',
           attending: rsvp.attending || 'NO',
           mealPreference: normalizeMealPreference(rsvp.mealPreference || ''),
           allergies: rsvp.allergies || '',
           additionalNotes: rsvp.additionalNotes || '',
-          guestCount: rsvp.guestCount || 1,
-          guests: rsvp.guests?.map(guest => ({
-            fullName: guest.fullName || '',
-            mealPreference: normalizeMealPreference(guest.mealPreference || ''),
-            allergies: guest.allergies || '',
-          })) || [
-            {
-              fullName: rsvp.fullName || '',
-              mealPreference: normalizeMealPreference(
-                rsvp.mealPreference || ''
-              ),
-              allergies: rsvp.allergies || '',
-            },
-          ],
+          guestCount: guests.length,
+          guests,
         };
         const isDifferent = Object.keys(newData).some(
           key => (prev as any)[key] !== (newData as any)[key]
@@ -212,7 +254,7 @@ export default function RSVPForm() {
         return isDifferent ? newData : prev;
       });
     }
-  }, [rsvp]); // Only depend on rsvp data, not successMessage
+  }, [rsvp, user]); // Re-run when fresh user data arrives with new household members
 
   // Available meal options — grouped by adult entrees, kids menu, and dietary accommodation
   const mealOptions = {

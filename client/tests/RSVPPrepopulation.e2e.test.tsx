@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import RSVPForm from '../src/components/RSVP/RSVPForm';
-import { GET_RSVP } from '../src/features/rsvp/graphql/queries';
+import { GET_RSVP, GET_ME } from '../src/features/rsvp/graphql/queries';
 import type { User } from '../src/models/userTypes';
 import type { AuthContextType } from '../src/models/userTypes';
 
@@ -39,6 +39,26 @@ const noRSVPMock = {
   result: { data: { getRSVP: null } },
 };
 
+// Mock for GET_ME query — useRSVP fetches this with network-only to pick up
+// household members added after login. Returns null to defer to the mocked useAuth user.
+const noMeMock = {
+  request: { query: GET_ME },
+  result: {
+    data: {
+      me: {
+        _id: '1',
+        fullName: 'Test User',
+        email: 'test@example.com',
+        isInvited: true,
+        plusOneAllowed: false,
+        plusOneName: null,
+        dietaryRestrictions: null,
+        householdMembers: [],
+      },
+    },
+  },
+};
+
 beforeEach(() => {
   mockUser = null;
   mockIsLoggedIn = false;
@@ -57,7 +77,7 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock]} addTypename={false}>
+      <MockedProvider mocks={[noRSVPMock, noRSVPMock, noMeMock]} addTypename={false}>
         <RSVPForm />
       </MockedProvider>
     );
@@ -84,7 +104,7 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock]} addTypename={false}>
+      <MockedProvider mocks={[noRSVPMock, noRSVPMock, noMeMock]} addTypename={false}>
         <RSVPForm />
       </MockedProvider>
     );
@@ -109,7 +129,7 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock]} addTypename={false}>
+      <MockedProvider mocks={[noRSVPMock, noRSVPMock, noMeMock]} addTypename={false}>
         <RSVPForm />
       </MockedProvider>
     );
@@ -162,7 +182,7 @@ describe('Phase 3: RSVP Pre-population', () => {
 
     render(
       <MockedProvider
-        mocks={[existingRSVPMock, existingRSVPMock]}
+        mocks={[existingRSVPMock, existingRSVPMock, noMeMock]}
         addTypename={false}
       >
         <RSVPForm />
@@ -209,7 +229,7 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock]} addTypename={false}>
+      <MockedProvider mocks={[noRSVPMock, noRSVPMock, noMeMock]} addTypename={false}>
         <RSVPForm />
       </MockedProvider>
     );
