@@ -204,6 +204,86 @@ describe('Phase 3: RSVP Pre-population', () => {
     // Only when no RSVP exists (rsvp is null) will user?.dietaryRestrictions be used
   });
 
+  it('should merge household members from GET_ME into existing RSVP guest list', async () => {
+    // Simulates the core bug fix: user submitted RSVP before admin added household members.
+    // On next RSVP page load, GET_ME (network-only) returns the updated user with household
+    // members; the hydration effect should merge them into the existing RSVP guest rows.
+    mockUser = {
+      _id: 'user-6',
+      fullName: 'Lisa Chen',
+      email: 'lisa@test.com',
+      isInvited: true,
+      plusOneAllowed: false,
+      // useAuth cache has no household members (stale login-time data)
+    };
+    mockIsLoggedIn = true;
+
+    // Existing RSVP submitted before household member was added — only primary guest
+    const existingRsvpPreMerge = {
+      request: { query: GET_RSVP },
+      result: {
+        data: {
+          getRSVP: {
+            _id: 'rsvp-merge',
+            userId: 'user-6',
+            attending: 'YES',
+            guestCount: 0,
+            guests: [{ fullName: 'Lisa Chen', mealPreference: '', allergies: '' }],
+            additionalNotes: '',
+            fullName: 'Lisa Chen',
+            mealPreference: '',
+            allergies: '',
+          },
+        },
+      },
+    };
+
+    // GET_ME returns fresh user with a household member added after login by admin
+    const getMeWithMembers = {
+      request: { query: GET_ME },
+      result: {
+        data: {
+          me: {
+            _id: 'user-6',
+            fullName: 'Lisa Chen',
+            email: 'lisa@test.com',
+            isInvited: true,
+            plusOneAllowed: false,
+            plusOneName: null,
+            dietaryRestrictions: null,
+            householdMembers: [
+              {
+                firstName: 'Wei',
+                lastName: 'Chen',
+                relationshipToBride: 'husband',
+                relationshipToGroom: 'brother',
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    render(
+      <MockedProvider
+        mocks={[existingRsvpPreMerge, existingRsvpPreMerge, getMeWithMembers]}
+        addTypename={false}
+      >
+        <RSVPForm />
+      </MockedProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /your response/i })).toBeInTheDocument();
+    });
+
+    // Both the original RSVP guest and the newly added household member should appear
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('Lisa Chen')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('Wei Chen')).toBeInTheDocument();
+    });
+  });
+
   it('should pre-populate guests with household members when no RSVP exists', async () => {
     mockUser = {
       _id: 'user-5',

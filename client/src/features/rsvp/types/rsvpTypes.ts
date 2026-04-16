@@ -42,6 +42,19 @@ export interface Guest {
 }
 
 /**
+ * Form row representation of a guest during RSVP editing.
+ *
+ * Extends Guest with a UI-only `attending` toggle used to drive per-person
+ * attendance selection. The `attending` flag is NEVER serialized into the API
+ * payload — only guests where attending=true are included in the submitted
+ * guests array.
+ */
+export interface GuestFormRow extends Guest {
+  /** Whether this household member is included in the current RSVP response. UI-only. */
+  attending: boolean;
+}
+
+/**
  * Complete RSVP record as stored in the database
  *
  * Represents a full RSVP response with both modern multi-guest fields and

@@ -241,7 +241,31 @@ describe("Admin Stats Headcount E2E", () => {
 
     // 2 RSVP records with YES
     expect(stats.totalAttending).toBe(2);
-    // (1+1) + (1+3) = 6 people
+    // guests.length: 2 + 4 = 6 people
     expect(stats.totalAttendingGuests).toBe(6);
+  });
+
+  it("uses guests array length, not guestCount, when guests array is populated", async () => {
+    // Simulates a document with stale guestCount (inflated by the old Math.max pre-save bug).
+    // guests.length=4 is the truth; guestCount=6 is stale — headcount must be 4, not 7.
+    const user = await createInvitedUser();
+    await RSVP.create({
+      userId: user._id,
+      attending: "YES",
+      guestCount: 6, // stale/inflated value — should be ignored when guests array is present
+      guests: [
+        { fullName: "Primary Guest" },
+        { fullName: "Guest A" },
+        { fullName: "Guest B" },
+        { fullName: "Guest C" },
+      ],
+    });
+    await User.findByIdAndUpdate(user._id, { hasRSVPed: true });
+
+    const stats = await fetchStats();
+
+    expect(stats.totalAttending).toBe(1);
+    // guests.length=4, not 1+6=7
+    expect(stats.totalAttendingGuests).toBe(4);
   });
 });

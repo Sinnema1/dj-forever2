@@ -117,8 +117,12 @@ export async function getWeddingStats(): Promise<AdminStats> {
       switch (rsvp.attending) {
         case "YES":
           totalAttending++;
-          // Headcount: primary guest + additional guests
-          totalAttendingGuests += 1 + (rsvp.guestCount || 0);
+          // Use guests.length when populated (authoritative); fall back to
+          // 1 + guestCount for legacy records that predate the guests array.
+          totalAttendingGuests +=
+            rsvp.guests && rsvp.guests.length > 0
+              ? rsvp.guests.length
+              : 1 + (rsvp.guestCount || 0);
           break;
         case "NO":
           totalNotAttending++;
