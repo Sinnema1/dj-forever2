@@ -330,6 +330,93 @@ describe('Phase 3: RSVP Pre-population', () => {
     });
   });
 
+  it('should re-show primary account holder after they were removed from rsvp.guests', async () => {
+    // Regression test: if the primary user unchecks themselves and submits, they are
+    // removed from rsvp.guests. On the next form load, buildGuestRows must re-insert them
+    // as attending:false so they can be re-selected. Without the fix they disappear forever.
+    mockUser = {
+      _id: 'user-primary-bug',
+      fullName: 'Jane Smith',
+      email: 'jane@test.com',
+      isInvited: true,
+      plusOneAllowed: false,
+      householdMembers: [
+        {
+          firstName: 'Wei',
+          lastName: 'Chen',
+          relationshipToBride: 'husband',
+          relationshipToGroom: 'brother',
+        },
+      ],
+    };
+    mockIsLoggedIn = true;
+
+    // RSVP after primary unchecked themselves — only household member remains
+    const rsvpPrimaryRemoved = {
+      request: { query: GET_RSVP },
+      result: {
+        data: {
+          getRSVP: {
+            _id: 'rsvp-primary-removed',
+            userId: 'user-primary-bug',
+            attending: 'YES',
+            guestCount: 0,
+            guests: [{ fullName: 'Wei Chen', mealPreference: '', allergies: '' }],
+            additionalNotes: '',
+            fullName: 'Wei Chen',
+            mealPreference: '',
+            allergies: '',
+          },
+        },
+      },
+    };
+
+    const getMeWithMember = {
+      request: { query: GET_ME },
+      result: {
+        data: {
+          me: {
+            _id: 'user-primary-bug',
+            fullName: 'Jane Smith',
+            email: 'jane@test.com',
+            isInvited: true,
+            plusOneAllowed: false,
+            plusOneName: null,
+            dietaryRestrictions: null,
+            householdMembers: [
+              {
+                firstName: 'Wei',
+                lastName: 'Chen',
+                relationshipToBride: 'husband',
+                relationshipToGroom: 'brother',
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    render(
+      <MockedProvider
+        mocks={[rsvpPrimaryRemoved, rsvpPrimaryRemoved, getMeWithMember]}
+        addTypename={false}
+      >
+        <RSVPForm />
+      </MockedProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /your response/i })).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      // Primary user must reappear even though they aren't in rsvp.guests
+      expect(screen.getByDisplayValue('Jane Smith')).toBeInTheDocument();
+      // Household member still present (attending:true from RSVP)
+      expect(screen.getByDisplayValue('Wei Chen')).toBeInTheDocument();
+    });
+  });
+
   it('should pre-populate guests with household members when no RSVP exists', async () => {
     mockUser = {
       _id: 'user-5',
