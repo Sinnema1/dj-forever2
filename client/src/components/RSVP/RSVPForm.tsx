@@ -22,7 +22,9 @@ function isValidGuestName(name: string): boolean {
 
 // Module-level helper — safe to call before component mounts
 function normalizeMealPreference(value: string): string {
-  if (!value) return '';
+  if (!value) {
+    return '';
+  }
   const normalized = value.toLowerCase().trim();
   const validValues = [
     'brisket',
@@ -76,13 +78,14 @@ function buildGuestRows(
       ];
       user?.householdMembers?.forEach(m => {
         const name = [m.firstName, m.lastName].filter(Boolean).join(' ');
-        if (isValidGuestName(name))
+        if (isValidGuestName(name)) {
           rows.push({
             fullName: name,
             mealPreference: '',
             allergies: '',
             attending: false,
           });
+        }
       });
       return rows;
     }
@@ -155,13 +158,14 @@ function buildGuestRows(
 
   user?.householdMembers?.forEach(m => {
     const name = [m.firstName, m.lastName].filter(Boolean).join(' ');
-    if (isValidGuestName(name))
+    if (isValidGuestName(name)) {
       rows.push({
         fullName: name,
         mealPreference: '',
         allergies: '',
         attending: true,
       });
+    }
   });
 
   // Plus-one slot (only when not already covered by a named household member)
@@ -286,12 +290,13 @@ export default function RSVPForm() {
     switch (name) {
       case 'fullName': {
         if (guestIndex !== undefined) {
-          if (!value.trim())
+          if (!value.trim()) {
             errors[`guest-${guestIndex}-fullName`] =
               "Please enter guest's full name";
-          else if (value.trim().length < 2)
+          } else if (value.trim().length < 2) {
             errors[`guest-${guestIndex}-fullName`] =
               'Name must be at least 2 characters';
+          }
         }
         break;
       }
@@ -702,8 +707,9 @@ export default function RSVPForm() {
                     value={guest.fullName}
                     onChange={e => {
                       updateGuest(index, 'fullName', e.target.value);
-                      if (guest.attending)
+                      if (guest.attending) {
                         validateField('fullName', e.target.value, index);
+                      }
                     }}
                     placeholder="Enter full name"
                     required={guest.attending}
