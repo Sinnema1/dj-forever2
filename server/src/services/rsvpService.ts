@@ -130,17 +130,17 @@ export interface UpdateRSVPInput {
  * Ensures guests cannot exceed their allocated party size based on household
  * composition and plus-one permissions.
  *
- * @param {number} guestCount - Number of guests in the party
+ * @param {number} totalGuestCount - Total number of guests including the primary guest
  * @param {IUser} user - User record with household members and plus-one status
  * @throws {ValidationError} If party size exceeds maximum allowed guests
  */
-function validatePartySize(guestCount: number, user: IUser): void {
+function validatePartySize(totalGuestCount: number, user: IUser): void {
   const namedGuestCount = 1 + (user.householdMembers?.length || 0);
   const maxAllowed = namedGuestCount + (user.plusOneAllowed ? 1 : 0);
 
-  if (guestCount > maxAllowed) {
+  if (totalGuestCount > maxAllowed) {
     throw new ValidationError(
-      `Party size ${guestCount} exceeds maximum allowed ${maxAllowed} guests. ` +
+      `Party size ${totalGuestCount} exceeds maximum allowed ${maxAllowed} guests. ` +
         `(${namedGuestCount} household member${namedGuestCount > 1 ? "s" : ""}${
           user.plusOneAllowed ? " + 1 plus-one" : ""
         })`,
@@ -251,23 +251,10 @@ export async function createRSVP(input: CreateRSVPInput): Promise<any> {
     // Validate attendance
     const validatedAttending = validateAttendance(attending);
 
-    // Validate guest count
-    const validatedGuestCount = guestCount ? validateGuestCount(guestCount) : 1;
-
-    // Validate party size against household limits
-    validatePartySize(validatedGuestCount, user);
-
-    // Validate guests array
+    // Validate guests array first — guestCount is derived from it, not the other way around.
     let validatedGuests: IGuest[] = [];
     if (guests && guests.length > 0) {
       validatedGuests = validateGuests(guests, validatedAttending);
-
-      // Ensure guest count matches guests array
-      if (validatedGuests.length !== validatedGuestCount) {
-        throw new ValidationError(
-          "Guest count must match the number of guests provided",
-        );
-      }
     } else if (validatedAttending === "YES") {
       // Create default guest from legacy fields
       if (!fullName) {
@@ -292,6 +279,19 @@ export async function createRSVP(input: CreateRSVPInput): Promise<any> {
       validatedGuests = [defaultGuest];
     }
 
+    // Validate party size against household limits using TOTAL guest count.
+    // guestCount on the document means "additional guests beyond the primary"
+    // (= guests.length - 1), but party size is validated against the full total.
+    const totalAttending = validatedGuests.length || 1;
+    validatePartySize(totalAttending, user);
+
+    // Optionally validate the caller-supplied guestCount for range (0-10), but
+    // always normalise from the guests array so the document stays consistent.
+    if (guestCount !== undefined) {
+      validateGuestCount(guestCount); // throws if out of range
+    }
+    const validatedGuestCount = Math.max(0, validatedGuests.length - 1);
+
     // Validate optional fields
     const sanitizedNotes = additionalNotes
       ? sanitizeText(additionalNotes, 500)
@@ -310,7 +310,7 @@ export async function createRSVP(input: CreateRSVPInput): Promise<any> {
       // Legacy fields for backward compatibility
       fullName: validatedGuests[0]?.fullName || fullName,
       mealPreference: validatedGuests[0]?.mealPreference || mealPreference,
-      allergies: sanitizedAllergies,
+      allergies: validatedGuests[0]?.allergies || sanitizedAllergies,
     })) as Document<unknown, {}, IRSVP> & IRSVP;
 
     // Update user's hasRSVPed status
@@ -352,16 +352,22 @@ export async function updateRSVP(
       validatedUpdates.attending = validateAttendance(updates.attending);
     }
 
-    if (updates.guestCount !== undefined) {
-      validatedUpdates.guestCount = validateGuestCount(updates.guestCount);
-
-      // Validate party size against household limits
-      validatePartySize(validatedUpdates.guestCount, user);
-    }
-
     if (updates.guests !== undefined) {
-      const attending = updates.attending || "YES"; // Assume attending if guests provided
+      // Validate the guests array first — guestCount is derived from it.
+      const attending =
+        validatedUpdates.attending || updates.attending || "YES";
       validatedUpdates.guests = validateGuests(updates.guests, attending);
+
+      // Always normalise guestCount from the guests array so the document stays
+      // consistent regardless of what the caller sent. findOneAndUpdate bypasses
+      // the pre-save hook, so we must do it here.
+      validatedUpdates.guestCount = Math.max(
+        0,
+        validatedUpdates.guests.length - 1,
+      );
+
+      // Validate total party size (guests.length = total including primary)
+      validatePartySize(validatedUpdates.guests.length, user);
 
       // Update legacy fields from first guest
       if (validatedUpdates.guests.length > 0) {
@@ -370,6 +376,11 @@ export async function updateRSVP(
           validatedUpdates.guests[0].mealPreference;
         validatedUpdates.allergies = validatedUpdates.guests[0].allergies;
       }
+    } else if (updates.guestCount !== undefined) {
+      // guestCount-only update (no guests array): validate range and party size.
+      // guestCount = additional guests, so total = guestCount + 1.
+      validatedUpdates.guestCount = validateGuestCount(updates.guestCount);
+      validatePartySize(validatedUpdates.guestCount + 1, user);
     }
 
     if (updates.additionalNotes !== undefined) {
@@ -450,7 +461,7 @@ export async function submitRSVP({
     fullName,
     attending,
     mealPreference,
-    guestCount: 1,
+    guestCount: 0,
     guests: [guest],
   };
 
