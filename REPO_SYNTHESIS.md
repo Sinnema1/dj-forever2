@@ -99,7 +99,8 @@ All models in `server/src/models/`.
 
 **User** (`User.ts`) -- Primary guest record
 
-*Persisted fields:*
+_Persisted fields:_
+
 - Authentication: `qrToken` (required, unique), `qrAlias` (unique, sparse), `qrAliasLocked`
 - Identity: `fullName`, `email` (unique), `isAdmin`, `isInvited`
 - RSVP state: `hasRSVPed` (boolean), `rsvpId` (ObjectId ref)
@@ -107,24 +108,29 @@ All models in `server/src/models/`.
 - Personalization: `relationshipToBride`, `relationshipToGroom`, `customWelcomeMessage`, `guestGroup` (enum), `plusOneAllowed`, `plusOneName`, `personalPhoto`, `specialInstructions`, `dietaryRestrictions`
 - Address: `streetAddress`, `addressLine2`, `city`, `state`, `zipCode`, `country`
 
-*Derived / virtual fields:*
+_Derived / virtual fields:_
+
 - `status` ("not-invited" | "invited" | "rsvped") -- computed from `isInvited` and `hasRSVPed`
 - `rsvp` -- virtual populate from RSVP collection via `localField: _id`, `foreignField: userId`
 
-*Indexes:*
+_Indexes:_
+
 - `{ isInvited: 1, hasRSVPed: 1 }` (compound)
 - `{ email: 1, qrToken: 1 }` (compound)
 - `qrToken` (unique), `qrAlias` (unique, sparse), `email` (unique)
 
-*Static methods:*
+_Static methods:_
+
 - `findByEmail()`, `findByQRToken()`, `findByQRAlias()`, `findByQRTokenOrAlias()`, `findInvitedUsers()`, `findRSVPedUsers()`
 
-*Cross-model invariant:*
+_Cross-model invariant:_
+
 - `hasRSVPed` must stay in sync with RSVP document existence (set on create, reset on admin delete)
 
 **RSVP** (`RSVP.ts`) -- Attendance record (one per user, enforced by unique index on `userId`)
 
-*Persisted fields:*
+_Persisted fields:_
+
 - `userId` (ref User, unique), `attending` (enum: "YES", "NO", "MAYBE")
 - `guestCount` (0-10) -- **additional** guests beyond the primary; always equals `guests.length - 1`.
   Read `guests.length` for total headcount. The stored field exists for legacy compatibility only
@@ -134,18 +140,22 @@ All models in `server/src/models/`.
 - Meal preference enum: `brisket`, `tritip`, `kids_chicken`, `kids_mac`, `dietary`, `""`
 - `additionalNotes` (max 500 chars)
 
-*Derived / virtual fields:*
+_Derived / virtual fields:_
+
 - `totalGuestCount` -- dead code; never called. Scheduled for removal in `docs/POST_WEDDING_REFACTOR.md`.
 
-*Indexes:*
+_Indexes:_
+
 - `{ userId: 1 }` (unique -- enforces one RSVP per user)
 - `{ attending: 1, createdAt: -1 }` (compound)
 - `{ userId: 1, attending: 1 }` (compound)
 
-*Static methods:*
+_Static methods:_
+
 - `findByUserId()`, `findAttending()`, `findNotAttending()`, `findMaybe()`, `getAttendanceStats()`
 
-*Lifecycle hooks:*
+_Lifecycle hooks:_
+
 - Pre-save: clears `guests[]` and resets `guestCount` to 0 when `attending === 'NO'`; normalizes
   `guestCount = guests.length - 1` when guests array is non-empty.
 - **Note**: Pre-save does NOT run on `findOneAndUpdate`. The service layer (`rsvpService.ts`)
@@ -153,39 +163,44 @@ All models in `server/src/models/`.
 
 **GuestbookMessage** (`GuestbookMessage.ts`) -- Two-stage moderation
 
-*Persisted fields:*
+_Persisted fields:_
+
 - `userId`, `authorName`, `message` (1-1000 chars), `isApproved` (default false), `isVisible` (default true)
 
-*Indexes:*
+_Indexes:_
+
 - `{ isApproved: 1, isVisible: 1, createdAt: -1 }` (compound -- covers public message query)
 
-*Static methods:*
+_Static methods:_
+
 - `findApproved()`, `findPending()`, `findByUser()`, `getMessageStats()`
 
 **EmailJob** (`EmailJob.ts`) -- Persistent email retry queue
 
-*Persisted fields:*
+_Persisted fields:_
+
 - `userId`, `template`, `status` (pending | retrying | sent | failed), `attempts`, `lastError`, `sentAt`
 
-*Indexes:*
+_Indexes:_
+
 - `{ status: 1, createdAt: 1 }` (compound -- supports queue processing)
 
 ### 2.5 Key Invariants
 
 These rules are enforced across the codebase and must not be violated:
 
-| Invariant                                                                                               | Enforcement Location                                                        |
-| ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| **Party size formula**: `maxAllowed = 1 + (householdMembers?.length \|\| 0) + (plusOneAllowed ? 1 : 0)` | `server/src/services/rsvpService.ts` (`validatePartySize`, called with total guest count) |
-| **guestCount convention**: `guestCount = guests.length - 1` (additional guests, not total)             | `server/src/models/RSVP.ts` (pre-save hook), `server/src/services/rsvpService.ts` (createRSVP, updateRSVP) |
-| **Primary guest always present**: `user.fullName` always appears in form rows even if removed from `rsvp.guests` | `client/src/components/RSVP/RSVPForm.tsx` (`buildGuestRows`) |
-| **Name validation on all admin write paths**: `validateName` called for fullName and householdMembers   | `server/src/services/adminService.ts`, `server/src/graphql/resolvers.ts`    |
-| **One RSVP per user**: unique index on `RSVP.userId`                                                    | `server/src/models/RSVP.ts`                                                 |
-| **User.hasRSVPed sync**: set true on RSVP creation, reset on admin delete                               | `server/src/services/rsvpService.ts`, `server/src/services/adminService.ts` |
-| **Email whitelist guard**: no email to real guests unless `ENABLE_PRODUCTION_EMAILS=true`               | `server/src/services/emailService.ts`                                       |
-| **Database name via option**: `mongoose.connect(uri, { dbName })`, never URI-appended                   | `server/src/config/index.ts`, `.claude/rules/server.md`                     |
-| **Legacy RSVP compatibility**: both multi-guest and single-guest formats must be supported              | `server/src/graphql/resolvers.ts`, `server/src/models/RSVP.ts`              |
-| **Bundle size gate**: CI currently enforces a 500KB client bundle budget                                | `scripts/check-bundle-size.cjs`, `.github/workflows/ci.yml`                 |
+| Invariant                                                                                                        | Enforcement Location                                                                                       |
+| ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Party size formula**: `maxAllowed = 1 + (householdMembers?.length \|\| 0) + (plusOneAllowed ? 1 : 0)`          | `server/src/services/rsvpService.ts` (`validatePartySize`, called with total guest count)                  |
+| **guestCount convention**: `guestCount = guests.length - 1` (additional guests, not total)                       | `server/src/models/RSVP.ts` (pre-save hook), `server/src/services/rsvpService.ts` (createRSVP, updateRSVP) |
+| **Primary guest always present**: `user.fullName` always appears in form rows even if removed from `rsvp.guests` | `client/src/components/RSVP/RSVPForm.tsx` (`buildGuestRows`)                                               |
+| **Name validation on all admin write paths**: `validateName` called for fullName and householdMembers            | `server/src/services/adminService.ts`, `server/src/graphql/resolvers.ts`                                   |
+| **One RSVP per user**: unique index on `RSVP.userId`                                                             | `server/src/models/RSVP.ts`                                                                                |
+| **User.hasRSVPed sync**: set true on RSVP creation, reset on admin delete                                        | `server/src/services/rsvpService.ts`, `server/src/services/adminService.ts`                                |
+| **Email whitelist guard**: no email to real guests unless `ENABLE_PRODUCTION_EMAILS=true`                        | `server/src/services/emailService.ts`                                                                      |
+| **Database name via option**: `mongoose.connect(uri, { dbName })`, never URI-appended                            | `server/src/config/index.ts`, `.claude/rules/server.md`                                                    |
+| **Legacy RSVP compatibility**: both multi-guest and single-guest formats must be supported                       | `server/src/graphql/resolvers.ts`, `server/src/models/RSVP.ts`                                             |
+| **Bundle size gate**: CI currently enforces a 500KB client bundle budget                                         | `scripts/check-bundle-size.cjs`, `.github/workflows/ci.yml`                                                |
 
 ### 2.6 GraphQL API Surface
 
@@ -329,6 +344,8 @@ Pipeline order:
 **State management**: AuthContext (token lifecycle, cross-tab sync via StorageEvent) + Apollo Client (InMemoryCache, error link -> auth link -> HTTP link) + ToastContext (notifications via custom events).
 
 **RSVP form model**: `RSVPForm.tsx` uses a per-person attendance model. Each household member is a `GuestFormRow` (extends `Guest` with a UI-only `attending: boolean`). The `buildGuestRows()` module-level helper builds the initial row state from an existing RSVP and the current user. The `attending` flag is stripped before API submission — only checked rows are included in `guests[]`.
+
+**RSVP form lint invariant**: `RSVPForm.tsx` must keep braces around all `if` branches, including single-line conditionals. The client lint pipeline enforces ESLint `curly`, so brace-less conditionals are CI-blocking.
 
 **Household member freshness**: `useRSVP` fires a `GET_ME` query with `fetchPolicy: 'network-only'` to pick up household members added by the admin after the user logged in. The hook exposes `freshUser` (network result) which takes precedence over the login-time cached `user` from `AuthContext`. This bypasses the stale `householdMembers` stored in `localStorage` at login time.
 

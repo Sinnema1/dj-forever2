@@ -120,6 +120,7 @@ npm run dev  # Starts both server and client with hot reload
 - **`buildGuestRows(rsvp, user)`**: Module-level helper that builds the initial/hydrated form row state. Always ensures `user.fullName` appears at row index 0, even if removed from `rsvp.guests`.
 - **Household member freshness**: `useRSVP` fires `GET_ME` with `fetchPolicy: 'network-only'` to pick up members added after login. The hook exposes `freshUser`; `RSVPForm` uses `freshUser ?? cachedUser`.
 - **Name validation parity**: `isValidGuestName()` in `RSVPForm.tsx` uses the same regex as server `validateName` (`/^[a-zA-Z\s\-']+$/`). Invalid household member names are silently filtered from rows.
+- **Lint invariant in `RSVPForm.tsx`**: Keep braces around all `if` branches (including single-line conditionals). CI enforces ESLint `curly`, and brace-less branches in this file will fail `npm run lint`.
 
 ### Database Patterns
 
