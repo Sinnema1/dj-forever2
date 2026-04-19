@@ -347,12 +347,12 @@ export const resolvers = {
     // Admin mutations
     adminUpdateRSVP: async (
       _: unknown,
-      args: { rsvpId: string; updates: AdminRSVPUpdateInput },
+      args: { userId: string; input: AdminRSVPUpdateInput },
       context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
-        return await adminUpdateRSVP(args.rsvpId, args.updates);
+        return await adminUpdateRSVP(args.userId, args.input);
       } catch (error: any) {
         console.error("Error in adminUpdateRSVP resolver:", error);
         throw new GraphQLError(error?.message || "Failed to update RSVP");
@@ -484,7 +484,10 @@ export const resolvers = {
               try {
                 return {
                   ...m,
-                  firstName: validateName(m.firstName, `Member ${i + 1} first name`),
+                  firstName: validateName(
+                    m.firstName,
+                    `Member ${i + 1} first name`,
+                  ),
                   lastName: m.lastName
                     ? validateName(m.lastName, `Member ${i + 1} last name`)
                     : m.lastName,
