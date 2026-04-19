@@ -334,8 +334,12 @@ export default function RSVPForm() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     validateField(name, value);
-    if (successMessage) setSuccessMessage('');
-    if (errorMessage) setErrorMessage('');
+    if (successMessage) {
+      setSuccessMessage('');
+    }
+    if (errorMessage) {
+      setErrorMessage('');
+    }
   };
 
   // Attendance toggle with AC 13 and AC 14 transitions
@@ -365,8 +369,12 @@ export default function RSVPForm() {
     });
 
     validateField('attending', value);
-    if (successMessage) setSuccessMessage('');
-    if (errorMessage) setErrorMessage('');
+    if (successMessage) {
+      setSuccessMessage('');
+    }
+    if (errorMessage) {
+      setErrorMessage('');
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -386,7 +394,9 @@ export default function RSVPForm() {
     // Validate name + meal for each selected guest
     if (formData.attending !== 'NO') {
       formData.guests.forEach((guest, index) => {
-        if (!guest.attending) return;
+        if (!guest.attending) {
+          return;
+        }
         if (!guest.fullName.trim()) {
           errors[`guest-${index}-fullName`] = "Please enter guest's full name";
         }
