@@ -40,6 +40,23 @@
       "sources": ["client/vite.config.ts"],
       "docs": ["CLAUDE.md", "REPO_SYNTHESIS.md"],
       "reason": "Build config changes affect build documentation"
+    },
+    {
+      "sources": [
+        "client/src/components/RSVP/*.tsx",
+        "client/src/features/rsvp/**/*.ts",
+        "client/src/features/rsvp/**/*.tsx"
+      ],
+      "docs": ["REPO_SYNTHESIS.md", ".github/copilot-instructions.md"],
+      "reason": "RSVP form or hook changes may affect RSVP logic documentation"
+    },
+    {
+      "sources": [
+        "client/src/context/*.tsx",
+        "client/src/api/apolloClient.ts"
+      ],
+      "docs": ["REPO_SYNTHESIS.md", ".github/copilot-instructions.md"],
+      "reason": "Auth context or Apollo config changes affect client architecture documentation"
     }
   ]
 }

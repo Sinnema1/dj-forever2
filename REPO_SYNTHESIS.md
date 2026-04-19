@@ -125,14 +125,17 @@ All models in `server/src/models/`.
 **RSVP** (`RSVP.ts`) -- Attendance record (one per user, enforced by unique index on `userId`)
 
 *Persisted fields:*
-- `userId` (ref User, unique), `attending` (enum: "YES", "NO", "MAYBE"), `guestCount` (0-10)
+- `userId` (ref User, unique), `attending` (enum: "YES", "NO", "MAYBE")
+- `guestCount` (0-10) -- **additional** guests beyond the primary; always equals `guests.length - 1`.
+  Read `guests.length` for total headcount. The stored field exists for legacy compatibility only
+  and is deferred for removal in `docs/POST_WEDDING_REFACTOR.md`.
 - Modern format: `guests[]` array with `{ fullName, mealPreference, allergies }`
-- Legacy format: flat `fullName`, `mealPreference`, `allergies` fields (backward compatibility)
+- Legacy format: flat `fullName`, `mealPreference`, `allergies` fields (backward compatibility; mirrors `guests[0]`)
 - Meal preference enum: `brisket`, `tritip`, `kids_chicken`, `kids_mac`, `dietary`, `""`
 - `additionalNotes` (max 500 chars)
 
 *Derived / virtual fields:*
-- `totalGuestCount` -- 1 + guestCount for YES, 0 for NO
+- `totalGuestCount` -- dead code; never called. Scheduled for removal in `docs/POST_WEDDING_REFACTOR.md`.
 
 *Indexes:*
 - `{ userId: 1 }` (unique -- enforces one RSVP per user)
@@ -143,7 +146,10 @@ All models in `server/src/models/`.
 - `findByUserId()`, `findAttending()`, `findNotAttending()`, `findMaybe()`, `getAttendanceStats()`
 
 *Lifecycle hooks:*
-- Pre-save: clears `guests[]` and resets `guestCount` to 0 when `attending === 'NO'`; syncs `guestCount` with `guests.length`
+- Pre-save: clears `guests[]` and resets `guestCount` to 0 when `attending === 'NO'`; normalizes
+  `guestCount = guests.length - 1` when guests array is non-empty.
+- **Note**: Pre-save does NOT run on `findOneAndUpdate`. The service layer (`rsvpService.ts`)
+  explicitly normalizes `guestCount` on both create and update paths.
 
 **GuestbookMessage** (`GuestbookMessage.ts`) -- Two-stage moderation
 
@@ -170,7 +176,10 @@ These rules are enforced across the codebase and must not be violated:
 
 | Invariant                                                                                               | Enforcement Location                                                        |
 | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| **Party size formula**: `maxAllowed = 1 + (householdMembers?.length \|\| 0) + (plusOneAllowed ? 1 : 0)` | `server/src/services/rsvpService.ts` (both createRSVP and updateRSVP)       |
+| **Party size formula**: `maxAllowed = 1 + (householdMembers?.length \|\| 0) + (plusOneAllowed ? 1 : 0)` | `server/src/services/rsvpService.ts` (`validatePartySize`, called with total guest count) |
+| **guestCount convention**: `guestCount = guests.length - 1` (additional guests, not total)             | `server/src/models/RSVP.ts` (pre-save hook), `server/src/services/rsvpService.ts` (createRSVP, updateRSVP) |
+| **Primary guest always present**: `user.fullName` always appears in form rows even if removed from `rsvp.guests` | `client/src/components/RSVP/RSVPForm.tsx` (`buildGuestRows`) |
+| **Name validation on all admin write paths**: `validateName` called for fullName and householdMembers   | `server/src/services/adminService.ts`, `server/src/graphql/resolvers.ts`    |
 | **One RSVP per user**: unique index on `RSVP.userId`                                                    | `server/src/models/RSVP.ts`                                                 |
 | **User.hasRSVPed sync**: set true on RSVP creation, reset on admin delete                               | `server/src/services/rsvpService.ts`, `server/src/services/adminService.ts` |
 | **Email whitelist guard**: no email to real guests unless `ENABLE_PRODUCTION_EMAILS=true`               | `server/src/services/emailService.ts`                                       |
@@ -319,6 +328,10 @@ Pipeline order:
 
 **State management**: AuthContext (token lifecycle, cross-tab sync via StorageEvent) + Apollo Client (InMemoryCache, error link -> auth link -> HTTP link) + ToastContext (notifications via custom events).
 
+**RSVP form model**: `RSVPForm.tsx` uses a per-person attendance model. Each household member is a `GuestFormRow` (extends `Guest` with a UI-only `attending: boolean`). The `buildGuestRows()` module-level helper builds the initial row state from an existing RSVP and the current user. The `attending` flag is stripped before API submission — only checked rows are included in `guests[]`.
+
+**Household member freshness**: `useRSVP` fires a `GET_ME` query with `fetchPolicy: 'network-only'` to pick up household members added by the admin after the user logged in. The hook exposes `freshUser` (network result) which takes precedence over the login-time cached `user` from `AuthContext`. This bypasses the stale `householdMembers` stored in `localStorage` at login time.
+
 **Styling**: Pure CSS with design tokens as CSS custom properties. No Tailwind or CSS-in-JS. Mobile-first. Design tokens include colors (dusty blue, sage, gold, cream), typography (Playfair Display headings, Lato body, Great Vibes script), 4pt spacing grid.
 
 **Code splitting**: AdminPage and AuthDebug lazy-loaded. Vendor chunks split by package (apollo, react-router, react, react-icons, utils). PWA with auto-update service worker, offline fallback, workbox caching.
@@ -367,6 +380,9 @@ High-value review hotspots (focus first):
 - Email functionality is intentionally narrow in template scope.
 - No realtime subscription layer is currently defined.
 - Admin UX capabilities may lag underlying model/service capabilities.
+- `guestCount` stored field and legacy top-level RSVP fields (`fullName`, `mealPreference`, `allergies`) are intentional tech debt deferred to post-wedding. Full removal plan in `docs/POST_WEDDING_REFACTOR.md`.
+- `server/src/graphql/context.ts` is a dead file (not imported by `server.ts`) with a `decoded.id` bug; deferred for deletion.
+- `adminUpdateRSVP` does not sync legacy top-level RSVP fields when guests change (pre-save hook runs but does not update those fields).
 
 ### 2.18 Review exclusions
 
@@ -390,11 +406,12 @@ Out of scope for code-only review unless external evidence is supplied:
 
 **RSVP**:
 
-- `server/src/services/rsvpService.ts` -- Business logic, party size validation
+- `server/src/services/rsvpService.ts` -- Business logic, party size validation, guestCount normalization
 - `server/src/models/RSVP.ts` -- Schema, pre-save middleware, legacy compat
-- `client/src/components/RSVP/RSVPForm.tsx` -- Multi-guest form (39KB, complex)
-- `client/src/features/rsvp/hooks/useRSVP.ts` -- RSVP CRUD operations hook
-- `client/src/features/rsvp/graphql/` -- Queries and mutations
+- `client/src/components/RSVP/RSVPForm.tsx` -- Per-person attendance form; `buildGuestRows()` helper; `GuestFormRow` UI type
+- `client/src/features/rsvp/hooks/useRSVP.ts` -- RSVP CRUD + `GET_ME` (network-only) for fresh household data; exposes `freshUser`
+- `client/src/features/rsvp/graphql/queries.ts` -- `GET_RSVP` and `GET_ME` queries
+- `client/src/features/rsvp/graphql/mutations.ts` -- `CREATE_RSVP` and `EDIT_RSVP` mutations
 
 **Email**:
 
@@ -477,13 +494,17 @@ Review points:
 
 Review points:
 
-- Is the party size formula `maxAllowed = 1 + (householdMembers?.length || 0) + (plusOneAllowed ? 1 : 0)` enforced in both `createRSVP` and `updateRSVP`?
-- Does the multi-guest format correctly sync `guestCount` with `guests.length`?
+- Is the party size formula `maxAllowed = 1 + (householdMembers?.length || 0) + (plusOneAllowed ? 1 : 0)` enforced in both `createRSVP` and `updateRSVP`? Is `validatePartySize` called with **total** guest count (`guests.length`), not the stored `guestCount` field?
+- Does `updateRSVP` explicitly normalize `guestCount = guests.length - 1` when guests are updated? (Pre-save hook does not run on `findOneAndUpdate`.)
+- Does `createRSVP` derive `guestCount` from `guests.length - 1` rather than trusting the caller-supplied value?
 - Are legacy RSVP fields (`fullName`, `mealPreference`, `allergies`) synced from `guests[0]` when using the modern format?
 - When `attending === 'NO'`, does the pre-save middleware clear `guestCount` to 0 and `guests` to empty array?
 - Is meal preference validation gated by `featuresConfig.mealPreferencesEnabled`? When disabled, does it accept empty string for YES attendance?
+- Does `buildGuestRows` in `RSVPForm.tsx` always ensure the primary account holder (`user.fullName`) appears in the row list, even if they were removed from `rsvp.guests`?
+- Does `buildGuestRows` correctly merge household members absent from `rsvp.guests` as `attending: false` rows (AC 3)?
+- Does `useRSVP` fire `GET_ME` with `fetchPolicy: 'network-only'` and expose `freshUser` to `RSVPForm`? Does `RSVPForm` prefer `freshUser` over the login-time cached user?
 - Does the client `useRSVP` hook correctly differentiate between create (no existing RSVP) and edit (existing RSVP) paths?
-- Does the client RSVP form correctly pre-populate when editing an existing RSVP?
+- Are household member names filtered through `isValidGuestName` (same regex as server `validateName`) before being added to guest rows?
 
 ### E. EMAIL SAFETY AND PRODUCTION GUARDS
 
