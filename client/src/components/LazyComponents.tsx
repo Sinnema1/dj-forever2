@@ -56,6 +56,15 @@ export const TravelGuide = lazy(() => import('../pages/TravelGuide'));
 /** Guestbook component - Guest messages and well wishes (feature-flagged) */
 export const Guestbook = lazy(() => import('../pages/Guestbook'));
 
+/** OurStory component - Story timeline with photo imports (below-the-fold) */
+export const OurStory = lazy(() => import('../pages/OurStory'));
+
+/** TheDetails component - Wedding schedule and venue details (below-the-fold) */
+export const TheDetails = lazy(() => import('../pages/TheDetails'));
+
+/** FAQs component - Frequently asked questions accordion (below-the-fold) */
+export const FAQs = lazy(() => import('../pages/FAQs'));
+
 // Note: RSVPForm and CountdownTimer are not lazy-loaded here because they are
 // critical components needed immediately on page load by HeroBanner and RSVP pages.
 // Static imports in those components are more appropriate for performance.

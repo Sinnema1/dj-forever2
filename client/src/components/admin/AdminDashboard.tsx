@@ -174,9 +174,9 @@ const AdminDashboard: React.FC = () => {
                         : !guest.hasRSVPed
                           ? 'Pending RSVP'
                           : guest.rsvp?.attending === 'YES'
-                            ? `Attending (${guest.rsvp.guestCount})`
+                            ? `Attending (${guest.rsvp.guests?.length ?? (guest.rsvp.guestCount ?? 0) + 1})`
                             : guest.rsvp?.attending === 'MAYBE'
-                              ? `Maybe (${guest.rsvp.guestCount})`
+                              ? `Maybe (${guest.rsvp.guests?.length ?? (guest.rsvp.guestCount ?? 0) + 1})`
                               : 'Not Attending'}
                     </div>
                   </div>

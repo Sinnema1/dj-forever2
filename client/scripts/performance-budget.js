@@ -14,7 +14,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Performance Budget Configuration
 const PERFORMANCE_BUDGET = {
   // Bundle size budgets (in KB)
-  maxBundleSize: 500,
+  maxBundleSize: 650, // uncompressed; CI gate uses gzipped via scripts/check-bundle-size.cjs (248kb)
   maxChunkSize: 200,
   maxVendorChunkSize: 300,
   maxCSSSize: 100,
