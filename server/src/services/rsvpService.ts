@@ -352,6 +352,10 @@ export async function updateRSVP(
       validatedUpdates.attending = validateAttendance(updates.attending);
     }
 
+    const nextAttending =
+      (validatedUpdates.attending as string | undefined) || updates.attending;
+    const isDeclining = nextAttending === "NO";
+
     if (updates.guests !== undefined) {
       // Validate the guests array first — guestCount is derived from it.
       const attending =
@@ -376,11 +380,21 @@ export async function updateRSVP(
           validatedUpdates.guests[0].mealPreference;
         validatedUpdates.allergies = validatedUpdates.guests[0].allergies;
       }
-    } else if (updates.guestCount !== undefined) {
+    } else if (updates.guestCount !== undefined && !isDeclining) {
       // guestCount-only update (no guests array): validate range and party size.
       // guestCount = additional guests, so total = guestCount + 1.
       validatedUpdates.guestCount = validateGuestCount(updates.guestCount);
       validatePartySize(validatedUpdates.guestCount + 1, user);
+    }
+
+    if (isDeclining) {
+      // Keep NO RSVPs consistent even when guests are omitted in the payload.
+      // findOneAndUpdate bypasses the pre-save cleanup hook.
+      validatedUpdates.guests = [];
+      validatedUpdates.guestCount = 0;
+      validatedUpdates.mealPreference = "";
+      validatedUpdates.allergies = "";
+      validatedUpdates.fullName = user.fullName;
     }
 
     if (updates.additionalNotes !== undefined) {

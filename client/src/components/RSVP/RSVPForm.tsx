@@ -20,6 +20,10 @@ function isValidGuestName(name: string): boolean {
   return t.length >= 2 && VALID_NAME_RE.test(t);
 }
 
+function normalizeGuestName(name: string): string {
+  return name.toLowerCase().trim();
+}
+
 // Module-level helper — safe to call before component mounts
 function normalizeMealPreference(value: string): string {
   if (!value) {
@@ -63,14 +67,13 @@ function buildGuestRows(
   rsvp: ReturnType<typeof useRSVP>['rsvp'],
   user: ReturnType<typeof useAuth>['user']
 ): GuestFormRow[] {
-  const normalize = (s: string) => s.toLowerCase().trim();
-
   if (rsvp) {
     if (rsvp.attending === 'NO') {
       // AC 15 — show all household rows, all unselected
+      const primaryName = user?.fullName?.trim() || rsvp.fullName || '';
       const rows: GuestFormRow[] = [
         {
-          fullName: rsvp.fullName || user?.fullName || '',
+          fullName: primaryName,
           mealPreference: '',
           allergies: '',
           attending: false,
@@ -78,7 +81,10 @@ function buildGuestRows(
       ];
       user?.householdMembers?.forEach(m => {
         const name = [m.firstName, m.lastName].filter(Boolean).join(' ');
-        if (isValidGuestName(name)) {
+        if (
+          isValidGuestName(name) &&
+          normalizeGuestName(name) !== normalizeGuestName(primaryName)
+        ) {
           rows.push({
             fullName: name,
             mealPreference: '',
@@ -93,7 +99,7 @@ function buildGuestRows(
     // Existing YES/MAYBE RSVP
     const rsvpGuestNames = new Set(
       (rsvp.guests?.length ? rsvp.guests : []).map(g =>
-        normalize(g.fullName || '')
+        normalizeGuestName(g.fullName || '')
       )
     );
 
@@ -118,7 +124,10 @@ function buildGuestRows(
     // Household members absent from RSVP → attending: false  (AC 3)
     user?.householdMembers?.forEach(m => {
       const name = [m.firstName, m.lastName].filter(Boolean).join(' ');
-      if (isValidGuestName(name) && !rsvpGuestNames.has(normalize(name))) {
+      if (
+        isValidGuestName(name) &&
+        !rsvpGuestNames.has(normalizeGuestName(name))
+      ) {
         rows.push({
           fullName: name,
           mealPreference: '',
@@ -133,7 +142,9 @@ function buildGuestRows(
     const primaryName = user?.fullName?.trim() || '';
     if (
       primaryName &&
-      !rows.some(r => normalize(r.fullName) === normalize(primaryName))
+      !rows.some(
+        r => normalizeGuestName(r.fullName) === normalizeGuestName(primaryName)
+      )
     ) {
       rows.unshift({
         fullName: primaryName,
@@ -235,6 +246,38 @@ export default function RSVPForm() {
         fullName: rsvp.fullName || '',
         guests: buildGuestRows(rsvp, user),
       }));
+      return;
+    }
+
+    if (user) {
+      setFormData(prev => {
+        const desiredRows = buildGuestRows(null, user);
+        const existingByName = new Map(
+          prev.guests.map(g => [normalizeGuestName(g.fullName || ''), g])
+        );
+
+        const mergedGuests: GuestFormRow[] = desiredRows.map(g => {
+          const existing = existingByName.get(normalizeGuestName(g.fullName));
+          return existing || g;
+        });
+
+        const mergedNames = new Set(
+          mergedGuests.map(g => normalizeGuestName(g.fullName || ''))
+        );
+        prev.guests.forEach(g => {
+          const key = normalizeGuestName(g.fullName || '');
+          if (key && !mergedNames.has(key)) {
+            mergedGuests.push(g);
+          }
+        });
+
+        return {
+          ...prev,
+          fullName: prev.fullName || user.fullName || '',
+          allergies: prev.allergies || user.dietaryRestrictions || '',
+          guests: mergedGuests,
+        };
+      });
     }
   }, [rsvp, user]);
 

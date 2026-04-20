@@ -479,26 +479,30 @@ export const resolvers = {
           updateFields.dietaryRestrictions = args.input.dietaryRestrictions;
         }
         if (args.input.householdMembers !== undefined) {
-          updateFields.householdMembers = args.input.householdMembers.map(
-            (m, i) => {
-              try {
-                return {
-                  ...m,
-                  firstName: validateName(
-                    m.firstName,
-                    `Member ${i + 1} first name`,
-                  ),
-                  lastName: m.lastName
-                    ? validateName(m.lastName, `Member ${i + 1} last name`)
-                    : m.lastName,
-                };
-              } catch (e: any) {
-                throw new GraphQLError(e.message, {
-                  extensions: { code: "VALIDATION_ERROR" },
-                });
-              }
-            },
-          );
+          if (args.input.householdMembers === null) {
+            updateFields.householdMembers = [];
+          } else {
+            updateFields.householdMembers = args.input.householdMembers.map(
+              (m, i) => {
+                try {
+                  return {
+                    ...m,
+                    firstName: validateName(
+                      m.firstName,
+                      `Member ${i + 1} first name`,
+                    ),
+                    lastName: m.lastName
+                      ? validateName(m.lastName, `Member ${i + 1} last name`)
+                      : m.lastName,
+                  };
+                } catch (e: any) {
+                  throw new GraphQLError(e.message, {
+                    extensions: { code: "VALIDATION_ERROR" },
+                  });
+                }
+              },
+            );
+          }
         }
         // Address fields
         if (args.input.streetAddress !== undefined) {

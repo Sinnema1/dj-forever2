@@ -59,6 +59,31 @@ const noMeMock = {
   },
 };
 
+const getMeWithHouseholdMemberNoRsvp = {
+  request: { query: GET_ME },
+  result: {
+    data: {
+      me: {
+        _id: 'user-no-rsvp-fresh',
+        fullName: 'Chris Morgan',
+        email: 'chris@test.com',
+        isInvited: true,
+        plusOneAllowed: false,
+        plusOneName: null,
+        dietaryRestrictions: null,
+        householdMembers: [
+          {
+            firstName: 'Taylor',
+            lastName: 'Morgan',
+            relationshipToBride: 'sibling',
+            relationshipToGroom: 'sibling',
+          },
+        ],
+      },
+    },
+  },
+};
+
 beforeEach(() => {
   mockUser = null;
   mockIsLoggedIn = false;
@@ -77,7 +102,10 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock, noMeMock]} addTypename={false}>
+      <MockedProvider
+        mocks={[noRSVPMock, noRSVPMock, noMeMock]}
+        addTypename={false}
+      >
         <RSVPForm />
       </MockedProvider>
     );
@@ -104,7 +132,10 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock, noMeMock]} addTypename={false}>
+      <MockedProvider
+        mocks={[noRSVPMock, noRSVPMock, noMeMock]}
+        addTypename={false}
+      >
         <RSVPForm />
       </MockedProvider>
     );
@@ -129,7 +160,10 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock, noMeMock]} addTypename={false}>
+      <MockedProvider
+        mocks={[noRSVPMock, noRSVPMock, noMeMock]}
+        addTypename={false}
+      >
         <RSVPForm />
       </MockedProvider>
     );
@@ -228,7 +262,9 @@ describe('Phase 3: RSVP Pre-population', () => {
             userId: 'user-6',
             attending: 'YES',
             guestCount: 0,
-            guests: [{ fullName: 'Lisa Chen', mealPreference: '', allergies: '' }],
+            guests: [
+              { fullName: 'Lisa Chen', mealPreference: '', allergies: '' },
+            ],
             additionalNotes: '',
             fullName: 'Lisa Chen',
             mealPreference: '',
@@ -274,13 +310,48 @@ describe('Phase 3: RSVP Pre-population', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /your response/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /your response/i })
+      ).toBeInTheDocument();
     });
 
     // Both the original RSVP guest and the newly added household member should appear
     await waitFor(() => {
       expect(screen.getByDisplayValue('Lisa Chen')).toBeInTheDocument();
       expect(screen.getByDisplayValue('Wei Chen')).toBeInTheDocument();
+    });
+  });
+
+  it('should add fresh GET_ME household members when no RSVP exists', async () => {
+    // Stale auth user has no household members; network-only GET_ME includes one.
+    mockUser = {
+      _id: 'user-no-rsvp-fresh',
+      fullName: 'Chris Morgan',
+      email: 'chris@test.com',
+      isInvited: true,
+      plusOneAllowed: false,
+      householdMembers: [],
+    };
+    mockIsLoggedIn = true;
+
+    render(
+      <MockedProvider
+        mocks={[noRSVPMock, noRSVPMock, getMeWithHouseholdMemberNoRsvp]}
+        addTypename={false}
+      >
+        <RSVPForm />
+      </MockedProvider>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: /your response/i })
+      ).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('Chris Morgan')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('Taylor Morgan')).toBeInTheDocument();
     });
   });
 
@@ -313,13 +384,18 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock, noMeMock]} addTypename={false}>
+      <MockedProvider
+        mocks={[noRSVPMock, noRSVPMock, noMeMock]}
+        addTypename={false}
+      >
         <RSVPForm />
       </MockedProvider>
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /your response/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /your response/i })
+      ).toBeInTheDocument();
     });
 
     await waitFor(() => {
@@ -361,7 +437,9 @@ describe('Phase 3: RSVP Pre-population', () => {
             userId: 'user-primary-bug',
             attending: 'YES',
             guestCount: 0,
-            guests: [{ fullName: 'Wei Chen', mealPreference: '', allergies: '' }],
+            guests: [
+              { fullName: 'Wei Chen', mealPreference: '', allergies: '' },
+            ],
             additionalNotes: '',
             fullName: 'Wei Chen',
             mealPreference: '',
@@ -406,7 +484,9 @@ describe('Phase 3: RSVP Pre-population', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /your response/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /your response/i })
+      ).toBeInTheDocument();
     });
 
     await waitFor(() => {
@@ -442,7 +522,10 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock, noMeMock]} addTypename={false}>
+      <MockedProvider
+        mocks={[noRSVPMock, noRSVPMock, noMeMock]}
+        addTypename={false}
+      >
         <RSVPForm />
       </MockedProvider>
     );
