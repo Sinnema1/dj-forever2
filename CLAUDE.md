@@ -78,7 +78,7 @@ Three separate MongoDB databases: `djforever2` (prod), `djforever2_dev`, `djfore
 - `VITE_ENABLE_GUESTBOOK` — guestbook feature
 
 ### CI/CD
-GitHub Actions runs tests → TypeScript check → lint → build → bundle size gate on every push. Deployment to Render.com triggers automatically on `main` branch CI success via deploy hooks. The CI gate (`scripts/check-bundle-size.cjs`) measures gzipped JS: main bundle under 120 KB, total under 248 KB. Currently ~30 KB main / ~178 KB total (71.9% of budget).
+GitHub Actions runs tests → TypeScript check → lint → build → bundle size gate on every push. Deployment to Render.com triggers automatically on `main` branch CI success via deploy hooks. The CI gate (`scripts/check-bundle-size.cjs`) measures gzipped JS: main bundle under 120 KB, total under 249 KB. Currently ~30 KB main / ~178 KB total (71.5% of budget).
 
 ## Critical gotchas
 

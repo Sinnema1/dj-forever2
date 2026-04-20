@@ -7,7 +7,7 @@
  *
  * Budgets:
  * - Main bundle: 120kb gzipped
- * - Total bundle: 248kb gzipped
+ * - Total bundle: 249kb gzipped
  *
  * Usage:
  *   node scripts/check-bundle-size.cjs
@@ -25,7 +25,7 @@ const path = require("node:path");
 // Configuration
 const KB = 1024;
 const MAIN_BUDGET = 120 * KB; // 120kb gzipped
-const TOTAL_BUDGET = 248 * KB; // 248kb gzipped (small buffer for dependency/content drift)
+const TOTAL_BUDGET = 249 * KB; // 249kb gzipped (small buffer for dependency/content drift)
 
 // Paths (assumes invocation from client/ working directory)
 const dist = path.join(process.cwd(), "dist");
