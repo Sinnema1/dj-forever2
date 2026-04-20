@@ -40,7 +40,7 @@ const noRSVPMock = {
 };
 
 // Mock for GET_ME query — useRSVP fetches this with network-only to pick up
-// household members added after login. Returns null to defer to the mocked useAuth user.
+// household members added after login. Returns a baseline me object for pre-population tests.
 const noMeMock = {
   request: { query: GET_ME },
   result: {

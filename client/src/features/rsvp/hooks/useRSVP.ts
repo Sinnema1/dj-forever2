@@ -137,7 +137,7 @@ export const useRSVP = () => {
   } = useQuery<GetRSVPResponse>(GET_RSVP);
 
   // Fetch fresh user data from DB to pick up household members added after login
-  const { data: meData, loading: meLoading } = useQuery<GetMeResponse>(GET_ME, {
+  const { data: meData, loading: meLoading, error: meError } = useQuery<GetMeResponse>(GET_ME, {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
   });
@@ -252,8 +252,8 @@ export const useRSVP = () => {
     queryLoading,
     /** True only while a create or edit mutation is in-flight */
     mutationLoading: createLoading || editLoading,
-    /** Any error from query or mutation operations */
-    error: queryError || createError || editError,
+    /** Any error from query or mutation operations (including fresh-user fetch) */
+    error: queryError || meError || createError || editError,
     /** Function to create a new RSVP submission */
     createRSVP,
     /** Function to update an existing RSVP */
