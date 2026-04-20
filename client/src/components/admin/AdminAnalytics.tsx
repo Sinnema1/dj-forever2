@@ -111,7 +111,7 @@ const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ stats, guests }) => {
 
     guests.forEach(guest => {
       if (guest.hasRSVPed && guest.rsvp?.attending === 'YES') {
-        const count = guest.rsvp.guestCount || 1;
+        const count = guest.rsvp.guests?.length ?? (guest.rsvp.guestCount ?? 0) + 1;
         distribution[count] = (distribution[count] || 0) + 1;
       }
     });
@@ -178,7 +178,7 @@ const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ stats, guests }) => {
       });
     }
 
-    // Attendance rate insight
+    // Response-based rate: what % of respondents said YES (not headcount-based)
     const attendanceRate =
       stats.totalRSVPed > 0
         ? (stats.totalAttending / stats.totalRSVPed) * 100

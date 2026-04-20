@@ -12,6 +12,7 @@ import React, {
   useRef,
 } from 'react';
 import { useMutation } from '@apollo/client/react/hooks';
+import apolloClient from '../api/apolloClient';
 import { LOGIN_WITH_QR_TOKEN } from '../features/auth/graphql/loginWithQrToken';
 import { AuthContextType, UserType } from '../models/userTypes';
 import { logInfo, logWarn } from '../utils/logger';
@@ -309,6 +310,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.setItem(STORAGE_TOKEN_KEY, authToken);
         localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(authUser));
         localStorage.setItem(STORAGE_VERSION_KEY, CURRENT_AUTH_VERSION);
+        // Clear Apollo cache so the incoming user never sees a previous user's
+        // cached queries (GET_ME, GET_RSVP, etc.).
+        await apolloClient.clearStore();
       } catch (err: unknown) {
         if (err instanceof Error) {
           reportError(err, {
@@ -328,8 +332,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
     localStorage.removeItem(STORAGE_TOKEN_KEY);
     localStorage.removeItem(STORAGE_USER_KEY);
-    // If you use Apollo auth links, consider resetting the store here.
-    // apolloClient?.clearStore?.();
+    apolloClient.clearStore();
   }, []);
 
   const isLoggedIn = !!token && !!user;

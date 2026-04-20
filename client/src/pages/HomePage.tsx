@@ -2,14 +2,11 @@ import { useEffect } from 'react';
 import HeroBanner from '../components/HeroBanner';
 import SectionDivider from '../components/SectionDivider';
 import { HomePageSEO } from '../components/SEO';
-import { Gallery, TravelGuide, Guestbook } from '../components/LazyComponents';
+import { Gallery, TravelGuide, Guestbook, OurStory, TheDetails, FAQs } from '../components/LazyComponents';
 import { EnhancedLazyComponent } from '../components/EnhancedSuspense';
 import { analytics } from '../utils/analytics';
 import { performanceMonitor } from '../utils/performance';
 import theme from '../theme/theme';
-import OurStory from './OurStory';
-import TheDetails from './TheDetails';
-import FAQs from './FAQs';
 import { features } from '../config/features';
 
 export default function HomePage() {
@@ -57,7 +54,12 @@ export default function HomePage() {
       <section id="our-story">
         <h2 className="section-title">Our Story</h2>
         <div className="section-content">
-          <OurStory />
+          <EnhancedLazyComponent
+            Component={OurStory}
+            name="our-story"
+            loadingMessage="Loading our story..."
+            enhanced
+          />
         </div>
         <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
@@ -67,7 +69,12 @@ export default function HomePage() {
         <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">The Details</h2>
         <div className="section-content">
-          <TheDetails />
+          <EnhancedLazyComponent
+            Component={TheDetails}
+            name="details"
+            loadingMessage="Loading wedding details..."
+            enhanced
+          />
         </div>
         <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>
@@ -107,7 +114,12 @@ export default function HomePage() {
         <SectionDivider position="top" color={theme.colors.cream} />
         <h2 className="section-title">FAQs</h2>
         <div className="section-content">
-          <FAQs />
+          <EnhancedLazyComponent
+            Component={FAQs}
+            name="faqs"
+            loadingMessage="Loading FAQs..."
+            enhanced
+          />
         </div>
         <SectionDivider position="bottom" color={theme.colors.cream} />
       </section>

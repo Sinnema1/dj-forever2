@@ -178,7 +178,7 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
     if (guest.rsvp) {
       setEditForm({
         attending: guest.rsvp.attending,
-        guestCount: guest.rsvp.guestCount || guest.rsvp.guests.length,
+        guestCount: guest.rsvp.guests?.length ?? (guest.rsvp.guestCount ?? 0) + 1,
         guests:
           guest.rsvp.guests.length > 0
             ? guest.rsvp.guests

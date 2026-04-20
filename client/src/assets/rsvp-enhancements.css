@@ -1744,3 +1744,87 @@
     max-width: 60px;
   }
 }
+
+/* ─── Per-person household attendance (per-person toggle feature) ─────────── */
+
+/* Attendance toggle: checkbox + label side-by-side */
+.guest-attending-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.guest-attending-toggle input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--color-accent);
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.guest-attending-label {
+  font-size: var(--font-xs);
+  font-weight: 500;
+  color: var(--color-charcoal);
+}
+
+/* Unselected (not-attending) section: visually dimmed */
+.guest-form-section.guest-not-attending {
+  opacity: 0.6;
+  background: rgba(231, 227, 218, 0.3);
+  border-color: rgba(180, 148, 108, 0.12);
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.guest-form-section.guest-not-attending:hover {
+  opacity: 0.8;
+  background: rgba(231, 227, 218, 0.45);
+}
+
+/* Hint shown below the toggle for unselected rows */
+.guest-not-attending-hint {
+  font-size: var(--font-xs);
+  color: var(--color-charcoal-60);
+  margin: 0 0 var(--spacing-3);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Live "X of Y attending" summary banner */
+.guest-attendance-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  background: rgba(159, 181, 161, 0.12);
+  border: 1px solid rgba(159, 181, 161, 0.3);
+  border-radius: var(--radius);
+  padding: var(--spacing-3) var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.attendance-summary-count {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: var(--color-sage-darker);
+}
+
+.attendance-summary-hint {
+  font-size: var(--font-xs);
+  color: var(--color-charcoal-60);
+  line-height: 1.4;
+}
+
+/* Mobile: toggle moves below the guest name on narrow screens */
+@media (max-width: 640px) {
+  .guest-attending-toggle {
+    align-self: flex-start;
+  }
+
+  .guest-attendance-summary {
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+}

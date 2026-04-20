@@ -121,6 +121,50 @@ describe("RSVP End-to-End", () => {
   });
 
   describe("Modern RSVP Creation (createRSVP)", () => {
+    it("accepts guestCount: 0 for solo attendance", async () => {
+      const rsvpRes = await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${jwtToken}`)
+        .send({
+          query: `
+            mutation {
+              createRSVP(input: {
+                attending: YES
+                guestCount: 0
+                guests: [
+                  {
+                    fullName: "Test User"
+                    mealPreference: "brisket"
+                    allergies: ""
+                  }
+                ]
+                additionalNotes: "Solo attendance"
+                fullName: "Test User"
+                mealPreference: "brisket"
+                allergies: ""
+              }) {
+                _id
+                attending
+                guestCount
+                guests {
+                  fullName
+                }
+              }
+            }
+          `,
+        });
+
+      if (rsvpRes.body.errors) {
+        console.error("GraphQL errors:", rsvpRes.body.errors);
+      }
+
+      expect(rsvpRes.body.errors).toBeUndefined();
+      expect(rsvpRes.body.data.createRSVP).not.toBeNull();
+      expect(rsvpRes.body.data.createRSVP.attending).toBe("YES");
+      expect(rsvpRes.body.data.createRSVP.guestCount).toBe(0);
+      expect(rsvpRes.body.data.createRSVP.guests).toHaveLength(1);
+    });
+
     it("creates attending RSVP with required fields", async () => {
       const rsvpRes = await request(app)
         .post("/graphql")
@@ -166,7 +210,8 @@ describe("RSVP End-to-End", () => {
 
       expect(rsvpRes.body.data.createRSVP).not.toBeNull();
       expect(rsvpRes.body.data.createRSVP.attending).toBe("YES");
-      expect(rsvpRes.body.data.createRSVP.guestCount).toBe(1);
+      // guestCount = additional guests beyond primary (guests.length - 1)
+      expect(rsvpRes.body.data.createRSVP.guestCount).toBe(0);
       expect(rsvpRes.body.data.createRSVP.guests).toHaveLength(1);
       expect(rsvpRes.body.data.createRSVP.guests[0].fullName).toBe("Test User");
       expect(rsvpRes.body.data.createRSVP.guests[0].mealPreference).toBe(
@@ -349,6 +394,69 @@ describe("RSVP End-to-End", () => {
   });
 
   describe("RSVP Editing (editRSVP)", () => {
+    it("clears guests when editing to NO without sending guests payload", async () => {
+      // First create an attending RSVP
+      await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${jwtToken}`)
+        .send({
+          query: `
+            mutation {
+              createRSVP(input: {
+                attending: YES
+                guestCount: 0
+                guests: [
+                  {
+                    fullName: "Test User"
+                    mealPreference: "brisket"
+                    allergies: "None"
+                  }
+                ]
+                additionalNotes: "Initial RSVP"
+                fullName: "Test User"
+                mealPreference: "brisket"
+                allergies: "None"
+              }) {
+                _id
+              }
+            }
+          `,
+        });
+
+      // Update to NO without guests array
+      const editRes = await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${jwtToken}`)
+        .send({
+          query: `
+            mutation {
+              editRSVP(updates: {
+                attending: NO
+                additionalNotes: "Cannot attend"
+              }) {
+                _id
+                attending
+                guestCount
+                additionalNotes
+                guests {
+                  fullName
+                }
+              }
+            }
+          `,
+        });
+
+      if (editRes.body.errors) {
+        console.error("GraphQL errors:", editRes.body.errors);
+      }
+
+      expect(editRes.body.errors).toBeUndefined();
+      expect(editRes.body.data.editRSVP).not.toBeNull();
+      expect(editRes.body.data.editRSVP.attending).toBe("NO");
+      expect(editRes.body.data.editRSVP.guestCount).toBe(0);
+      expect(editRes.body.data.editRSVP.guests).toHaveLength(0);
+    });
+
     it("edits existing RSVP from attending to not attending", async () => {
       // First create an attending RSVP
       await request(app)

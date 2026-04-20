@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import RSVPForm from '../src/components/RSVP/RSVPForm';
-import { GET_RSVP } from '../src/features/rsvp/graphql/queries';
+import { GET_RSVP, GET_ME } from '../src/features/rsvp/graphql/queries';
 import type { User } from '../src/models/userTypes';
 import type { AuthContextType } from '../src/models/userTypes';
 
@@ -39,6 +39,51 @@ const noRSVPMock = {
   result: { data: { getRSVP: null } },
 };
 
+// Mock for GET_ME query — useRSVP fetches this with network-only to pick up
+// household members added after login. Returns a baseline me object for pre-population tests.
+const noMeMock = {
+  request: { query: GET_ME },
+  result: {
+    data: {
+      me: {
+        _id: '1',
+        fullName: 'Test User',
+        email: 'test@example.com',
+        isInvited: true,
+        plusOneAllowed: false,
+        plusOneName: null,
+        dietaryRestrictions: null,
+        householdMembers: [],
+      },
+    },
+  },
+};
+
+const getMeWithHouseholdMemberNoRsvp = {
+  request: { query: GET_ME },
+  result: {
+    data: {
+      me: {
+        _id: 'user-no-rsvp-fresh',
+        fullName: 'Chris Morgan',
+        email: 'chris@test.com',
+        isInvited: true,
+        plusOneAllowed: false,
+        plusOneName: null,
+        dietaryRestrictions: null,
+        householdMembers: [
+          {
+            firstName: 'Taylor',
+            lastName: 'Morgan',
+            relationshipToBride: 'sibling',
+            relationshipToGroom: 'sibling',
+          },
+        ],
+      },
+    },
+  },
+};
+
 beforeEach(() => {
   mockUser = null;
   mockIsLoggedIn = false;
@@ -57,7 +102,10 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock]} addTypename={false}>
+      <MockedProvider
+        mocks={[noRSVPMock, noRSVPMock, noMeMock]}
+        addTypename={false}
+      >
         <RSVPForm />
       </MockedProvider>
     );
@@ -84,7 +132,10 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock]} addTypename={false}>
+      <MockedProvider
+        mocks={[noRSVPMock, noRSVPMock, noMeMock]}
+        addTypename={false}
+      >
         <RSVPForm />
       </MockedProvider>
     );
@@ -109,7 +160,10 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock]} addTypename={false}>
+      <MockedProvider
+        mocks={[noRSVPMock, noRSVPMock, noMeMock]}
+        addTypename={false}
+      >
         <RSVPForm />
       </MockedProvider>
     );
@@ -162,7 +216,7 @@ describe('Phase 3: RSVP Pre-population', () => {
 
     render(
       <MockedProvider
-        mocks={[existingRSVPMock, existingRSVPMock]}
+        mocks={[existingRSVPMock, existingRSVPMock, noMeMock]}
         addTypename={false}
       >
         <RSVPForm />
@@ -182,6 +236,265 @@ describe('Phase 3: RSVP Pre-population', () => {
     // Logic correctly prioritizes existing RSVP allergies over profile dietaryRestrictions
     // When an existing RSVP exists, rsvp?.allergies will be used (in this case "Peanuts, Dairy")
     // Only when no RSVP exists (rsvp is null) will user?.dietaryRestrictions be used
+  });
+
+  it('should merge household members from GET_ME into existing RSVP guest list', async () => {
+    // Simulates the core bug fix: user submitted RSVP before admin added household members.
+    // On next RSVP page load, GET_ME (network-only) returns the updated user with household
+    // members; the hydration effect should merge them into the existing RSVP guest rows.
+    mockUser = {
+      _id: 'user-6',
+      fullName: 'Lisa Chen',
+      email: 'lisa@test.com',
+      isInvited: true,
+      plusOneAllowed: false,
+      // useAuth cache has no household members (stale login-time data)
+    };
+    mockIsLoggedIn = true;
+
+    // Existing RSVP submitted before household member was added — only primary guest
+    const existingRsvpPreMerge = {
+      request: { query: GET_RSVP },
+      result: {
+        data: {
+          getRSVP: {
+            _id: 'rsvp-merge',
+            userId: 'user-6',
+            attending: 'YES',
+            guestCount: 0,
+            guests: [
+              { fullName: 'Lisa Chen', mealPreference: '', allergies: '' },
+            ],
+            additionalNotes: '',
+            fullName: 'Lisa Chen',
+            mealPreference: '',
+            allergies: '',
+          },
+        },
+      },
+    };
+
+    // GET_ME returns fresh user with a household member added after login by admin
+    const getMeWithMembers = {
+      request: { query: GET_ME },
+      result: {
+        data: {
+          me: {
+            _id: 'user-6',
+            fullName: 'Lisa Chen',
+            email: 'lisa@test.com',
+            isInvited: true,
+            plusOneAllowed: false,
+            plusOneName: null,
+            dietaryRestrictions: null,
+            householdMembers: [
+              {
+                firstName: 'Wei',
+                lastName: 'Chen',
+                relationshipToBride: 'husband',
+                relationshipToGroom: 'brother',
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    render(
+      <MockedProvider
+        mocks={[existingRsvpPreMerge, existingRsvpPreMerge, getMeWithMembers]}
+        addTypename={false}
+      >
+        <RSVPForm />
+      </MockedProvider>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: /your response/i })
+      ).toBeInTheDocument();
+    });
+
+    // Both the original RSVP guest and the newly added household member should appear
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('Lisa Chen')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('Wei Chen')).toBeInTheDocument();
+    });
+  });
+
+  it('should add fresh GET_ME household members when no RSVP exists', async () => {
+    // Stale auth user has no household members; network-only GET_ME includes one.
+    mockUser = {
+      _id: 'user-no-rsvp-fresh',
+      fullName: 'Chris Morgan',
+      email: 'chris@test.com',
+      isInvited: true,
+      plusOneAllowed: false,
+      householdMembers: [],
+    };
+    mockIsLoggedIn = true;
+
+    render(
+      <MockedProvider
+        mocks={[noRSVPMock, noRSVPMock, getMeWithHouseholdMemberNoRsvp]}
+        addTypename={false}
+      >
+        <RSVPForm />
+      </MockedProvider>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: /your response/i })
+      ).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('Chris Morgan')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('Taylor Morgan')).toBeInTheDocument();
+    });
+  });
+
+  it('should skip household members with invalid names (e.g. digits) to prevent ghost rows', async () => {
+    // Regression test for validation parity: client VALID_NAME_RE must match server validateName.
+    // A household member whose constructed name fails /^[a-zA-Z\s\-']+$/ should be silently
+    // filtered by buildGuestRows so it never becomes a row that would block RSVP submission.
+    mockUser = {
+      _id: 'user-invalid',
+      fullName: 'Valid Guest',
+      email: 'valid@test.com',
+      isInvited: true,
+      plusOneAllowed: false,
+      householdMembers: [
+        {
+          firstName: 'Valid',
+          lastName: 'Member',
+          relationshipToBride: 'friend',
+          relationshipToGroom: 'friend',
+        },
+        {
+          // "Guest 2" has a digit — server validateName would reject it
+          firstName: 'Guest',
+          lastName: '2',
+          relationshipToBride: 'child',
+          relationshipToGroom: 'child',
+        },
+      ],
+    };
+    mockIsLoggedIn = true;
+
+    render(
+      <MockedProvider
+        mocks={[noRSVPMock, noRSVPMock, noMeMock]}
+        addTypename={false}
+      >
+        <RSVPForm />
+      </MockedProvider>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: /your response/i })
+      ).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      // Valid member is shown as a guest row
+      expect(screen.getByDisplayValue('Valid Member')).toBeInTheDocument();
+      // Invalid-named member is silently dropped — not an unselectable ghost row
+      expect(screen.queryByDisplayValue('Guest 2')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should re-show primary account holder after they were removed from rsvp.guests', async () => {
+    // Regression test: if the primary user unchecks themselves and submits, they are
+    // removed from rsvp.guests. On the next form load, buildGuestRows must re-insert them
+    // as attending:false so they can be re-selected. Without the fix they disappear forever.
+    mockUser = {
+      _id: 'user-primary-bug',
+      fullName: 'Jane Smith',
+      email: 'jane@test.com',
+      isInvited: true,
+      plusOneAllowed: false,
+      householdMembers: [
+        {
+          firstName: 'Wei',
+          lastName: 'Chen',
+          relationshipToBride: 'husband',
+          relationshipToGroom: 'brother',
+        },
+      ],
+    };
+    mockIsLoggedIn = true;
+
+    // RSVP after primary unchecked themselves — only household member remains
+    const rsvpPrimaryRemoved = {
+      request: { query: GET_RSVP },
+      result: {
+        data: {
+          getRSVP: {
+            _id: 'rsvp-primary-removed',
+            userId: 'user-primary-bug',
+            attending: 'YES',
+            guestCount: 0,
+            guests: [
+              { fullName: 'Wei Chen', mealPreference: '', allergies: '' },
+            ],
+            additionalNotes: '',
+            fullName: 'Wei Chen',
+            mealPreference: '',
+            allergies: '',
+          },
+        },
+      },
+    };
+
+    const getMeWithMember = {
+      request: { query: GET_ME },
+      result: {
+        data: {
+          me: {
+            _id: 'user-primary-bug',
+            fullName: 'Jane Smith',
+            email: 'jane@test.com',
+            isInvited: true,
+            plusOneAllowed: false,
+            plusOneName: null,
+            dietaryRestrictions: null,
+            householdMembers: [
+              {
+                firstName: 'Wei',
+                lastName: 'Chen',
+                relationshipToBride: 'husband',
+                relationshipToGroom: 'brother',
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    render(
+      <MockedProvider
+        mocks={[rsvpPrimaryRemoved, rsvpPrimaryRemoved, getMeWithMember]}
+        addTypename={false}
+      >
+        <RSVPForm />
+      </MockedProvider>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: /your response/i })
+      ).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      // Primary user must reappear even though they aren't in rsvp.guests
+      expect(screen.getByDisplayValue('Jane Smith')).toBeInTheDocument();
+      // Household member still present (attending:true from RSVP)
+      expect(screen.getByDisplayValue('Wei Chen')).toBeInTheDocument();
+    });
   });
 
   it('should pre-populate guests with household members when no RSVP exists', async () => {
@@ -209,7 +522,10 @@ describe('Phase 3: RSVP Pre-population', () => {
     mockIsLoggedIn = true;
 
     render(
-      <MockedProvider mocks={[noRSVPMock, noRSVPMock]} addTypename={false}>
+      <MockedProvider
+        mocks={[noRSVPMock, noRSVPMock, noMeMock]}
+        addTypename={false}
+      >
         <RSVPForm />
       </MockedProvider>
     );

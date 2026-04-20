@@ -1,0 +1,62 @@
+{
+  "description": "Maps source file patterns to documentation files that may need updates. Used by scripts/check-docs-freshness.sh, the pre-commit hook, and CI.",
+  "mappings": [
+    {
+      "sources": ["server/src/models/*.ts"],
+      "docs": ["REPO_SYNTHESIS.md"],
+      "reason": "Schema changes affect data model section"
+    },
+    {
+      "sources": ["server/src/graphql/typeDefs.ts", "server/src/graphql/resolvers.ts"],
+      "docs": ["REPO_SYNTHESIS.md", ".github/copilot-instructions.md"],
+      "reason": "API changes affect GraphQL documentation"
+    },
+    {
+      "sources": ["server/src/services/*.ts"],
+      "docs": ["REPO_SYNTHESIS.md"],
+      "reason": "Business logic changes affect invariants section"
+    },
+    {
+      "sources": ["server/src/config/index.ts"],
+      "docs": ["docs/CONFIGURATION.md", "CLAUDE.md"],
+      "reason": "Config changes affect env var reference"
+    },
+    {
+      "sources": ["client/src/App.tsx"],
+      "docs": ["REPO_SYNTHESIS.md", ".github/copilot-instructions.md"],
+      "reason": "Routing changes affect route documentation"
+    },
+    {
+      "sources": ["client/src/config/*.ts"],
+      "docs": ["REPO_SYNTHESIS.md", ".github/copilot-instructions.md", "CLAUDE.md", "docs/CONFIGURATION.md"],
+      "reason": "Feature flag or config changes affect multiple docs"
+    },
+    {
+      "sources": [".github/workflows/*.yml"],
+      "docs": ["REPO_SYNTHESIS.md", "CLAUDE.md"],
+      "reason": "CI changes affect pipeline documentation"
+    },
+    {
+      "sources": ["client/vite.config.ts"],
+      "docs": ["CLAUDE.md", "REPO_SYNTHESIS.md"],
+      "reason": "Build config changes affect build documentation"
+    },
+    {
+      "sources": [
+        "client/src/components/RSVP/*.tsx",
+        "client/src/features/rsvp/**/*.ts",
+        "client/src/features/rsvp/**/*.tsx"
+      ],
+      "docs": ["REPO_SYNTHESIS.md", ".github/copilot-instructions.md"],
+      "reason": "RSVP form or hook changes may affect RSVP logic documentation"
+    },
+    {
+      "sources": [
+        "client/src/context/*.tsx",
+        "client/src/api/apolloClient.ts"
+      ],
+      "docs": ["REPO_SYNTHESIS.md", ".github/copilot-instructions.md"],
+      "reason": "Auth context or Apollo config changes affect client architecture documentation"
+    }
+  ]
+}

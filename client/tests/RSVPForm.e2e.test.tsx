@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import RSVPForm from '../src/components/RSVP/RSVPForm';
 import { AuthProvider } from '../src/context/AuthContext';
 import { MockedProvider } from '@apollo/client/testing';
-import { GET_RSVP } from '../src/features/rsvp/graphql/queries';
+import { GET_RSVP, GET_ME } from '../src/features/rsvp/graphql/queries';
 import { CREATE_RSVP } from '../src/features/rsvp/graphql/mutations';
 
 // Mock feature flags - enable meal preferences for these tests
@@ -38,6 +38,26 @@ vi.mock('../src/config/features', async () => {
 const createInitialRSVPMock = () => ({
   request: { query: GET_RSVP },
   result: { data: { getRSVP: null } },
+});
+
+// Helper to create GET_ME mock (fresh user data from server)
+// useRSVP fetches this with network-only to pick up admin changes (e.g. household members)
+const createMeMock = () => ({
+  request: { query: GET_ME },
+  result: {
+    data: {
+      me: {
+        _id: '1',
+        fullName: 'Test User',
+        email: 'test@example.com',
+        isInvited: true,
+        plusOneAllowed: false,
+        plusOneName: null,
+        dietaryRestrictions: null,
+        householdMembers: [],
+      },
+    },
+  },
 });
 
 // Mock for attending RSVP
@@ -100,7 +120,7 @@ const createAttendingRSVPMock = {
     variables: {
       input: {
         attending: 'YES',
-        guestCount: 1,
+        guestCount: 0,
         guests: [
           {
             fullName: 'Test User',
@@ -130,17 +150,11 @@ const createNonAttendingRSVPMock = {
     variables: {
       input: {
         attending: 'NO',
-        guestCount: 1,
-        guests: [
-          {
-            fullName: '',
-            mealPreference: '',
-            allergies: '',
-          },
-        ],
+        guestCount: 0,
+        guests: [],
         additionalNotes: "Sorry, can't make it",
-        // Legacy fields - empty for non-attending
-        fullName: '',
+        // Legacy fields - client sends primary guest name even for non-attending
+        fullName: 'Test User',
         mealPreference: '',
         allergies: '',
       },
@@ -160,17 +174,17 @@ const createMaybeRSVPMock = {
     variables: {
       input: {
         attending: 'MAYBE',
-        guestCount: 1,
+        guestCount: 0,
         guests: [
           {
-            fullName: '',
+            fullName: 'Test User',
             mealPreference: '',
             allergies: '',
           },
         ],
         additionalNotes: 'Not sure yet',
-        // Legacy fields - empty for maybe
-        fullName: '',
+        // Legacy fields synced from first attending guest
+        fullName: 'Test User',
         mealPreference: '',
         allergies: '',
       },
@@ -193,6 +207,9 @@ function renderRSVPForm(
     createInitialRSVPMock(),
     createAttendingRSVPMock,
     getRSVPMockAfterCreate,
+    // GET_ME mock: useRSVP fetches fresh user data with network-only to pick up
+    // household members added after login
+    createMeMock(),
   ]
 ) {
   return render(
@@ -305,6 +322,7 @@ describe('RSVPForm integration', () => {
           createInitialRSVPMock(),
           createInitialRSVPMock(),
           createNonAttendingRSVPMock,
+          createMeMock(),
         ]);
       });
 
@@ -315,7 +333,7 @@ describe('RSVPForm integration', () => {
       // Fill out form for non-attending (no name required)
       await user.click(attendingNoRadio);
 
-      // Verify meal preference fields are hidden
+      // Meal preference is hidden — parent conditional-fields has class 'hide' when attending=NO
       expect(
         screen.getByLabelText(/meal preference/i).closest('.conditional-fields')
       ).toHaveClass('hide');
@@ -348,6 +366,7 @@ describe('RSVPForm integration', () => {
           createInitialRSVPMock(),
           createInitialRSVPMock(),
           createNonAttendingRSVPMock,
+          createMeMock(),
         ]);
       });
 
@@ -385,6 +404,7 @@ describe('RSVPForm integration', () => {
           createInitialRSVPMock(),
           createInitialRSVPMock(),
           createMaybeRSVPMock,
+          createMeMock(),
         ]);
       });
 
@@ -392,15 +412,14 @@ describe('RSVPForm integration', () => {
         'MAYBE'
       ) as HTMLInputElement;
 
-      // Fill out form for maybe attending (no name required)
+      // Select maybe — AC 12: conditional fields are visible for MAYBE (parity with YES)
       await user.click(attendingMaybeRadio);
 
-      // Verify meal preference fields are hidden
-      expect(
-        screen.getByLabelText(/meal preference/i).closest('.conditional-fields')
-      ).toHaveClass('hide');
+      // AC 14: switching from NO auto-selects primary guest — fill their name
+      const fullNameInput = screen.getByLabelText(/full name/i) as HTMLInputElement;
+      fireEvent.change(fullNameInput, { target: { value: 'Test User' } });
 
-      // Add optional note
+      // MAYBE does not require meal preference selection — just add a note
       const notesTextarea = screen.getByLabelText(
         /additional notes/i
       ) as HTMLTextAreaElement;
@@ -510,10 +529,12 @@ describe('RSVPForm integration', () => {
       // Try to submit without required fields
       await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
 
-      // Should show validation errors for attending guests
+      // Should show validation errors for attending guests.
+      // buildGuestRows pre-fills the primary user's name, so the first
+      // required field that fires is meal preference, not name.
       await waitFor(() => {
         expect(
-          screen.getAllByText(/please enter guest's full name/i)
+          screen.getAllByText(/please select a meal preference/i)
         ).toHaveLength(2); // One in error summary, one in field error
       });
 
@@ -557,10 +578,8 @@ describe('RSVPForm integration', () => {
       // Change to not attending
       await user.click(attendingNoRadio);
 
-      // Meal preference should be hidden
-      expect(
-        screen.getByLabelText(/meal preference/i).closest('.conditional-fields')
-      ).toHaveClass('hide');
+      // Meal preference not rendered — guest.attending=false removes the field from DOM
+      expect(screen.queryByLabelText(/meal preference/i)).not.toBeInTheDocument();
 
       // Name should still be filled
       expect(fullNameInput.value).toBe('Test User');

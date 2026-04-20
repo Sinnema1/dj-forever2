@@ -42,6 +42,7 @@ import { randomBytes } from "crypto";
 import UserModel, { IUser } from "../models/User.js";
 import RSVP from "../models/RSVP.js";
 import { ValidationError } from "../utils/errors.js";
+import { validateName } from "../utils/validation.js";
 import { logger } from "../utils/logger.js";
 import {
   generateQRCodeForUser,
@@ -104,6 +105,7 @@ export async function getWeddingStats(): Promise<AdminStats> {
 
     // Count attendance responses
     let totalAttending = 0;
+    let totalAttendingGuests = 0;
     let totalNotAttending = 0;
     let totalMaybe = 0;
     const mealPreferenceCounts = new Map<string, number>();
@@ -116,6 +118,12 @@ export async function getWeddingStats(): Promise<AdminStats> {
       switch (rsvp.attending) {
         case "YES":
           totalAttending++;
+          // Use guests.length when populated (authoritative); fall back to
+          // 1 + guestCount for legacy records that predate the guests array.
+          totalAttendingGuests +=
+            rsvp.guests && rsvp.guests.length > 0
+              ? rsvp.guests.length
+              : 1 + (rsvp.guestCount || 0);
           break;
         case "NO":
           totalNotAttending++;
@@ -168,6 +176,7 @@ export async function getWeddingStats(): Promise<AdminStats> {
       totalInvited,
       totalRSVPed,
       totalAttending,
+      totalAttendingGuests,
       totalNotAttending,
       totalMaybe,
       rsvpPercentage: Math.round(rsvpPercentage * 100) / 100,
@@ -425,7 +434,8 @@ export async function adminUpdateUser(
       throw new ValidationError("User not found");
     }
 
-    if (input.fullName !== undefined) user.fullName = input.fullName;
+    if (input.fullName !== undefined)
+      user.fullName = validateName(input.fullName, "Full Name");
     if (input.email !== undefined) user.email = input.email;
     if (input.isInvited !== undefined) user.isInvited = input.isInvited;
 
@@ -565,6 +575,9 @@ export async function adminCreateUser(input: {
       service: "AdminService",
     });
 
+    // Validate name before hitting the database
+    const validatedFullName = validateName(input.fullName, "Full Name");
+
     // Check if user with email already exists
     const existingUser = await (User.findOne as any)({ email: input.email });
     if (existingUser) {
@@ -579,7 +592,7 @@ export async function adminCreateUser(input: {
 
     // Create new user
     const user = new User({
-      fullName: input.fullName,
+      fullName: validatedFullName,
       email: input.email,
       isInvited: input.isInvited,
       isAdmin: false,
@@ -899,6 +912,15 @@ export async function bulkUpdatePersonalization(
           logger.error(`Cannot create user without fullName: ${update.email}`, {
             service: "AdminService",
           });
+          continue;
+        }
+
+        // Validate name before creating
+        try {
+          update.fullName = validateName(update.fullName, "Full Name");
+        } catch (nameError: any) {
+          result.failed++;
+          result.errors.push({ email: update.email, error: nameError.message });
           continue;
         }
 

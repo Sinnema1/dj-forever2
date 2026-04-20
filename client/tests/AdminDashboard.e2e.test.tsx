@@ -33,6 +33,7 @@ const mockStats = {
     totalInvited: 100,
     totalRSVPed: 50,
     totalAttending: 40,
+    totalAttendingGuests: 55,
     totalNotAttending: 10,
     totalMaybe: 0,
     rsvpPercentage: 50,

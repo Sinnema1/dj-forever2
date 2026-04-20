@@ -110,8 +110,17 @@ npm run dev  # Starts both server and client with hot reload
 - **Authentication**: All resolvers receive `user` from JWT context in `src/graphql/resolvers.ts`
 - **Party size validation**: RSVP service enforces maximum party size limits
   - Formula: `maxAllowed = 1 + (householdMembers?.length || 0) + (plusOneAllowed ? 1 : 0)`
-  - Validation in both `createRSVP` and `updateRSVP` functions
-  - Descriptive error messages include party size breakdown
+  - Validation in both `createRSVP` and `updateRSVP`; called with **total** guest count (`guests.length`)
+  - `guestCount` stored on the document = **additional** guests beyond primary = `guests.length - 1`
+  - `guestCount` is normalized by the service layer on both create and update (pre-save hook only runs on `.save()`, not `findOneAndUpdate`)
+
+### RSVP Form (Client)
+
+- **Per-person attendance**: Each household member is a `GuestFormRow` (extends `Guest` with UI-only `attending: boolean`). Only checked rows are included in the API payload; `attending` is stripped before submission.
+- **`buildGuestRows(rsvp, user)`**: Module-level helper that builds the initial/hydrated form row state. Always ensures `user.fullName` appears at row index 0, even if removed from `rsvp.guests`.
+- **Household member freshness**: `useRSVP` fires `GET_ME` with `fetchPolicy: 'network-only'` to pick up members added after login. The hook exposes `freshUser`; `RSVPForm` uses `freshUser ?? cachedUser`.
+- **Name validation parity**: `isValidGuestName()` in `RSVPForm.tsx` uses the same regex as server `validateName` (`/^[a-zA-Z\s\-']+$/`). Invalid household member names are silently filtered from rows.
+- **Lint invariant in `RSVPForm.tsx`**: Keep braces around all `if` branches (including single-line conditionals). CI enforces ESLint `curly`, and brace-less branches in this file will fail `npm run lint`.
 
 ### Database Patterns
 
@@ -411,7 +420,7 @@ When reasoning about specific domains, prioritize context from these files:
 
 ### 🎨 Feature-Specific
 
-- **RSVP Form**: `/client/src/pages/RSVPPage.tsx` (Pre-population, validation)
+- **RSVP Form**: `/client/src/components/RSVP/RSVPForm.tsx` (Per-person attendance, `buildGuestRows`, validation)
 - **Admin Dashboard**: `/client/src/pages/AdminPage.tsx` (Guest management)
 - **Bulk Upload**: `/client/src/components/admin/BulkPersonalization.tsx` (CSV import)
 - **Photo Gallery**: `/client/src/components/PhotoGallery.tsx` (SwipeableLightbox integration)

@@ -198,28 +198,27 @@ export function validateAttendance(attending: string): "YES" | "NO" | "MAYBE" {
 /**
  * Validate guest count for wedding capacity management
  *
- * Enforces business constraints:
- * - Must be positive integer (no fractional guests)
- * - Minimum 1 guest (the invitee themselves)
- * - Maximum 10 guests (venue capacity limitations)
+ * Enforces business constraints for "additional guests beyond the primary":
+ * - Must be non-negative integer (no fractional guests)
+ * - Minimum 0 additional guests (solo attendance)
+ * - Maximum 10 additional guests (venue capacity limitations)
  * - Validates numeric type integrity
  *
- * @param count - Number of guests from RSVP form
+ * @param count - Number of additional guests beyond the primary invitee
  * @returns Validated guest count as integer
- * @throws {ValidationError} When count is not integer, negative, zero, or exceeds limit
+ * @throws {ValidationError} When count is not integer, negative, or exceeds limit
  *
  * @example
  * ```typescript
- * // Valid guest counts
- * validateGuestCount(1); // Solo attendance
- * validateGuestCount(2); // Couple
- * validateGuestCount(5); // Family group
+ * // Valid additional guest counts
+ * validateGuestCount(0); // Solo attendance
+ * validateGuestCount(1); // Couple
+ * validateGuestCount(4); // Family group
  *
  * // Validation errors
- * validateGuestCount(0); // ValidationError: Guest count must be between 1 and 10
+ * validateGuestCount(-1); // ValidationError: Guest count must be between 0 and 10
  * validateGuestCount(11); // ValidationError: Guest count must be between 1 and 10
- * validateGuestCount(2.5); // ValidationError: Guest count must be between 1 and 10
- * validateGuestCount(-1); // ValidationError: Guest count must be between 1 and 10
+ * validateGuestCount(2.5); // ValidationError: Guest count must be between 0 and 10
  * ```
  *
  * @businessLogic
@@ -229,8 +228,8 @@ export function validateAttendance(attending: string): "YES" | "NO" | "MAYBE" {
  * - Cost estimation for event planning
  */
 export function validateGuestCount(count: number): number {
-  if (!Number.isInteger(count) || count < 1 || count > 10) {
-    throw new ValidationError("Guest count must be between 1 and 10");
+  if (!Number.isInteger(count) || count < 0 || count > 10) {
+    throw new ValidationError("Guest count must be between 0 and 10");
   }
 
   return count;

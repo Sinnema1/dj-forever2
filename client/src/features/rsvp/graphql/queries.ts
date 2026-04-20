@@ -20,3 +20,23 @@ export const GET_RSVP = gql`
     }
   }
 `;
+
+export const GET_ME = gql`
+  query GetMe {
+    me {
+      _id
+      fullName
+      email
+      isInvited
+      plusOneAllowed
+      plusOneName
+      dietaryRestrictions
+      householdMembers {
+        firstName
+        lastName
+        relationshipToBride
+        relationshipToGroom
+      }
+    }
+  }
+`;

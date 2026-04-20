@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# ──────────────────────────────────────────────────────────────
+# Git pre-commit hook: documentation freshness check.
+#
+# This is INFORMATIONAL ONLY — it will not block your commit.
+# Warns when staged source changes may require doc updates.
+#
+# Installed automatically via: npm install (prepare lifecycle)
+# Manual install: bash scripts/install-hooks.sh
+# ──────────────────────────────────────────────────────────────
+SCRIPT="$(git rev-parse --show-toplevel)/scripts/check-docs-freshness.sh"
+if [[ -x "$SCRIPT" ]]; then
+  exec "$SCRIPT" --staged
+fi
+# Script not found (e.g. worktree without the file) — skip silently
+exit 0

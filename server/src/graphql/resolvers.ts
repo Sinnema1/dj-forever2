@@ -65,6 +65,7 @@ import {
 } from "../services/emailService.js";
 import User from "../models/User.js";
 import { AuthenticationError, ValidationError } from "../utils/errors.js";
+import { validateName } from "../utils/validation.js";
 import type {
   GraphQLContext,
   RegisterUserArgs,
@@ -346,12 +347,12 @@ export const resolvers = {
     // Admin mutations
     adminUpdateRSVP: async (
       _: unknown,
-      args: { rsvpId: string; updates: AdminRSVPUpdateInput },
+      args: { userId: string; input: AdminRSVPUpdateInput },
       context: GraphQLContext,
     ) => {
       requireAdmin(context);
       try {
-        return await adminUpdateRSVP(args.rsvpId, args.updates);
+        return await adminUpdateRSVP(args.userId, args.input);
       } catch (error: any) {
         console.error("Error in adminUpdateRSVP resolver:", error);
         throw new GraphQLError(error?.message || "Failed to update RSVP");
@@ -478,7 +479,30 @@ export const resolvers = {
           updateFields.dietaryRestrictions = args.input.dietaryRestrictions;
         }
         if (args.input.householdMembers !== undefined) {
-          updateFields.householdMembers = args.input.householdMembers;
+          if (args.input.householdMembers === null) {
+            updateFields.householdMembers = [];
+          } else {
+            updateFields.householdMembers = args.input.householdMembers.map(
+              (m, i) => {
+                try {
+                  return {
+                    ...m,
+                    firstName: validateName(
+                      m.firstName,
+                      `Member ${i + 1} first name`,
+                    ),
+                    lastName: m.lastName
+                      ? validateName(m.lastName, `Member ${i + 1} last name`)
+                      : m.lastName,
+                  };
+                } catch (e: any) {
+                  throw new GraphQLError(e.message, {
+                    extensions: { code: "VALIDATION_ERROR" },
+                  });
+                }
+              },
+            );
+          }
         }
         // Address fields
         if (args.input.streetAddress !== undefined) {
