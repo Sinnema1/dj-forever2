@@ -153,8 +153,8 @@ const createNonAttendingRSVPMock = {
         guestCount: 0,
         guests: [],
         additionalNotes: "Sorry, can't make it",
-        // Legacy fields - empty for non-attending
-        fullName: '',
+        // Legacy fields - client sends primary guest name even for non-attending
+        fullName: 'Test User',
         mealPreference: '',
         allergies: '',
       },
@@ -529,10 +529,12 @@ describe('RSVPForm integration', () => {
       // Try to submit without required fields
       await user.click(screen.getByRole('button', { name: /submit rsvp/i }));
 
-      // Should show validation errors for attending guests
+      // Should show validation errors for attending guests.
+      // buildGuestRows pre-fills the primary user's name, so the first
+      // required field that fires is meal preference, not name.
       await waitFor(() => {
         expect(
-          screen.getAllByText(/please enter guest's full name/i)
+          screen.getAllByText(/please select a meal preference/i)
         ).toHaveLength(2); // One in error summary, one in field error
       });
 
