@@ -95,7 +95,6 @@ export default defineConfig({
         globPatterns: [
           '**/*.{js,css,html,webmanifest}',
           'assets/**/*.{png,svg,jpg,jpeg,webp}',
-          'images/**/*.{png,svg,jpg,jpeg,webp}',
           // Note: offline.html is included via *.html glob pattern above
         ],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,

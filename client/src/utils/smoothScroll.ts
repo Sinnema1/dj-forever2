@@ -75,7 +75,7 @@ export function smoothScroll(targetId: string, offset: number = 100) {
   // (prevents "lost" focus after skip links / drawer actions)
   if (typeof (el as HTMLElement).focus === 'function') {
     (el as HTMLElement).setAttribute('tabindex', '-1');
-    (el as HTMLElement).focus({ preventScroll: true } as any);
+    (el as HTMLElement).focus({ preventScroll: true });
   }
 }
 

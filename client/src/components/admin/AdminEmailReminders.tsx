@@ -216,10 +216,10 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
           `❌ Failed to send email: ${data.adminSendReminderEmail.error || 'Unknown error'}`
         );
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to send reminder:', error);
       alert(
-        `❌ Failed to send reminder: ${error.message || 'Please try again.'}`
+        `❌ Failed to send reminder: ${error instanceof Error ? error.message : 'Please try again.'}`
       );
     } finally {
       setIsSending(false);
@@ -256,10 +256,10 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
       );
 
       setSelectedGuests(new Set());
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to send bulk reminders:', error);
       alert(
-        `❌ Failed to send reminders: ${error.message || 'Please try again.'}`
+        `❌ Failed to send reminders: ${error instanceof Error ? error.message : 'Please try again.'}`
       );
     } finally {
       setIsSending(false);
@@ -295,10 +295,10 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
 
       setSelectedGuests(new Set());
       refetchHistory(); // Refresh history after sending
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to send all reminders:', error);
       alert(
-        `❌ Failed to send reminders: ${error.message || 'Please try again.'}`
+        `❌ Failed to send reminders: ${error instanceof Error ? error.message : 'Please try again.'}`
       );
     } finally {
       setIsSending(false);
@@ -316,10 +316,10 @@ const AdminEmailReminders: React.FC<AdminEmailRemindersProps> = ({
         setPreviewData(data.emailPreview);
         setShowPreview(true);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to generate preview:', error);
       alert(
-        `❌ Failed to generate preview: ${error.message || 'Please try again.'}`
+        `❌ Failed to generate preview: ${error instanceof Error ? error.message : 'Please try again.'}`
       );
     }
   };

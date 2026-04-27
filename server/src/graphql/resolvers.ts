@@ -65,6 +65,7 @@ import {
 } from "../services/emailService.js";
 import User from "../models/User.js";
 import { AuthenticationError, ValidationError } from "../utils/errors.js";
+import { logger } from "../utils/logger.js";
 import { validateName } from "../utils/validation.js";
 import type {
   GraphQLContext,
@@ -168,9 +169,9 @@ export const resolvers = {
 
       try {
         return await getRSVP(user._id?.toString() || user.id?.toString());
-      } catch (error: any) {
-        console.error("Error in getRSVP resolver:", error);
-        throw new GraphQLError(error?.message || "Failed to fetch RSVP");
+      } catch (error: unknown) {
+        logger.error("Error in getRSVP resolver", { service: "Resolver", error });
+        throw new GraphQLError(error instanceof Error ? error.message : "Failed to fetch RSVP");
       }
     },
     // Admin queries
@@ -182,9 +183,9 @@ export const resolvers = {
       requireAdmin(context);
       try {
         return await getAllUsersWithRSVPs();
-      } catch (error: any) {
-        console.error("Error in adminGetAllRSVPs resolver:", error);
-        throw new GraphQLError(error?.message || "Failed to fetch RSVP data");
+      } catch (error: unknown) {
+        logger.error("Error in adminGetAllRSVPs resolver", { service: "Resolver", error });
+        throw new GraphQLError(error instanceof Error ? error.message : "Failed to fetch RSVP data");
       }
     },
     adminGetUserStats: async (
@@ -195,10 +196,10 @@ export const resolvers = {
       requireAdmin(context);
       try {
         return await getWeddingStats();
-      } catch (error: any) {
-        console.error("Error in adminGetUserStats resolver:", error);
+      } catch (error: unknown) {
+        logger.error("Error in adminGetUserStats resolver", { service: "Resolver", error });
         throw new GraphQLError(
-          error?.message || "Failed to fetch wedding statistics",
+          error instanceof Error ? error.message : "Failed to fetch wedding statistics",
         );
       }
     },
@@ -210,9 +211,9 @@ export const resolvers = {
       requireAdmin(context);
       try {
         return await exportGuestListCSV();
-      } catch (error: any) {
-        console.error("Error in adminExportGuestList resolver:", error);
-        throw new GraphQLError(error?.message || "Failed to export guest list");
+      } catch (error: unknown) {
+        logger.error("Error in adminExportGuestList resolver", { service: "Resolver", error });
+        throw new GraphQLError(error instanceof Error ? error.message : "Failed to export guest list");
       }
     },
 
@@ -234,10 +235,10 @@ export const resolvers = {
         const { generateEmailPreview } =
           await import("../services/emailService.js");
         return await generateEmailPreview(args.userId, args.template);
-      } catch (error: any) {
-        console.error("Error in emailPreview resolver:", error);
+      } catch (error: unknown) {
+        logger.error("Error in emailPreview resolver", { service: "Resolver", error });
         throw new GraphQLError(
-          error?.message || "Failed to generate email preview",
+          error instanceof Error ? error.message : "Failed to generate email preview",
         );
       }
     },
@@ -259,10 +260,10 @@ export const resolvers = {
       try {
         const { getEmailHistory } = await import("../services/emailService.js");
         return await getEmailHistory(args.limit || 50, args.status);
-      } catch (error: any) {
-        console.error("Error in emailSendHistory resolver:", error);
+      } catch (error: unknown) {
+        logger.error("Error in emailSendHistory resolver", { service: "Resolver", error });
         throw new GraphQLError(
-          error?.message || "Failed to fetch email history",
+          error instanceof Error ? error.message : "Failed to fetch email history",
         );
       }
     },
@@ -271,18 +272,18 @@ export const resolvers = {
     registerUser: async (_: unknown, args: RegisterUserArgs) => {
       try {
         return await registerUser(args);
-      } catch (error: any) {
-        console.error("Error in registerUser resolver:", error);
-        throw new ValidationError(error?.message || "Registration failed");
+      } catch (error: unknown) {
+        logger.error("Error in registerUser resolver", { service: "Resolver", error });
+        throw new ValidationError(error instanceof Error ? error.message : "Registration failed");
       }
     },
     loginWithQrToken: async (_: unknown, args: LoginArgs) => {
       const { qrToken } = args;
       try {
         return await loginWithQrToken({ qrToken });
-      } catch (error: any) {
-        console.error("Error in loginWithQrToken resolver:", error);
-        throw new AuthenticationError(error?.message || "Login failed");
+      } catch (error: unknown) {
+        logger.error("Error in loginWithQrToken resolver", { service: "Resolver", error });
+        throw new AuthenticationError(error instanceof Error ? error.message : "Login failed");
       }
     },
     submitRSVP: async (
@@ -299,10 +300,10 @@ export const resolvers = {
           userId: user._id?.toString() || user.id?.toString(),
           fullName: args.fullName || user.fullName,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error instanceof GraphQLError) throw error;
-        console.error("Error in submitRSVP resolver:", error);
-        throw new GraphQLError(error?.message || "Failed to submit RSVP");
+        logger.error("Error in submitRSVP resolver", { service: "Resolver", error });
+        throw new GraphQLError(error instanceof Error ? error.message : "Failed to submit RSVP");
       }
     },
     createRSVP: async (
@@ -319,10 +320,10 @@ export const resolvers = {
           userId: user._id?.toString() || user.id?.toString(),
           fullName: input.fullName || user.fullName,
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error instanceof GraphQLError) throw error;
-        console.error("Error in createRSVP resolver:", error);
-        throw new GraphQLError(error?.message || "Failed to create RSVP");
+        logger.error("Error in createRSVP resolver", { service: "Resolver", error });
+        throw new GraphQLError(error instanceof Error ? error.message : "Failed to create RSVP");
       }
     },
     editRSVP: async (
@@ -338,10 +339,10 @@ export const resolvers = {
           user._id?.toString() || user.id?.toString(),
           updates,
         );
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error instanceof GraphQLError) throw error;
-        console.error("Error in editRSVP resolver:", error);
-        throw new GraphQLError(error?.message || "Failed to update RSVP");
+        logger.error("Error in editRSVP resolver", { service: "Resolver", error });
+        throw new GraphQLError(error instanceof Error ? error.message : "Failed to update RSVP");
       }
     },
     // Admin mutations
@@ -353,9 +354,9 @@ export const resolvers = {
       requireAdmin(context);
       try {
         return await adminUpdateRSVP(args.userId, args.input);
-      } catch (error: any) {
-        console.error("Error in adminUpdateRSVP resolver:", error);
-        throw new GraphQLError(error?.message || "Failed to update RSVP");
+      } catch (error: unknown) {
+        logger.error("Error in adminUpdateRSVP resolver", { service: "Resolver", error });
+        throw new GraphQLError(error instanceof Error ? error.message : "Failed to update RSVP");
       }
     },
     adminUpdateUser: async (
@@ -366,9 +367,9 @@ export const resolvers = {
       requireAdmin(context);
       try {
         return await adminUpdateUser(args.userId, args.input);
-      } catch (error: any) {
-        console.error("Error in adminUpdateUser resolver:", error);
-        throw new GraphQLError(error?.message || "Failed to update user");
+      } catch (error: unknown) {
+        logger.error("Error in adminUpdateUser resolver", { service: "Resolver", error });
+        throw new GraphQLError(error instanceof Error ? error.message : "Failed to update user");
       }
     },
     adminUpdateUserPersonalization: async (
@@ -537,15 +538,16 @@ export const resolvers = {
         }
 
         return user;
-      } catch (error: any) {
-        console.error(
-          "Error in adminUpdateUserPersonalization resolver:",
-          error,
-        );
+      } catch (error: unknown) {
+        logger.error("Error in adminUpdateUserPersonalization resolver", { service: "Resolver", error });
 
         // Handle MongoDB duplicate key error for qrAlias
-        if (error.code === 11000 && error.message?.includes("qrAlias")) {
-          const aliasMatch = error.message.match(
+        const mongoCode = typeof error === 'object' && error !== null
+          ? (error as Record<string, unknown>).code
+          : undefined;
+        const errorMsg = error instanceof Error ? error.message : '';
+        if (mongoCode === 11000 && errorMsg.includes("qrAlias")) {
+          const aliasMatch = errorMsg.match(
             /dup key: \{ qrAlias: "([^"]+)" \}/,
           );
           const alias = aliasMatch ? aliasMatch[1] : "this value";
@@ -556,7 +558,7 @@ export const resolvers = {
         }
 
         throw new GraphQLError(
-          error?.message || "Failed to update user personalization",
+          error instanceof Error ? error.message : "Failed to update user personalization",
         );
       }
     },
@@ -569,9 +571,9 @@ export const resolvers = {
       try {
         await adminDeleteRSVP(args.rsvpId);
         return true;
-      } catch (error: any) {
-        console.error("Error in adminDeleteRSVP resolver:", error);
-        throw new GraphQLError(error?.message || "Failed to delete RSVP");
+      } catch (error: unknown) {
+        logger.error("Error in adminDeleteRSVP resolver", { service: "Resolver", error });
+        throw new GraphQLError(error instanceof Error ? error.message : "Failed to delete RSVP");
       }
     },
     adminCreateUser: async (
@@ -582,9 +584,9 @@ export const resolvers = {
       requireAdmin(context);
       try {
         return await adminCreateUser(args.input);
-      } catch (error: any) {
-        console.error("Error in adminCreateUser resolver:", error);
-        throw new GraphQLError(error?.message || "Failed to create user");
+      } catch (error: unknown) {
+        logger.error("Error in adminCreateUser resolver", { service: "Resolver", error });
+        throw new GraphQLError(error instanceof Error ? error.message : "Failed to create user");
       }
     },
     adminDeleteUser: async (
@@ -595,9 +597,9 @@ export const resolvers = {
       requireAdmin(context);
       try {
         return await adminDeleteUser(args.userId);
-      } catch (error: any) {
-        console.error("Error in adminDeleteUser resolver:", error);
-        throw new GraphQLError(error?.message || "Failed to delete user");
+      } catch (error: unknown) {
+        logger.error("Error in adminDeleteUser resolver", { service: "Resolver", error });
+        throw new GraphQLError(error instanceof Error ? error.message : "Failed to delete user");
       }
     },
     adminBulkUpdatePersonalization: async (
@@ -624,13 +626,10 @@ export const resolvers = {
       requireAdmin(context);
       try {
         return await bulkUpdatePersonalization(args.updates);
-      } catch (error: any) {
-        console.error(
-          "Error in adminBulkUpdatePersonalization resolver:",
-          error,
-        );
+      } catch (error: unknown) {
+        logger.error("Error in adminBulkUpdatePersonalization resolver", { service: "Resolver", error });
         throw new GraphQLError(
-          error?.message || "Failed to bulk update personalization",
+          error instanceof Error ? error.message : "Failed to bulk update personalization",
         );
       }
     },
@@ -643,10 +642,10 @@ export const resolvers = {
       requireAdmin(context);
       try {
         return await adminRegenerateQRCodes();
-      } catch (error: any) {
-        console.error("Error in adminRegenerateQRCodes resolver:", error);
+      } catch (error: unknown) {
+        logger.error("Error in adminRegenerateQRCodes resolver", { service: "Resolver", error });
         throw new GraphQLError(
-          error?.message || "Failed to regenerate QR codes",
+          error instanceof Error ? error.message : "Failed to regenerate QR codes",
         );
       }
     },
@@ -679,12 +678,12 @@ export const resolvers = {
           email: user.email,
           error: success ? null : "Failed to send email",
         };
-      } catch (error: any) {
-        console.error("Error in adminSendReminderEmail resolver:", error);
+      } catch (error: unknown) {
+        logger.error("Error in adminSendReminderEmail resolver", { service: "Resolver", error });
         return {
           success: false,
           email: "",
-          error: error?.message || "Failed to send reminder email",
+          error: error instanceof Error ? error.message : "Failed to send reminder email",
         };
       }
     },
@@ -716,10 +715,10 @@ export const resolvers = {
           failureCount: results.filter((r) => !r.success).length,
           results,
         };
-      } catch (error: any) {
-        console.error("Error in adminSendBulkReminderEmails resolver:", error);
+      } catch (error: unknown) {
+        logger.error("Error in adminSendBulkReminderEmails resolver", { service: "Resolver", error });
         throw new GraphQLError(
-          error?.message || "Failed to send bulk reminder emails",
+          error instanceof Error ? error.message : "Failed to send bulk reminder emails",
         );
       }
     },
@@ -750,13 +749,10 @@ export const resolvers = {
           failureCount: results.filter((r) => !r.success).length,
           results,
         };
-      } catch (error: any) {
-        console.error(
-          "Error in adminSendReminderToAllPending resolver:",
-          error,
-        );
+      } catch (error: unknown) {
+        logger.error("Error in adminSendReminderToAllPending resolver", { service: "Resolver", error });
         throw new GraphQLError(
-          error?.message || "Failed to send reminders to all pending guests",
+          error instanceof Error ? error.message : "Failed to send reminders to all pending guests",
         );
       }
     },

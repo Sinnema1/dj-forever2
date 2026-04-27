@@ -52,6 +52,7 @@ import jwt from "jsonwebtoken";
 import { Document } from "mongoose";
 import { config } from "../config/index.js";
 import { ValidationError, AuthenticationError } from "../utils/errors.js";
+import { logger } from "../utils/logger.js";
 import {
   validateEmail,
   validateName,
@@ -151,12 +152,12 @@ export async function registerUser({
     } as jwt.SignOptions);
 
     return { token, user };
-  } catch (error: any) {
-    console.error("Registration error:", error);
+  } catch (error: unknown) {
+    logger.error("Registration error", { service: "AuthService", error });
     if (error instanceof ValidationError) {
       throw error;
     }
-    throw new ValidationError(error?.message || "Registration failed");
+    throw new ValidationError(error instanceof Error ? error.message : "Registration failed");
   }
 }
 
@@ -195,15 +196,15 @@ export async function loginWithQrToken({
     } as jwt.SignOptions);
 
     return { token, user: user.toObject() };
-  } catch (error: any) {
-    console.error("Login error:", error);
+  } catch (error: unknown) {
+    logger.error("Login error", { service: "AuthService", error });
     if (
       error instanceof AuthenticationError ||
       error instanceof ValidationError
     ) {
       throw error;
     }
-    throw new AuthenticationError(error?.message || "Login failed");
+    throw new AuthenticationError(error instanceof Error ? error.message : "Login failed");
   }
 }
 
@@ -227,7 +228,7 @@ export async function verifyToken(token: string): Promise<IUser | null> {
 
     return user;
   } catch (error) {
-    console.error("Token verification failed:", error);
+    logger.error("Token verification failed", { service: "AuthService", error });
     return null;
   }
 }
@@ -245,7 +246,7 @@ export async function getUserFromRequest(req: any): Promise<IUser | null> {
     const token = authHeader.substring(7); // Remove "Bearer " prefix
     return await verifyToken(token);
   } catch (error) {
-    console.error("Error extracting user from request:", error);
+    logger.error("Error extracting user from request", { service: "AuthService", error });
     return null;
   }
 }

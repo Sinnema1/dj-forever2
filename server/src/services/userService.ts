@@ -98,26 +98,6 @@ export interface UserUpdateInput {
 }
 
 /**
- * User statistics
- */
-export interface UserStats {
-  totalUsers: number;
-  totalInvited: number;
-  totalRSVPed: number;
-  totalAttending: number;
-  totalNotAttending: number;
-  totalMaybe: number;
-  rsvpPercentage: number;
-  attendancePercentage: number;
-  byGuestGroup: Record<string, number>;
-  byRelationship: {
-    bride: number;
-    groom: number;
-    both: number;
-  };
-}
-
-/**
  * Get user by ID
  *
  * @param userId - User ID to fetch
@@ -486,100 +466,6 @@ export async function regenerateQRToken(userId: string): Promise<IUser> {
       error,
     });
     throw new Error("Failed to regenerate QR token");
-  }
-}
-
-/**
- * @deprecated Dead code — not called by any resolver. Admin stats use
- * getWeddingStats() in adminService.ts. Has the same totalAttending++
- * (record-count, not headcount) pattern. Do not revive without fixing.
- *
- * @returns User and RSVP statistics
- */
-export async function getUserStats(): Promise<UserStats> {
-  try {
-    logger.info("Calculating user statistics", { service: "UserService" });
-
-    const users = await (User.find as any)({ isInvited: true }).populate(
-      "rsvp",
-    );
-
-    const stats: UserStats = {
-      totalUsers: users.length,
-      totalInvited: users.length,
-      totalRSVPed: 0,
-      totalAttending: 0,
-      totalNotAttending: 0,
-      totalMaybe: 0,
-      rsvpPercentage: 0,
-      attendancePercentage: 0,
-      byGuestGroup: {},
-      byRelationship: {
-        bride: 0,
-        groom: 0,
-        both: 0,
-      },
-    };
-
-    for (const user of users) {
-      // Count RSVPs
-      if (user.hasRSVPed) {
-        stats.totalRSVPed++;
-
-        if (user.rsvp) {
-          switch (user.rsvp.attending) {
-            case "YES":
-              stats.totalAttending++;
-              break;
-            case "NO":
-              stats.totalNotAttending++;
-              break;
-            case "MAYBE":
-              stats.totalMaybe++;
-              break;
-          }
-        }
-      }
-
-      // Count by guest group
-      if (user.guestGroup) {
-        stats.byGuestGroup[user.guestGroup] =
-          (stats.byGuestGroup[user.guestGroup] || 0) + 1;
-      }
-
-      // Count by relationship
-      if (user.relationshipToBride && user.relationshipToGroom) {
-        stats.byRelationship.both++;
-      } else if (user.relationshipToBride) {
-        stats.byRelationship.bride++;
-      } else if (user.relationshipToGroom) {
-        stats.byRelationship.groom++;
-      }
-    }
-
-    // Calculate percentages
-    stats.rsvpPercentage =
-      stats.totalInvited > 0
-        ? Math.round((stats.totalRSVPed / stats.totalInvited) * 100)
-        : 0;
-
-    stats.attendancePercentage =
-      stats.totalRSVPed > 0
-        ? Math.round((stats.totalAttending / stats.totalRSVPed) * 100)
-        : 0;
-
-    logger.info("Successfully calculated user statistics", {
-      service: "UserService",
-      stats,
-    });
-
-    return stats;
-  } catch (error) {
-    logger.error("Failed to calculate user statistics", {
-      service: "UserService",
-      error,
-    });
-    throw new Error("Failed to calculate user statistics");
   }
 }
 

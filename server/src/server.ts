@@ -76,6 +76,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import User from "./models/User.js";
+import { logger } from "./utils/logger.js";
 
 dotenv.config();
 
@@ -136,7 +137,7 @@ async function startServer() {
     await mongoose.connect(uri, { dbName });
     console.log(`🗄️ Connected to MongoDB: ${dbName}`);
   } catch (error) {
-    console.error("❌ MongoDB connection error:", error);
+    logger.error("MongoDB connection error", { error });
     process.exit(1);
   }
 
@@ -250,7 +251,7 @@ async function startServer() {
       const user = await (User.findOne as any)({ qrToken });
 
       if (!user) {
-        console.error(`[QR Download] User not found for token: ${qrToken}`);
+        logger.error("QR Download: User not found", { qrToken });
         return res.status(404).json({
           error: "User not found",
           message: `No user found with QR token ${qrToken}`,
@@ -284,7 +285,7 @@ async function startServer() {
 
       // Check if file exists
       if (!fs.existsSync(filePath)) {
-        console.error(`[QR Download] File not found: ${filePath}`);
+        logger.error("QR Download: File not found", { filePath });
         return res.status(404).json({
           error: "QR code file not found",
           message: `QR code file for ${user.fullName} does not exist. Use the 'Regenerate QR Codes' button in the admin dashboard to generate it.`,
@@ -306,7 +307,7 @@ async function startServer() {
       // Send the file - sendFile requires absolute path
       return res.sendFile(filePath, (err) => {
         if (err) {
-          console.error(`[QR Download] Error sending file:`, err);
+          logger.error("QR Download: Error sending file", { error: err });
           if (!res.headersSent) {
             res.status(500).json({
               error: "Failed to send QR code file",
@@ -316,7 +317,7 @@ async function startServer() {
         }
       });
     } catch (error) {
-      console.error("Error serving QR code:", error);
+      logger.error("Error serving QR code", { error });
       if (!res.headersSent) {
         res.status(500).json({
           error: "Failed to retrieve QR code",
@@ -341,7 +342,7 @@ async function startServer() {
     try {
       await processEmailQueue();
     } catch (error) {
-      console.error("Email queue processing error:", error);
+      logger.error("Email queue processing error", { error });
     }
   }, 60 * 1000); // Run every minute
 

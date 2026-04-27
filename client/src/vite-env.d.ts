@@ -2,7 +2,7 @@
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
-  glob: (pattern: string, options?: any) => Record<string, unknown>;
+  glob: (pattern: string, options?: unknown) => Record<string, unknown>;
 }
 
 interface ImportMetaEnv {
