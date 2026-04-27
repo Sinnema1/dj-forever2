@@ -38,6 +38,7 @@
 
 // Centralized error handling for GraphQL
 import { GraphQLError } from "graphql";
+import { logger } from "./logger.js";
 
 /**
  * Authentication error for invalid or missing credentials
@@ -196,10 +197,6 @@ export class ValidationError extends GraphQLError {
  * - All errors logged server-side for security monitoring
  */
 export function formatError(error: GraphQLError) {
-  // Log errors (add your logging service here)
-  if (process.env.NODE_ENV !== "production") {
-    console.error("GraphQL Error:", error);
-  }
-
+  logger.error("GraphQL Error", { error });
   return error;
 }

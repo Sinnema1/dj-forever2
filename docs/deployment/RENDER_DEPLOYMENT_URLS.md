@@ -60,21 +60,6 @@ VITE_GRAPHQL_ENDPOINT=https://api.djforever2026.com/graphql
 
 ## 🧪 Test Your Deployment
 
-Use the verification scripts (already updated to use custom domains):
-
-```bash
-# Full verification suite
-bash scripts/verify-production.sh
-
-# Frontend-backend communication test
-bash scripts/test-frontend-backend.sh
-
-# Comprehensive validation
-bash scripts/validate-production.sh
-```
-
-Or manually:
-
 ```bash
 # Backend health
 curl https://api.djforever2026.com/health
