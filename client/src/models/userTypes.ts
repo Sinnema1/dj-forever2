@@ -130,17 +130,6 @@ export interface User {
 }
 
 /**
- * UserType - Legacy Type Alias
- *
- * Maintains backward compatibility with existing code that imports UserType.
- * New code should use the User interface directly for clarity.
- *
- * @deprecated Use `User` interface directly for new code
- * @type {User}
- */
-export type UserType = User;
-
-/**
  * AuthContextType - Authentication Context Interface
  *
  * Defines the structure and methods available through the authentication context.

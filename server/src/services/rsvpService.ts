@@ -62,6 +62,7 @@ import RSVP, { IRSVP, IGuest } from "../models/RSVP.js";
 import User, { IUser } from "../models/User.js";
 import mongoose, { Document } from "mongoose";
 import { ValidationError } from "../utils/errors.js";
+import { logger } from "../utils/logger.js";
 import { featuresConfig } from "../config/index.js";
 import {
   validateName,
@@ -162,8 +163,8 @@ export async function getRSVP(userId: string): Promise<any> {
       | null;
 
     return rsvp ? rsvp.toObject() : null;
-  } catch (error: any) {
-    console.error("Error fetching RSVP:", error);
+  } catch (error: unknown) {
+    logger.error("Error fetching RSVP", { service: "RSVPService", error });
     if (error instanceof ValidationError) {
       throw error;
     }
@@ -208,8 +209,10 @@ function validateGuests(
       }
 
       return validatedGuest;
-    } catch (error: any) {
-      throw new ValidationError(`Guest ${index + 1}: ${error.message}`);
+    } catch (error: unknown) {
+      throw new ValidationError(
+        `Guest ${index + 1}: ${error instanceof Error ? error.message : "Invalid guest data"}`,
+      );
     }
   });
 }
@@ -317,8 +320,8 @@ export async function createRSVP(input: CreateRSVPInput): Promise<any> {
     await (User.findByIdAndUpdate as any)(userId, { hasRSVPed: true });
 
     return rsvpDoc.toObject();
-  } catch (error: any) {
-    console.error("Error creating RSVP:", error);
+  } catch (error: unknown) {
+    logger.error("Error creating RSVP", { service: "RSVPService", error });
     if (error instanceof ValidationError) {
       throw error;
     }
@@ -432,8 +435,8 @@ export async function updateRSVP(
     }
 
     return rsvp.toObject();
-  } catch (error: any) {
-    console.error("Error updating RSVP:", error);
+  } catch (error: unknown) {
+    logger.error("Error updating RSVP", { service: "RSVPService", error });
     if (error instanceof ValidationError) {
       throw error;
     }

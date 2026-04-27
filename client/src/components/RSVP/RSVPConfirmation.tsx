@@ -72,9 +72,8 @@ export default function RSVPConfirmation({
             {isAttending ? (
               <>
                 <p className="next-steps-text">
-                  We've sent a confirmation email with all the wedding details.
-                  If you need to make any changes, you can update your RSVP
-                  anytime.
+                  YAY!! So excited to have you join us! If you need to make any changes, you can
+                  update your RSVP anytime.
                 </p>
                 <div className="next-steps-links">
                   <a href="/#details" className="next-step-link">

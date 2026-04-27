@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_ADMIN_STATS, GET_ADMIN_RSVPS } from '../../api/adminQueries';
 import AdminStatsCard from './AdminStatsCard';
-import AdminRSVPManager from './AdminRSVPManager';
+import AdminRSVPManager, { AdminUser } from './AdminRSVPManager';
 import AdminGuestExport from './AdminGuestExport';
 import AdminAnalytics from './AdminAnalytics';
 import AdminEmailReminders from './AdminEmailReminders';
@@ -152,7 +152,7 @@ const AdminDashboard: React.FC = () => {
             <div className="rsvp-visual-summary">
               <h2>RSVP Status Overview</h2>
               <div className="rsvp-status-grid">
-                {guests.map((guest: any) => (
+                {(guests as AdminUser[]).map((guest) => (
                   <div
                     key={guest._id}
                     className={`guest-status-card ${

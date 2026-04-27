@@ -14,7 +14,7 @@ import React, {
 import { useMutation } from '@apollo/client/react/hooks';
 import apolloClient from '../api/apolloClient';
 import { LOGIN_WITH_QR_TOKEN } from '../features/auth/graphql/loginWithQrToken';
-import { AuthContextType, UserType } from '../models/userTypes';
+import { AuthContextType, User } from '../models/userTypes';
 import { logInfo, logWarn } from '../utils/logger';
 import {
   reportError,
@@ -88,7 +88,7 @@ interface AuthProviderProps {
  * - `Logger Service` - Debug and info logging
  */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<UserType | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const hasShownExpirationWarning = useRef(false);
@@ -98,7 +98,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
 
   // Safe JSON parse helper
-  const safeParseUser = (raw: string | null): UserType | null => {
+  const safeParseUser = (raw: string | null): User | null => {
     if (!raw) {
       return null;
     }
@@ -106,7 +106,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const parsed = JSON.parse(raw);
       // Optional: quick shape check for expected fields
       if (parsed && typeof parsed === 'object') {
-        return parsed as UserType;
+        return parsed as User;
       }
       return null;
     } catch {
@@ -294,7 +294,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
 
         const authToken: string | undefined = data?.loginWithQrToken?.token;
-        const authUser: UserType | undefined = data?.loginWithQrToken?.user;
+        const authUser: User | undefined = data?.loginWithQrToken?.user;
         if (!authToken || !authUser) {
           const error = new Error('Invalid QR login response.');
           reportError(error, {

@@ -25,7 +25,7 @@ interface RSVP {
   additionalNotes?: string;
 }
 
-interface AdminUser {
+export interface AdminUser {
   _id: string;
   fullName: string;
   email: string;
@@ -41,6 +41,20 @@ interface EditRSVPForm {
   guestCount: number;
   guests: Guest[];
   additionalNotes: string;
+}
+
+interface AdminUserUpdateInput {
+  fullName?: string;
+  email?: string;
+  isInvited?: boolean;
+  qrAlias?: string;
+  qrAliasLocked?: boolean;
+  streetAddress?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
 }
 
 interface AdminRSVPManagerProps {
@@ -165,10 +179,10 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to download QR code:', error);
       alert(
-        `Failed to download QR code: ${error.message || 'Please try again.'}`
+        `Failed to download QR code: ${error instanceof Error ? error.message : 'Please try again.'}`
       );
     }
   };
@@ -202,7 +216,7 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
     setEditForm(null);
   };
 
-  const handleUpdateUser = async (userId: string, updates: any) => {
+  const handleUpdateUser = async (userId: string, updates: AdminUserUpdateInput) => {
     try {
       setIsSaving(true);
       await updateUser({
@@ -237,9 +251,9 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
       });
       await onUpdate();
       handleCancelEdit();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to update RSVP:', error);
-      alert(`Failed to update RSVP: ${error.message || 'Please try again.'}`);
+      alert(`Failed to update RSVP: ${error instanceof Error ? error.message : 'Please try again.'}`);
     } finally {
       setIsSaving(false);
     }
@@ -261,9 +275,9 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
       });
       await onUpdate();
       handleCancelEdit();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to delete RSVP:', error);
-      alert(`Failed to delete RSVP: ${error.message || 'Please try again.'}`);
+      alert(`Failed to delete RSVP: ${error instanceof Error ? error.message : 'Please try again.'}`);
     } finally {
       setIsSaving(false);
     }
@@ -349,9 +363,9 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
         country: '',
       });
       alert('Guest added successfully!');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to add guest:', error);
-      alert(`Failed to add guest: ${error.message || 'Please try again.'}`);
+      alert(`Failed to add guest: ${error instanceof Error ? error.message : 'Please try again.'}`);
     } finally {
       setIsSaving(false);
     }
@@ -373,9 +387,9 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
       });
       await onUpdate();
       alert('Guest deleted successfully!');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to delete guest:', error);
-      alert(`Failed to delete guest: ${error.message || 'Please try again.'}`);
+      alert(`Failed to delete guest: ${error instanceof Error ? error.message : 'Please try again.'}`);
     } finally {
       setIsSaving(false);
     }
@@ -442,10 +456,10 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
       } else {
         alert('QR codes regenerated successfully!');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to regenerate QR codes:', error);
       alert(
-        `Failed to regenerate QR codes: ${error.message || 'Please try again.'}`
+        `Failed to regenerate QR codes: ${error instanceof Error ? error.message : 'Please try again.'}`
       );
     } finally {
       setIsSaving(false);
@@ -481,7 +495,7 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
           />
           <select
             value={filterStatus}
-            onChange={e => setFilterStatus(e.target.value as any)}
+            onChange={e => setFilterStatus(e.target.value as 'all' | 'invited' | 'rsvped' | 'attending' | 'pending')}
             className="filter-select"
           >
             <option value="all">All Guests</option>
@@ -615,7 +629,7 @@ const AdminRSVPManager: React.FC<AdminRSVPManagerProps> = ({
                       onChange={e =>
                         setEditForm({
                           ...editForm,
-                          attending: e.target.value as any,
+                          attending: e.target.value as 'YES' | 'NO' | 'MAYBE',
                         })
                       }
                       className="form-select"
